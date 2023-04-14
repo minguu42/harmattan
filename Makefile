@@ -13,7 +13,8 @@ build: ## serverプログラムをビルドする
 	go build -ldflags $(LDFLAGS) -o server ./cmd/server
 
 run: ## serverプログラムを実行する
-	@go run ./cmd/server
+	@docker compose up -d db-local
+	@docker compose up api
 
 fmt: ## フォーマットを実行する
 	@goimports -w .
