@@ -11,12 +11,13 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/minguu42/mtasks/pkg/route"
 )
 
 func main() {
 	r := chi.NewRouter()
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {})
+	route.Route(r)
 
 	s := &http.Server{
 		Addr:           ":8080",
