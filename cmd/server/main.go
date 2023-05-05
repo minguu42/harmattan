@@ -2,13 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/minguu42/mtasks/pkg/logger"
 	"github.com/minguu42/mtasks/pkg/server"
 )
 
@@ -22,16 +21,16 @@ func main() {
 		<-sigterm
 
 		if err := s.Shutdown(context.Background()); err != nil {
-			shutdownErr <- fmt.Errorf("s.Shutdown failed: %w", err)
+			shutdownErr <- err
 			return
 		}
 		shutdownErr <- nil
 	}()
 
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("s.ListenAndServe failed: %v", err)
+		logger.Fatalf("s.ListenAndServe failed: %v\n", err)
 	}
 	if err := <-shutdownErr; err != nil {
-		log.Fatal(err)
+		logger.Fatalf("s.Shutdown failed: %v\n", err)
 	}
 }
