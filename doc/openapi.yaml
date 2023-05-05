@@ -1,0 +1,214 @@
+openapi: 3.0.3
+
+info:
+  title: mTasks API仕様書
+  description: mTasks APIの仕様を定義するドキュメント
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:8080/
+    description: ローカル環境のAPIサーバ
+
+paths:
+  /tasks:
+    post:
+      tags:
+        - tasks
+      summary: 新しいタスクを作成する
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  example: タスク1
+      responses:
+        201:
+          description: 成功
+          headers:
+            Location:
+              schema:
+                type: string
+                example: http://localhost:8080/tasks/1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/task"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    get:
+      tags:
+        - tasks
+      summary: タスク一覧を取得する
+      description: 作成日時の降順で最大25件まで取得する。
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tasks"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    patch:
+      tags:
+        - tasks
+      summary: タスクを更新する
+      parameters:
+        - $ref: "#/components/parameters/taskID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isCompleted:
+                  type: boolean
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/task"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          $ref: "#/components/responses/NotFoundError"
+    delete:
+      tags:
+        - tasks
+      summary: タスクを削除する
+      parameters:
+        - $ref: "#/components/parameters/taskID"
+      responses:
+        204:
+          description: 成功
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          $ref: "#/components/responses/NotFoundError"
+  /health:
+    get:
+      tags:
+        - monitoring
+      summary: サーバの状態を取得する
+      responses:
+        200:
+          description: 成功
+        503:
+          $ref: "#/components/responses/ServerUnavailableError"
+
+components:
+  schemas:
+    task:
+      type: object
+      required:
+        - id
+        - title
+        - completedAt
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          description: タスクID
+          type: integer
+          minimum: 1
+        title:
+          description: タイトル
+          type: string
+          example: タスク1
+        completedAt:
+          description: 完了日時
+          type: string
+          format: date-time
+        createdAt:
+          description: 作成日時
+          type: string
+          format: date-time
+        updatedAt:
+          description: 更新日時
+          type: string
+          format: date-time
+    tasks:
+      type: object
+      required:
+        - tasks
+      properties:
+        tasks:
+          description: タスク一覧
+          type: array
+          items:
+            $ref: "#/components/schemas/task"
+    error:
+      type: object
+      required:
+        - message
+        - debug
+      properties:
+        message:
+          description: ユーザ向けの大まかなエラーの説明
+          type: string
+        debug:
+          description: 開発者向けの詳細なエラーの説明
+          type: string
+  responses:
+    BadRequestError:
+      description: リクエストに何らかの間違いがあります。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+    UnauthorizedError:
+      description: ユーザの認証に失敗しました。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+    NotFoundError:
+      description: 指定されたリソースは存在しません。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+    InternalServerError:
+      description: サーバで何らかのエラーが発生しました。もう一度お試しください。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+    ServerUnavailableError:
+      description: サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+  parameters:
+    taskID:
+      name: taskID
+      in: path
+      description: タスクID
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+
+tags:
+  - name: tasks
+    description: タスクに関するエンドポイント
+  - name: monitoring
+    description: サーバ監視に関するエンドポイント
