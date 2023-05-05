@@ -2,30 +2,17 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/minguu42/mtasks/pkg/route"
+	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/server"
 )
 
 func main() {
-	r := chi.NewRouter()
-
-	route.Route(r)
-
-	s := &http.Server{
-		Addr:           ":8080",
-		Handler:        r,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
-	}
+	s := server.New()
 
 	shutdownErr := make(chan error, 1)
 	go func() {
@@ -34,16 +21,19 @@ func main() {
 		<-sigterm
 
 		if err := s.Shutdown(context.Background()); err != nil {
-			shutdownErr <- fmt.Errorf("s.Shutdown failed: %w", err)
+			shutdownErr <- err
 			return
 		}
 		shutdownErr <- nil
 	}()
 
+	logging.Infof("Start accepting requests")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("s.ListenAndServe failed: %v", err)
+		logging.Fatalf("s.ListenAndServe failed: %v\n", err)
 	}
+
 	if err := <-shutdownErr; err != nil {
-		log.Fatal(err)
+		logging.Fatalf("s.Shutdown failed: %v\n", err)
 	}
+	logging.Infof("Stop accepting requests")
 }
