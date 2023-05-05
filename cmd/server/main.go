@@ -8,24 +8,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/minguu42/mtasks/pkg/route"
+	"github.com/minguu42/mtasks/pkg/server"
 )
 
 func main() {
-	r := chi.NewRouter()
-
-	route.Route(r)
-
-	s := &http.Server{
-		Addr:           ":8080",
-		Handler:        r,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
-	}
+	s := server.New()
 
 	shutdownErr := make(chan error, 1)
 	go func() {
