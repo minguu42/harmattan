@@ -1,4 +1,4 @@
-// Package server はルーティングを含むサーバの設定に関する設定を記述するパッケージ
+// Package server はルーティングを含むサーバの設定を記述するパッケージ
 package server
 
 import (
