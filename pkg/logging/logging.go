@@ -1,5 +1,5 @@
-// Package logger はロギングを行うためのパッケージ
-package logger
+// Package logging はロギングを行うためのパッケージ
+package logging
 
 import (
 	"log"

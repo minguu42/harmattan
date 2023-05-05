@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/minguu42/mtasks/pkg/logger"
+	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/server"
 )
 
@@ -27,10 +27,13 @@ func main() {
 		shutdownErr <- nil
 	}()
 
+	logging.Infof("Start accepting requests")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
-		logger.Fatalf("s.ListenAndServe failed: %v\n", err)
+		logging.Fatalf("s.ListenAndServe failed: %v\n", err)
 	}
+
 	if err := <-shutdownErr; err != nil {
-		logger.Fatalf("s.Shutdown failed: %v\n", err)
+		logging.Fatalf("s.Shutdown failed: %v\n", err)
 	}
+	logging.Infof("Stop accepting requests")
 }
