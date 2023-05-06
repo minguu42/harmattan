@@ -9,8 +9,8 @@ setup: ## 開発に必要なツールをインストールする
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 
-build: ## serverプログラムをビルドする
-	go build -ldflags $(LDFLAGS) -o server ./cmd/server
+build: ## serverプログラムを含むDockerイメージをビルドする
+	@docker build --tag=mtasks-api --target=prod .
 
 run: ## serverプログラムを実行する
 	@docker compose up -d db-local
