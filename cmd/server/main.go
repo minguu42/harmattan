@@ -13,10 +13,11 @@ import (
 func main() {
 	db, err := api.OpenDB(api.DSN("root", "", "mtasks-db-local", 3306, "db_local"))
 	if err != nil {
-		api.Fatalf("rdb.New failed: %v", err)
+		api.Fatalf("api.OpenDB failed: %v", err)
 	}
+	defer db.Close()
 
-	s := api.New(db)
+	s := api.NewServer(db)
 	shutdownErr := make(chan error, 1)
 	go func() {
 		sigterm := make(chan os.Signal, 1)

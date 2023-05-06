@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// New は http.Server を返す
-func New(_ *sql.DB) *http.Server {
+// NewServer は http.Server を返す
+func NewServer(_ *sql.DB) *http.Server {
 	r := chi.NewRouter()
 	r.Get("/health", getHealth())
 
