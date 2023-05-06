@@ -7,13 +7,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/server"
+	"github.com/minguu42/mtasks/api"
 )
 
 func main() {
-	s := server.New()
+	db, err := api.OpenDB(api.DSN("root", "", "mtasks-db-local", 3306, "db_local"))
+	if err != nil {
+		api.Fatalf("rdb.New failed: %v", err)
+	}
 
+	s := api.New(db)
 	shutdownErr := make(chan error, 1)
 	go func() {
 		sigterm := make(chan os.Signal, 1)
@@ -27,13 +30,13 @@ func main() {
 		shutdownErr <- nil
 	}()
 
-	logging.Infof("Start accepting requests")
+	api.Infof("Start accepting requests")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
-		logging.Fatalf("s.ListenAndServe failed: %v\n", err)
+		api.Fatalf("s.ListenAndServe failed: %v", err)
 	}
 
 	if err := <-shutdownErr; err != nil {
-		logging.Fatalf("s.Shutdown failed: %v\n", err)
+		api.Fatalf("s.Shutdown failed: %v", err)
 	}
-	logging.Infof("Stop accepting requests")
+	api.Infof("Stop accepting requests")
 }

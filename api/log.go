@@ -1,5 +1,4 @@
-// Package logging はロギングを行うためのパッケージ
-package logging
+package api
 
 import (
 	"log"
