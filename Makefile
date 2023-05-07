@@ -1,6 +1,5 @@
 VERSION  := 0.1.0
 REVISION := $(shell git rev-parse --short HEAD)
-LDFLAGS  := "-X main.revision=$(REVISION)"
 
 .DEFAULT_GOAL := help
 .PHONY: setup build run fmt lint test help
@@ -10,7 +9,7 @@ setup: ## 開発に必要なツールをインストールする
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 build: ## serverプログラムを含むDockerイメージをビルドする
-	@docker build --tag=mtasks-api --target=prod .
+	@docker build --build-arg="APP_VERSION=v$(VERSION)" --build-arg="APP_REVISION=$(REVISION)" --tag=mtasks-api --target=prod .
 
 run: ## serverプログラムを実行する
 	@docker compose up -d db-local
