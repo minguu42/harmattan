@@ -16,7 +16,10 @@ ARG API_VERSION="v0.0.0+unknown"
 ARG API_REVISION=""
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,target=. \
-    CGO_ENABLED=0 go build -ldflags "-X main.version=$API_VERSION -X main.revision=$API_REVISION" -o /go/bin/api ./cmd/server
+    CGO_ENABLED=0 go build \
+      -ldflags "-X main.version=$API_VERSION -X main.revision=$API_REVISION" \
+      -o /go/bin/api \
+      ./cmd/server
 
 FROM gcr.io/distroless/static-debian11 AS prod
 COPY --from=build /go/bin/api /

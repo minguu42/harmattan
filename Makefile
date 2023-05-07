@@ -9,7 +9,10 @@ setup: ## 開発に必要なツールをインストールする
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 
 build: ## serverプログラムを含むDockerイメージをビルドする
-	@docker build --build-arg="API_VERSION=v$(VERSION)" --build-arg="API_REVISION=$(REVISION)" --tag=mtasks-api --target=prod .
+	@docker build \
+            --build-arg="API_VERSION=v$(VERSION)" \
+            --build-arg="API_REVISION=$(REVISION)" \
+            --tag=mtasks-api --target=prod .
 
 run: ## serverプログラムを実行する
 	@docker compose up -d db-local
@@ -26,4 +29,5 @@ test: ## テストを実行する
 	@go test ./...
 
 help: ## ヘルプを表示する
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+      | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'
