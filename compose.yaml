@@ -1,16 +1,16 @@
 services:
   api:
-    image: mtasks-api-dev
+    image: mtasks-api-local
     build:
       context: .
       dockerfile: Dockerfile
-      target: dev
-    container_name: mtasks-api
+      target: local
+    container_name: mtasks-api-local
     tty: true
     ports:
       - "8080:8080"
     volumes:
-      - .:/go/src/app
+      - .:/go/src/api
     depends_on:
       - db-local
   db-local:
