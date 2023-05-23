@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// OpenDB はデータベースとの接続を確立した sql.DB を返す
+// OpenDB はデータベースとの接続を確立した *sql.DB を返す
 func OpenDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -34,7 +34,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
-// DSN はDSNを生成する
+// DSN はデータベースとの接続に使用する Data Source Name を生成する
 func DSN(user, password, host string, port int, dbname string) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true",
 		user,
