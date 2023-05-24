@@ -2,7 +2,6 @@
 package api
 
 import (
-	"database/sql"
 	"net/http"
 	"time"
 
@@ -10,7 +9,7 @@ import (
 )
 
 // NewServer は http.Server を返す
-func NewServer(_ *sql.DB) *http.Server {
+func NewServer() *http.Server {
 	r := chi.NewRouter()
 	r.Get("/health", getHealth())
 

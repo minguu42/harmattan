@@ -8,11 +8,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// OpenDB はデータベースとの接続を確立した *sql.DB を返す
-func OpenDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("mysql", dsn)
+var db *sql.DB
+
+// OpenDB はデータベースとの接続を確立する
+func OpenDB(dsn string) error {
+	var err error
+	db, err = sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("sql.Open failed: %w", err)
+		return fmt.Errorf("sql.Open failed: %w", err)
 	}
 
 	maxFailureTimes := 2
@@ -20,7 +23,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		if err := db.Ping(); err == nil {
 			break
 		} else if maxFailureTimes <= 0 {
-			return nil, fmt.Errorf("db.Ping failed: %w", err)
+			return fmt.Errorf("db.Ping failed: %w", err)
 		}
 
 		Infof("db.Ping failed. try again after 15 seconds")
@@ -31,7 +34,12 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	db.SetConnMaxLifetime(3 * time.Minute)
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
-	return db, nil
+	return nil
+}
+
+// CloseDB はデータベースとの接続を終了する
+func CloseDB() {
+	_ = db.Close()
 }
 
 // DSN はデータベースとの接続に使用する Data Source Name を生成する
