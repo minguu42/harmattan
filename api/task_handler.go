@@ -171,7 +171,7 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 			_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 			return
 		}
-		t.completedAt = &now
+		resp.CompletedAt = &now
 	} else {
 		if err := updateTask(taskID, nil); err != nil {
 			Errorf("updateTask failed: %v", err)
@@ -179,7 +179,6 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 			_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 			return
 		}
-		t.completedAt = nil
 	}
 
 	w.Header().Set("Content-Type", "application/json")
