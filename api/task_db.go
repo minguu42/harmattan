@@ -50,3 +50,25 @@ func getTasksByUserID(userID uint64) ([]*task, error) {
 
 	return ts, nil
 }
+
+func getTaskByID(id uint64) (*task, error) {
+	q := `SELECT user_id, title,completed_at, created_at, updated_at FROM tasks WHERE id = ?`
+	Debugf(q)
+
+	t := task{id: id}
+	if err := db.QueryRow(q, id).Scan(&t.userID, &t.title, &t.completedAt, &t.createdAt, &t.updatedAt); err != nil {
+		return nil, fmt.Errorf("row.Scan failed: %w", err)
+	}
+
+	return &t, nil
+}
+
+func updateTask(id uint64, completedAt *time.Time) error {
+	q := `UPDATE tasks SET completed_at = ? WHERE id = ?`
+	Debugf(q)
+
+	if _, err := db.Exec(q, completedAt, id); err != nil {
+		return fmt.Errorf("db.Exec failed: %w", err)
+	}
+	return nil
+}

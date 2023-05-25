@@ -15,6 +15,7 @@ func NewServer() *http.Server {
 	r.Route("/tasks", func(r chi.Router) {
 		r.Post("/", postTasks)
 		r.Get("/", getTasks)
+		r.Patch("/{taskID}", patchTask)
 	})
 
 	return &http.Server{
