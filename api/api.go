@@ -11,7 +11,7 @@ import (
 // NewServer は http.Server を返す
 func NewServer() *http.Server {
 	r := chi.NewRouter()
-	r.Get("/health", getHealth())
+	r.Get("/health", getHealth)
 	r.Post("/tasks", postTasks)
 
 	return &http.Server{
