@@ -12,6 +12,7 @@ import (
 func NewServer() *http.Server {
 	r := chi.NewRouter()
 	r.Get("/health", getHealth())
+	r.Post("/tasks", postTasks)
 
 	return &http.Server{
 		Addr:              ":8080",
