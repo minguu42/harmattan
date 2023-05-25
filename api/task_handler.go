@@ -190,3 +190,45 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func deleteTask(w http.ResponseWriter, r *http.Request) {
+	u, err := getUserByToken(token)
+	if err != nil {
+		Errorf("getUserByToken failed: %v", err)
+		w.WriteHeader(http.StatusUnauthorized)
+		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
+		return
+	}
+
+	id, err := strconv.ParseUint(chi.URLParam(r, "taskID"), 10, 64)
+	if err != nil {
+		Errorf("strconv.ParseUint failed: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		return
+	}
+
+	t, err := getTaskByID(id)
+	if err != nil {
+		Errorf("getTaskByID failed: %v", err)
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		return
+	}
+
+	if t.userID != u.id {
+		Errorf("t.userID != user.id")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(newNotFound(err))
+		return
+	}
+
+	if err := destroyTask(t.id); err != nil {
+		Errorf("destroyTask failed: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

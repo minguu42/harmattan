@@ -72,3 +72,13 @@ func updateTask(id uint64, completedAt *time.Time) error {
 	}
 	return nil
 }
+
+func destroyTask(id uint64) error {
+	q := `DELETE FROM tasks WHERE id = ?`
+	Debugf(q)
+
+	if _, err := db.Exec(q, id); err != nil {
+		return fmt.Errorf("db.Exec failed: %w", err)
+	}
+	return nil
+}

@@ -16,6 +16,7 @@ func NewServer() *http.Server {
 		r.Post("/", postTasks)
 		r.Get("/", getTasks)
 		r.Patch("/{taskID}", patchTask)
+		r.Delete("/{taskID}", deleteTask)
 	})
 
 	return &http.Server{
