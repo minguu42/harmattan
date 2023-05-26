@@ -16,22 +16,6 @@ var (
 	token = "rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR"
 )
 
-type taskResponse struct {
-	ID          uint64     `json:"id"`
-	Title       string     `json:"title"`
-	CompletedAt *time.Time `json:"completedAt"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	UpdatedAt   time.Time  `json:"updatedAt"`
-}
-
-type tasksResponse struct {
-	Tasks []*taskResponse `json:"tasks"`
-}
-
-type postTasksRequest struct {
-	Title string `json:"title"`
-}
-
 // PostTasks は POST /tasks に対応するハンドラ関数
 func PostTasks(w http.ResponseWriter, r *http.Request) {
 	var req postTasksRequest
@@ -102,10 +86,6 @@ func GetTasks(w http.ResponseWriter, _ *http.Request) {
 		render.Error(w, http.StatusInternalServerError, err)
 		return
 	}
-}
-
-type patchTaskRequest struct {
-	IsCompleted bool `json:"isCompleted"`
 }
 
 // PatchTask は PATCH /tasks/{taskID} に対応するハンドラ関数
