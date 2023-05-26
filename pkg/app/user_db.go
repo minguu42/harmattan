@@ -1,8 +1,7 @@
-package api
+package app
 
 import (
 	"fmt"
-
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 

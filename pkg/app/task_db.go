@@ -1,10 +1,9 @@
-package api
+package app
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/minguu42/mtasks/pkg/logging"
+	"time"
 )
 
 func createTask(userID uint64, title string) (*task, error) {

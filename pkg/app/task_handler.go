@@ -1,14 +1,13 @@
-package api
+package app
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-chi/chi/v5"
+	"github.com/minguu42/mtasks/pkg/logging"
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/minguu42/mtasks/pkg/logging"
 )
 
 type taskResponse struct {
@@ -31,7 +30,7 @@ type postTasksRequest struct {
 	Title string `json:"title"`
 }
 
-func postTasks(w http.ResponseWriter, r *http.Request) {
+func PostTasks(w http.ResponseWriter, r *http.Request) {
 	var req postTasksRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logging.Errorf("decoder.Decode failed: %v", err)
@@ -76,7 +75,7 @@ func postTasks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getTasks(w http.ResponseWriter, _ *http.Request) {
+func GetTasks(w http.ResponseWriter, _ *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
@@ -119,7 +118,7 @@ type patchTaskRequest struct {
 	IsCompleted bool `json:"isCompleted"`
 }
 
-func patchTask(w http.ResponseWriter, r *http.Request) {
+func PatchTask(w http.ResponseWriter, r *http.Request) {
 	var req patchTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logging.Errorf("decoder.Decode failed: %v", err)
@@ -191,7 +190,7 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteTask(w http.ResponseWriter, r *http.Request) {
+func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
