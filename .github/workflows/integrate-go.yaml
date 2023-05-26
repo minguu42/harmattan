@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - pkg/**
+      - cmd/**
 
 jobs:
   check-style:
