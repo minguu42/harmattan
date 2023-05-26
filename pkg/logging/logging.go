@@ -1,3 +1,4 @@
+// Package logging はロギングに関するパッケージ
 package logging
 
 import (

@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"github.com/minguu42/mtasks/pkg/app"
-	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/server"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/minguu42/mtasks/pkg/app"
+	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/server"
 )
 
 func main() {

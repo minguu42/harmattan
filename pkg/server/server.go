@@ -1,10 +1,12 @@
+// Package server はサーバに関するパッケージ
 package server
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/minguu42/mtasks/pkg/app"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/minguu42/mtasks/pkg/app"
 )
 
 // NewServer はルーティングの設定、サーバの初期化を行う
