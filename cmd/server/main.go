@@ -8,11 +8,12 @@ import (
 	"syscall"
 
 	"github.com/minguu42/mtasks/api"
+	"github.com/minguu42/mtasks/pkg/logging"
 )
 
 func main() {
 	if err := api.OpenDB(api.DSN("root", "", "mtasks-db-local", 3306, "db_local")); err != nil {
-		api.Fatalf("api.OpenDB failed: %v", err)
+		logging.Fatalf("api.OpenDB failed: %v", err)
 	}
 	defer api.CloseDB()
 
@@ -30,13 +31,13 @@ func main() {
 		shutdownErr <- nil
 	}()
 
-	api.Infof("Start accepting requests")
+	logging.Infof("Start accepting requests")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
-		api.Fatalf("s.ListenAndServe failed: %v", err)
+		logging.Fatalf("s.ListenAndServe failed: %v", err)
 	}
 
 	if err := <-shutdownErr; err != nil {
-		api.Fatalf("s.Shutdown failed: %v", err)
+		logging.Fatalf("s.Shutdown failed: %v", err)
 	}
-	api.Infof("Stop accepting requests")
+	logging.Infof("Stop accepting requests")
 }

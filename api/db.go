@@ -6,6 +6,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/minguu42/mtasks/pkg/logging"
 )
 
 var db *sql.DB
@@ -26,7 +27,7 @@ func OpenDB(dsn string) error {
 			return fmt.Errorf("db.Ping failed: %w", err)
 		}
 
-		Infof("db.Ping failed. try again after 15 seconds")
+		logging.Infof("db.Ping failed. try again after 15 seconds")
 		time.Sleep(15 * time.Second)
 		maxFailureTimes--
 	}

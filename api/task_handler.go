@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/minguu42/mtasks/pkg/logging"
 )
 
 type taskResponse struct {
@@ -33,7 +34,7 @@ type postTasksRequest struct {
 func postTasks(w http.ResponseWriter, r *http.Request) {
 	var req postTasksRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		Errorf("decoder.Decode failed: %v", err)
+		logging.Errorf("decoder.Decode failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
@@ -41,7 +42,7 @@ func postTasks(w http.ResponseWriter, r *http.Request) {
 
 	u, err := getUserByToken(token)
 	if err != nil {
-		Errorf("getUserByToken failed: %v", err)
+		logging.Errorf("getUserByToken failed: %v", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
 		return
@@ -49,7 +50,7 @@ func postTasks(w http.ResponseWriter, r *http.Request) {
 
 	t, err := createTask(u.id, req.Title)
 	if err != nil {
-		Errorf("createTask failed: %v", err)
+		logging.Errorf("createTask failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
@@ -68,7 +69,7 @@ func postTasks(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt:   t.updatedAt,
 	}
 	if err := encoder.Encode(resp); err != nil {
-		Errorf("encoder.Encode failed: %v", err)
+		logging.Errorf("encoder.Encode failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 		return
@@ -78,7 +79,7 @@ func postTasks(w http.ResponseWriter, r *http.Request) {
 func getTasks(w http.ResponseWriter, _ *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
-		Errorf("getUserByToken failed: %v", err)
+		logging.Errorf("getUserByToken failed: %v", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
 		return
@@ -86,7 +87,7 @@ func getTasks(w http.ResponseWriter, _ *http.Request) {
 
 	ts, err := getTasksByUserID(u.id)
 	if err != nil {
-		Errorf("getTasksByUserID failed: %v", err)
+		logging.Errorf("getTasksByUserID failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
@@ -107,7 +108,7 @@ func getTasks(w http.ResponseWriter, _ *http.Request) {
 		taskResponses = append(taskResponses, &tr)
 	}
 	if err := encoder.Encode(tasksResponse{Tasks: taskResponses}); err != nil {
-		Errorf("encoder.Encode failed: %v", err)
+		logging.Errorf("encoder.Encode failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 		return
@@ -121,14 +122,14 @@ type patchTaskRequest struct {
 func patchTask(w http.ResponseWriter, r *http.Request) {
 	var req patchTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		Errorf("decoder.Decode failed: %v", err)
+		logging.Errorf("decoder.Decode failed: %v", err)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
 	}
 
 	u, err := getUserByToken(token)
 	if err != nil {
-		Errorf("getUserByToken failed: %v", err)
+		logging.Errorf("getUserByToken failed: %v", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
 		return
@@ -136,7 +137,7 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 
 	taskID, err := strconv.ParseUint(chi.URLParam(r, "taskID"), 10, 64)
 	if err != nil {
-		Errorf("strconv.ParseUint failed: %v", err)
+		logging.Errorf("strconv.ParseUint failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
@@ -144,14 +145,14 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 
 	t, err := getTaskByID(taskID)
 	if err != nil {
-		Errorf("getTaskByID failed: %v", err)
+		logging.Errorf("getTaskByID failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
 	}
 
 	if t.userID != u.id {
-		Errorf("t.userID != user.id")
+		logging.Errorf("t.userID != user.id")
 		w.WriteHeader(http.StatusNotFound)
 		_ = json.NewEncoder(w).Encode(newNotFound(err))
 		return
@@ -166,7 +167,7 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 	if req.IsCompleted {
 		now := time.Now()
 		if err := updateTask(taskID, &now); err != nil {
-			Errorf("updateTask failed: %v", err)
+			logging.Errorf("updateTask failed: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 			return
@@ -174,7 +175,7 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 		resp.CompletedAt = &now
 	} else {
 		if err := updateTask(taskID, nil); err != nil {
-			Errorf("updateTask failed: %v", err)
+			logging.Errorf("updateTask failed: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 			return
@@ -183,7 +184,7 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		Errorf("encoder.Encode failed: %v", err)
+		logging.Errorf("encoder.Encode failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 		return
@@ -193,7 +194,7 @@ func patchTask(w http.ResponseWriter, r *http.Request) {
 func deleteTask(w http.ResponseWriter, r *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
-		Errorf("getUserByToken failed: %v", err)
+		logging.Errorf("getUserByToken failed: %v", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
 		return
@@ -201,7 +202,7 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseUint(chi.URLParam(r, "taskID"), 10, 64)
 	if err != nil {
-		Errorf("strconv.ParseUint failed: %v", err)
+		logging.Errorf("strconv.ParseUint failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
@@ -209,21 +210,21 @@ func deleteTask(w http.ResponseWriter, r *http.Request) {
 
 	t, err := getTaskByID(id)
 	if err != nil {
-		Errorf("getTaskByID failed: %v", err)
+		logging.Errorf("getTaskByID failed: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		_ = json.NewEncoder(w).Encode(newBadRequest(err))
 		return
 	}
 
 	if t.userID != u.id {
-		Errorf("t.userID != user.id")
+		logging.Errorf("t.userID != user.id")
 		w.WriteHeader(http.StatusNotFound)
 		_ = json.NewEncoder(w).Encode(newNotFound(err))
 		return
 	}
 
 	if err := destroyTask(t.id); err != nil {
-		Errorf("destroyTask failed: %v", err)
+		logging.Errorf("destroyTask failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
 		return
