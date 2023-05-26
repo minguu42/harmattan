@@ -3,8 +3,8 @@ name: Integrate Go application
 on:
   push:
     paths:
-      - pkg/**
       - cmd/**
+      - pkg/**
 
 jobs:
   check-style:
