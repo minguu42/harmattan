@@ -12,6 +12,10 @@ import (
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 
+var (
+	token = "rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR"
+)
+
 type taskResponse struct {
 	ID          uint64     `json:"id"`
 	Title       string     `json:"title"`
@@ -24,14 +28,11 @@ type tasksResponse struct {
 	Tasks []*taskResponse `json:"tasks"`
 }
 
-var (
-	token = "rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR"
-)
-
 type postTasksRequest struct {
 	Title string `json:"title"`
 }
 
+// PostTasks は POST /tasks に対応するハンドラ関数
 func PostTasks(w http.ResponseWriter, r *http.Request) {
 	var req postTasksRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -69,6 +70,7 @@ func PostTasks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetTasks は GET /tasks に対応するハンドラ関数
 func GetTasks(w http.ResponseWriter, _ *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
@@ -106,6 +108,7 @@ type patchTaskRequest struct {
 	IsCompleted bool `json:"isCompleted"`
 }
 
+// PatchTask は PATCH /tasks/{taskID} に対応するハンドラ関数
 func PatchTask(w http.ResponseWriter, r *http.Request) {
 	var req patchTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -170,6 +173,7 @@ func PatchTask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// DeleteTask は DELETE /tasks/{taskID} に対応するハンドラ関数
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
