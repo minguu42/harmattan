@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/minguu42/mtasks/pkg/app/render"
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 
@@ -35,32 +36,25 @@ func PostTasks(w http.ResponseWriter, r *http.Request) {
 	var req postTasksRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logging.Errorf("decoder.Decode failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
+		render.Error(w, http.StatusUnauthorized, err)
 		return
 	}
 
 	t, err := createTask(u.id, req.Title)
 	if err != nil {
 		logging.Errorf("createTask failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Location", fmt.Sprintf("http://localhost:8080/tasks/%d", t.id))
-	w.Header().Set("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "  ")
 	resp := taskResponse{
 		ID:          t.id,
 		Title:       t.title,
@@ -68,10 +62,9 @@ func PostTasks(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:   t.createdAt,
 		UpdatedAt:   t.updatedAt,
 	}
-	if err := encoder.Encode(resp); err != nil {
+	if err := render.Response(w, http.StatusCreated, resp); err != nil {
 		logging.Errorf("encoder.Encode failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
+		render.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 }
@@ -80,22 +73,17 @@ func GetTasks(w http.ResponseWriter, _ *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
+		render.Error(w, http.StatusUnauthorized, err)
 		return
 	}
 
 	ts, err := getTasksByUserID(u.id)
 	if err != nil {
 		logging.Errorf("getTasksByUserID failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "  ")
 	taskResponses := make([]*taskResponse, 0, len(ts))
 	for _, t := range ts {
 		tr := taskResponse{
@@ -107,10 +95,9 @@ func GetTasks(w http.ResponseWriter, _ *http.Request) {
 		}
 		taskResponses = append(taskResponses, &tr)
 	}
-	if err := encoder.Encode(tasksResponse{Tasks: taskResponses}); err != nil {
+	if err := render.Response(w, http.StatusOK, tasksResponse{Tasks: taskResponses}); err != nil {
 		logging.Errorf("encoder.Encode failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
+		render.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 }
@@ -123,38 +110,34 @@ func PatchTask(w http.ResponseWriter, r *http.Request) {
 	var req patchTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		logging.Errorf("decoder.Decode failed: %v", err)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
+		render.Error(w, http.StatusUnauthorized, err)
 		return
 	}
 
 	taskID, err := strconv.ParseUint(chi.URLParam(r, "taskID"), 10, 64)
 	if err != nil {
 		logging.Errorf("strconv.ParseUint failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	t, err := getTaskByID(taskID)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if t.userID != u.id {
 		logging.Errorf("t.userID != user.id")
-		w.WriteHeader(http.StatusNotFound)
-		_ = json.NewEncoder(w).Encode(newNotFound(err))
+		render.Error(w, http.StatusNotFound, err)
 		return
 	}
 
@@ -168,25 +151,21 @@ func PatchTask(w http.ResponseWriter, r *http.Request) {
 		now := time.Now()
 		if err := updateTask(taskID, &now); err != nil {
 			logging.Errorf("updateTask failed: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			_ = json.NewEncoder(w).Encode(newInternalServerError(err))
+			render.Error(w, http.StatusInternalServerError, err)
 			return
 		}
 		resp.CompletedAt = &now
 	} else {
 		if err := updateTask(taskID, nil); err != nil {
 			logging.Errorf("updateTask failed: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			_ = json.NewEncoder(w).Encode(newInternalServerError(err))
+			render.Error(w, http.StatusInternalServerError, err)
 			return
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(resp); err != nil {
+	if err = render.Response(w, http.StatusOK, resp); err != nil {
 		logging.Errorf("encoder.Encode failed: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
+		render.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 }
@@ -195,38 +174,33 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		w.WriteHeader(http.StatusUnauthorized)
-		_ = json.NewEncoder(w).Encode(newUnauthorized(err))
+		render.Error(w, http.StatusUnauthorized, err)
 		return
 	}
 
 	id, err := strconv.ParseUint(chi.URLParam(r, "taskID"), 10, 64)
 	if err != nil {
 		logging.Errorf("strconv.ParseUint failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	t, err := getTaskByID(id)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(newBadRequest(err))
+		render.Error(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if t.userID != u.id {
 		logging.Errorf("t.userID != user.id")
-		w.WriteHeader(http.StatusNotFound)
-		_ = json.NewEncoder(w).Encode(newNotFound(err))
+		render.Error(w, http.StatusNotFound, err)
 		return
 	}
 
 	if err := destroyTask(t.id); err != nil {
 		logging.Errorf("destroyTask failed: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		_ = json.NewEncoder(w).Encode(newInternalServerError(err))
+		render.Error(w, http.StatusInternalServerError, err)
 		return
 	}
 
