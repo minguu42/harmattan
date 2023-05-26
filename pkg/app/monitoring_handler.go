@@ -2,6 +2,5 @@ package app
 
 import "net/http"
 
-func GetHealth() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
-}
+// GetHealth は GET /health に対応するハンドラ関数
+func GetHealth(_ http.ResponseWriter, _ *http.Request) {}

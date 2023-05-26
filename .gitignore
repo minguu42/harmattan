@@ -17,3 +17,6 @@
 
 # Go workspace file
 go.work
+
+# Temporary directory for use with Air
+tmp/

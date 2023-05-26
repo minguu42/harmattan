@@ -1,4 +1,4 @@
-// Package server はルーティングを含むサーバの設定を記述するパッケージ
+// Package server はサーバに関するパッケージ
 package server
 
 import (
@@ -9,15 +9,23 @@ import (
 	"github.com/minguu42/mtasks/pkg/app"
 )
 
-func New() *http.Server {
+// NewServer はルーティングの設定、サーバの初期化を行う
+func NewServer() *http.Server {
 	r := chi.NewRouter()
-	r.Get("/health", app.GetHealth())
+
+	r.Get("/health", app.GetHealth)
+	r.Route("/tasks", func(r chi.Router) {
+		r.Post("/", app.PostTasks)
+		r.Get("/", app.GetTasks)
+		r.Patch("/{taskID}", app.PatchTask)
+		r.Delete("/{taskID}", app.DeleteTask)
+	})
 
 	return &http.Server{
-		Addr:           ":8080",
-		Handler:        r,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
+		Addr:              ":8080",
+		Handler:           r,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		MaxHeaderBytes:    1 << 20,
 	}
 }

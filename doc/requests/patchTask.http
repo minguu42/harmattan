@@ -1,0 +1,7 @@
+PATCH http://localhost:8080/tasks/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "isCompleted": true
+}
