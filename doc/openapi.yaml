@@ -15,6 +15,7 @@ paths:
       tags:
         - tasks
       summary: 新しいタスクを作成する
+      operationId: CreateTasks
       requestBody:
         required: true
         content:
@@ -48,6 +49,7 @@ paths:
         - tasks
       summary: タスク一覧を取得する
       description: 作成日時の降順で最大25件まで取得する。
+      operationId: getTasks
       responses:
         200:
           description: 成功
@@ -60,12 +62,20 @@ paths:
         401:
           $ref: "#/components/responses/UnauthorizedError"
   /tasks/{taskID}:
+    parameters:
+      - name: taskID
+        in: path
+        description: タスクID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
     patch:
       tags:
         - tasks
       summary: タスクを更新する
-      parameters:
-        - $ref: "#/components/parameters/taskID"
+      operationId: patchTask
       requestBody:
         required: true
         content:
@@ -92,8 +102,7 @@ paths:
       tags:
         - tasks
       summary: タスクを削除する
-      parameters:
-        - $ref: "#/components/parameters/taskID"
+      operationId: deleteTask
       responses:
         204:
           description: 成功
@@ -108,6 +117,7 @@ paths:
       tags:
         - monitoring
       summary: サーバの状態を取得する
+      operationId: getHealth
       responses:
         200:
           description: 成功
@@ -128,6 +138,7 @@ components:
         id:
           description: タスクID
           type: integer
+          format: int64
           minimum: 1
         title:
           description: タイトル
@@ -198,15 +209,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/error"
-  parameters:
-    taskID:
-      name: taskID
-      in: path
-      description: タスクID
-      required: true
-      schema:
-        type: integer
-        minimum: 1
 
 tags:
   - name: tasks
