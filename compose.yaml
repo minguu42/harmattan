@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
       target: local
     container_name: mtasks-api-local
+    env_file:
+      - .env.local
     tty: true
     ports:
       - "8080:8080"

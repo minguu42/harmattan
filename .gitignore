@@ -20,3 +20,9 @@ go.work
 
 # Temporary directory for use with Air
 tmp/
+
+# Environment variable files
+.env.local
+.env.dev
+.env.std
+.env.prod

@@ -8,17 +8,23 @@ import (
 	"syscall"
 
 	"github.com/minguu42/mtasks/pkg/app"
+	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/server"
 )
 
 func main() {
-	if err := app.OpenDB(app.DSN("root", "", "mtasks-db-local", 3306, "db_local")); err != nil {
-		logging.Fatalf("api.OpenDB failed: %v", err)
+	appEnv, err := env.Load()
+	if err != nil {
+		logging.Fatalf("env.Load failed: %v", err)
+	}
+
+	if err := app.OpenDB(appEnv.MySQL.DSN()); err != nil {
+		logging.Fatalf("app.OpenDB failed: %v", err)
 	}
 	defer app.CloseDB()
 
-	s := server.NewServer()
+	s := server.NewServer(appEnv.API)
 	shutdownErr := make(chan error, 1)
 	go func() {
 		sigterm := make(chan os.Signal, 1)
