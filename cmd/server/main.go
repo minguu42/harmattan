@@ -8,9 +8,16 @@ import (
 	"syscall"
 
 	"github.com/minguu42/mtasks/pkg/app"
+	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/server"
 )
+
+func init() {
+	if err := env.Load(); err != nil {
+		logging.Fatalf("env.Load failed: %v", err)
+	}
+}
 
 func main() {
 	if err := app.OpenDB(app.DSN("root", "", "mtasks-db-local", 3306, "db_local")); err != nil {
