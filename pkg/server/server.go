@@ -2,15 +2,18 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/minguu42/mtasks/pkg/env"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/minguu42/mtasks/pkg/app"
 )
 
 // NewServer はルーティングの設定、サーバの初期化を行う
-func NewServer() *http.Server {
+func NewServer(api *env.API) *http.Server {
 	r := chi.NewRouter()
 
 	r.Get("/health", app.GetHealth)
@@ -22,7 +25,7 @@ func NewServer() *http.Server {
 	})
 
 	return &http.Server{
-		Addr:              ":8080",
+		Addr:              fmt.Sprintf(":%d", api.Port),
 		Handler:           r,
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
