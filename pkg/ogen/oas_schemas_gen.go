@@ -6,28 +6,6 @@ import (
 	"time"
 )
 
-type CreateTasksBadRequest Error
-
-func (*CreateTasksBadRequest) createTasksRes() {}
-
-type CreateTasksReq struct {
-	Title string `json:"title"`
-}
-
-// GetTitle returns the value of Title.
-func (s *CreateTasksReq) GetTitle() string {
-	return s.Title
-}
-
-// SetTitle sets the value of Title.
-func (s *CreateTasksReq) SetTitle(val string) {
-	s.Title = val
-}
-
-type CreateTasksUnauthorized Error
-
-func (*CreateTasksUnauthorized) createTasksRes() {}
-
 type DeleteTaskBadRequest Error
 
 func (*DeleteTaskBadRequest) deleteTaskRes() {}
@@ -134,38 +112,38 @@ func (o OptBool) Or(d bool) bool {
 	return d
 }
 
-// NewOptString returns new OptString with value set to v.
-func NewOptString(v string) OptString {
-	return OptString{
+// NewOptDateTime returns new OptDateTime with value set to v.
+func NewOptDateTime(v time.Time) OptDateTime {
+	return OptDateTime{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptString is optional string.
-type OptString struct {
-	Value string
+// OptDateTime is optional time.Time.
+type OptDateTime struct {
+	Value time.Time
 	Set   bool
 }
 
-// IsSet returns true if OptString was set.
-func (o OptString) IsSet() bool { return o.Set }
+// IsSet returns true if OptDateTime was set.
+func (o OptDateTime) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptString) Reset() {
-	var v string
+func (o *OptDateTime) Reset() {
+	var v time.Time
 	o.Value = v
 	o.Set = false
 }
 
 // SetTo sets value to v.
-func (o *OptString) SetTo(v string) {
+func (o *OptDateTime) SetTo(v time.Time) {
 	o.Set = true
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptString) Get() (v string, ok bool) {
+func (o OptDateTime) Get() (v time.Time, ok bool) {
 	if !o.Set {
 		return v, false
 	}
@@ -173,7 +151,7 @@ func (o OptString) Get() (v string, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptString) Or(d string) string {
+func (o OptDateTime) Or(d time.Time) time.Time {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -206,6 +184,28 @@ type PatchTaskUnauthorized Error
 
 func (*PatchTaskUnauthorized) patchTaskRes() {}
 
+type PostTasksBadRequest Error
+
+func (*PostTasksBadRequest) postTasksRes() {}
+
+type PostTasksReq struct {
+	Title string `json:"title"`
+}
+
+// GetTitle returns the value of Title.
+func (s *PostTasksReq) GetTitle() string {
+	return s.Title
+}
+
+// SetTitle sets the value of Title.
+func (s *PostTasksReq) SetTitle(val string) {
+	s.Title = val
+}
+
+type PostTasksUnauthorized Error
+
+func (*PostTasksUnauthorized) postTasksRes() {}
+
 // Ref: #/components/schemas/task
 type Task struct {
 	// タスクID.
@@ -213,7 +213,7 @@ type Task struct {
 	// タイトル.
 	Title string `json:"title"`
 	// 完了日時.
-	CompletedAt time.Time `json:"completedAt"`
+	CompletedAt OptDateTime `json:"completedAt"`
 	// 作成日時.
 	CreatedAt time.Time `json:"createdAt"`
 	// 更新日時.
@@ -231,7 +231,7 @@ func (s *Task) GetTitle() string {
 }
 
 // GetCompletedAt returns the value of CompletedAt.
-func (s *Task) GetCompletedAt() time.Time {
+func (s *Task) GetCompletedAt() OptDateTime {
 	return s.CompletedAt
 }
 
@@ -256,7 +256,7 @@ func (s *Task) SetTitle(val string) {
 }
 
 // SetCompletedAt sets the value of CompletedAt.
-func (s *Task) SetCompletedAt(val time.Time) {
+func (s *Task) SetCompletedAt(val OptDateTime) {
 	s.CompletedAt = val
 }
 
@@ -274,12 +274,12 @@ func (*Task) patchTaskRes() {}
 
 // TaskHeaders wraps Task with response headers.
 type TaskHeaders struct {
-	Location OptString
+	Location string
 	Response Task
 }
 
 // GetLocation returns the value of Location.
-func (s *TaskHeaders) GetLocation() OptString {
+func (s *TaskHeaders) GetLocation() string {
 	return s.Location
 }
 
@@ -289,7 +289,7 @@ func (s *TaskHeaders) GetResponse() Task {
 }
 
 // SetLocation sets the value of Location.
-func (s *TaskHeaders) SetLocation(val OptString) {
+func (s *TaskHeaders) SetLocation(val string) {
 	s.Location = val
 }
 
@@ -298,7 +298,7 @@ func (s *TaskHeaders) SetResponse(val Task) {
 	s.Response = val
 }
 
-func (*TaskHeaders) createTasksRes() {}
+func (*TaskHeaders) postTasksRes() {}
 
 // Ref: #/components/schemas/tasks
 type Tasks struct {

@@ -85,7 +85,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					case "GET":
 						s.handleGetTasksRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
-						s.handleCreateTasksRequest([0]string{}, elemIsEscaped, w, r)
+						s.handlePostTasksRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET,POST")
 					}
@@ -242,8 +242,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.count = 0
 						return r, true
 					case "POST":
-						r.name = "CreateTasks"
-						r.operationID = "CreateTasks"
+						r.name = "PostTasks"
+						r.operationID = "PostTasks"
 						r.pathPattern = "/tasks"
 						r.args = args
 						r.count = 0

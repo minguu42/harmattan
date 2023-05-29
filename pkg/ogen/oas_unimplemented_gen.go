@@ -13,15 +13,6 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// CreateTasks implements CreateTasks operation.
-//
-// 新しいタスクを作成する.
-//
-// POST /tasks
-func (UnimplementedHandler) CreateTasks(ctx context.Context, req *CreateTasksReq) (r CreateTasksRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // DeleteTask implements deleteTask operation.
 //
 // タスクを削除する.
@@ -55,5 +46,14 @@ func (UnimplementedHandler) GetTasks(ctx context.Context) (r GetTasksRes, _ erro
 //
 // PATCH /tasks/{taskID}
 func (UnimplementedHandler) PatchTask(ctx context.Context, req *PatchTaskReq, params PatchTaskParams) (r PatchTaskRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// PostTasks implements PostTasks operation.
+//
+// 新しいタスクを作成する.
+//
+// POST /tasks
+func (UnimplementedHandler) PostTasks(ctx context.Context, req *PostTasksReq) (r PostTasksRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

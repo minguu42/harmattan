@@ -8,12 +8,6 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// CreateTasks implements CreateTasks operation.
-	//
-	// 新しいタスクを作成する.
-	//
-	// POST /tasks
-	CreateTasks(ctx context.Context, req *CreateTasksReq) (CreateTasksRes, error)
 	// DeleteTask implements deleteTask operation.
 	//
 	// タスクを削除する.
@@ -38,6 +32,12 @@ type Handler interface {
 	//
 	// PATCH /tasks/{taskID}
 	PatchTask(ctx context.Context, req *PatchTaskReq, params PatchTaskParams) (PatchTaskRes, error)
+	// PostTasks implements PostTasks operation.
+	//
+	// 新しいタスクを作成する.
+	//
+	// POST /tasks
+	PostTasks(ctx context.Context, req *PostTasksReq) (PostTasksRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and
