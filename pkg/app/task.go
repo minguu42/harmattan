@@ -3,8 +3,8 @@ package app
 import "time"
 
 type task struct {
-	id          uint64
-	userID      uint64
+	id          int64
+	userID      int64
 	title       string
 	completedAt *time.Time
 	createdAt   time.Time

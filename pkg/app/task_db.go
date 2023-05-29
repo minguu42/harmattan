@@ -7,7 +7,7 @@ import (
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 
-func createTask(userID uint64, title string) (*task, error) {
+func createTask(userID int64, title string) (*task, error) {
 	createdAt := time.Now()
 	q := `INSERT INTO tasks (user_id, title, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	logging.Debugf(q)
@@ -22,7 +22,7 @@ func createTask(userID uint64, title string) (*task, error) {
 	}
 
 	return &task{
-		id:          uint64(id),
+		id:          id,
 		userID:      userID,
 		title:       title,
 		completedAt: nil,
@@ -31,7 +31,7 @@ func createTask(userID uint64, title string) (*task, error) {
 	}, nil
 }
 
-func getTasksByUserID(userID uint64) ([]*task, error) {
+func getTasksByUserID(userID int64) ([]*task, error) {
 	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE user_id = ?`
 	logging.Debugf(q)
 
@@ -53,7 +53,7 @@ func getTasksByUserID(userID uint64) ([]*task, error) {
 	return ts, nil
 }
 
-func getTaskByID(id uint64) (*task, error) {
+func getTaskByID(id int64) (*task, error) {
 	q := `SELECT user_id, title,completed_at, created_at, updated_at FROM tasks WHERE id = ?`
 	logging.Debugf(q)
 
@@ -65,7 +65,7 @@ func getTaskByID(id uint64) (*task, error) {
 	return &t, nil
 }
 
-func updateTask(id uint64, completedAt *time.Time) error {
+func updateTask(id int64, completedAt *time.Time) error {
 	q := `UPDATE tasks SET completed_at = ? WHERE id = ?`
 	logging.Debugf(q)
 
@@ -75,7 +75,7 @@ func updateTask(id uint64, completedAt *time.Time) error {
 	return nil
 }
 
-func destroyTask(id uint64) error {
+func destroyTask(id int64) error {
 	q := `DELETE FROM tasks WHERE id = ?`
 	logging.Debugf(q)
 

@@ -32,7 +32,7 @@ func (h *Handler) PostTasks(_ context.Context, req *ogen.PostTasksReq) (ogen.Pos
 		completedAt = ogen.NewOptDateTime(*t.completedAt)
 	}
 	resp := ogen.Task{
-		ID:          int64(t.id),
+		ID:          t.id,
 		Title:       t.title,
 		CompletedAt: completedAt,
 		CreatedAt:   t.createdAt,
@@ -62,7 +62,7 @@ func (h *Handler) GetTasks(_ context.Context) (ogen.GetTasksRes, error) {
 	for _, t := range ts {
 		completedAt := ogen.OptDateTime{}
 		task := ogen.Task{
-			ID:          int64(t.id),
+			ID:          t.id,
 			Title:       t.title,
 			CompletedAt: completedAt,
 			CreatedAt:   t.createdAt,
@@ -81,7 +81,7 @@ func (h *Handler) PatchTask(_ context.Context, req *ogen.PatchTaskReq, params og
 		return &ogen.PatchTaskUnauthorized{}, nil
 	}
 
-	t, err := getTaskByID(uint64(params.TaskID))
+	t, err := getTaskByID(params.TaskID)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
 		return &ogen.PatchTaskBadRequest{}, nil
@@ -95,13 +95,13 @@ func (h *Handler) PatchTask(_ context.Context, req *ogen.PatchTaskReq, params og
 	if req.IsCompleted.IsSet() {
 		if req.IsCompleted.Value {
 			now := time.Now()
-			if err := updateTask(uint64(params.TaskID), &now); err != nil {
+			if err := updateTask(params.TaskID, &now); err != nil {
 				logging.Errorf("updateTask failed: %v", err)
 				// TODO: InternalServerError の方が望ましい
 				return &ogen.PatchTaskBadRequest{}, nil
 			}
 		} else {
-			if err := updateTask(uint64(params.TaskID), nil); err != nil {
+			if err := updateTask(params.TaskID, nil); err != nil {
 				logging.Errorf("updateTask failed: %v", err)
 				// TODO: InternalServerError の方が望ましい
 				return &ogen.PatchTaskBadRequest{}, nil
@@ -114,7 +114,7 @@ func (h *Handler) PatchTask(_ context.Context, req *ogen.PatchTaskReq, params og
 		completedAt = ogen.NewOptDateTime(*t.completedAt)
 	}
 	return &ogen.Task{
-		ID:          int64(t.id),
+		ID:          t.id,
 		Title:       t.title,
 		CompletedAt: completedAt,
 		CreatedAt:   t.createdAt,
@@ -130,7 +130,7 @@ func (h *Handler) DeleteTask(_ context.Context, params ogen.DeleteTaskParams) (o
 		return &ogen.DeleteTaskUnauthorized{}, nil
 	}
 
-	t, err := getTaskByID(uint64(params.TaskID))
+	t, err := getTaskByID(params.TaskID)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
 		return &ogen.DeleteTaskBadRequest{}, nil
