@@ -2,11 +2,12 @@ VERSION  := 0.1.0
 REVISION := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := help
-.PHONY: setup build run fmt lint test help
+.PHONY: setup build run gen fmt lint test help
 
 setup: ## 開発に必要なツールをインストールする
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
+	go install github.com/ogen-go/ogen/cmd/ogen@latest
 
 build: ## serverプログラムを含むDockerイメージをビルドする
 	@docker build \
@@ -17,6 +18,9 @@ build: ## serverプログラムを含むDockerイメージをビルドする
 run: ## serverプログラムを実行する
 	@docker compose up -d db-local
 	@docker compose up api
+
+gen: ## コードを生成する
+	@go generate ./gen
 
 fmt: ## フォーマットを実行する
 	@goimports -w .

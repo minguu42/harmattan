@@ -1,32 +1,40 @@
 package app
 
-import "time"
+import (
+	"time"
+
+	"github.com/minguu42/mtasks/pkg/ogen"
+)
 
 type task struct {
-	id          uint64
-	userID      uint64
+	id          int64
+	userID      int64
 	title       string
 	completedAt *time.Time
 	createdAt   time.Time
 	updatedAt   time.Time
 }
 
-type taskResponse struct {
-	ID          uint64     `json:"id"`
-	Title       string     `json:"title"`
-	CompletedAt *time.Time `json:"completedAt"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	UpdatedAt   time.Time  `json:"updatedAt"`
+// newTaskResponse はデータベースモデルの task からレスポンスモデルの ogen.Task を生成する
+func newTaskResponse(t *task) ogen.Task {
+	completedAt := ogen.OptDateTime{}
+	if t.completedAt != nil {
+		completedAt = ogen.NewOptDateTime(*t.completedAt)
+	}
+	return ogen.Task{
+		ID:          t.id,
+		Title:       t.title,
+		CompletedAt: completedAt,
+		CreatedAt:   t.createdAt,
+		UpdatedAt:   t.updatedAt,
+	}
 }
 
-type tasksResponse struct {
-	Tasks []*taskResponse `json:"tasks"`
-}
-
-type postTasksRequest struct {
-	Title string `json:"title"`
-}
-
-type patchTaskRequest struct {
-	IsCompleted bool `json:"isCompleted"`
+// newTasksResponse はデータベースモデルの task のスライスからレスポンスモデルの ogen.Task のスライスを生成する
+func newTasksResponse(ts []*task) []ogen.Task {
+	tasks := make([]ogen.Task, 0, len(ts))
+	for _, t := range ts {
+		tasks = append(tasks, newTaskResponse(t))
+	}
+	return tasks
 }

@@ -24,7 +24,11 @@ func main() {
 	}
 	defer app.CloseDB()
 
-	s := server.NewServer(appEnv.API)
+	s, err := server.NewServer(appEnv.API)
+	if err != nil {
+		logging.Fatalf("server.NewServer failed: %v", err)
+	}
+
 	shutdownErr := make(chan error, 1)
 	go func() {
 		sigterm := make(chan os.Signal, 1)

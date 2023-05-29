@@ -1,192 +1,118 @@
 package app
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
-	"net/http"
-	"strconv"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/minguu42/mtasks/pkg/app/render"
 	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/ogen"
 )
 
 var (
 	token = "rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR"
 )
 
-// PostTasks は POST /tasks に対応するハンドラ関数
-func PostTasks(w http.ResponseWriter, r *http.Request) {
-	var req postTasksRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		logging.Errorf("decoder.Decode failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
+// PostTasks は POST /tasks に対応するハンドラ
+func (h *Handler) PostTasks(_ context.Context, req *ogen.PostTasksReq) (ogen.PostTasksRes, error) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		render.Error(w, http.StatusUnauthorized, err)
-		return
+		return &ogen.PostTasksUnauthorized{}, nil
 	}
 
 	t, err := createTask(u.id, req.Title)
 	if err != nil {
 		logging.Errorf("createTask failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
+		return &ogen.PostTasksBadRequest{}, nil
 	}
 
-	w.Header().Set("Location", fmt.Sprintf("http://localhost:8080/tasks/%d", t.id))
-	resp := taskResponse{
-		ID:          t.id,
-		Title:       t.title,
-		CompletedAt: t.completedAt,
-		CreatedAt:   t.createdAt,
-		UpdatedAt:   t.updatedAt,
-	}
-	if err := render.Response(w, http.StatusCreated, resp); err != nil {
-		logging.Errorf("encoder.Encode failed: %v", err)
-		render.Error(w, http.StatusInternalServerError, err)
-		return
-	}
+	return &ogen.TaskHeaders{
+		Location: fmt.Sprintf("http://localhost:8080/tasks/%d", t.id),
+		Response: newTaskResponse(t),
+	}, nil
 }
 
-// GetTasks は GET /tasks に対応するハンドラ関数
-func GetTasks(w http.ResponseWriter, _ *http.Request) {
+// GetTasks は GET /tasks に対応するハンドラ
+func (h *Handler) GetTasks(_ context.Context) (ogen.GetTasksRes, error) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		render.Error(w, http.StatusUnauthorized, err)
-		return
+		return &ogen.GetTasksUnauthorized{}, nil
 	}
 
 	ts, err := getTasksByUserID(u.id)
 	if err != nil {
 		logging.Errorf("getTasksByUserID failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
+		return &ogen.GetTasksBadRequest{}, nil
 	}
 
-	taskResponses := make([]*taskResponse, 0, len(ts))
-	for _, t := range ts {
-		tr := taskResponse{
-			ID:          t.id,
-			Title:       t.title,
-			CompletedAt: t.completedAt,
-			CreatedAt:   t.createdAt,
-			UpdatedAt:   t.updatedAt,
-		}
-		taskResponses = append(taskResponses, &tr)
-	}
-	if err := render.Response(w, http.StatusOK, tasksResponse{Tasks: taskResponses}); err != nil {
-		logging.Errorf("encoder.Encode failed: %v", err)
-		render.Error(w, http.StatusInternalServerError, err)
-		return
-	}
+	return &ogen.Tasks{Tasks: newTasksResponse(ts)}, nil
 }
 
-// PatchTask は PATCH /tasks/{taskID} に対応するハンドラ関数
-func PatchTask(w http.ResponseWriter, r *http.Request) {
-	var req patchTaskRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		logging.Errorf("decoder.Decode failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
+// PatchTask は PATCH /tasks/{taskID} に対応するハンドラ
+func (h *Handler) PatchTask(_ context.Context, req *ogen.PatchTaskReq, params ogen.PatchTaskParams) (ogen.PatchTaskRes, error) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		render.Error(w, http.StatusUnauthorized, err)
-		return
+		return &ogen.PatchTaskUnauthorized{}, nil
 	}
 
-	taskID, err := strconv.ParseUint(chi.URLParam(r, "taskID"), 10, 64)
-	if err != nil {
-		logging.Errorf("strconv.ParseUint failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	t, err := getTaskByID(taskID)
+	t, err := getTaskByID(params.TaskID)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
+		return &ogen.PatchTaskBadRequest{}, nil
 	}
 
 	if t.userID != u.id {
 		logging.Errorf("t.userID != user.id")
-		render.Error(w, http.StatusNotFound, err)
-		return
+		return &ogen.PatchTaskNotFound{}, nil
 	}
 
-	resp := taskResponse{
-		ID:        taskID,
-		Title:     t.title,
-		CreatedAt: t.createdAt,
-		UpdatedAt: t.updatedAt,
-	}
-	if req.IsCompleted {
-		now := time.Now()
-		if err := updateTask(taskID, &now); err != nil {
-			logging.Errorf("updateTask failed: %v", err)
-			render.Error(w, http.StatusInternalServerError, err)
-			return
-		}
-		resp.CompletedAt = &now
-	} else {
-		if err := updateTask(taskID, nil); err != nil {
-			logging.Errorf("updateTask failed: %v", err)
-			render.Error(w, http.StatusInternalServerError, err)
-			return
+	if req.IsCompleted.IsSet() {
+		if req.IsCompleted.Value {
+			now := time.Now()
+			if err := updateTask(params.TaskID, &now); err != nil {
+				logging.Errorf("updateTask failed: %v", err)
+				// TODO: InternalServerError の方が望ましい
+				return &ogen.PatchTaskBadRequest{}, nil
+			}
+		} else {
+			if err := updateTask(params.TaskID, nil); err != nil {
+				logging.Errorf("updateTask failed: %v", err)
+				// TODO: InternalServerError の方が望ましい
+				return &ogen.PatchTaskBadRequest{}, nil
+			}
 		}
 	}
 
-	if err = render.Response(w, http.StatusOK, resp); err != nil {
-		logging.Errorf("encoder.Encode failed: %v", err)
-		render.Error(w, http.StatusInternalServerError, err)
-		return
-	}
+	resp := newTaskResponse(t)
+	return &resp, nil
 }
 
-// DeleteTask は DELETE /tasks/{taskID} に対応するハンドラ関数
-func DeleteTask(w http.ResponseWriter, r *http.Request) {
+// DeleteTask は DELETE /tasks/{taskID} に対応するハンドラ
+func (h *Handler) DeleteTask(_ context.Context, params ogen.DeleteTaskParams) (ogen.DeleteTaskRes, error) {
 	u, err := getUserByToken(token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
-		render.Error(w, http.StatusUnauthorized, err)
-		return
+		return &ogen.DeleteTaskUnauthorized{}, nil
 	}
 
-	id, err := strconv.ParseUint(chi.URLParam(r, "taskID"), 10, 64)
-	if err != nil {
-		logging.Errorf("strconv.ParseUint failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
-	}
-
-	t, err := getTaskByID(id)
+	t, err := getTaskByID(params.TaskID)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
-		render.Error(w, http.StatusBadRequest, err)
-		return
+		return &ogen.DeleteTaskBadRequest{}, nil
 	}
 
 	if t.userID != u.id {
-		logging.Errorf("t.userID != user.id")
-		render.Error(w, http.StatusNotFound, err)
-		return
+		logging.Errorf("t.userID != u.id")
+		return &ogen.DeleteTaskNotFound{}, nil
 	}
 
 	if err := destroyTask(t.id); err != nil {
 		logging.Errorf("destroyTask failed: %v", err)
-		render.Error(w, http.StatusInternalServerError, err)
-		return
+		return &ogen.DeleteTaskBadRequest{}, nil
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	return &ogen.DeleteTaskNoContent{}, nil
 }
