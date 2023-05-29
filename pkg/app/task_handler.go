@@ -27,20 +27,9 @@ func (h *Handler) PostTasks(_ context.Context, req *ogen.PostTasksReq) (ogen.Pos
 		return &ogen.PostTasksBadRequest{}, nil
 	}
 
-	completedAt := ogen.OptDateTime{}
-	if t.completedAt != nil {
-		completedAt = ogen.NewOptDateTime(*t.completedAt)
-	}
-	resp := ogen.Task{
-		ID:          t.id,
-		Title:       t.title,
-		CompletedAt: completedAt,
-		CreatedAt:   t.createdAt,
-		UpdatedAt:   t.updatedAt,
-	}
 	return &ogen.TaskHeaders{
 		Location: fmt.Sprintf("http://localhost:8080/tasks/%d", t.id),
-		Response: resp,
+		Response: newTaskResponse(t),
 	}, nil
 }
 
@@ -58,19 +47,7 @@ func (h *Handler) GetTasks(_ context.Context) (ogen.GetTasksRes, error) {
 		return &ogen.GetTasksBadRequest{}, nil
 	}
 
-	tasks := make([]ogen.Task, 0, len(ts))
-	for _, t := range ts {
-		completedAt := ogen.OptDateTime{}
-		task := ogen.Task{
-			ID:          t.id,
-			Title:       t.title,
-			CompletedAt: completedAt,
-			CreatedAt:   t.createdAt,
-			UpdatedAt:   t.updatedAt,
-		}
-		tasks = append(tasks, task)
-	}
-	return &ogen.Tasks{Tasks: tasks}, nil
+	return &ogen.Tasks{Tasks: newTasksResponse(ts)}, nil
 }
 
 // PatchTask は PATCH /tasks/{taskID} に対応するハンドラ
@@ -109,17 +86,8 @@ func (h *Handler) PatchTask(_ context.Context, req *ogen.PatchTaskReq, params og
 		}
 	}
 
-	completedAt := ogen.OptDateTime{}
-	if t.completedAt != nil {
-		completedAt = ogen.NewOptDateTime(*t.completedAt)
-	}
-	return &ogen.Task{
-		ID:          t.id,
-		Title:       t.title,
-		CompletedAt: completedAt,
-		CreatedAt:   t.createdAt,
-		UpdatedAt:   t.updatedAt,
-	}, nil
+	resp := newTaskResponse(t)
+	return &resp, nil
 }
 
 // DeleteTask は DELETE /tasks/{taskID} に対応するハンドラ
