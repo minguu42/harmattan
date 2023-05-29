@@ -6,16 +6,17 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/ogen"
-
-	"github.com/minguu42/mtasks/pkg/env"
-
 	"github.com/minguu42/mtasks/pkg/app"
+	"github.com/minguu42/mtasks/pkg/env"
+	"github.com/minguu42/mtasks/pkg/ogen"
 )
 
-// NewServer はルーティングの設定、サーバの初期化を行う
-func NewServer(api *env.API) *http.Server {
-	s, _ := ogen.NewServer(&app.Handler{})
+// NewServer はサーバの初期化する
+func NewServer(api *env.API) (*http.Server, error) {
+	s, err := ogen.NewServer(&app.Handler{})
+	if err != nil {
+		return nil, fmt.Errorf("ogen.NewServer failed: %w", err)
+	}
 
 	return &http.Server{
 		Addr:              fmt.Sprintf(":%d", api.Port),
@@ -23,5 +24,5 @@ func NewServer(api *env.API) *http.Server {
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		MaxHeaderBytes:    1 << 20,
-	}
+	}, nil
 }
