@@ -42,14 +42,3 @@ func OpenDB(dsn string) error {
 func CloseDB() {
 	_ = db.Close()
 }
-
-// DSN はデータベースとの接続に使用する Data Source Name を生成する
-func DSN(user, password, host string, port int, dbname string) string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true",
-		user,
-		password,
-		host,
-		port,
-		dbname,
-	)
-}

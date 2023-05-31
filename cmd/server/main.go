@@ -10,7 +10,6 @@ import (
 	"github.com/minguu42/mtasks/pkg/app"
 	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/server"
 )
 
 func main() {
@@ -24,7 +23,7 @@ func main() {
 	}
 	defer app.CloseDB()
 
-	s, err := server.NewServer(appEnv.API)
+	s, err := app.NewServer(appEnv.API)
 	if err != nil {
 		logging.Fatalf("server.NewServer failed: %v", err)
 	}
