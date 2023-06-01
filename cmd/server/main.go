@@ -7,8 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/minguu42/mtasks/pkg/app"
 	"github.com/minguu42/mtasks/pkg/database"
+
+	"github.com/minguu42/mtasks/pkg/app"
 	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/logging"
 )

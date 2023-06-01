@@ -1,4 +1,4 @@
-// Package database はデータベースに関するパッケージ
+// Package database はデータベースに関するアダプタパッケージ
 package database
 
 import (
@@ -11,8 +11,13 @@ import (
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 
+// DB は app.repository インタフェースを実装する
+type DB struct {
+	*sql.DB
+}
+
 // Open はデータベースとの接続が確立する
-func Open(ctx context.Context, dsn string) (*sql.DB, error) {
+func Open(ctx context.Context, dsn string) (*DB, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open failed: %w", err)
@@ -23,14 +28,14 @@ func Open(ctx context.Context, dsn string) (*sql.DB, error) {
 		if err := db.PingContext(ctx); err == nil {
 			break
 		} else if i == maxFailureTimes {
-			return nil, fmt.Errorf("db.PingContext failed: %w", err)
+			return nil, fmt.Errorf("DB.PingContext failed: %w", err)
 		}
-		logging.Infof("db.PingContext failed. try again after 15 seconds")
+		logging.Infof("DB.PingContext failed. try again after 15 seconds")
 		time.Sleep(15 * time.Second)
 	}
 
 	db.SetConnMaxLifetime(3 * time.Minute)
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
-	return db, nil
+	return &DB{db}, nil
 }

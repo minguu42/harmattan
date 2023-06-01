@@ -1,9 +1,8 @@
-// Package app はモデル、ハンドラ関数、データベース関数を定義する
+// Package app はアプリケーションの中心に関するパッケージ
 package app
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"time"
@@ -17,23 +16,19 @@ type handler struct {
 }
 
 type repository interface {
-	getUserByToken(ctx context.Context, token string) (*user, error)
+	GetUserByToken(ctx context.Context, token string) (*User, error)
 
-	createTask(ctx context.Context, userID int64, title string) (*task, error)
-	getTasksByUserID(ctx context.Context, userID int64) ([]*task, error)
-	getTaskByID(ctx context.Context, id int64) (*task, error)
-	updateTask(ctx context.Context, id int64, completedAt *time.Time) error
-	deleteTask(ctx context.Context, id int64) error
-}
-
-type database struct {
-	*sql.DB
+	CreateTask(ctx context.Context, userID int64, title string) (*Task, error)
+	GetTasksByUserID(ctx context.Context, userID int64) ([]*Task, error)
+	GetTaskByID(ctx context.Context, id int64) (*Task, error)
+	UpdateTask(ctx context.Context, id int64, completedAt *time.Time) error
+	DeleteTask(ctx context.Context, id int64) error
 }
 
 // NewServer はサーバを初期化する
-func NewServer(api *env.API, db *sql.DB) (*http.Server, error) {
+func NewServer(api *env.API, repository repository) (*http.Server, error) {
 	s, err := ogen.NewServer(&handler{
-		repository: &database{db},
+		repository: repository,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("ogen.NewServer failed: %w", err)

@@ -1,14 +1,15 @@
-package app
+package database
 
 import (
 	"context"
 	"fmt"
 	"time"
 
+	"github.com/minguu42/mtasks/pkg/app"
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 
-func (db *database) createTask(ctx context.Context, userID int64, title string) (*task, error) {
+func (db *DB) CreateTask(ctx context.Context, userID int64, title string) (*app.Task, error) {
 	q := `INSERT INTO tasks (user_id, title, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	logging.Debugf(q)
 
@@ -23,17 +24,17 @@ func (db *database) createTask(ctx context.Context, userID int64, title string) 
 		return nil, fmt.Errorf("result.LastInsertId failed: %w", err)
 	}
 
-	return &task{
-		id:        id,
-		userID:    userID,
-		title:     title,
-		createdAt: createdAt,
-		updatedAt: createdAt,
+	return &app.Task{
+		ID:        id,
+		UserID:    userID,
+		Title:     title,
+		CreatedAt: createdAt,
+		UpdatedAt: createdAt,
 	}, nil
 }
 
-func (db *database) getTasksByUserID(ctx context.Context, userID int64) ([]*task, error) {
-	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE user_id = ?`
+func (db *DB) GetTasksByUserID(ctx context.Context, userID int64) ([]*app.Task, error) {
+	q := `SELECT ID, Title, completed_at, created_at, updated_at FROM tasks WHERE user_id = ?`
 	logging.Debugf(q)
 
 	rows, err := db.QueryContext(ctx, q, userID)
@@ -42,10 +43,10 @@ func (db *database) getTasksByUserID(ctx context.Context, userID int64) ([]*task
 	}
 	defer rows.Close()
 
-	ts := make([]*task, 0, 10)
+	ts := make([]*app.Task, 0, 10)
 	for rows.Next() {
-		var t task
-		if err := rows.Scan(&t.id, &t.title, &t.completedAt, &t.createdAt, &t.updatedAt); err != nil {
+		var t app.Task
+		if err := rows.Scan(&t.ID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("rows.Scan failed: %w", err)
 		}
 		ts = append(ts, &t)
@@ -53,19 +54,19 @@ func (db *database) getTasksByUserID(ctx context.Context, userID int64) ([]*task
 	return ts, nil
 }
 
-func (db *database) getTaskByID(ctx context.Context, id int64) (*task, error) {
-	q := `SELECT user_id, title,completed_at, created_at, updated_at FROM tasks WHERE id = ?`
+func (db *DB) GetTaskByID(ctx context.Context, id int64) (*app.Task, error) {
+	q := `SELECT user_id, Title,completed_at, created_at, updated_at FROM tasks WHERE ID = ?`
 	logging.Debugf(q)
 
-	t := task{id: id}
-	if err := db.QueryRowContext(ctx, q, id).Scan(&t.userID, &t.title, &t.completedAt, &t.createdAt, &t.updatedAt); err != nil {
+	t := app.Task{ID: id}
+	if err := db.QueryRowContext(ctx, q, id).Scan(&t.UserID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
 		return nil, fmt.Errorf("db.QueryRowContext failed: %w", err)
 	}
 	return &t, nil
 }
 
-func (db *database) updateTask(ctx context.Context, id int64, completedAt *time.Time) error {
-	q := `UPDATE tasks SET completed_at = ? WHERE id = ?`
+func (db *DB) UpdateTask(ctx context.Context, id int64, completedAt *time.Time) error {
+	q := `UPDATE tasks SET completed_at = ? WHERE ID = ?`
 	logging.Debugf(q)
 
 	if _, err := db.ExecContext(ctx, q, completedAt, id); err != nil {
@@ -74,8 +75,8 @@ func (db *database) updateTask(ctx context.Context, id int64, completedAt *time.
 	return nil
 }
 
-func (db *database) deleteTask(ctx context.Context, id int64) error {
-	q := `DELETE FROM tasks WHERE id = ?`
+func (db *DB) DeleteTask(ctx context.Context, id int64) error {
+	q := `DELETE FROM tasks WHERE ID = ?`
 	logging.Debugf(q)
 
 	if _, err := db.ExecContext(ctx, q, id); err != nil {
