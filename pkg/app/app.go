@@ -12,11 +12,11 @@ import (
 	"github.com/minguu42/mtasks/pkg/ogen"
 )
 
-type Handler struct {
-	Repository Repository
+type handler struct {
+	repository repository
 }
 
-type Repository interface {
+type repository interface {
 	getUserByToken(ctx context.Context, token string) (*user, error)
 
 	createTask(ctx context.Context, userID int64, title string) (*task, error)
@@ -26,14 +26,14 @@ type Repository interface {
 	deleteTask(ctx context.Context, id int64) error
 }
 
-type Database struct {
+type database struct {
 	*sql.DB
 }
 
 // NewServer はサーバを初期化する
-func NewServer(api *env.API) (*http.Server, error) {
-	s, err := ogen.NewServer(&Handler{
-		Repository: &Database{db},
+func NewServer(api *env.API, db *sql.DB) (*http.Server, error) {
+	s, err := ogen.NewServer(&handler{
+		repository: &database{db},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("ogen.NewServer failed: %w", err)

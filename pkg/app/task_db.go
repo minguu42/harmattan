@@ -8,7 +8,7 @@ import (
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 
-func (db *Database) createTask(ctx context.Context, userID int64, title string) (*task, error) {
+func (db *database) createTask(ctx context.Context, userID int64, title string) (*task, error) {
 	q := `INSERT INTO tasks (user_id, title, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	logging.Debugf(q)
 
@@ -32,7 +32,7 @@ func (db *Database) createTask(ctx context.Context, userID int64, title string) 
 	}, nil
 }
 
-func (db *Database) getTasksByUserID(ctx context.Context, userID int64) ([]*task, error) {
+func (db *database) getTasksByUserID(ctx context.Context, userID int64) ([]*task, error) {
 	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE user_id = ?`
 	logging.Debugf(q)
 
@@ -53,7 +53,7 @@ func (db *Database) getTasksByUserID(ctx context.Context, userID int64) ([]*task
 	return ts, nil
 }
 
-func (db *Database) getTaskByID(ctx context.Context, id int64) (*task, error) {
+func (db *database) getTaskByID(ctx context.Context, id int64) (*task, error) {
 	q := `SELECT user_id, title,completed_at, created_at, updated_at FROM tasks WHERE id = ?`
 	logging.Debugf(q)
 
@@ -64,7 +64,7 @@ func (db *Database) getTaskByID(ctx context.Context, id int64) (*task, error) {
 	return &t, nil
 }
 
-func (db *Database) updateTask(ctx context.Context, id int64, completedAt *time.Time) error {
+func (db *database) updateTask(ctx context.Context, id int64, completedAt *time.Time) error {
 	q := `UPDATE tasks SET completed_at = ? WHERE id = ?`
 	logging.Debugf(q)
 
@@ -74,7 +74,7 @@ func (db *Database) updateTask(ctx context.Context, id int64, completedAt *time.
 	return nil
 }
 
-func (db *Database) deleteTask(ctx context.Context, id int64) error {
+func (db *database) deleteTask(ctx context.Context, id int64) error {
 	q := `DELETE FROM tasks WHERE id = ?`
 	logging.Debugf(q)
 

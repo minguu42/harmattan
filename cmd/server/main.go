@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/minguu42/mtasks/pkg/app"
+	"github.com/minguu42/mtasks/pkg/database"
 	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/logging"
 )
@@ -18,12 +19,13 @@ func main() {
 		logging.Fatalf("env.Load failed: %v", err)
 	}
 
-	if err := app.OpenDB(appEnv.MySQL.DSN()); err != nil {
-		logging.Fatalf("app.OpenDB failed: %v", err)
+	db, err := database.Open(context.Background(), appEnv.MySQL.DSN())
+	if err != nil {
+		logging.Fatalf("database.Open failed: %v", err)
 	}
-	defer app.CloseDB()
+	defer db.Close()
 
-	s, err := app.NewServer(appEnv.API)
+	s, err := app.NewServer(appEnv.API, db)
 	if err != nil {
 		logging.Fatalf("server.NewServer failed: %v", err)
 	}

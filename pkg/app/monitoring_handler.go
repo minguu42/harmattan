@@ -7,6 +7,6 @@ import (
 )
 
 // GetHealth は GET /health に対応するハンドラ関数
-func (h *Handler) GetHealth(_ context.Context) (ogen.GetHealthRes, error) {
+func (h *handler) GetHealth(_ context.Context) (ogen.GetHealthRes, error) {
 	return &ogen.GetHealthOK{}, nil
 }

@@ -14,14 +14,14 @@ var (
 )
 
 // PostTasks は POST /tasks に対応するハンドラ
-func (h *Handler) PostTasks(ctx context.Context, req *ogen.PostTasksReq) (ogen.PostTasksRes, error) {
-	u, err := h.Repository.getUserByToken(ctx, token)
+func (h *handler) PostTasks(ctx context.Context, req *ogen.PostTasksReq) (ogen.PostTasksRes, error) {
+	u, err := h.repository.getUserByToken(ctx, token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
 		return &ogen.PostTasksUnauthorized{}, nil
 	}
 
-	t, err := h.Repository.createTask(ctx, u.id, req.Title)
+	t, err := h.repository.createTask(ctx, u.id, req.Title)
 	if err != nil {
 		logging.Errorf("createTask failed: %v", err)
 		return &ogen.PostTasksBadRequest{}, nil
@@ -34,14 +34,14 @@ func (h *Handler) PostTasks(ctx context.Context, req *ogen.PostTasksReq) (ogen.P
 }
 
 // GetTasks は GET /tasks に対応するハンドラ
-func (h *Handler) GetTasks(ctx context.Context) (ogen.GetTasksRes, error) {
-	u, err := h.Repository.getUserByToken(ctx, token)
+func (h *handler) GetTasks(ctx context.Context) (ogen.GetTasksRes, error) {
+	u, err := h.repository.getUserByToken(ctx, token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
 		return &ogen.GetTasksUnauthorized{}, nil
 	}
 
-	ts, err := h.Repository.getTasksByUserID(ctx, u.id)
+	ts, err := h.repository.getTasksByUserID(ctx, u.id)
 	if err != nil {
 		logging.Errorf("getTasksByUserID failed: %v", err)
 		return &ogen.GetTasksBadRequest{}, nil
@@ -51,14 +51,14 @@ func (h *Handler) GetTasks(ctx context.Context) (ogen.GetTasksRes, error) {
 }
 
 // PatchTask は PATCH /tasks/{taskID} に対応するハンドラ
-func (h *Handler) PatchTask(ctx context.Context, req *ogen.PatchTaskReq, params ogen.PatchTaskParams) (ogen.PatchTaskRes, error) {
-	u, err := h.Repository.getUserByToken(ctx, token)
+func (h *handler) PatchTask(ctx context.Context, req *ogen.PatchTaskReq, params ogen.PatchTaskParams) (ogen.PatchTaskRes, error) {
+	u, err := h.repository.getUserByToken(ctx, token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
 		return &ogen.PatchTaskUnauthorized{}, nil
 	}
 
-	t, err := h.Repository.getTaskByID(ctx, params.TaskID)
+	t, err := h.repository.getTaskByID(ctx, params.TaskID)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
 		return &ogen.PatchTaskBadRequest{}, nil
@@ -72,13 +72,13 @@ func (h *Handler) PatchTask(ctx context.Context, req *ogen.PatchTaskReq, params 
 	if req.IsCompleted.IsSet() {
 		if req.IsCompleted.Value {
 			now := time.Now()
-			if err := h.Repository.updateTask(ctx, params.TaskID, &now); err != nil {
+			if err := h.repository.updateTask(ctx, params.TaskID, &now); err != nil {
 				logging.Errorf("updateTask failed: %v", err)
 				// TODO: InternalServerError の方が望ましい
 				return &ogen.PatchTaskBadRequest{}, nil
 			}
 		} else {
-			if err := h.Repository.updateTask(ctx, params.TaskID, nil); err != nil {
+			if err := h.repository.updateTask(ctx, params.TaskID, nil); err != nil {
 				logging.Errorf("updateTask failed: %v", err)
 				// TODO: InternalServerError の方が望ましい
 				return &ogen.PatchTaskBadRequest{}, nil
@@ -91,14 +91,14 @@ func (h *Handler) PatchTask(ctx context.Context, req *ogen.PatchTaskReq, params 
 }
 
 // DeleteTask は DELETE /tasks/{taskID} に対応するハンドラ
-func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) (ogen.DeleteTaskRes, error) {
-	u, err := h.Repository.getUserByToken(ctx, token)
+func (h *handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) (ogen.DeleteTaskRes, error) {
+	u, err := h.repository.getUserByToken(ctx, token)
 	if err != nil {
 		logging.Errorf("getUserByToken failed: %v", err)
 		return &ogen.DeleteTaskUnauthorized{}, nil
 	}
 
-	t, err := h.Repository.getTaskByID(ctx, params.TaskID)
+	t, err := h.repository.getTaskByID(ctx, params.TaskID)
 	if err != nil {
 		logging.Errorf("getTaskByID failed: %v", err)
 		return &ogen.DeleteTaskBadRequest{}, nil
@@ -109,7 +109,7 @@ func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) 
 		return &ogen.DeleteTaskNotFound{}, nil
 	}
 
-	if err := h.Repository.deleteTask(ctx, t.id); err != nil {
+	if err := h.repository.deleteTask(ctx, t.id); err != nil {
 		logging.Errorf("destroyTask failed: %v", err)
 		return &ogen.DeleteTaskBadRequest{}, nil
 	}

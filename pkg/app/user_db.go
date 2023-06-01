@@ -7,7 +7,7 @@ import (
 	"github.com/minguu42/mtasks/pkg/logging"
 )
 
-func (db *Database) getUserByToken(ctx context.Context, token string) (*user, error) {
+func (db *database) getUserByToken(ctx context.Context, token string) (*user, error) {
 	q := `SELECT id, name, created_at, updated_at FROM users WHERE token = ?`
 	logging.Debugf(q)
 
