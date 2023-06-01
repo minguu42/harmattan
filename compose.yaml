@@ -22,7 +22,7 @@ services:
     container_name: mtasks-db-local
     restart: always
     ports:
-      - "13306:3306"
+      - "3306:3306"
     volumes:
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
       - db-data-local:/var/lib/mysql
