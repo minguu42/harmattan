@@ -1,3 +1,33 @@
+CREATE DATABASE IF NOT EXISTS mtasks_local;
+USE mtasks_local;
+
+DROP TABLE IF EXISTS tasks;
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
+    id         BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    name       CHAR(255) NOT NULL UNIQUE,
+    token      CHAR(64)  NOT NULL UNIQUE,
+    created_at DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tasks (
+    id           BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    user_id      BIGINT UNSIGNED NOT NULL,
+    title        CHAR(255)       NOT NULL,
+    completed_at DATETIME,
+    created_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+INSERT INTO users (name, token)
+VALUES ('minguu42', 'rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR');
+
+-- 同様にmtasks_local_testも作成する
+CREATE DATABASE IF NOT EXISTS mtasks_local_test;
+USE mtasks_local_test;
+
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS users;
 
