@@ -124,6 +124,22 @@ paths:
       responses:
         200:
           description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - version
+                  - revision
+                properties:
+                  version:
+                    description: mTasks APIのバージョン
+                    type: string
+                    example: v0.1.0
+                  revision:
+                    description: mTasks APIのリビジョン
+                    type: string
+                    example: a1b2c3d
         503:
           $ref: "#/components/responses/ServerUnavailableError"
 
