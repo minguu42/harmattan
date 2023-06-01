@@ -26,8 +26,8 @@ fmt: ## フォーマットを実行する
 	@goimports -w .
 
 lint: ## 静的解析を実行する
-	@go vet ./...
-	@staticcheck ./...
+	@go vet $$(go list ./... | grep -v /pkg/ogen)
+	@staticcheck $$(go list ./... | grep -v /pkg/ogen)
 
 test: ## テストを実行する
 	@go test ./...
