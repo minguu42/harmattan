@@ -37,6 +37,7 @@ paths:
               required: true
               schema:
                 type: string
+                format: uri
                 example: http://localhost:8080/tasks/1
           content:
             application/json:
