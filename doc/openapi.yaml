@@ -53,8 +53,11 @@ paths:
       tags:
         - projects
       summary: プロジェクト一覧を取得する
-      description: 作成日時の降順で最大10件まで取得する。
+      description: 作成日時の降順で取得する。
       operationId: getProjects
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
       responses:
         200:
           description: 成功
@@ -156,8 +159,11 @@ paths:
       tags:
         - tasks
       summary: タスク一覧を取得する
-      description: 作成日時の降順で最大25件まで取得する。
+      description: 作成日時の降順で取得する。
       operationId: getTasks
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
       responses:
         200:
           description: 成功
@@ -340,6 +346,23 @@ components:
       schema:
         type: string
         format: uuid
+    limit:
+      name: limit
+      in: query
+      description: リソースの最大取得数
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 30
+    offset:
+      name: offset
+      in: query
+      description: リソースの取得開始位置
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
     projectID:
       name: projectID
       in: path
