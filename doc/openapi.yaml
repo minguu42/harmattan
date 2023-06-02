@@ -10,6 +10,112 @@ servers:
     description: ローカル環境のAPIサーバ
 
 paths:
+  /projects:
+    post:
+      tags:
+        - projects
+      summary: 新しいプロジェクトを作成する
+      operationId: PostProjects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: プロジェクト1
+      responses:
+        201:
+          description: 成功
+          headers:
+            Location:
+              description: 新しく作成したプロジェクトへのURL
+              required: true
+              schema:
+                type: string
+                format: uri
+                example: http://localhost:8080/projects/1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/project"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    get:
+      tags:
+        - projects
+      summary: プロジェクト一覧を取得する
+      description: 作成日時の降順で最大10件まで取得する。
+      operationId: getProjects
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/projects"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /projects/{projectID}:
+    parameters:
+      - name: projectID
+        in: path
+        description: プロジェクトID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
+    patch:
+      tags:
+        - projects
+      summary: プロジェクトを更新する
+      operationId: patchProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: プロジェクト1
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/project"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          $ref: "#/components/responses/NotFoundError"
+    delete:
+      tags:
+        - projects
+      summary: プロジェクトを削除する
+      operationId: deleteProject
+      responses:
+        204:
+          description: 成功
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          $ref: "#/components/responses/NotFoundError"
   /tasks:
     post:
       tags:
@@ -145,6 +251,41 @@ paths:
 
 components:
   schemas:
+    project:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          description: プロジェクトID
+          type: integer
+          format: int64
+          minimum: 1
+        name:
+          description: プロジェクト名
+          type: string
+          example: プロジェクト1
+        createdAt:
+          description: 作成日時
+          type: string
+          format: date-time
+        updatedAt:
+          description: 更新日時
+          type: string
+          format: date-time
+    projects:
+      type: object
+      required:
+        - projects
+      properties:
+        projects:
+          description: プロジェクト一覧
+          type: array
+          items:
+            $ref: "#/components/schemas/project"
     task:
       type: object
       required:
@@ -229,6 +370,8 @@ components:
             $ref: "#/components/schemas/error"
 
 tags:
+  - name: projects
+    description: プロジェクトに関するエンドポイント
   - name: tasks
     description: タスクに関するエンドポイント
   - name: monitoring
