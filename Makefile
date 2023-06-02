@@ -2,22 +2,27 @@ VERSION  := 0.1.0
 REVISION := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := help
-.PHONY: setup build run gen fmt lint test help
+.PHONY: setup build run up down gen fmt lint test help
 
 setup: ## 開発に必要なツールをインストールする
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install github.com/ogen-go/ogen/cmd/ogen@latest
 
-build: ## serverプログラムを含むDockerイメージをビルドする
+build: ## APIサーバのコンテナイメージをビルドする
 	@docker build \
             --build-arg="API_VERSION=v$(VERSION)" \
             --build-arg="API_REVISION=$(REVISION)" \
             --tag=mtasks-api --target=prod .
 
-run: ## serverプログラムを実行する
-	@docker compose up -d db-local
-	@docker compose up api
+run: ## APIサーバを実行する
+	@docker compose --env-file .env.local up api
+
+up: ## バックグラウンドでデータベースサーバを実行する
+	@docker compose --env-file .env.local up -d db
+
+down: ## サービスコンテナを終了する
+	@docker compose --env-file .env.local down
 
 gen: ## コードを生成する
 	@go generate ./gen
