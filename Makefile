@@ -11,7 +11,7 @@ setup: ## 開発に必要なツールをインストールする
 
 build: ## APIサーバのコンテナイメージをビルドする
 	@docker build \
-            --build-arg="API_VERSION=v$(VERSION)" \
+            --build-arg="API_VERSION=$(VERSION)" \
             --build-arg="API_REVISION=$(REVISION)" \
             --tag=mtasks-api --target=prod .
 
