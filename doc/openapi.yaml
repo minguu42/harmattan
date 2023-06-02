@@ -66,14 +66,7 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
   /projects/{projectID}:
     parameters:
-      - name: projectID
-        in: path
-        description: プロジェクトID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          minimum: 1
+      - $ref: "#/components/parameters/projectID"
     patch:
       tags:
         - projects
@@ -172,14 +165,7 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
   /tasks/{taskID}:
     parameters:
-      - name: taskID
-        in: path
-        description: タスクID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          minimum: 1
+      - $ref: "#/components/parameters/taskID"
     patch:
       tags:
         - tasks
@@ -337,6 +323,25 @@ components:
         debug:
           description: 開発者向けの詳細なエラーの説明
           type: string
+  parameters:
+    projectID:
+      name: projectID
+      in: path
+      description: プロジェクトID
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    taskID:
+      name: taskID
+      in: path
+      description: タスクID
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
   responses:
     BadRequestError:
       description: リクエストに何らかの間違いがあります。
