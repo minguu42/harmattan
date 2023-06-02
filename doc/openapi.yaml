@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
 info:
-  title: mTasks API仕様書
+  title: mTasks API Specification
   description: mTasks APIの仕様を定義するドキュメント
   version: 0.1.0
 
@@ -11,6 +11,8 @@ servers:
 
 paths:
   /projects:
+    parameters:
+      - $ref: "#/components/parameters/apiKey"
     post:
       tags:
         - projects
@@ -66,6 +68,7 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
   /projects/{projectID}:
     parameters:
+      - $ref: "#/components/parameters/apiKey"
       - $ref: "#/components/parameters/projectID"
     patch:
       tags:
@@ -111,6 +114,7 @@ paths:
           $ref: "#/components/responses/NotFoundError"
   /projects/{projectID}/tasks:
     parameters:
+      - $ref: "#/components/parameters/apiKey"
       - $ref: "#/components/parameters/projectID"
     post:
       tags:
@@ -167,6 +171,7 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
   /projects/{projectID}/tasks/{taskID}:
     parameters:
+      - $ref: "#/components/parameters/apiKey"
       - $ref: "#/components/parameters/projectID"
       - $ref: "#/components/parameters/taskID"
     patch:
@@ -327,6 +332,14 @@ components:
           description: 開発者向けの詳細なエラーの説明
           type: string
   parameters:
+    apiKey:
+      name: Authentication
+      in: header
+      description: APIキー
+      required: true
+      schema:
+        type: string
+        format: uuid
     projectID:
       name: projectID
       in: path
