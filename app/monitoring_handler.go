@@ -3,7 +3,7 @@ package app
 import (
 	"context"
 
-	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/app/ogen"
 )
 
 // GetHealth は GET /health に対応するハンドラ関数

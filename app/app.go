@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/env"
-	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/app/env"
+	"github.com/minguu42/mtasks/app/ogen"
 )
 
 type handler struct {

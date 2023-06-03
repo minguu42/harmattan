@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/app"
-	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/app"
+	"github.com/minguu42/mtasks/app/logging"
 )
 
 func (db *DB) CreateTask(ctx context.Context, userID int64, title string) (*app.Task, error) {

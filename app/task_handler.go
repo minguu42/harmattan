@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/app/logging"
+	"github.com/minguu42/mtasks/app/ogen"
 )
 
 var (

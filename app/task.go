@@ -3,7 +3,7 @@ package app
 import (
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/app/ogen"
 )
 
 type Task struct {
