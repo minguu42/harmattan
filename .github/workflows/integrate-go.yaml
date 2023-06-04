@@ -4,9 +4,9 @@ on:
   push:
     paths:
       - .github/workflows/**
+      - app/**
       - cmd/**
       - gen/**
-      - pkg/**
       - staticcheck.conf
 
 jobs:
