@@ -1,16 +1,124 @@
 openapi: 3.0.3
 
 info:
-  title: mTasks API仕様書
+  title: mTasks API Specification
   description: mTasks APIの仕様を定義するドキュメント
-  version: 0.1.0
+  version: v0.1.1
 
 servers:
   - url: http://localhost:8080/
     description: ローカル環境のAPIサーバ
 
 paths:
-  /tasks:
+  /projects:
+    parameters:
+      - $ref: "#/components/parameters/apiKey"
+    post:
+      tags:
+        - projects
+      summary: 新しいプロジェクトを作成する
+      operationId: PostProjects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: プロジェクト1
+      responses:
+        201:
+          description: 成功
+          headers:
+            Location:
+              description: 新しく作成したプロジェクトへのURL
+              required: true
+              schema:
+                type: string
+                format: uri
+                example: http://localhost:8080/projects/1
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/project"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+    get:
+      tags:
+        - projects
+      summary: プロジェクト一覧を取得する
+      description: 作成日時の降順で取得する。
+      operationId: getProjects
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/projects"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+  /projects/{projectID}:
+    parameters:
+      - $ref: "#/components/parameters/apiKey"
+      - $ref: "#/components/parameters/projectID"
+    patch:
+      tags:
+        - projects
+      summary: プロジェクトを更新する
+      operationId: patchProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: プロジェクト1
+      responses:
+        200:
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/project"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          $ref: "#/components/responses/NotFoundError"
+    delete:
+      tags:
+        - projects
+      summary: プロジェクトを削除する
+      operationId: deleteProject
+      responses:
+        204:
+          description: 成功
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        404:
+          $ref: "#/components/responses/NotFoundError"
+  /projects/{projectID}/tasks:
+    parameters:
+      - $ref: "#/components/parameters/apiKey"
+      - $ref: "#/components/parameters/projectID"
     post:
       tags:
         - tasks
@@ -37,6 +145,7 @@ paths:
               required: true
               schema:
                 type: string
+                format: uri
                 example: http://localhost:8080/tasks/1
           content:
             application/json:
@@ -50,8 +159,11 @@ paths:
       tags:
         - tasks
       summary: タスク一覧を取得する
-      description: 作成日時の降順で最大25件まで取得する。
+      description: 作成日時の降順で取得する。
       operationId: getTasks
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
       responses:
         200:
           description: 成功
@@ -63,16 +175,11 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         401:
           $ref: "#/components/responses/UnauthorizedError"
-  /tasks/{taskID}:
+  /projects/{projectID}/tasks/{taskID}:
     parameters:
-      - name: taskID
-        in: path
-        description: タスクID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          minimum: 1
+      - $ref: "#/components/parameters/apiKey"
+      - $ref: "#/components/parameters/projectID"
+      - $ref: "#/components/parameters/taskID"
     patch:
       tags:
         - tasks
@@ -123,11 +230,62 @@ paths:
       responses:
         200:
           description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - version
+                  - revision
+                properties:
+                  version:
+                    description: mTasks APIのバージョン
+                    type: string
+                    example: v0.1.0
+                  revision:
+                    description: mTasks APIのリビジョン
+                    type: string
+                    example: a1b2c3d
         503:
           $ref: "#/components/responses/ServerUnavailableError"
 
 components:
   schemas:
+    project:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          description: プロジェクトID
+          type: integer
+          format: int64
+          minimum: 1
+        name:
+          description: プロジェクト名
+          type: string
+          example: プロジェクト1
+        createdAt:
+          description: 作成日時
+          type: string
+          format: date-time
+        updatedAt:
+          description: 更新日時
+          type: string
+          format: date-time
+    projects:
+      type: object
+      required:
+        - projects
+      properties:
+        projects:
+          description: プロジェクト一覧
+          type: array
+          items:
+            $ref: "#/components/schemas/project"
     task:
       type: object
       required:
@@ -179,6 +337,50 @@ components:
         debug:
           description: 開発者向けの詳細なエラーの説明
           type: string
+  parameters:
+    apiKey:
+      name: Authentication
+      in: header
+      description: APIキー
+      required: true
+      schema:
+        type: string
+        format: uuid
+    limit:
+      name: limit
+      in: query
+      description: リソースの最大取得数
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 30
+    offset:
+      name: offset
+      in: query
+      description: リソースの取得開始位置
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
+    projectID:
+      name: projectID
+      in: path
+      description: プロジェクトID
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+    taskID:
+      name: taskID
+      in: path
+      description: タスクID
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
   responses:
     BadRequestError:
       description: リクエストに何らかの間違いがあります。
@@ -212,7 +414,9 @@ components:
             $ref: "#/components/schemas/error"
 
 tags:
+  - name: projects
+    description: プロジェクトに関するオペレーション
   - name: tasks
-    description: タスクに関するエンドポイント
+    description: タスクに関するオペレーション
   - name: monitoring
-    description: サーバ監視に関するエンドポイント
+    description: サーバ監視に関するオペレーション

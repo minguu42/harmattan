@@ -10,21 +10,23 @@ services:
       - .env.local
     tty: true
     ports:
-      - "8080:8080"
+      - 8080:${API_PORT:?}
     volumes:
       - .:/go/src/api
     depends_on:
-      - db-local
-  db-local:
+      - db
+  db:
     image: mysql:8.0
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:?}
+      MYSQL_DATABASE_TEST: ${MYSQL_DATABASE_TEST:?}
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
     container_name: mtasks-db-local
     restart: always
     ports:
-      - "13306:3306"
+      - 3306:3306
     volumes:
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./mysql/initdb:/docker-entrypoint-initdb.d
       - db-data-local:/var/lib/mysql
 
 volumes:
