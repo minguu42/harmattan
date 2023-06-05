@@ -6,8 +6,6 @@ import (
 	"github.com/minguu42/mtasks/app/ogen"
 )
 
-var token = "rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR"
-
 // PostTasks は POST /projects/{projectID}/tasks に対応するハンドラ
 func (h *handler) PostTasks(_ context.Context, _ *ogen.PostTasksReq, _ ogen.PostTasksParams) (ogen.PostTasksRes, error) {
 	return &ogen.PostTasksNotImplemented{}, nil
