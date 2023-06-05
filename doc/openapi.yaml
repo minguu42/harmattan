@@ -49,6 +49,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         401:
           $ref: "#/components/responses/UnauthorizedError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
     get:
       tags:
         - projects
@@ -69,6 +71,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         401:
           $ref: "#/components/responses/UnauthorizedError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
   /projects/{projectID}:
     parameters:
       - $ref: "#/components/parameters/apiKey"
@@ -101,6 +105,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         404:
           $ref: "#/components/responses/NotFoundError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
     delete:
       tags:
         - projects
@@ -115,6 +121,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         404:
           $ref: "#/components/responses/NotFoundError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
   /projects/{projectID}/tasks:
     parameters:
       - $ref: "#/components/parameters/apiKey"
@@ -155,6 +163,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         401:
           $ref: "#/components/responses/UnauthorizedError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
     get:
       tags:
         - tasks
@@ -175,6 +185,8 @@ paths:
           $ref: "#/components/responses/BadRequestError"
         401:
           $ref: "#/components/responses/UnauthorizedError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
   /projects/{projectID}/tasks/{taskID}:
     parameters:
       - $ref: "#/components/parameters/apiKey"
@@ -207,6 +219,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         404:
           $ref: "#/components/responses/NotFoundError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
     delete:
       tags:
         - tasks
@@ -221,6 +235,8 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         404:
           $ref: "#/components/responses/NotFoundError"
+        501:
+          $ref: "#/components/responses/NotImplementedError"
   /health:
     get:
       tags:
@@ -246,6 +262,8 @@ paths:
                     description: mTasks APIのリビジョン
                     type: string
                     example: a1b2c3d
+        501:
+          $ref: "#/components/responses/NotImplementedError"
         503:
           $ref: "#/components/responses/ServerUnavailableError"
 
@@ -408,6 +426,12 @@ components:
             $ref: "#/components/schemas/error"
     ServerUnavailableError:
       description: サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/error"
+    NotImplementedError:
+      description: この機能はまだ使用できません。お楽しみに♪
       content:
         application/json:
           schema:
