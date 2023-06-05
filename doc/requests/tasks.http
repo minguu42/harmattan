@@ -1,0 +1,28 @@
+### PostTasks
+POST http://localhost:8080/projects/1/tasks
+Accept: application/json
+Content-Type: application/json
+X-Api-Key: rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR
+
+{
+  "title": "タスク1"
+}
+
+### GetTasks
+GET http://localhost:8080/projects/1/tasks
+Accept: application/json
+X-Api-Key: rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR
+
+### PatchTask
+PATCH http://localhost:8080/projects/1/tasks/1
+Accept: application/json
+Content-Type: application/json
+X-Api-Key: rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR
+
+{
+  "isCompleted": true
+}
+
+### DeleteTask
+DELETE http://localhost:8080/projects/1/tasks/1
+X-Api-Key: rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR
