@@ -35,7 +35,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.notFound(w, r)
 		return
 	}
-	args := [1]string{}
+	args := [2]string{}
 
 	// Static code generated router with unwrapped path search.
 	switch {
@@ -73,8 +73,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 					return
 				}
-			case 't': // Prefix: "tasks"
-				if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
+			case 'p': // Prefix: "projects"
+				if l := len("projects"); len(elem) >= l && elem[0:l] == "projects" {
 					elem = elem[l:]
 				} else {
 					break
@@ -83,9 +83,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if len(elem) == 0 {
 					switch r.Method {
 					case "GET":
-						s.handleGetTasksRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleGetProjectsRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
-						s.handlePostTasksRequest([0]string{}, elemIsEscaped, w, r)
+						s.handlePostProjectsRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET,POST")
 					}
@@ -100,20 +100,23 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 
-					// Param: "taskID"
-					// Leaf parameter
-					args[0] = elem
-					elem = ""
+					// Param: "projectID"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
 
 					if len(elem) == 0 {
-						// Leaf node.
 						switch r.Method {
 						case "DELETE":
-							s.handleDeleteTaskRequest([1]string{
+							s.handleDeleteProjectRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
 						case "PATCH":
-							s.handlePatchTaskRequest([1]string{
+							s.handlePatchProjectRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
 						default:
@@ -121,6 +124,64 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/tasks"
+						if l := len("/tasks"); len(elem) >= l && elem[0:l] == "/tasks" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch r.Method {
+							case "GET":
+								s.handleGetTasksRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							case "POST":
+								s.handlePostTasksRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET,POST")
+							}
+
+							return
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "taskID"
+							// Leaf parameter
+							args[1] = elem
+							elem = ""
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "DELETE":
+									s.handleDeleteTaskRequest([2]string{
+										args[0],
+										args[1],
+									}, elemIsEscaped, w, r)
+								case "PATCH":
+									s.handlePatchTaskRequest([2]string{
+										args[0],
+										args[1],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "DELETE,PATCH")
+								}
+
+								return
+							}
+						}
 					}
 				}
 			}
@@ -135,7 +196,7 @@ type Route struct {
 	operationID string
 	pathPattern string
 	count       int
-	args        [1]string
+	args        [2]string
 }
 
 // Name returns ogen operation name.
@@ -225,8 +286,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						return
 					}
 				}
-			case 't': // Prefix: "tasks"
-				if l := len("tasks"); len(elem) >= l && elem[0:l] == "tasks" {
+			case 'p': // Prefix: "projects"
+				if l := len("projects"); len(elem) >= l && elem[0:l] == "projects" {
 					elem = elem[l:]
 				} else {
 					break
@@ -235,16 +296,16 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						r.name = "GetTasks"
-						r.operationID = "getTasks"
-						r.pathPattern = "/tasks"
+						r.name = "GetProjects"
+						r.operationID = "getProjects"
+						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
 						return r, true
 					case "POST":
-						r.name = "PostTasks"
-						r.operationID = "PostTasks"
-						r.pathPattern = "/tasks"
+						r.name = "PostProjects"
+						r.operationID = "PostProjects"
+						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -260,31 +321,98 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 
-					// Param: "taskID"
-					// Leaf parameter
-					args[0] = elem
-					elem = ""
+					// Param: "projectID"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
 
 					if len(elem) == 0 {
 						switch method {
 						case "DELETE":
-							// Leaf: DeleteTask
-							r.name = "DeleteTask"
-							r.operationID = "deleteTask"
-							r.pathPattern = "/tasks/{taskID}"
+							r.name = "DeleteProject"
+							r.operationID = "deleteProject"
+							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
 							return r, true
 						case "PATCH":
-							// Leaf: PatchTask
-							r.name = "PatchTask"
-							r.operationID = "patchTask"
-							r.pathPattern = "/tasks/{taskID}"
+							r.name = "PatchProject"
+							r.operationID = "patchProject"
+							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
 							return r, true
 						default:
 							return
+						}
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/tasks"
+						if l := len("/tasks"); len(elem) >= l && elem[0:l] == "/tasks" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								r.name = "GetTasks"
+								r.operationID = "getTasks"
+								r.pathPattern = "/projects/{projectID}/tasks"
+								r.args = args
+								r.count = 1
+								return r, true
+							case "POST":
+								r.name = "PostTasks"
+								r.operationID = "PostTasks"
+								r.pathPattern = "/projects/{projectID}/tasks"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "taskID"
+							// Leaf parameter
+							args[1] = elem
+							elem = ""
+
+							if len(elem) == 0 {
+								switch method {
+								case "DELETE":
+									// Leaf: DeleteTask
+									r.name = "DeleteTask"
+									r.operationID = "deleteTask"
+									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
+									r.args = args
+									r.count = 2
+									return r, true
+								case "PATCH":
+									// Leaf: PatchTask
+									r.name = "PatchTask"
+									r.operationID = "patchTask"
+									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
+									r.args = args
+									r.count = 2
+									return r, true
+								default:
+									return
+								}
+							}
 						}
 					}
 				}
