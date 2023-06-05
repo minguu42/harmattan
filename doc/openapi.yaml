@@ -357,13 +357,12 @@ components:
           type: string
   parameters:
     apiKey:
-      name: Authentication
+      name: X-Api-Key
       in: header
       description: APIキー
       required: true
       schema:
         type: string
-        format: uuid
     limit:
       name: limit
       in: query
@@ -424,14 +423,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/error"
-    ServerUnavailableError:
-      description: サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。
+    NotImplementedError:
+      description: この機能はもうすぐ使用できます。お楽しみに♪
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/error"
-    NotImplementedError:
-      description: この機能はまだ使用できません。お楽しみに♪
+    ServerUnavailableError:
+      description: サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。
       content:
         application/json:
           schema:
