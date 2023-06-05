@@ -7,7 +7,6 @@ import (
 	"net/url"
 
 	"github.com/go-faster/errors"
-	"github.com/google/uuid"
 
 	"github.com/ogen-go/ogen/conv"
 	"github.com/ogen-go/ogen/middleware"
@@ -19,7 +18,7 @@ import (
 // DeleteProjectParams is parameters of deleteProject operation.
 type DeleteProjectParams struct {
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 	// プロジェクトID.
 	ProjectID int64
 }
@@ -27,10 +26,10 @@ type DeleteProjectParams struct {
 func unpackDeleteProjectParams(packed middleware.Parameters) (params DeleteProjectParams) {
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -44,10 +43,10 @@ func unpackDeleteProjectParams(packed middleware.Parameters) (params DeleteProje
 
 func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request) (params DeleteProjectParams, _ error) {
 	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -57,12 +56,12 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -73,7 +72,7 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}
@@ -146,7 +145,7 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 // DeleteTaskParams is parameters of deleteTask operation.
 type DeleteTaskParams struct {
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 	// プロジェクトID.
 	ProjectID int64
 	// タスクID.
@@ -156,10 +155,10 @@ type DeleteTaskParams struct {
 func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskParams) {
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -180,10 +179,10 @@ func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskPara
 
 func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (params DeleteTaskParams, _ error) {
 	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -193,12 +192,12 @@ func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -209,7 +208,7 @@ func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}
@@ -348,7 +347,7 @@ type GetProjectsParams struct {
 	// リソースの取得開始位置.
 	Offset OptInt
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 }
 
 func unpackGetProjectsParams(packed middleware.Parameters) (params GetProjectsParams) {
@@ -372,10 +371,10 @@ func unpackGetProjectsParams(packed middleware.Parameters) (params GetProjectsPa
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	return params
 }
@@ -523,10 +522,10 @@ func decodeGetProjectsParams(args [0]string, argsEscaped bool, r *http.Request) 
 			Err:  err,
 		}
 	}
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -536,12 +535,12 @@ func decodeGetProjectsParams(args [0]string, argsEscaped bool, r *http.Request) 
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -552,7 +551,7 @@ func decodeGetProjectsParams(args [0]string, argsEscaped bool, r *http.Request) 
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}
@@ -567,7 +566,7 @@ type GetTasksParams struct {
 	// リソースの取得開始位置.
 	Offset OptInt
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 	// プロジェクトID.
 	ProjectID int64
 }
@@ -593,10 +592,10 @@ func unpackGetTasksParams(packed middleware.Parameters) (params GetTasksParams) 
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -751,10 +750,10 @@ func decodeGetTasksParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 			Err:  err,
 		}
 	}
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -764,12 +763,12 @@ func decodeGetTasksParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -780,7 +779,7 @@ func decodeGetTasksParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}
@@ -853,7 +852,7 @@ func decodeGetTasksParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 // PatchProjectParams is parameters of patchProject operation.
 type PatchProjectParams struct {
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 	// プロジェクトID.
 	ProjectID int64
 }
@@ -861,10 +860,10 @@ type PatchProjectParams struct {
 func unpackPatchProjectParams(packed middleware.Parameters) (params PatchProjectParams) {
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -878,10 +877,10 @@ func unpackPatchProjectParams(packed middleware.Parameters) (params PatchProject
 
 func decodePatchProjectParams(args [1]string, argsEscaped bool, r *http.Request) (params PatchProjectParams, _ error) {
 	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -891,12 +890,12 @@ func decodePatchProjectParams(args [1]string, argsEscaped bool, r *http.Request)
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -907,7 +906,7 @@ func decodePatchProjectParams(args [1]string, argsEscaped bool, r *http.Request)
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}
@@ -980,7 +979,7 @@ func decodePatchProjectParams(args [1]string, argsEscaped bool, r *http.Request)
 // PatchTaskParams is parameters of patchTask operation.
 type PatchTaskParams struct {
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 	// プロジェクトID.
 	ProjectID int64
 	// タスクID.
@@ -990,10 +989,10 @@ type PatchTaskParams struct {
 func unpackPatchTaskParams(packed middleware.Parameters) (params PatchTaskParams) {
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -1014,10 +1013,10 @@ func unpackPatchTaskParams(packed middleware.Parameters) (params PatchTaskParams
 
 func decodePatchTaskParams(args [2]string, argsEscaped bool, r *http.Request) (params PatchTaskParams, _ error) {
 	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -1027,12 +1026,12 @@ func decodePatchTaskParams(args [2]string, argsEscaped bool, r *http.Request) (p
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -1043,7 +1042,7 @@ func decodePatchTaskParams(args [2]string, argsEscaped bool, r *http.Request) (p
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}
@@ -1178,26 +1177,26 @@ func decodePatchTaskParams(args [2]string, argsEscaped bool, r *http.Request) (p
 // PostProjectsParams is parameters of PostProjects operation.
 type PostProjectsParams struct {
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 }
 
 func unpackPostProjectsParams(packed middleware.Parameters) (params PostProjectsParams) {
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	return params
 }
 
 func decodePostProjectsParams(args [0]string, argsEscaped bool, r *http.Request) (params PostProjectsParams, _ error) {
 	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -1207,12 +1206,12 @@ func decodePostProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -1223,7 +1222,7 @@ func decodePostProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}
@@ -1234,7 +1233,7 @@ func decodePostProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 // PostTasksParams is parameters of PostTasks operation.
 type PostTasksParams struct {
 	// APIキー.
-	Authentication uuid.UUID
+	XAPIKey string
 	// プロジェクトID.
 	ProjectID int64
 }
@@ -1242,10 +1241,10 @@ type PostTasksParams struct {
 func unpackPostTasksParams(packed middleware.Parameters) (params PostTasksParams) {
 	{
 		key := middleware.ParameterKey{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 		}
-		params.Authentication = packed[key].(uuid.UUID)
+		params.XAPIKey = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
@@ -1259,10 +1258,10 @@ func unpackPostTasksParams(packed middleware.Parameters) (params PostTasksParams
 
 func decodePostTasksParams(args [1]string, argsEscaped bool, r *http.Request) (params PostTasksParams, _ error) {
 	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: Authentication.
+	// Decode header: X-Api-Key.
 	if err := func() error {
 		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "Authentication",
+			Name:    "X-Api-Key",
 			Explode: false,
 		}
 		if err := h.HasParam(cfg); err == nil {
@@ -1272,12 +1271,12 @@ func decodePostTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 					return err
 				}
 
-				c, err := conv.ToUUID(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
-				params.Authentication = c
+				params.XAPIKey = c
 				return nil
 			}); err != nil {
 				return err
@@ -1288,7 +1287,7 @@ func decodePostTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "Authentication",
+			Name: "X-Api-Key",
 			In:   "header",
 			Err:  err,
 		}

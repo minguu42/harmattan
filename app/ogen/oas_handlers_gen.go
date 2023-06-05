@@ -79,9 +79,9 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -185,9 +185,9 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -386,9 +386,9 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 					In:   "query",
 				}: params.Offset,
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 			},
 			Raw: r,
 		}
@@ -496,9 +496,9 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 					In:   "query",
 				}: params.Offset,
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -617,9 +617,9 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 			Body:          request,
 			Params: middleware.Parameters{
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -738,9 +738,9 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 			Body:          request,
 			Params: middleware.Parameters{
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -863,9 +863,9 @@ func (s *Server) handlePostProjectsRequest(args [0]string, argsEscaped bool, w h
 			Body:          request,
 			Params: middleware.Parameters{
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 			},
 			Raw: r,
 		}
@@ -980,9 +980,9 @@ func (s *Server) handlePostTasksRequest(args [1]string, argsEscaped bool, w http
 			Body:          request,
 			Params: middleware.Parameters{
 				{
-					Name: "Authentication",
+					Name: "X-Api-Key",
 					In:   "header",
-				}: params.Authentication,
+				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
