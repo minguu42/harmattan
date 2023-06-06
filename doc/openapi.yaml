@@ -324,12 +324,18 @@ components:
       type: object
       required:
         - id
+        - project_id
         - title
         - createdAt
         - updatedAt
       properties:
         id:
           description: タスクID
+          type: integer
+          format: int64
+          minimum: 1
+        project_id:
+          description: 紐づくプロジェクトのID
           type: integer
           format: int64
           minimum: 1

@@ -570,6 +570,8 @@ func (*Projects) getProjectsRes() {}
 type Task struct {
 	// タスクID.
 	ID int64 `json:"id"`
+	// 紐づくプロジェクトのID.
+	ProjectID int64 `json:"project_id"`
 	// タイトル.
 	Title string `json:"title"`
 	// 完了日時.
@@ -583,6 +585,11 @@ type Task struct {
 // GetID returns the value of ID.
 func (s *Task) GetID() int64 {
 	return s.ID
+}
+
+// GetProjectID returns the value of ProjectID.
+func (s *Task) GetProjectID() int64 {
+	return s.ProjectID
 }
 
 // GetTitle returns the value of Title.
@@ -608,6 +615,11 @@ func (s *Task) GetUpdatedAt() time.Time {
 // SetID sets the value of ID.
 func (s *Task) SetID(val int64) {
 	s.ID = val
+}
+
+// SetProjectID sets the value of ProjectID.
+func (s *Task) SetProjectID(val int64) {
+	s.ProjectID = val
 }
 
 // SetTitle sets the value of Title.

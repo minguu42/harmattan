@@ -2374,6 +2374,10 @@ func (s *Task) encodeFields(e *jx.Encoder) {
 		e.Int64(s.ID)
 	}
 	{
+		e.FieldStart("project_id")
+		e.Int64(s.ProjectID)
+	}
+	{
 		e.FieldStart("title")
 		e.Str(s.Title)
 	}
@@ -2393,12 +2397,13 @@ func (s *Task) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfTask = [5]string{
+var jsonFieldsNameOfTask = [6]string{
 	0: "id",
-	1: "title",
-	2: "completedAt",
-	3: "createdAt",
-	4: "updatedAt",
+	1: "project_id",
+	2: "title",
+	3: "completedAt",
+	4: "createdAt",
+	5: "updatedAt",
 }
 
 // Decode decodes Task from json.
@@ -2422,8 +2427,20 @@ func (s *Task) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"id\"")
 			}
-		case "title":
+		case "project_id":
 			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int64()
+				s.ProjectID = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"project_id\"")
+			}
+		case "title":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				v, err := d.Str()
 				s.Title = string(v)
@@ -2445,7 +2462,7 @@ func (s *Task) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"completedAt\"")
 			}
 		case "createdAt":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -2457,7 +2474,7 @@ func (s *Task) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"createdAt\"")
 			}
 		case "updatedAt":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -2478,7 +2495,7 @@ func (s *Task) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00011011,
+		0b00110111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
