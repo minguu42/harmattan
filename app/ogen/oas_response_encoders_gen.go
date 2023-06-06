@@ -308,6 +308,18 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 		}
 		return nil
 
+	case *GetTasksNotFound:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
 	case *GetTasksInternalServerError:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(500)
@@ -624,6 +636,18 @@ func encodePostTasksResponse(response PostTasksRes, w http.ResponseWriter, span 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *PostTasksNotFound:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
 
 		e := jx.GetEncoder()
 		response.Encode(e)

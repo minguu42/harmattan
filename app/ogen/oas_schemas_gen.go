@@ -146,6 +146,10 @@ type GetTasksInternalServerError Error
 
 func (*GetTasksInternalServerError) getTasksRes() {}
 
+type GetTasksNotFound Error
+
+func (*GetTasksNotFound) getTasksRes() {}
+
 type GetTasksNotImplemented Error
 
 func (*GetTasksNotImplemented) getTasksRes() {}
@@ -443,6 +447,10 @@ func (*PostTasksBadRequest) postTasksRes() {}
 type PostTasksInternalServerError Error
 
 func (*PostTasksInternalServerError) postTasksRes() {}
+
+type PostTasksNotFound Error
+
+func (*PostTasksNotFound) postTasksRes() {}
 
 type PostTasksNotImplemented Error
 
