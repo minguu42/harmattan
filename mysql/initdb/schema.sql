@@ -19,7 +19,6 @@ CREATE TABLE projects (
 
 CREATE TABLE tasks (
     id           BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    user_id      BIGINT UNSIGNED NOT NULL,
     project_id   BIGINT UNSIGNED NOT NULL,
     title        CHAR(255)       NOT NULL,
     completed_at DATETIME,
