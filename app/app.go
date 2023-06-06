@@ -16,7 +16,9 @@ type handler struct {
 }
 
 type repository interface {
-	GetUserByToken(ctx context.Context, token string) (*User, error)
+	GetUserByAPIKey(ctx context.Context, apiKey string) (*User, error)
+
+	CreateProject(ctx context.Context, userID int64, name string) (*Project, error)
 
 	CreateTask(ctx context.Context, userID int64, title string) (*Task, error)
 	GetTasksByUserID(ctx context.Context, userID int64) ([]*Task, error)
