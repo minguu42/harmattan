@@ -58,6 +58,18 @@ func encodeDeleteProjectResponse(response DeleteProjectRes, w http.ResponseWrite
 		}
 		return nil
 
+	case *DeleteProjectInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
 	case *DeleteProjectNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
@@ -111,6 +123,18 @@ func encodeDeleteTaskResponse(response DeleteTaskRes, w http.ResponseWriter, spa
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *DeleteTaskInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
 
 		e := jx.GetEncoder()
 		response.Encode(e)
@@ -217,6 +241,18 @@ func encodeGetProjectsResponse(response GetProjectsRes, w http.ResponseWriter, s
 		}
 		return nil
 
+	case *GetProjectsInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
 	case *GetProjectsNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
@@ -264,6 +300,18 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *GetTasksInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
 
 		e := jx.GetEncoder()
 		response.Encode(e)
@@ -339,6 +387,18 @@ func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter,
 		}
 		return nil
 
+	case *PatchProjectInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
 	case *PatchProjectNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
@@ -398,6 +458,18 @@ func encodePatchTaskResponse(response PatchTaskRes, w http.ResponseWriter, span 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *PatchTaskInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
 
 		e := jx.GetEncoder()
 		response.Encode(e)
@@ -477,6 +549,18 @@ func encodePostProjectsResponse(response PostProjectsRes, w http.ResponseWriter,
 		}
 		return nil
 
+	case *PostProjectsInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
 	case *PostProjectsNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
@@ -540,6 +624,18 @@ func encodePostTasksResponse(response PostTasksRes, w http.ResponseWriter, span 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *PostTasksInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
 
 		e := jx.GetEncoder()
 		response.Encode(e)

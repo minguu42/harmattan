@@ -11,6 +11,10 @@ type DeleteProjectBadRequest Error
 
 func (*DeleteProjectBadRequest) deleteProjectRes() {}
 
+type DeleteProjectInternalServerError Error
+
+func (*DeleteProjectInternalServerError) deleteProjectRes() {}
+
 // DeleteProjectNoContent is response for DeleteProject operation.
 type DeleteProjectNoContent struct{}
 
@@ -31,6 +35,10 @@ func (*DeleteProjectUnauthorized) deleteProjectRes() {}
 type DeleteTaskBadRequest Error
 
 func (*DeleteTaskBadRequest) deleteTaskRes() {}
+
+type DeleteTaskInternalServerError Error
+
+func (*DeleteTaskInternalServerError) deleteTaskRes() {}
 
 // DeleteTaskNoContent is response for DeleteTask operation.
 type DeleteTaskNoContent struct{}
@@ -118,6 +126,10 @@ type GetProjectsBadRequest Error
 
 func (*GetProjectsBadRequest) getProjectsRes() {}
 
+type GetProjectsInternalServerError Error
+
+func (*GetProjectsInternalServerError) getProjectsRes() {}
+
 type GetProjectsNotImplemented Error
 
 func (*GetProjectsNotImplemented) getProjectsRes() {}
@@ -129,6 +141,10 @@ func (*GetProjectsUnauthorized) getProjectsRes() {}
 type GetTasksBadRequest Error
 
 func (*GetTasksBadRequest) getTasksRes() {}
+
+type GetTasksInternalServerError Error
+
+func (*GetTasksInternalServerError) getTasksRes() {}
 
 type GetTasksNotImplemented Error
 
@@ -326,6 +342,10 @@ type PatchProjectBadRequest Error
 
 func (*PatchProjectBadRequest) patchProjectRes() {}
 
+type PatchProjectInternalServerError Error
+
+func (*PatchProjectInternalServerError) patchProjectRes() {}
+
 type PatchProjectNotFound Error
 
 func (*PatchProjectNotFound) patchProjectRes() {}
@@ -355,6 +375,10 @@ func (*PatchProjectUnauthorized) patchProjectRes() {}
 type PatchTaskBadRequest Error
 
 func (*PatchTaskBadRequest) patchTaskRes() {}
+
+type PatchTaskInternalServerError Error
+
+func (*PatchTaskInternalServerError) patchTaskRes() {}
 
 type PatchTaskNotFound Error
 
@@ -386,6 +410,10 @@ type PostProjectsBadRequest Error
 
 func (*PostProjectsBadRequest) postProjectsRes() {}
 
+type PostProjectsInternalServerError Error
+
+func (*PostProjectsInternalServerError) postProjectsRes() {}
+
 type PostProjectsNotImplemented Error
 
 func (*PostProjectsNotImplemented) postProjectsRes() {}
@@ -411,6 +439,10 @@ func (*PostProjectsUnauthorized) postProjectsRes() {}
 type PostTasksBadRequest Error
 
 func (*PostTasksBadRequest) postTasksRes() {}
+
+type PostTasksInternalServerError Error
+
+func (*PostTasksInternalServerError) postTasksRes() {}
 
 type PostTasksNotImplemented Error
 
