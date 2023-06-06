@@ -9,12 +9,12 @@ import (
 	"github.com/minguu42/mtasks/app/logging"
 )
 
-func (db *DB) CreateTask(ctx context.Context, userID int64, title string) (*app.Task, error) {
-	q := `INSERT INTO tasks (user_id, title, created_at, updated_at) VALUES (?, ?, ?, ?)`
+func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*app.Task, error) {
+	q := `INSERT INTO tasks (project_id, title, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	logging.Debugf(q)
 
-	createdAt := time.Now()
-	result, err := db.ExecContext(ctx, q, userID, title, createdAt, createdAt)
+	now := time.Now()
+	result, err := db.ExecContext(ctx, q, projectID, title, now, now)
 	if err != nil {
 		return nil, fmt.Errorf("db.ExecContext failed: %w", err)
 	}
@@ -26,24 +26,24 @@ func (db *DB) CreateTask(ctx context.Context, userID int64, title string) (*app.
 
 	return &app.Task{
 		ID:        id,
-		UserID:    userID,
+		ProjectID: projectID,
 		Title:     title,
-		CreatedAt: createdAt,
-		UpdatedAt: createdAt,
+		CreatedAt: now,
+		UpdatedAt: now,
 	}, nil
 }
 
-func (db *DB) GetTasksByUserID(ctx context.Context, userID int64) ([]*app.Task, error) {
-	q := `SELECT ID, Title, completed_at, created_at, updated_at FROM tasks WHERE user_id = ?`
+func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64) ([]*app.Task, error) {
+	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE project_id = ?`
 	logging.Debugf(q)
 
-	rows, err := db.QueryContext(ctx, q, userID)
+	rows, err := db.QueryContext(ctx, q, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("db.QueryContext failed: %w", err)
 	}
 	defer rows.Close()
 
-	ts := make([]*app.Task, 0, 10)
+	ts := make([]*app.Task, 0, 20)
 	for rows.Next() {
 		var t app.Task
 		if err := rows.Scan(&t.ID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
@@ -55,28 +55,28 @@ func (db *DB) GetTasksByUserID(ctx context.Context, userID int64) ([]*app.Task, 
 }
 
 func (db *DB) GetTaskByID(ctx context.Context, id int64) (*app.Task, error) {
-	q := `SELECT user_id, Title,completed_at, created_at, updated_at FROM tasks WHERE ID = ?`
+	q := `SELECT project_id, title, completed_at, created_at, updated_at FROM tasks WHERE id = ?`
 	logging.Debugf(q)
 
 	t := app.Task{ID: id}
-	if err := db.QueryRowContext(ctx, q, id).Scan(&t.UserID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
+	if err := db.QueryRowContext(ctx, q, id).Scan(&t.ProjectID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
 		return nil, fmt.Errorf("db.QueryRowContext failed: %w", err)
 	}
 	return &t, nil
 }
 
-func (db *DB) UpdateTask(ctx context.Context, id int64, completedAt *time.Time) error {
-	q := `UPDATE tasks SET completed_at = ? WHERE ID = ?`
+func (db *DB) UpdateTask(ctx context.Context, id int64, completedAt *time.Time, updatedAt time.Time) error {
+	q := `UPDATE tasks SET completed_at = ?, updated_at = ? WHERE id = ?`
 	logging.Debugf(q)
 
-	if _, err := db.ExecContext(ctx, q, completedAt, id); err != nil {
+	if _, err := db.ExecContext(ctx, q, completedAt, updatedAt, id); err != nil {
 		return fmt.Errorf("db.ExecContext failed: %w", err)
 	}
 	return nil
 }
 
 func (db *DB) DeleteTask(ctx context.Context, id int64) error {
-	q := `DELETE FROM tasks WHERE ID = ?`
+	q := `DELETE FROM tasks WHERE id = ?`
 	logging.Debugf(q)
 
 	if _, err := db.ExecContext(ctx, q, id); err != nil {

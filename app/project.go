@@ -14,7 +14,7 @@ type Project struct {
 	UpdatedAt time.Time
 }
 
-// newProjectResponse はモデル Project からレスポンスモデルの ogen.Project を生成する
+// newProjectResponse は Project から ogen.Project を生成する
 func newProjectResponse(p *Project) ogen.Project {
 	return ogen.Project{
 		ID:        p.ID,
@@ -24,7 +24,7 @@ func newProjectResponse(p *Project) ogen.Project {
 	}
 }
 
-// newProjectsResponse はモデル []*Project からレスポンスモデルの []ogen.Project を生成する
+// newProjectsResponse は Project のスライスから ogen.Project のスライスを生成する
 func newProjectsResponse(ps []*Project) []ogen.Project {
 	projects := make([]ogen.Project, 0, len(ps))
 	for _, p := range ps {

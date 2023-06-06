@@ -13,8 +13,8 @@ func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*ap
 	q := `INSERT INTO projects (user_id, name, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	logging.Debugf(q)
 
-	createdAt := time.Now()
-	result, err := db.ExecContext(ctx, q, userID, name, createdAt, createdAt)
+	now := time.Now()
+	result, err := db.ExecContext(ctx, q, userID, name, now, now)
 	if err != nil {
 		return nil, fmt.Errorf("db.ExecContext failed: %w", err)
 	}
@@ -28,8 +28,8 @@ func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*ap
 		ID:        id,
 		UserID:    userID,
 		Name:      name,
-		CreatedAt: createdAt,
-		UpdatedAt: createdAt,
+		CreatedAt: now,
+		UpdatedAt: now,
 	}, nil
 }
 

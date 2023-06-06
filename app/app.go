@@ -24,10 +24,10 @@ type repository interface {
 	UpdateProject(ctx context.Context, id int64, name string, updatedAt time.Time) error
 	DeleteProject(ctx context.Context, id int64) error
 
-	CreateTask(ctx context.Context, userID int64, title string) (*Task, error)
-	GetTasksByUserID(ctx context.Context, userID int64) ([]*Task, error)
+	CreateTask(ctx context.Context, projectID int64, title string) (*Task, error)
+	GetTasksByProjectID(ctx context.Context, projectID int64) ([]*Task, error)
 	GetTaskByID(ctx context.Context, id int64) (*Task, error)
-	UpdateTask(ctx context.Context, id int64, completedAt *time.Time) error
+	UpdateTask(ctx context.Context, id int64, completedAt *time.Time, updatedAt time.Time) error
 	DeleteTask(ctx context.Context, id int64) error
 }
 
