@@ -20,13 +20,13 @@ func (h *handler) PostProjects(ctx context.Context, req *ogen.PostProjectsReq, p
 	p, err := h.repository.CreateProject(ctx, u.ID, req.Name)
 	if err != nil {
 		logging.Errorf("repository.CreateProject failed: %v", err)
-		return &ogen.PostProjectsBadRequest{}, nil
+		return &ogen.PostProjectsInternalServerError{}, nil
 	}
 
 	location, err := url.ParseRequestURI(fmt.Sprintf("http://localhost:8080/projects/%d", p.ID))
 	if err != nil {
 		logging.Errorf("url.ParseRequestURI failed: %v", err)
-		return &ogen.PostProjectsBadRequest{}, nil
+		return &ogen.PostProjectsInternalServerError{}, nil
 	}
 	return &ogen.ProjectHeaders{
 		Location: *location,
