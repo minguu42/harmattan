@@ -23,3 +23,12 @@ func newProjectResponse(p *Project) ogen.Project {
 		UpdatedAt: p.UpdatedAt,
 	}
 }
+
+// newProjectsResponse はモデル []*Project からレスポンスモデルの []ogen.Project を生成する
+func newProjectsResponse(ps []*Project) []ogen.Project {
+	projects := make([]ogen.Project, 0, len(ps))
+	for _, p := range ps {
+		projects = append(projects, newProjectResponse(p))
+	}
+	return projects
+}
