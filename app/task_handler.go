@@ -12,10 +12,10 @@ import (
 
 // PostTasks は POST /projects/{projectID}/tasks に対応するハンドラ
 func (h *handler) PostTasks(ctx context.Context, req *ogen.PostTasksReq, params ogen.PostTasksParams) (ogen.PostTasksRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.PostTasksUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.PostTasksInternalServerError{}, nil
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
@@ -47,10 +47,10 @@ func (h *handler) PostTasks(ctx context.Context, req *ogen.PostTasksReq, params 
 
 // GetTasks は GET /projects/{projectID}/tasks に対応するハンドラ
 func (h *handler) GetTasks(ctx context.Context, params ogen.GetTasksParams) (ogen.GetTasksRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.GetTasksUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.GetTasksInternalServerError{}, nil
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
@@ -74,10 +74,10 @@ func (h *handler) GetTasks(ctx context.Context, params ogen.GetTasksParams) (oge
 
 // PatchTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *handler) PatchTask(ctx context.Context, req *ogen.PatchTaskReq, params ogen.PatchTaskParams) (ogen.PatchTaskRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.PatchTaskUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.PatchTaskInternalServerError{}, nil
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
@@ -121,10 +121,10 @@ func (h *handler) PatchTask(ctx context.Context, req *ogen.PatchTaskReq, params 
 
 // DeleteTask は DELETE /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) (ogen.DeleteTaskRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.DeleteTaskUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.DeleteTaskInternalServerError{}, nil
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)

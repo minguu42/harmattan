@@ -12,10 +12,10 @@ import (
 
 // PostProjects は POST /projects に対応するハンドラ
 func (h *handler) PostProjects(ctx context.Context, req *ogen.PostProjectsReq, params ogen.PostProjectsParams) (ogen.PostProjectsRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.PostProjectsUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.PostProjectsInternalServerError{}, nil
 	}
 
 	p, err := h.repository.CreateProject(ctx, u.ID, req.Name)
@@ -37,10 +37,10 @@ func (h *handler) PostProjects(ctx context.Context, req *ogen.PostProjectsReq, p
 
 // GetProjects は GET /projects に対応するハンドラ
 func (h *handler) GetProjects(ctx context.Context, params ogen.GetProjectsParams) (ogen.GetProjectsRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.GetProjectsUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.GetProjectsInternalServerError{}, nil
 	}
 
 	ps, err := h.repository.GetProjectsByUserID(ctx, u.ID, params.Limit.Or(10), params.Offset.Or(0))
@@ -54,10 +54,10 @@ func (h *handler) GetProjects(ctx context.Context, params ogen.GetProjectsParams
 
 // PatchProject は PATCH /projects/{projectID} に対応するハンドラ
 func (h *handler) PatchProject(ctx context.Context, req *ogen.PatchProjectReq, params ogen.PatchProjectParams) (ogen.PatchProjectRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.PatchProjectUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.PatchProjectInternalServerError{}, nil
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
@@ -88,10 +88,10 @@ func (h *handler) PatchProject(ctx context.Context, req *ogen.PatchProjectReq, p
 
 // DeleteProject は DELETE /projects/{projectID} に対応するハンドラ
 func (h *handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectParams) (ogen.DeleteProjectRes, error) {
-	u, err := h.repository.GetUserByAPIKey(ctx, params.XAPIKey)
-	if err != nil {
-		logging.Errorf("repository.GetUserByAPIKey failed: %v", err)
-		return &ogen.DeleteProjectUnauthorized{}, nil
+	u, ok := ctx.Value(userKey{}).(*User)
+	if !ok {
+		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
+		return &ogen.DeleteProjectInternalServerError{}, nil
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)

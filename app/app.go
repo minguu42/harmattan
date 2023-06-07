@@ -42,7 +42,7 @@ func NewServer(api *env.API, repository repository) (*http.Server, error) {
 
 	return &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", api.Host, api.Port),
-		Handler:           s,
+		Handler:           &authMiddleware{next: s, repository: repository},
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		MaxHeaderBytes:    1 << 20,
