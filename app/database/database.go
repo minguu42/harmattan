@@ -8,7 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/app/logging"
 )
 
 // DB は app.repository インタフェースを実装する

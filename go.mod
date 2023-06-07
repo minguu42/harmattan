@@ -3,10 +3,10 @@ module github.com/minguu42/mtasks
 go 1.20
 
 require (
-	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-faster/errors v0.6.1
 	github.com/go-faster/jx v1.0.0
 	github.com/go-sql-driver/mysql v1.7.1
+	github.com/google/uuid v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/ogen-go/ogen v0.68.1
 	go.opentelemetry.io/otel v1.16.0
@@ -22,7 +22,6 @@ require (
 	github.com/go-faster/yaml v0.4.6 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect

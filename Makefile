@@ -1,4 +1,4 @@
-VERSION  := 0.1.0
+VERSION  := v0.1.1
 REVISION := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := help
@@ -31,8 +31,8 @@ fmt: ## フォーマットを実行する
 	@goimports -w .
 
 lint: ## 静的解析を実行する
-	@go vet $$(go list ./... | grep -v /pkg/ogen)
-	@staticcheck $$(go list ./... | grep -v /pkg/ogen)
+	@go vet $$(go list ./... | grep -v /app/ogen)
+	@staticcheck $$(go list ./... | grep -v /app/ogen)
 
 test: ## テストを実行する
 	@go test ./...
