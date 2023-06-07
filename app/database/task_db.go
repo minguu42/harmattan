@@ -34,8 +34,7 @@ func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*a
 }
 
 func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64, limit, offset int) ([]*app.Task, error) {
-	q := `
-SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE project_id = ? LIMIT ? OFFSET ?`
+	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE project_id = ? LIMIT ? OFFSET ?`
 	logging.Debugf(q)
 
 	rows, err := db.QueryContext(ctx, q, projectID, limit, offset)
@@ -46,7 +45,7 @@ SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE project_
 
 	ts := make([]*app.Task, 0, 20)
 	for rows.Next() {
-		var t app.Task
+		t := app.Task{ProjectID: projectID}
 		if err := rows.Scan(&t.ID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("rows.Scan failed: %w", err)
 		}

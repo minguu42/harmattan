@@ -9,7 +9,7 @@ import (
 )
 
 func (db *DB) GetUserByAPIKey(ctx context.Context, apiKey string) (*app.User, error) {
-	q := `SELECT ID, Name, created_at, updated_at FROM users WHERE api_key = ?`
+	q := `SELECT id, name, created_at, updated_at FROM users WHERE api_key = ?`
 	logging.Debugf(q)
 
 	var u app.User
