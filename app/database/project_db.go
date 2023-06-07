@@ -33,11 +33,11 @@ func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*ap
 	}, nil
 }
 
-func (db *DB) GetProjectsByUserID(ctx context.Context, userID int64) ([]*app.Project, error) {
-	q := `SELECT id, name, created_at, updated_at FROM projects WHERE user_id = ?`
+func (db *DB) GetProjectsByUserID(ctx context.Context, userID int64, limit, offset int) ([]*app.Project, error) {
+	q := `SELECT id, name, created_at, updated_at FROM projects WHERE user_id = ? LIMIT ? OFFSET ?`
 	logging.Debugf(q)
 
-	rows, err := db.QueryContext(ctx, q, userID)
+	rows, err := db.QueryContext(ctx, q, userID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("db.QueryContext failed: %w", err)
 	}

@@ -19,13 +19,13 @@ type repository interface {
 	GetUserByAPIKey(ctx context.Context, apiKey string) (*User, error)
 
 	CreateProject(ctx context.Context, userID int64, name string) (*Project, error)
-	GetProjectsByUserID(ctx context.Context, userID int64) ([]*Project, error)
+	GetProjectsByUserID(ctx context.Context, userID int64, limit, offset int) ([]*Project, error)
 	GetProjectByID(ctx context.Context, id int64) (*Project, error)
 	UpdateProject(ctx context.Context, id int64, name string, updatedAt time.Time) error
 	DeleteProject(ctx context.Context, id int64) error
 
 	CreateTask(ctx context.Context, projectID int64, title string) (*Task, error)
-	GetTasksByProjectID(ctx context.Context, projectID int64) ([]*Task, error)
+	GetTasksByProjectID(ctx context.Context, projectID int64, limit, offset int) ([]*Task, error)
 	GetTaskByID(ctx context.Context, id int64) (*Task, error)
 	UpdateTask(ctx context.Context, id int64, completedAt *time.Time, updatedAt time.Time) error
 	DeleteTask(ctx context.Context, id int64) error

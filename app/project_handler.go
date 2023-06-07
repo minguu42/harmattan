@@ -43,7 +43,7 @@ func (h *handler) GetProjects(ctx context.Context, params ogen.GetProjectsParams
 		return &ogen.GetProjectsUnauthorized{}, nil
 	}
 
-	ps, err := h.repository.GetProjectsByUserID(ctx, u.ID)
+	ps, err := h.repository.GetProjectsByUserID(ctx, u.ID, params.Limit.Or(10), params.Offset.Or(0))
 	if err != nil {
 		logging.Errorf("repository.GetProjectsByUserID failed: %v", err)
 		return &ogen.GetProjectsInternalServerError{}, nil

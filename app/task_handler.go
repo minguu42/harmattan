@@ -63,7 +63,7 @@ func (h *handler) GetTasks(ctx context.Context, params ogen.GetTasksParams) (oge
 		return &ogen.GetTasksNotFound{}, nil
 	}
 
-	ts, err := h.repository.GetTasksByProjectID(ctx, p.ID)
+	ts, err := h.repository.GetTasksByProjectID(ctx, p.ID, params.Limit.Or(10), params.Offset.Or(0))
 	if err != nil {
 		logging.Errorf("repository.GetTasksByProjectID failed: %v", err)
 		return &ogen.GetTasksInternalServerError{}, nil
