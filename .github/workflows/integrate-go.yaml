@@ -27,8 +27,8 @@ jobs:
         with:
           go-version-file: ./go.mod
       - run: go install honnef.co/go/tools/cmd/staticcheck@latest
-      - run: go vet $(go list ./... | grep -v /pkg/ogen)
-      - run: staticcheck $(go list ./... | grep -v /pkg/ogen)
+      - run: go vet $(go list ./... | grep -v /app/ogen)
+      - run: staticcheck $(go list ./... | grep -v /app/ogen)
   test:
     runs-on: ubuntu-22.04
     steps:
