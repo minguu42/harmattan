@@ -10,6 +10,27 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+func (s GetProjectsSort) Validate() error {
+	switch s {
+	case "createdAt":
+		return nil
+	case "-createdAt":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+func (s GetTasksSort) Validate() error {
+	switch s {
+	case "createdAt":
+		return nil
+	case "-createdAt":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *Project) Validate() error {
 	var failures []validate.FieldError
 	if err := func() error {

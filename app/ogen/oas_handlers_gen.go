@@ -41,7 +41,8 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -147,7 +148,8 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -257,7 +259,8 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -340,7 +343,8 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -385,6 +389,10 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 					Name: "offset",
 					In:   "query",
 				}: params.Offset,
+				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
 				{
 					Name: "X-Api-Key",
 					In:   "header",
@@ -450,7 +458,8 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -495,6 +504,10 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 					Name: "offset",
 					In:   "query",
 				}: params.Offset,
+				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
 				{
 					Name: "X-Api-Key",
 					In:   "header",
@@ -564,7 +577,8 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -685,7 +699,8 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -810,7 +825,8 @@ func (s *Server) handlePostProjectsRequest(args [0]string, argsEscaped bool, w h
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.
@@ -927,7 +943,8 @@ func (s *Server) handlePostTasksRequest(args [1]string, argsEscaped bool, w http
 	startTime := time.Now()
 	defer func() {
 		elapsedDuration := time.Since(startTime)
-		s.duration.Record(ctx, elapsedDuration.Microseconds(), metric.WithAttributes(otelAttrs...))
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
 	}()
 
 	// Increment request counter.

@@ -5,6 +5,8 @@ package ogen
 import (
 	"net/url"
 	"time"
+
+	"github.com/go-faster/errors"
 )
 
 type DeleteProjectBadRequest Error
@@ -134,6 +136,39 @@ type GetProjectsNotImplemented Error
 
 func (*GetProjectsNotImplemented) getProjectsRes() {}
 
+type GetProjectsSort string
+
+const (
+	GetProjectsSortCreatedAt      GetProjectsSort = "createdAt"
+	GetProjectsSortMinusCreatedAt GetProjectsSort = "-createdAt"
+)
+
+// MarshalText implements encoding.TextMarshaler.
+func (s GetProjectsSort) MarshalText() ([]byte, error) {
+	switch s {
+	case GetProjectsSortCreatedAt:
+		return []byte(s), nil
+	case GetProjectsSortMinusCreatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *GetProjectsSort) UnmarshalText(data []byte) error {
+	switch GetProjectsSort(data) {
+	case GetProjectsSortCreatedAt:
+		*s = GetProjectsSortCreatedAt
+		return nil
+	case GetProjectsSortMinusCreatedAt:
+		*s = GetProjectsSortMinusCreatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 type GetProjectsUnauthorized Error
 
 func (*GetProjectsUnauthorized) getProjectsRes() {}
@@ -153,6 +188,39 @@ func (*GetTasksNotFound) getTasksRes() {}
 type GetTasksNotImplemented Error
 
 func (*GetTasksNotImplemented) getTasksRes() {}
+
+type GetTasksSort string
+
+const (
+	GetTasksSortCreatedAt      GetTasksSort = "createdAt"
+	GetTasksSortMinusCreatedAt GetTasksSort = "-createdAt"
+)
+
+// MarshalText implements encoding.TextMarshaler.
+func (s GetTasksSort) MarshalText() ([]byte, error) {
+	switch s {
+	case GetTasksSortCreatedAt:
+		return []byte(s), nil
+	case GetTasksSortMinusCreatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *GetTasksSort) UnmarshalText(data []byte) error {
+	switch GetTasksSort(data) {
+	case GetTasksSortCreatedAt:
+		*s = GetTasksSortCreatedAt
+		return nil
+	case GetTasksSortMinusCreatedAt:
+		*s = GetTasksSortMinusCreatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
 
 type GetTasksUnauthorized Error
 
@@ -244,6 +312,98 @@ func (o OptDateTime) Get() (v time.Time, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptGetProjectsSort returns new OptGetProjectsSort with value set to v.
+func NewOptGetProjectsSort(v GetProjectsSort) OptGetProjectsSort {
+	return OptGetProjectsSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptGetProjectsSort is optional GetProjectsSort.
+type OptGetProjectsSort struct {
+	Value GetProjectsSort
+	Set   bool
+}
+
+// IsSet returns true if OptGetProjectsSort was set.
+func (o OptGetProjectsSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptGetProjectsSort) Reset() {
+	var v GetProjectsSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptGetProjectsSort) SetTo(v GetProjectsSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptGetProjectsSort) Get() (v GetProjectsSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptGetProjectsSort) Or(d GetProjectsSort) GetProjectsSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptGetTasksSort returns new OptGetTasksSort with value set to v.
+func NewOptGetTasksSort(v GetTasksSort) OptGetTasksSort {
+	return OptGetTasksSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptGetTasksSort is optional GetTasksSort.
+type OptGetTasksSort struct {
+	Value GetTasksSort
+	Set   bool
+}
+
+// IsSet returns true if OptGetTasksSort was set.
+func (o OptGetTasksSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptGetTasksSort) Reset() {
+	var v GetTasksSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptGetTasksSort) SetTo(v GetTasksSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptGetTasksSort) Get() (v GetTasksSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptGetTasksSort) Or(d GetTasksSort) GetTasksSort {
 	if v, ok := o.Get(); ok {
 		return v
 	}
