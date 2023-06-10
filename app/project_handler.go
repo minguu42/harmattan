@@ -11,7 +11,7 @@ import (
 )
 
 // PostProjects は POST /projects に対応するハンドラ
-func (h *handler) PostProjects(ctx context.Context, req *ogen.PostProjectsReq, params ogen.PostProjectsParams) (ogen.PostProjectsRes, error) {
+func (h *handler) PostProjects(ctx context.Context, req *ogen.PostProjectsReq, _ ogen.PostProjectsParams) (ogen.PostProjectsRes, error) {
 	u, ok := ctx.Value(userKey{}).(*User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
@@ -43,7 +43,7 @@ func (h *handler) GetProjects(ctx context.Context, params ogen.GetProjectsParams
 		return &ogen.GetProjectsInternalServerError{}, nil
 	}
 
-	ps, err := h.repository.GetProjectsByUserID(ctx, u.ID, params.Limit.Or(10), params.Offset.Or(0))
+	ps, err := h.repository.GetProjectsByUserID(ctx, u.ID, string(params.Sort.Or(ogen.GetProjectsSortMinusCreatedAt)), params.Limit.Or(10), params.Offset.Or(0))
 	if err != nil {
 		logging.Errorf("repository.GetProjectsByUserID failed: %v", err)
 		return &ogen.GetProjectsInternalServerError{}, nil
