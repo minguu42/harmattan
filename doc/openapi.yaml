@@ -28,12 +28,12 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - name
               properties:
                 name:
                   type: string
                   example: プロジェクト1
+              required:
+                - name
       responses:
         201:
           description: 成功
@@ -157,12 +157,12 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - title
               properties:
                 title:
                   type: string
                   example: タスク1
+              required:
+                - title
       responses:
         201:
           description: 成功
@@ -199,6 +199,7 @@ paths:
             enum:
               - createdAt
               - -createdAt
+            default: -createdAt
       responses:
         200:
           description: 成功
