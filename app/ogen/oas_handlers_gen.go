@@ -60,15 +60,49 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 			ID:   "CreateProject",
 		}
 	)
-	params, err := decodeCreateProjectParams(args, argsEscaped, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "CreateProject", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
 		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
 	}
 	request, close, err := s.decodeCreateProjectRequest(r)
 	if err != nil {
@@ -93,18 +127,13 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 			OperationName: "CreateProject",
 			OperationID:   "CreateProject",
 			Body:          request,
-			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
-			},
-			Raw: r,
+			Params:        middleware.Parameters{},
+			Raw:           r,
 		}
 
 		type (
 			Request  = *CreateProjectReq
-			Params   = CreateProjectParams
+			Params   = struct{}
 			Response = CreateProjectRes
 		)
 		response, err = middleware.HookMiddleware[
@@ -114,14 +143,14 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		](
 			m,
 			mreq,
-			unpackCreateProjectParams,
+			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.CreateProject(ctx, request, params)
+				response, err = s.h.CreateProject(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.CreateProject(ctx, request, params)
+		response, err = s.h.CreateProject(ctx, request)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -178,6 +207,50 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 			ID:   "CreateTask",
 		}
 	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "CreateTask", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
 	params, err := decodeCreateTaskParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
@@ -212,10 +285,6 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 			OperationID:   "CreateTask",
 			Body:          request,
 			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -300,6 +369,50 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 			ID:   "DeleteProject",
 		}
 	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "DeleteProject", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
 	params, err := decodeDeleteProjectParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
@@ -319,10 +432,6 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 			OperationID:   "DeleteProject",
 			Body:          nil,
 			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -407,6 +516,50 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 			ID:   "DeleteTask",
 		}
 	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "DeleteTask", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
 	params, err := decodeDeleteTaskParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
@@ -426,10 +579,6 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 			OperationID:   "DeleteTask",
 			Body:          nil,
 			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -602,6 +751,50 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 			ID:   "ListProjects",
 		}
 	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "ListProjects", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
 	params, err := decodeListProjectsParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
@@ -633,10 +826,6 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 					Name: "sort",
 					In:   "query",
 				}: params.Sort,
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
 			},
 			Raw: r,
 		}
@@ -717,6 +906,50 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 			ID:   "ListTasks",
 		}
 	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "ListTasks", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
 	params, err := decodeListTasksParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
@@ -748,10 +981,6 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 					Name: "sort",
 					In:   "query",
 				}: params.Sort,
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -836,6 +1065,50 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 			ID:   "UpdateProject",
 		}
 	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "UpdateProject", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
 	params, err := decodeUpdateProjectParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
@@ -870,10 +1143,6 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 			OperationID:   "UpdateProject",
 			Body:          request,
 			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",
@@ -958,6 +1227,50 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 			ID:   "UpdateTask",
 		}
 	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityIsAuthorized(ctx, "UpdateTask", r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "IsAuthorized",
+					Err:              err,
+				}
+				recordError("Security:IsAuthorized", err)
+				s.cfg.ErrorHandler(ctx, w, r, err)
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			recordError("Security", err)
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+	}
 	params, err := decodeUpdateTaskParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
@@ -992,10 +1305,6 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 			OperationID:   "UpdateTask",
 			Body:          request,
 			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
 				{
 					Name: "projectID",
 					In:   "path",

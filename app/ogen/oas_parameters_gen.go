@@ -15,75 +15,12 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-// CreateProjectParams is parameters of CreateProject operation.
-type CreateProjectParams struct {
-	XAPIKey string
-}
-
-func unpackCreateProjectParams(packed middleware.Parameters) (params CreateProjectParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
-	return params
-}
-
-func decodeCreateProjectParams(args [0]string, argsEscaped bool, r *http.Request) (params CreateProjectParams, _ error) {
-	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
-	return params, nil
-}
-
 // CreateTaskParams is parameters of CreateTask operation.
 type CreateTaskParams struct {
-	XAPIKey   string
 	ProjectID int64
 }
 
 func unpackCreateTaskParams(packed middleware.Parameters) (params CreateTaskParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "projectID",
@@ -95,41 +32,6 @@ func unpackCreateTaskParams(packed middleware.Parameters) (params CreateTaskPara
 }
 
 func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (params CreateTaskParams, _ error) {
-	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
 	// Decode path: projectID.
 	if err := func() error {
 		param := args[0]
@@ -197,18 +99,10 @@ func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 
 // DeleteProjectParams is parameters of DeleteProject operation.
 type DeleteProjectParams struct {
-	XAPIKey   string
 	ProjectID int64
 }
 
 func unpackDeleteProjectParams(packed middleware.Parameters) (params DeleteProjectParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "projectID",
@@ -220,41 +114,6 @@ func unpackDeleteProjectParams(packed middleware.Parameters) (params DeleteProje
 }
 
 func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request) (params DeleteProjectParams, _ error) {
-	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
 	// Decode path: projectID.
 	if err := func() error {
 		param := args[0]
@@ -322,19 +181,11 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 
 // DeleteTaskParams is parameters of DeleteTask operation.
 type DeleteTaskParams struct {
-	XAPIKey   string
 	ProjectID int64
 	TaskID    int64
 }
 
 func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "projectID",
@@ -353,41 +204,6 @@ func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskPara
 }
 
 func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (params DeleteTaskParams, _ error) {
-	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
 	// Decode path: projectID.
 	if err := func() error {
 		param := args[0]
@@ -522,8 +338,7 @@ type ListProjectsParams struct {
 	// リソースの取得開始位置を指定する。.
 	Offset OptInt
 	// 並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
-	Sort    OptListProjectsSort
-	XAPIKey string
+	Sort OptListProjectsSort
 }
 
 func unpackListProjectsParams(packed middleware.Parameters) (params ListProjectsParams) {
@@ -554,19 +369,11 @@ func unpackListProjectsParams(packed middleware.Parameters) (params ListProjects
 			params.Sort = v.(OptListProjectsSort)
 		}
 	}
-	{
-		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
 	return params
 }
 
 func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request) (params ListProjectsParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
-	h := uri.NewHeaderDecoder(r.Header)
 	// Set default value for query: limit.
 	{
 		val := int(10)
@@ -763,40 +570,6 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 			Err:  err,
 		}
 	}
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
 	return params, nil
 }
 
@@ -808,7 +581,6 @@ type ListTasksParams struct {
 	Offset OptInt
 	// 並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
 	Sort      OptListTasksSort
-	XAPIKey   string
 	ProjectID int64
 }
 
@@ -842,13 +614,6 @@ func unpackListTasksParams(packed middleware.Parameters) (params ListTasksParams
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
-	{
-		key := middleware.ParameterKey{
 			Name: "projectID",
 			In:   "path",
 		}
@@ -859,7 +624,6 @@ func unpackListTasksParams(packed middleware.Parameters) (params ListTasksParams
 
 func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (params ListTasksParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
-	h := uri.NewHeaderDecoder(r.Header)
 	// Set default value for query: limit.
 	{
 		val := int(10)
@@ -1056,40 +820,6 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 			Err:  err,
 		}
 	}
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
 	// Decode path: projectID.
 	if err := func() error {
 		param := args[0]
@@ -1157,18 +887,10 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 
 // UpdateProjectParams is parameters of UpdateProject operation.
 type UpdateProjectParams struct {
-	XAPIKey   string
 	ProjectID int64
 }
 
 func unpackUpdateProjectParams(packed middleware.Parameters) (params UpdateProjectParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "projectID",
@@ -1180,41 +902,6 @@ func unpackUpdateProjectParams(packed middleware.Parameters) (params UpdateProje
 }
 
 func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request) (params UpdateProjectParams, _ error) {
-	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
 	// Decode path: projectID.
 	if err := func() error {
 		param := args[0]
@@ -1282,19 +969,11 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 
 // UpdateTaskParams is parameters of UpdateTask operation.
 type UpdateTaskParams struct {
-	XAPIKey   string
 	ProjectID int64
 	TaskID    int64
 }
 
 func unpackUpdateTaskParams(packed middleware.Parameters) (params UpdateTaskParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "X-Api-Key",
-			In:   "header",
-		}
-		params.XAPIKey = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "projectID",
@@ -1313,41 +992,6 @@ func unpackUpdateTaskParams(packed middleware.Parameters) (params UpdateTaskPara
 }
 
 func decodeUpdateTaskParams(args [2]string, argsEscaped bool, r *http.Request) (params UpdateTaskParams, _ error) {
-	h := uri.NewHeaderDecoder(r.Header)
-	// Decode header: X-Api-Key.
-	if err := func() error {
-		cfg := uri.HeaderParameterDecodingConfig{
-			Name:    "X-Api-Key",
-			Explode: false,
-		}
-		if err := h.HasParam(cfg); err == nil {
-			if err := h.DecodeParam(cfg, func(d uri.Decoder) error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.XAPIKey = c
-				return nil
-			}); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "X-Api-Key",
-			In:   "header",
-			Err:  err,
-		}
-	}
 	// Decode path: projectID.
 	if err := func() error {
 		param := args[0]

@@ -18,7 +18,7 @@ var _ Handler = UnimplementedHandler{}
 // 新しいプロジェクトを作成する.
 //
 // POST /projects
-func (UnimplementedHandler) CreateProject(ctx context.Context, req *CreateProjectReq, params CreateProjectParams) (r CreateProjectRes, _ error) {
+func (UnimplementedHandler) CreateProject(ctx context.Context, req *CreateProjectReq) (r CreateProjectRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

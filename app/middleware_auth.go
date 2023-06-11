@@ -18,7 +18,7 @@ type userKey struct{}
 
 func (a *authMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	route, ok := a.next.FindRoute(r.Method, r.URL.Path)
-	if !ok || route.OperationID() == "getHealth" {
+	if !ok || route.OperationID() == "GetHealth" {
 		a.next.ServeHTTP(w, r)
 		return
 	}

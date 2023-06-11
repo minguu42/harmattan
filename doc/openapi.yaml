@@ -11,13 +11,13 @@ servers:
 
 paths:
   /projects:
-    parameters:
-      - $ref: "#/components/parameters/apiKey"
     post:
       tags:
         - projects
       summary: 新しいプロジェクトを作成する
       operationId: CreateProject
+      security:
+        - isAuthorized: [ ]
       requestBody:
         required: true
         content:
@@ -59,6 +59,8 @@ paths:
       summary: プロジェクト一覧を取得する
       description: 作成日時の降順で取得する。
       operationId: ListProjects
+      security:
+        - isAuthorized: [ ]
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
@@ -87,13 +89,14 @@ paths:
           $ref: "#/components/responses/NotImplementedError"
   /projects/{projectID}:
     parameters:
-      - $ref: "#/components/parameters/apiKey"
       - $ref: "#/components/parameters/projectID"
     patch:
       tags:
         - projects
       summary: プロジェクトを更新する
       operationId: UpdateProject
+      security:
+        - isAuthorized: [ ]
       requestBody:
         required: true
         content:
@@ -126,6 +129,8 @@ paths:
         - projects
       summary: プロジェクトを削除する
       operationId: DeleteProject
+      security:
+        - isAuthorized: [ ]
       responses:
         204:
           description: 成功
@@ -141,13 +146,14 @@ paths:
           $ref: "#/components/responses/NotImplementedError"
   /projects/{projectID}/tasks:
     parameters:
-      - $ref: "#/components/parameters/apiKey"
       - $ref: "#/components/parameters/projectID"
     post:
       tags:
         - tasks
       summary: 新しいタスクを作成する
       operationId: CreateTask
+      security:
+        - isAuthorized: [ ]
       requestBody:
         required: true
         content:
@@ -191,6 +197,8 @@ paths:
       summary: タスク一覧を取得する
       description: 作成日時の降順で取得する。
       operationId: ListTasks
+      security:
+        - isAuthorized: [ ]
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
@@ -221,7 +229,6 @@ paths:
           $ref: "#/components/responses/NotImplementedError"
   /projects/{projectID}/tasks/{taskID}:
     parameters:
-      - $ref: "#/components/parameters/apiKey"
       - $ref: "#/components/parameters/projectID"
       - $ref: "#/components/parameters/taskID"
     patch:
@@ -229,6 +236,8 @@ paths:
         - tasks
       summary: タスクを更新する
       operationId: UpdateTask
+      security:
+        - isAuthorized: [ ]
       requestBody:
         required: true
         content:
@@ -260,6 +269,8 @@ paths:
         - tasks
       summary: タスクを削除する
       operationId: DeleteTask
+      security:
+        - isAuthorized: [ ]
       responses:
         204:
           description: 成功
@@ -279,6 +290,7 @@ paths:
         - monitoring
       summary: サーバの状態を取得する
       operationId: GetHealth
+      security: [ ]
       responses:
         200:
           description: 成功
@@ -398,12 +410,6 @@ components:
           description: 開発者向けの詳細なエラーの説明
           type: string
   parameters:
-    apiKey:
-      name: X-Api-Key
-      in: header
-      required: true
-      schema:
-        type: string
     limit:
       name: limit
       in: query
@@ -474,6 +480,11 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/error"
+  securitySchemes:
+    isAuthorized:
+      type: apiKey
+      name: X-Api-Key
+      in: header
 
 tags:
   - name: projects

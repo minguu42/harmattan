@@ -11,7 +11,7 @@ import (
 )
 
 // CreateProject は POST /projects に対応するハンドラ
-func (h *handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq, _ ogen.CreateProjectParams) (ogen.CreateProjectRes, error) {
+func (h *handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq) (ogen.CreateProjectRes, error) {
 	u, ok := ctx.Value(userKey{}).(*User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")

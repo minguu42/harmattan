@@ -188,6 +188,20 @@ type GetHealthServiceUnavailable Error
 
 func (*GetHealthServiceUnavailable) getHealthRes() {}
 
+type IsAuthorized struct {
+	APIKey string
+}
+
+// GetAPIKey returns the value of APIKey.
+func (s *IsAuthorized) GetAPIKey() string {
+	return s.APIKey
+}
+
+// SetAPIKey sets the value of APIKey.
+func (s *IsAuthorized) SetAPIKey(val string) {
+	s.APIKey = val
+}
+
 type ListProjectsBadRequest Error
 
 func (*ListProjectsBadRequest) listProjectsRes() {}

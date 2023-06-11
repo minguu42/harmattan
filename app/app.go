@@ -15,6 +15,14 @@ type handler struct {
 	repository repository
 }
 
+type securityHandler struct{}
+
+// HandleIsAuthorized -
+// TODO: これを利用して authMiddleware を記述すべき
+func (s *securityHandler) HandleIsAuthorized(ctx context.Context, _ string, _ ogen.IsAuthorized) (context.Context, error) {
+	return ctx, nil
+}
+
 type repository interface {
 	GetUserByAPIKey(ctx context.Context, apiKey string) (*User, error)
 
@@ -35,7 +43,7 @@ type repository interface {
 func NewServer(api *env.API, repository repository) (*http.Server, error) {
 	s, err := ogen.NewServer(&handler{
 		repository: repository,
-	})
+	}, &securityHandler{})
 	if err != nil {
 		return nil, fmt.Errorf("ogen.NewServer failed: %w", err)
 	}

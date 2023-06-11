@@ -13,7 +13,7 @@ type Handler interface {
 	// 新しいプロジェクトを作成する.
 	//
 	// POST /projects
-	CreateProject(ctx context.Context, req *CreateProjectReq, params CreateProjectParams) (CreateProjectRes, error)
+	CreateProject(ctx context.Context, req *CreateProjectReq) (CreateProjectRes, error)
 	// CreateTask implements CreateTask operation.
 	//
 	// 新しいタスクを作成する.
@@ -67,18 +67,20 @@ type Handler interface {
 // Server implements http server based on OpenAPI v3 specification and
 // calls Handler to handle requests.
 type Server struct {
-	h Handler
+	h   Handler
+	sec SecurityHandler
 	baseServer
 }
 
 // NewServer creates new Server.
-func NewServer(h Handler, opts ...ServerOption) (*Server, error) {
+func NewServer(h Handler, sec SecurityHandler, opts ...ServerOption) (*Server, error) {
 	s, err := newServerConfig(opts...).baseServer()
 	if err != nil {
 		return nil, err
 	}
 	return &Server{
 		h:          h,
+		sec:        sec,
 		baseServer: s,
 	}, nil
 }
