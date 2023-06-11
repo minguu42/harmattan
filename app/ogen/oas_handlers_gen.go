@@ -18,14 +18,254 @@ import (
 	"github.com/ogen-go/ogen/otelogen"
 )
 
-// handleDeleteProjectRequest handles deleteProject operation.
+// handleCreateProjectRequest handles CreateProject operation.
+//
+// 新しいプロジェクトを作成する.
+//
+// POST /projects
+func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("CreateProject"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/projects"),
+	}
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "CreateProject",
+		trace.WithAttributes(otelAttrs...),
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: "CreateProject",
+			ID:   "CreateProject",
+		}
+	)
+	params, err := decodeCreateProjectParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	request, close, err := s.decodeCreateProjectRequest(r)
+	if err != nil {
+		err = &ogenerrors.DecodeRequestError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeRequest", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	defer func() {
+		if err := close(); err != nil {
+			recordError("CloseRequest", err)
+		}
+	}()
+
+	var response CreateProjectRes
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:       ctx,
+			OperationName: "CreateProject",
+			OperationID:   "CreateProject",
+			Body:          request,
+			Params: middleware.Parameters{
+				{
+					Name: "X-Api-Key",
+					In:   "header",
+				}: params.XAPIKey,
+			},
+			Raw: r,
+		}
+
+		type (
+			Request  = *CreateProjectReq
+			Params   = CreateProjectParams
+			Response = CreateProjectRes
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			unpackCreateProjectParams,
+			func(ctx context.Context, request Request, params Params) (response Response, err error) {
+				response, err = s.h.CreateProject(ctx, request, params)
+				return response, err
+			},
+		)
+	} else {
+		response, err = s.h.CreateProject(ctx, request, params)
+	}
+	if err != nil {
+		recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeCreateProjectResponse(response, w, span); err != nil {
+		recordError("EncodeResponse", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+}
+
+// handleCreateTaskRequest handles CreateTask operation.
+//
+// 新しいタスクを作成する.
+//
+// POST /projects/{projectID}/tasks
+func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("CreateTask"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks"),
+	}
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "CreateTask",
+		trace.WithAttributes(otelAttrs...),
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: "CreateTask",
+			ID:   "CreateTask",
+		}
+	)
+	params, err := decodeCreateTaskParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	request, close, err := s.decodeCreateTaskRequest(r)
+	if err != nil {
+		err = &ogenerrors.DecodeRequestError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		recordError("DecodeRequest", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	defer func() {
+		if err := close(); err != nil {
+			recordError("CloseRequest", err)
+		}
+	}()
+
+	var response CreateTaskRes
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:       ctx,
+			OperationName: "CreateTask",
+			OperationID:   "CreateTask",
+			Body:          request,
+			Params: middleware.Parameters{
+				{
+					Name: "X-Api-Key",
+					In:   "header",
+				}: params.XAPIKey,
+				{
+					Name: "projectID",
+					In:   "path",
+				}: params.ProjectID,
+			},
+			Raw: r,
+		}
+
+		type (
+			Request  = *CreateTaskReq
+			Params   = CreateTaskParams
+			Response = CreateTaskRes
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			unpackCreateTaskParams,
+			func(ctx context.Context, request Request, params Params) (response Response, err error) {
+				response, err = s.h.CreateTask(ctx, request, params)
+				return response, err
+			},
+		)
+	} else {
+		response, err = s.h.CreateTask(ctx, request, params)
+	}
+	if err != nil {
+		recordError("Internal", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+
+	if err := encodeCreateTaskResponse(response, w, span); err != nil {
+		recordError("EncodeResponse", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+}
+
+// handleDeleteProjectRequest handles DeleteProject operation.
 //
 // プロジェクトを削除する.
 //
 // DELETE /projects/{projectID}
 func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteProject"),
+		otelogen.OperationID("DeleteProject"),
 		semconv.HTTPMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}"),
 	}
@@ -57,7 +297,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "DeleteProject",
-			ID:   "deleteProject",
+			ID:   "DeleteProject",
 		}
 	)
 	params, err := decodeDeleteProjectParams(args, argsEscaped, r)
@@ -76,7 +316,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "DeleteProject",
-			OperationID:   "deleteProject",
+			OperationID:   "DeleteProject",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -125,14 +365,14 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 	}
 }
 
-// handleDeleteTaskRequest handles deleteTask operation.
+// handleDeleteTaskRequest handles DeleteTask operation.
 //
 // タスクを削除する.
 //
 // DELETE /projects/{projectID}/tasks/{taskID}
 func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("deleteTask"),
+		otelogen.OperationID("DeleteTask"),
 		semconv.HTTPMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks/{taskID}"),
 	}
@@ -164,7 +404,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "DeleteTask",
-			ID:   "deleteTask",
+			ID:   "DeleteTask",
 		}
 	)
 	params, err := decodeDeleteTaskParams(args, argsEscaped, r)
@@ -183,7 +423,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "DeleteTask",
-			OperationID:   "deleteTask",
+			OperationID:   "DeleteTask",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -236,14 +476,14 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 	}
 }
 
-// handleGetHealthRequest handles getHealth operation.
+// handleGetHealthRequest handles GetHealth operation.
 //
 // サーバの状態を取得する.
 //
 // GET /health
 func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("getHealth"),
+		otelogen.OperationID("GetHealth"),
 		semconv.HTTPMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/health"),
 	}
@@ -280,7 +520,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "GetHealth",
-			OperationID:   "getHealth",
+			OperationID:   "GetHealth",
 			Body:          nil,
 			Params:        middleware.Parameters{},
 			Raw:           r,
@@ -320,20 +560,20 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 	}
 }
 
-// handleGetProjectsRequest handles getProjects operation.
+// handleListProjectsRequest handles ListProjects operation.
 //
 // 作成日時の降順で取得する。.
 //
 // GET /projects
-func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("getProjects"),
+		otelogen.OperationID("ListProjects"),
 		semconv.HTTPMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/projects"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "GetProjects",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ListProjects",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -358,11 +598,11 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "GetProjects",
-			ID:   "getProjects",
+			Name: "ListProjects",
+			ID:   "ListProjects",
 		}
 	)
-	params, err := decodeGetProjectsParams(args, argsEscaped, r)
+	params, err := decodeListProjectsParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -373,12 +613,12 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 		return
 	}
 
-	var response GetProjectsRes
+	var response ListProjectsRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "GetProjects",
-			OperationID:   "getProjects",
+			OperationName: "ListProjects",
+			OperationID:   "ListProjects",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -403,8 +643,8 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 
 		type (
 			Request  = struct{}
-			Params   = GetProjectsParams
-			Response = GetProjectsRes
+			Params   = ListProjectsParams
+			Response = ListProjectsRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -413,14 +653,14 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 		](
 			m,
 			mreq,
-			unpackGetProjectsParams,
+			unpackListProjectsParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.GetProjects(ctx, params)
+				response, err = s.h.ListProjects(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.GetProjects(ctx, params)
+		response, err = s.h.ListProjects(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -428,27 +668,27 @@ func (s *Server) handleGetProjectsRequest(args [0]string, argsEscaped bool, w ht
 		return
 	}
 
-	if err := encodeGetProjectsResponse(response, w, span); err != nil {
+	if err := encodeListProjectsResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 }
 
-// handleGetTasksRequest handles getTasks operation.
+// handleListTasksRequest handles ListTasks operation.
 //
 // 作成日時の降順で取得する。.
 //
 // GET /projects/{projectID}/tasks
-func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("getTasks"),
+		otelogen.OperationID("ListTasks"),
 		semconv.HTTPMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "GetTasks",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "ListTasks",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -473,11 +713,11 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "GetTasks",
-			ID:   "getTasks",
+			Name: "ListTasks",
+			ID:   "ListTasks",
 		}
 	)
-	params, err := decodeGetTasksParams(args, argsEscaped, r)
+	params, err := decodeListTasksParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -488,12 +728,12 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 		return
 	}
 
-	var response GetTasksRes
+	var response ListTasksRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "GetTasks",
-			OperationID:   "getTasks",
+			OperationName: "ListTasks",
+			OperationID:   "ListTasks",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -522,8 +762,8 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 
 		type (
 			Request  = struct{}
-			Params   = GetTasksParams
-			Response = GetTasksRes
+			Params   = ListTasksParams
+			Response = ListTasksRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -532,14 +772,14 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 		](
 			m,
 			mreq,
-			unpackGetTasksParams,
+			unpackListTasksParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.GetTasks(ctx, params)
+				response, err = s.h.ListTasks(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.GetTasks(ctx, params)
+		response, err = s.h.ListTasks(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -547,27 +787,27 @@ func (s *Server) handleGetTasksRequest(args [1]string, argsEscaped bool, w http.
 		return
 	}
 
-	if err := encodeGetTasksResponse(response, w, span); err != nil {
+	if err := encodeListTasksResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 }
 
-// handlePatchProjectRequest handles patchProject operation.
+// handleUpdateProjectRequest handles UpdateProject operation.
 //
 // プロジェクトを更新する.
 //
 // PATCH /projects/{projectID}
-func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("patchProject"),
+		otelogen.OperationID("UpdateProject"),
 		semconv.HTTPMethodKey.String("PATCH"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "PatchProject",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "UpdateProject",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -592,11 +832,11 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "PatchProject",
-			ID:   "patchProject",
+			Name: "UpdateProject",
+			ID:   "UpdateProject",
 		}
 	)
-	params, err := decodePatchProjectParams(args, argsEscaped, r)
+	params, err := decodeUpdateProjectParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -606,7 +846,7 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodePatchProjectRequest(r)
+	request, close, err := s.decodeUpdateProjectRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -622,12 +862,12 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 		}
 	}()
 
-	var response PatchProjectRes
+	var response UpdateProjectRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "PatchProject",
-			OperationID:   "patchProject",
+			OperationName: "UpdateProject",
+			OperationID:   "UpdateProject",
 			Body:          request,
 			Params: middleware.Parameters{
 				{
@@ -643,9 +883,9 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 		}
 
 		type (
-			Request  = *PatchProjectReq
-			Params   = PatchProjectParams
-			Response = PatchProjectRes
+			Request  = *UpdateProjectReq
+			Params   = UpdateProjectParams
+			Response = UpdateProjectRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -654,14 +894,14 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 		](
 			m,
 			mreq,
-			unpackPatchProjectParams,
+			unpackUpdateProjectParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.PatchProject(ctx, request, params)
+				response, err = s.h.UpdateProject(ctx, request, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.PatchProject(ctx, request, params)
+		response, err = s.h.UpdateProject(ctx, request, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -669,27 +909,27 @@ func (s *Server) handlePatchProjectRequest(args [1]string, argsEscaped bool, w h
 		return
 	}
 
-	if err := encodePatchProjectResponse(response, w, span); err != nil {
+	if err := encodeUpdateProjectResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
 }
 
-// handlePatchTaskRequest handles patchTask operation.
+// handleUpdateTaskRequest handles UpdateTask operation.
 //
 // タスクを更新する.
 //
 // PATCH /projects/{projectID}/tasks/{taskID}
-func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("patchTask"),
+		otelogen.OperationID("UpdateTask"),
 		semconv.HTTPMethodKey.String("PATCH"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks/{taskID}"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "PatchTask",
+	ctx, span := s.cfg.Tracer.Start(r.Context(), "UpdateTask",
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -714,11 +954,11 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: "PatchTask",
-			ID:   "patchTask",
+			Name: "UpdateTask",
+			ID:   "UpdateTask",
 		}
 	)
-	params, err := decodePatchTaskParams(args, argsEscaped, r)
+	params, err := decodeUpdateTaskParams(args, argsEscaped, r)
 	if err != nil {
 		err = &ogenerrors.DecodeParamsError{
 			OperationContext: opErrContext,
@@ -728,7 +968,7 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodePatchTaskRequest(r)
+	request, close, err := s.decodeUpdateTaskRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -744,12 +984,12 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 		}
 	}()
 
-	var response PatchTaskRes
+	var response UpdateTaskRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
-			OperationName: "PatchTask",
-			OperationID:   "patchTask",
+			OperationName: "UpdateTask",
+			OperationID:   "UpdateTask",
 			Body:          request,
 			Params: middleware.Parameters{
 				{
@@ -769,9 +1009,9 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 		}
 
 		type (
-			Request  = *PatchTaskReq
-			Params   = PatchTaskParams
-			Response = PatchTaskRes
+			Request  = *UpdateTaskReq
+			Params   = UpdateTaskParams
+			Response = UpdateTaskRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -780,14 +1020,14 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 		](
 			m,
 			mreq,
-			unpackPatchTaskParams,
+			unpackUpdateTaskParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.PatchTask(ctx, request, params)
+				response, err = s.h.UpdateTask(ctx, request, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.PatchTask(ctx, request, params)
+		response, err = s.h.UpdateTask(ctx, request, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
@@ -795,247 +1035,7 @@ func (s *Server) handlePatchTaskRequest(args [2]string, argsEscaped bool, w http
 		return
 	}
 
-	if err := encodePatchTaskResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handlePostProjectsRequest handles PostProjects operation.
-//
-// 新しいプロジェクトを作成する.
-//
-// POST /projects
-func (s *Server) handlePostProjectsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("PostProjects"),
-		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/projects"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "PostProjects",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "PostProjects",
-			ID:   "PostProjects",
-		}
-	)
-	params, err := decodePostProjectsParams(args, argsEscaped, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	request, close, err := s.decodePostProjectsRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
-
-	var response PostProjectsRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "PostProjects",
-			OperationID:   "PostProjects",
-			Body:          request,
-			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = *PostProjectsReq
-			Params   = PostProjectsParams
-			Response = PostProjectsRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackPostProjectsParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.PostProjects(ctx, request, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.PostProjects(ctx, request, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodePostProjectsResponse(response, w, span); err != nil {
-		recordError("EncodeResponse", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-}
-
-// handlePostTasksRequest handles PostTasks operation.
-//
-// 新しいタスクを作成する.
-//
-// POST /projects/{projectID}/tasks
-func (s *Server) handlePostTasksRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("PostTasks"),
-		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks"),
-	}
-
-	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), "PostTasks",
-		trace.WithAttributes(otelAttrs...),
-		serverSpanKind,
-	)
-	defer span.End()
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		elapsedDuration := time.Since(startTime)
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		s.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	s.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	var (
-		recordError = func(stage string, err error) {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			s.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		err          error
-		opErrContext = ogenerrors.OperationContext{
-			Name: "PostTasks",
-			ID:   "PostTasks",
-		}
-	)
-	params, err := decodePostTasksParams(args, argsEscaped, r)
-	if err != nil {
-		err = &ogenerrors.DecodeParamsError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeParams", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	request, close, err := s.decodePostTasksRequest(r)
-	if err != nil {
-		err = &ogenerrors.DecodeRequestError{
-			OperationContext: opErrContext,
-			Err:              err,
-		}
-		recordError("DecodeRequest", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-	defer func() {
-		if err := close(); err != nil {
-			recordError("CloseRequest", err)
-		}
-	}()
-
-	var response PostTasksRes
-	if m := s.cfg.Middleware; m != nil {
-		mreq := middleware.Request{
-			Context:       ctx,
-			OperationName: "PostTasks",
-			OperationID:   "PostTasks",
-			Body:          request,
-			Params: middleware.Parameters{
-				{
-					Name: "X-Api-Key",
-					In:   "header",
-				}: params.XAPIKey,
-				{
-					Name: "projectID",
-					In:   "path",
-				}: params.ProjectID,
-			},
-			Raw: r,
-		}
-
-		type (
-			Request  = *PostTasksReq
-			Params   = PostTasksParams
-			Response = PostTasksRes
-		)
-		response, err = middleware.HookMiddleware[
-			Request,
-			Params,
-			Response,
-		](
-			m,
-			mreq,
-			unpackPostTasksParams,
-			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.PostTasks(ctx, request, params)
-				return response, err
-			},
-		)
-	} else {
-		response, err = s.h.PostTasks(ctx, request, params)
-	}
-	if err != nil {
-		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
-		return
-	}
-
-	if err := encodePostTasksResponse(response, w, span); err != nil {
+	if err := encodeUpdateTaskResponse(response, w, span); err != nil {
 		recordError("EncodeResponse", err)
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return

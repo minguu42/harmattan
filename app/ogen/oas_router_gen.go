@@ -83,9 +83,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if len(elem) == 0 {
 					switch r.Method {
 					case "GET":
-						s.handleGetProjectsRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleListProjectsRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
-						s.handlePostProjectsRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleCreateProjectRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, "GET,POST")
 					}
@@ -116,7 +116,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								args[0],
 							}, elemIsEscaped, w, r)
 						case "PATCH":
-							s.handlePatchProjectRequest([1]string{
+							s.handleUpdateProjectRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
 						default:
@@ -136,11 +136,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						if len(elem) == 0 {
 							switch r.Method {
 							case "GET":
-								s.handleGetTasksRequest([1]string{
+								s.handleListTasksRequest([1]string{
 									args[0],
 								}, elemIsEscaped, w, r)
 							case "POST":
-								s.handlePostTasksRequest([1]string{
+								s.handleCreateTaskRequest([1]string{
 									args[0],
 								}, elemIsEscaped, w, r)
 							default:
@@ -171,7 +171,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 										args[1],
 									}, elemIsEscaped, w, r)
 								case "PATCH":
-									s.handlePatchTaskRequest([2]string{
+									s.handleUpdateTaskRequest([2]string{
 										args[0],
 										args[1],
 									}, elemIsEscaped, w, r)
@@ -277,7 +277,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					case "GET":
 						// Leaf: GetHealth
 						r.name = "GetHealth"
-						r.operationID = "getHealth"
+						r.operationID = "GetHealth"
 						r.pathPattern = "/health"
 						r.args = args
 						r.count = 0
@@ -296,15 +296,15 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						r.name = "GetProjects"
-						r.operationID = "getProjects"
+						r.name = "ListProjects"
+						r.operationID = "ListProjects"
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
 						return r, true
 					case "POST":
-						r.name = "PostProjects"
-						r.operationID = "PostProjects"
+						r.name = "CreateProject"
+						r.operationID = "CreateProject"
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
@@ -334,14 +334,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						switch method {
 						case "DELETE":
 							r.name = "DeleteProject"
-							r.operationID = "deleteProject"
+							r.operationID = "DeleteProject"
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
 							return r, true
 						case "PATCH":
-							r.name = "PatchProject"
-							r.operationID = "patchProject"
+							r.name = "UpdateProject"
+							r.operationID = "UpdateProject"
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
@@ -361,15 +361,15 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						if len(elem) == 0 {
 							switch method {
 							case "GET":
-								r.name = "GetTasks"
-								r.operationID = "getTasks"
+								r.name = "ListTasks"
+								r.operationID = "ListTasks"
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
 								return r, true
 							case "POST":
-								r.name = "PostTasks"
-								r.operationID = "PostTasks"
+								r.name = "CreateTask"
+								r.operationID = "CreateTask"
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
@@ -396,15 +396,15 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								case "DELETE":
 									// Leaf: DeleteTask
 									r.name = "DeleteTask"
-									r.operationID = "deleteTask"
+									r.operationID = "DeleteTask"
 									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
 									r.args = args
 									r.count = 2
 									return r, true
 								case "PATCH":
-									// Leaf: PatchTask
-									r.name = "PatchTask"
-									r.operationID = "patchTask"
+									// Leaf: UpdateTask
+									r.name = "UpdateTask"
+									r.operationID = "UpdateTask"
 									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
 									r.args = args
 									r.count = 2

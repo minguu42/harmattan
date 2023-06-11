@@ -8,60 +8,60 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// DeleteProject implements deleteProject operation.
+	// CreateProject implements CreateProject operation.
+	//
+	// 新しいプロジェクトを作成する.
+	//
+	// POST /projects
+	CreateProject(ctx context.Context, req *CreateProjectReq, params CreateProjectParams) (CreateProjectRes, error)
+	// CreateTask implements CreateTask operation.
+	//
+	// 新しいタスクを作成する.
+	//
+	// POST /projects/{projectID}/tasks
+	CreateTask(ctx context.Context, req *CreateTaskReq, params CreateTaskParams) (CreateTaskRes, error)
+	// DeleteProject implements DeleteProject operation.
 	//
 	// プロジェクトを削除する.
 	//
 	// DELETE /projects/{projectID}
 	DeleteProject(ctx context.Context, params DeleteProjectParams) (DeleteProjectRes, error)
-	// DeleteTask implements deleteTask operation.
+	// DeleteTask implements DeleteTask operation.
 	//
 	// タスクを削除する.
 	//
 	// DELETE /projects/{projectID}/tasks/{taskID}
 	DeleteTask(ctx context.Context, params DeleteTaskParams) (DeleteTaskRes, error)
-	// GetHealth implements getHealth operation.
+	// GetHealth implements GetHealth operation.
 	//
 	// サーバの状態を取得する.
 	//
 	// GET /health
 	GetHealth(ctx context.Context) (GetHealthRes, error)
-	// GetProjects implements getProjects operation.
+	// ListProjects implements ListProjects operation.
 	//
 	// 作成日時の降順で取得する。.
 	//
 	// GET /projects
-	GetProjects(ctx context.Context, params GetProjectsParams) (GetProjectsRes, error)
-	// GetTasks implements getTasks operation.
+	ListProjects(ctx context.Context, params ListProjectsParams) (ListProjectsRes, error)
+	// ListTasks implements ListTasks operation.
 	//
 	// 作成日時の降順で取得する。.
 	//
 	// GET /projects/{projectID}/tasks
-	GetTasks(ctx context.Context, params GetTasksParams) (GetTasksRes, error)
-	// PatchProject implements patchProject operation.
+	ListTasks(ctx context.Context, params ListTasksParams) (ListTasksRes, error)
+	// UpdateProject implements UpdateProject operation.
 	//
 	// プロジェクトを更新する.
 	//
 	// PATCH /projects/{projectID}
-	PatchProject(ctx context.Context, req *PatchProjectReq, params PatchProjectParams) (PatchProjectRes, error)
-	// PatchTask implements patchTask operation.
+	UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (UpdateProjectRes, error)
+	// UpdateTask implements UpdateTask operation.
 	//
 	// タスクを更新する.
 	//
 	// PATCH /projects/{projectID}/tasks/{taskID}
-	PatchTask(ctx context.Context, req *PatchTaskReq, params PatchTaskParams) (PatchTaskRes, error)
-	// PostProjects implements PostProjects operation.
-	//
-	// 新しいプロジェクトを作成する.
-	//
-	// POST /projects
-	PostProjects(ctx context.Context, req *PostProjectsReq, params PostProjectsParams) (PostProjectsRes, error)
-	// PostTasks implements PostTasks operation.
-	//
-	// 新しいタスクを作成する.
-	//
-	// POST /projects/{projectID}/tasks
-	PostTasks(ctx context.Context, req *PostTasksReq, params PostTasksParams) (PostTasksRes, error)
+	UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (UpdateTaskRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

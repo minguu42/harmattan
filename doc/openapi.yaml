@@ -17,7 +17,7 @@ paths:
       tags:
         - projects
       summary: 新しいプロジェクトを作成する
-      operationId: PostProjects
+      operationId: CreateProject
       requestBody:
         required: true
         content:
@@ -58,7 +58,7 @@ paths:
         - projects
       summary: プロジェクト一覧を取得する
       description: 作成日時の降順で取得する。
-      operationId: getProjects
+      operationId: ListProjects
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
@@ -93,7 +93,7 @@ paths:
       tags:
         - projects
       summary: プロジェクトを更新する
-      operationId: patchProject
+      operationId: UpdateProject
       requestBody:
         required: true
         content:
@@ -125,7 +125,7 @@ paths:
       tags:
         - projects
       summary: プロジェクトを削除する
-      operationId: deleteProject
+      operationId: DeleteProject
       responses:
         204:
           description: 成功
@@ -147,7 +147,7 @@ paths:
       tags:
         - tasks
       summary: 新しいタスクを作成する
-      operationId: PostTasks
+      operationId: CreateTask
       requestBody:
         required: true
         content:
@@ -190,7 +190,7 @@ paths:
         - tasks
       summary: タスク一覧を取得する
       description: 作成日時の降順で取得する。
-      operationId: getTasks
+      operationId: ListTasks
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
@@ -228,7 +228,7 @@ paths:
       tags:
         - tasks
       summary: タスクを更新する
-      operationId: patchTask
+      operationId: UpdateTask
       requestBody:
         required: true
         content:
@@ -259,7 +259,7 @@ paths:
       tags:
         - tasks
       summary: タスクを削除する
-      operationId: deleteTask
+      operationId: DeleteTask
       responses:
         204:
           description: 成功
@@ -278,7 +278,7 @@ paths:
       tags:
         - monitoring
       summary: サーバの状態を取得する
-      operationId: getHealth
+      operationId: GetHealth
       responses:
         200:
           description: 成功

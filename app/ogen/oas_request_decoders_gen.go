@@ -15,8 +15,8 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s *Server) decodePatchProjectRequest(r *http.Request) (
-	req *PatchProjectReq,
+func (s *Server) decodeCreateProjectRequest(r *http.Request) (
+	req *CreateProjectReq,
 	close func() error,
 	rerr error,
 ) {
@@ -55,7 +55,7 @@ func (s *Server) decodePatchProjectRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request PatchProjectReq
+		var request CreateProjectReq
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err
@@ -78,8 +78,8 @@ func (s *Server) decodePatchProjectRequest(r *http.Request) (
 	}
 }
 
-func (s *Server) decodePatchTaskRequest(r *http.Request) (
-	req *PatchTaskReq,
+func (s *Server) decodeCreateTaskRequest(r *http.Request) (
+	req *CreateTaskReq,
 	close func() error,
 	rerr error,
 ) {
@@ -118,7 +118,7 @@ func (s *Server) decodePatchTaskRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request PatchTaskReq
+		var request CreateTaskReq
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err
@@ -141,8 +141,8 @@ func (s *Server) decodePatchTaskRequest(r *http.Request) (
 	}
 }
 
-func (s *Server) decodePostProjectsRequest(r *http.Request) (
-	req *PostProjectsReq,
+func (s *Server) decodeUpdateProjectRequest(r *http.Request) (
+	req *UpdateProjectReq,
 	close func() error,
 	rerr error,
 ) {
@@ -181,7 +181,7 @@ func (s *Server) decodePostProjectsRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request PostProjectsReq
+		var request UpdateProjectReq
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err
@@ -204,8 +204,8 @@ func (s *Server) decodePostProjectsRequest(r *http.Request) (
 	}
 }
 
-func (s *Server) decodePostTasksRequest(r *http.Request) (
-	req *PostTasksReq,
+func (s *Server) decodeUpdateTaskRequest(r *http.Request) (
+	req *UpdateTaskReq,
 	close func() error,
 	rerr error,
 ) {
@@ -244,7 +244,7 @@ func (s *Server) decodePostTasksRequest(r *http.Request) (
 
 		d := jx.DecodeBytes(buf)
 
-		var request PostTasksReq
+		var request UpdateTaskReq
 		if err := func() error {
 			if err := request.Decode(d); err != nil {
 				return err

@@ -14,6 +14,184 @@ import (
 	"github.com/ogen-go/ogen/uri"
 )
 
+func encodeCreateProjectResponse(response CreateProjectRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *ProjectHeaders:
+		w.Header().Set("Content-Type", "application/json")
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "Location" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "Location",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					return e.EncodeValue(conv.URLToString(response.Location))
+				}); err != nil {
+					return errors.Wrap(err, "encode Location header")
+				}
+			}
+		}
+		w.WriteHeader(201)
+		span.SetStatus(codes.Ok, http.StatusText(201))
+
+		e := jx.GetEncoder()
+		response.Response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateProjectBadRequest:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateProjectUnauthorized:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateProjectInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateProjectNotImplemented:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(501)
+		span.SetStatus(codes.Error, http.StatusText(501))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
+func encodeCreateTaskResponse(response CreateTaskRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *TaskHeaders:
+		w.Header().Set("Content-Type", "application/json")
+		// Encoding response headers.
+		{
+			h := uri.NewHeaderEncoder(w.Header())
+			// Encode "Location" header.
+			{
+				cfg := uri.HeaderParameterEncodingConfig{
+					Name:    "Location",
+					Explode: false,
+				}
+				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+					return e.EncodeValue(conv.URLToString(response.Location))
+				}); err != nil {
+					return errors.Wrap(err, "encode Location header")
+				}
+			}
+		}
+		w.WriteHeader(201)
+		span.SetStatus(codes.Ok, http.StatusText(201))
+
+		e := jx.GetEncoder()
+		response.Response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateTaskBadRequest:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateTaskUnauthorized:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(401)
+		span.SetStatus(codes.Error, http.StatusText(401))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateTaskNotFound:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateTaskInternalServerError:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(500)
+		span.SetStatus(codes.Error, http.StatusText(500))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	case *CreateTaskNotImplemented:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(501)
+		span.SetStatus(codes.Error, http.StatusText(501))
+
+		e := jx.GetEncoder()
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
+}
+
 func encodeDeleteProjectResponse(response DeleteProjectRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *DeleteProjectNoContent:
@@ -203,7 +381,7 @@ func encodeGetHealthResponse(response GetHealthRes, w http.ResponseWriter, span 
 	}
 }
 
-func encodeGetProjectsResponse(response GetProjectsRes, w http.ResponseWriter, span trace.Span) error {
+func encodeListProjectsResponse(response ListProjectsRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Projects:
 		w.Header().Set("Content-Type", "application/json")
@@ -217,7 +395,7 @@ func encodeGetProjectsResponse(response GetProjectsRes, w http.ResponseWriter, s
 		}
 		return nil
 
-	case *GetProjectsBadRequest:
+	case *ListProjectsBadRequest:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
@@ -229,7 +407,7 @@ func encodeGetProjectsResponse(response GetProjectsRes, w http.ResponseWriter, s
 		}
 		return nil
 
-	case *GetProjectsUnauthorized:
+	case *ListProjectsUnauthorized:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
@@ -241,7 +419,7 @@ func encodeGetProjectsResponse(response GetProjectsRes, w http.ResponseWriter, s
 		}
 		return nil
 
-	case *GetProjectsInternalServerError:
+	case *ListProjectsInternalServerError:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
@@ -253,7 +431,7 @@ func encodeGetProjectsResponse(response GetProjectsRes, w http.ResponseWriter, s
 		}
 		return nil
 
-	case *GetProjectsNotImplemented:
+	case *ListProjectsNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
 		span.SetStatus(codes.Error, http.StatusText(501))
@@ -270,7 +448,7 @@ func encodeGetProjectsResponse(response GetProjectsRes, w http.ResponseWriter, s
 	}
 }
 
-func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span trace.Span) error {
+func encodeListTasksResponse(response ListTasksRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Tasks:
 		w.Header().Set("Content-Type", "application/json")
@@ -284,7 +462,7 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 		}
 		return nil
 
-	case *GetTasksBadRequest:
+	case *ListTasksBadRequest:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
@@ -296,7 +474,7 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 		}
 		return nil
 
-	case *GetTasksUnauthorized:
+	case *ListTasksUnauthorized:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
@@ -308,7 +486,7 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 		}
 		return nil
 
-	case *GetTasksNotFound:
+	case *ListTasksNotFound:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
@@ -320,7 +498,7 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 		}
 		return nil
 
-	case *GetTasksInternalServerError:
+	case *ListTasksInternalServerError:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
@@ -332,7 +510,7 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 		}
 		return nil
 
-	case *GetTasksNotImplemented:
+	case *ListTasksNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
 		span.SetStatus(codes.Error, http.StatusText(501))
@@ -349,7 +527,7 @@ func encodeGetTasksResponse(response GetTasksRes, w http.ResponseWriter, span tr
 	}
 }
 
-func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter, span trace.Span) error {
+func encodeUpdateProjectResponse(response UpdateProjectRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Project:
 		w.Header().Set("Content-Type", "application/json")
@@ -363,7 +541,7 @@ func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter,
 		}
 		return nil
 
-	case *PatchProjectBadRequest:
+	case *UpdateProjectBadRequest:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
@@ -375,7 +553,7 @@ func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter,
 		}
 		return nil
 
-	case *PatchProjectUnauthorized:
+	case *UpdateProjectUnauthorized:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
@@ -387,7 +565,7 @@ func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter,
 		}
 		return nil
 
-	case *PatchProjectNotFound:
+	case *UpdateProjectNotFound:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
@@ -399,7 +577,7 @@ func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter,
 		}
 		return nil
 
-	case *PatchProjectInternalServerError:
+	case *UpdateProjectInternalServerError:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
@@ -411,7 +589,7 @@ func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter,
 		}
 		return nil
 
-	case *PatchProjectNotImplemented:
+	case *UpdateProjectNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
 		span.SetStatus(codes.Error, http.StatusText(501))
@@ -428,7 +606,7 @@ func encodePatchProjectResponse(response PatchProjectRes, w http.ResponseWriter,
 	}
 }
 
-func encodePatchTaskResponse(response PatchTaskRes, w http.ResponseWriter, span trace.Span) error {
+func encodeUpdateTaskResponse(response UpdateTaskRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
 	case *Task:
 		w.Header().Set("Content-Type", "application/json")
@@ -442,7 +620,7 @@ func encodePatchTaskResponse(response PatchTaskRes, w http.ResponseWriter, span 
 		}
 		return nil
 
-	case *PatchTaskBadRequest:
+	case *UpdateTaskBadRequest:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(400)
 		span.SetStatus(codes.Error, http.StatusText(400))
@@ -454,7 +632,7 @@ func encodePatchTaskResponse(response PatchTaskRes, w http.ResponseWriter, span 
 		}
 		return nil
 
-	case *PatchTaskUnauthorized:
+	case *UpdateTaskUnauthorized:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(401)
 		span.SetStatus(codes.Error, http.StatusText(401))
@@ -466,7 +644,7 @@ func encodePatchTaskResponse(response PatchTaskRes, w http.ResponseWriter, span 
 		}
 		return nil
 
-	case *PatchTaskNotFound:
+	case *UpdateTaskNotFound:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(404)
 		span.SetStatus(codes.Error, http.StatusText(404))
@@ -478,7 +656,7 @@ func encodePatchTaskResponse(response PatchTaskRes, w http.ResponseWriter, span 
 		}
 		return nil
 
-	case *PatchTaskInternalServerError:
+	case *UpdateTaskInternalServerError:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(500)
 		span.SetStatus(codes.Error, http.StatusText(500))
@@ -490,185 +668,7 @@ func encodePatchTaskResponse(response PatchTaskRes, w http.ResponseWriter, span 
 		}
 		return nil
 
-	case *PatchTaskNotImplemented:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(501)
-		span.SetStatus(codes.Error, http.StatusText(501))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	default:
-		return errors.Errorf("unexpected response type: %T", response)
-	}
-}
-
-func encodePostProjectsResponse(response PostProjectsRes, w http.ResponseWriter, span trace.Span) error {
-	switch response := response.(type) {
-	case *ProjectHeaders:
-		w.Header().Set("Content-Type", "application/json")
-		// Encoding response headers.
-		{
-			h := uri.NewHeaderEncoder(w.Header())
-			// Encode "Location" header.
-			{
-				cfg := uri.HeaderParameterEncodingConfig{
-					Name:    "Location",
-					Explode: false,
-				}
-				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
-					return e.EncodeValue(conv.URLToString(response.Location))
-				}); err != nil {
-					return errors.Wrap(err, "encode Location header")
-				}
-			}
-		}
-		w.WriteHeader(201)
-		span.SetStatus(codes.Ok, http.StatusText(201))
-
-		e := jx.GetEncoder()
-		response.Response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostProjectsBadRequest:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostProjectsUnauthorized:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostProjectsInternalServerError:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(500)
-		span.SetStatus(codes.Error, http.StatusText(500))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostProjectsNotImplemented:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(501)
-		span.SetStatus(codes.Error, http.StatusText(501))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	default:
-		return errors.Errorf("unexpected response type: %T", response)
-	}
-}
-
-func encodePostTasksResponse(response PostTasksRes, w http.ResponseWriter, span trace.Span) error {
-	switch response := response.(type) {
-	case *TaskHeaders:
-		w.Header().Set("Content-Type", "application/json")
-		// Encoding response headers.
-		{
-			h := uri.NewHeaderEncoder(w.Header())
-			// Encode "Location" header.
-			{
-				cfg := uri.HeaderParameterEncodingConfig{
-					Name:    "Location",
-					Explode: false,
-				}
-				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
-					return e.EncodeValue(conv.URLToString(response.Location))
-				}); err != nil {
-					return errors.Wrap(err, "encode Location header")
-				}
-			}
-		}
-		w.WriteHeader(201)
-		span.SetStatus(codes.Ok, http.StatusText(201))
-
-		e := jx.GetEncoder()
-		response.Response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostTasksBadRequest:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-		span.SetStatus(codes.Error, http.StatusText(400))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostTasksUnauthorized:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(401)
-		span.SetStatus(codes.Error, http.StatusText(401))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostTasksNotFound:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(404)
-		span.SetStatus(codes.Error, http.StatusText(404))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostTasksInternalServerError:
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(500)
-		span.SetStatus(codes.Error, http.StatusText(500))
-
-		e := jx.GetEncoder()
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
-		return nil
-
-	case *PostTasksNotImplemented:
+	case *UpdateTaskNotImplemented:
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(501)
 		span.SetStatus(codes.Error, http.StatusText(501))

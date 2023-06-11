@@ -13,7 +13,25 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// DeleteProject implements deleteProject operation.
+// CreateProject implements CreateProject operation.
+//
+// 新しいプロジェクトを作成する.
+//
+// POST /projects
+func (UnimplementedHandler) CreateProject(ctx context.Context, req *CreateProjectReq, params CreateProjectParams) (r CreateProjectRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// CreateTask implements CreateTask operation.
+//
+// 新しいタスクを作成する.
+//
+// POST /projects/{projectID}/tasks
+func (UnimplementedHandler) CreateTask(ctx context.Context, req *CreateTaskReq, params CreateTaskParams) (r CreateTaskRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// DeleteProject implements DeleteProject operation.
 //
 // プロジェクトを削除する.
 //
@@ -22,7 +40,7 @@ func (UnimplementedHandler) DeleteProject(ctx context.Context, params DeleteProj
 	return r, ht.ErrNotImplemented
 }
 
-// DeleteTask implements deleteTask operation.
+// DeleteTask implements DeleteTask operation.
 //
 // タスクを削除する.
 //
@@ -31,7 +49,7 @@ func (UnimplementedHandler) DeleteTask(ctx context.Context, params DeleteTaskPar
 	return r, ht.ErrNotImplemented
 }
 
-// GetHealth implements getHealth operation.
+// GetHealth implements GetHealth operation.
 //
 // サーバの状態を取得する.
 //
@@ -40,56 +58,38 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) (r GetHealthRes, _ er
 	return r, ht.ErrNotImplemented
 }
 
-// GetProjects implements getProjects operation.
+// ListProjects implements ListProjects operation.
 //
 // 作成日時の降順で取得する。.
 //
 // GET /projects
-func (UnimplementedHandler) GetProjects(ctx context.Context, params GetProjectsParams) (r GetProjectsRes, _ error) {
+func (UnimplementedHandler) ListProjects(ctx context.Context, params ListProjectsParams) (r ListProjectsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// GetTasks implements getTasks operation.
+// ListTasks implements ListTasks operation.
 //
 // 作成日時の降順で取得する。.
 //
 // GET /projects/{projectID}/tasks
-func (UnimplementedHandler) GetTasks(ctx context.Context, params GetTasksParams) (r GetTasksRes, _ error) {
+func (UnimplementedHandler) ListTasks(ctx context.Context, params ListTasksParams) (r ListTasksRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// PatchProject implements patchProject operation.
+// UpdateProject implements UpdateProject operation.
 //
 // プロジェクトを更新する.
 //
 // PATCH /projects/{projectID}
-func (UnimplementedHandler) PatchProject(ctx context.Context, req *PatchProjectReq, params PatchProjectParams) (r PatchProjectRes, _ error) {
+func (UnimplementedHandler) UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (r UpdateProjectRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// PatchTask implements patchTask operation.
+// UpdateTask implements UpdateTask operation.
 //
 // タスクを更新する.
 //
 // PATCH /projects/{projectID}/tasks/{taskID}
-func (UnimplementedHandler) PatchTask(ctx context.Context, req *PatchTaskReq, params PatchTaskParams) (r PatchTaskRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// PostProjects implements PostProjects operation.
-//
-// 新しいプロジェクトを作成する.
-//
-// POST /projects
-func (UnimplementedHandler) PostProjects(ctx context.Context, req *PostProjectsReq, params PostProjectsParams) (r PostProjectsRes, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
-// PostTasks implements PostTasks operation.
-//
-// 新しいタスクを作成する.
-//
-// POST /projects/{projectID}/tasks
-func (UnimplementedHandler) PostTasks(ctx context.Context, req *PostTasksReq, params PostTasksParams) (r PostTasksRes, _ error) {
+func (UnimplementedHandler) UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (r UpdateTaskRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
