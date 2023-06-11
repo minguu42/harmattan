@@ -9,36 +9,17 @@ import (
 	"github.com/go-faster/jx"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
-
-	"github.com/ogen-go/ogen/conv"
-	"github.com/ogen-go/ogen/uri"
 )
 
 func encodeCreateProjectResponse(response CreateProjectRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *ProjectHeaders:
+	case *Project:
 		w.Header().Set("Content-Type", "application/json")
-		// Encoding response headers.
-		{
-			h := uri.NewHeaderEncoder(w.Header())
-			// Encode "Location" header.
-			{
-				cfg := uri.HeaderParameterEncodingConfig{
-					Name:    "Location",
-					Explode: false,
-				}
-				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
-					return e.EncodeValue(conv.URLToString(response.Location))
-				}); err != nil {
-					return errors.Wrap(err, "encode Location header")
-				}
-			}
-		}
 		w.WriteHeader(201)
 		span.SetStatus(codes.Ok, http.StatusText(201))
 
 		e := jx.GetEncoder()
-		response.Response.Encode(e)
+		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}
@@ -99,29 +80,13 @@ func encodeCreateProjectResponse(response CreateProjectRes, w http.ResponseWrite
 
 func encodeCreateTaskResponse(response CreateTaskRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *TaskHeaders:
+	case *Task:
 		w.Header().Set("Content-Type", "application/json")
-		// Encoding response headers.
-		{
-			h := uri.NewHeaderEncoder(w.Header())
-			// Encode "Location" header.
-			{
-				cfg := uri.HeaderParameterEncodingConfig{
-					Name:    "Location",
-					Explode: false,
-				}
-				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
-					return e.EncodeValue(conv.URLToString(response.Location))
-				}); err != nil {
-					return errors.Wrap(err, "encode Location header")
-				}
-			}
-		}
 		w.WriteHeader(201)
 		span.SetStatus(codes.Ok, http.StatusText(201))
 
 		e := jx.GetEncoder()
-		response.Response.Encode(e)
+		response.Encode(e)
 		if _, err := e.WriteTo(w); err != nil {
 			return errors.Wrap(err, "write")
 		}

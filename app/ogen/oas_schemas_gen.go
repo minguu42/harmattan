@@ -3,21 +3,20 @@
 package ogen
 
 import (
-	"net/url"
 	"time"
 
 	"github.com/go-faster/errors"
 )
 
-type CreateProjectBadRequest Error
+type CreateProjectBadRequest ErrorResponse
 
 func (*CreateProjectBadRequest) createProjectRes() {}
 
-type CreateProjectInternalServerError Error
+type CreateProjectInternalServerError ErrorResponse
 
 func (*CreateProjectInternalServerError) createProjectRes() {}
 
-type CreateProjectNotImplemented Error
+type CreateProjectNotImplemented ErrorResponse
 
 func (*CreateProjectNotImplemented) createProjectRes() {}
 
@@ -35,23 +34,23 @@ func (s *CreateProjectReq) SetName(val string) {
 	s.Name = val
 }
 
-type CreateProjectUnauthorized Error
+type CreateProjectUnauthorized ErrorResponse
 
 func (*CreateProjectUnauthorized) createProjectRes() {}
 
-type CreateTaskBadRequest Error
+type CreateTaskBadRequest ErrorResponse
 
 func (*CreateTaskBadRequest) createTaskRes() {}
 
-type CreateTaskInternalServerError Error
+type CreateTaskInternalServerError ErrorResponse
 
 func (*CreateTaskInternalServerError) createTaskRes() {}
 
-type CreateTaskNotFound Error
+type CreateTaskNotFound ErrorResponse
 
 func (*CreateTaskNotFound) createTaskRes() {}
 
-type CreateTaskNotImplemented Error
+type CreateTaskNotImplemented ErrorResponse
 
 func (*CreateTaskNotImplemented) createTaskRes() {}
 
@@ -69,15 +68,15 @@ func (s *CreateTaskReq) SetTitle(val string) {
 	s.Title = val
 }
 
-type CreateTaskUnauthorized Error
+type CreateTaskUnauthorized ErrorResponse
 
 func (*CreateTaskUnauthorized) createTaskRes() {}
 
-type DeleteProjectBadRequest Error
+type DeleteProjectBadRequest ErrorResponse
 
 func (*DeleteProjectBadRequest) deleteProjectRes() {}
 
-type DeleteProjectInternalServerError Error
+type DeleteProjectInternalServerError ErrorResponse
 
 func (*DeleteProjectInternalServerError) deleteProjectRes() {}
 
@@ -86,23 +85,23 @@ type DeleteProjectNoContent struct{}
 
 func (*DeleteProjectNoContent) deleteProjectRes() {}
 
-type DeleteProjectNotFound Error
+type DeleteProjectNotFound ErrorResponse
 
 func (*DeleteProjectNotFound) deleteProjectRes() {}
 
-type DeleteProjectNotImplemented Error
+type DeleteProjectNotImplemented ErrorResponse
 
 func (*DeleteProjectNotImplemented) deleteProjectRes() {}
 
-type DeleteProjectUnauthorized Error
+type DeleteProjectUnauthorized ErrorResponse
 
 func (*DeleteProjectUnauthorized) deleteProjectRes() {}
 
-type DeleteTaskBadRequest Error
+type DeleteTaskBadRequest ErrorResponse
 
 func (*DeleteTaskBadRequest) deleteTaskRes() {}
 
-type DeleteTaskInternalServerError Error
+type DeleteTaskInternalServerError ErrorResponse
 
 func (*DeleteTaskInternalServerError) deleteTaskRes() {}
 
@@ -111,20 +110,19 @@ type DeleteTaskNoContent struct{}
 
 func (*DeleteTaskNoContent) deleteTaskRes() {}
 
-type DeleteTaskNotFound Error
+type DeleteTaskNotFound ErrorResponse
 
 func (*DeleteTaskNotFound) deleteTaskRes() {}
 
-type DeleteTaskNotImplemented Error
+type DeleteTaskNotImplemented ErrorResponse
 
 func (*DeleteTaskNotImplemented) deleteTaskRes() {}
 
-type DeleteTaskUnauthorized Error
+type DeleteTaskUnauthorized ErrorResponse
 
 func (*DeleteTaskUnauthorized) deleteTaskRes() {}
 
-// Ref: #/components/schemas/error
-type Error struct {
+type ErrorResponse struct {
 	// ユーザ向けの大まかなエラーの説明.
 	Message string `json:"message"`
 	// 開発者向けの詳細なエラーの説明.
@@ -132,26 +130,26 @@ type Error struct {
 }
 
 // GetMessage returns the value of Message.
-func (s *Error) GetMessage() string {
+func (s *ErrorResponse) GetMessage() string {
 	return s.Message
 }
 
 // GetDebug returns the value of Debug.
-func (s *Error) GetDebug() string {
+func (s *ErrorResponse) GetDebug() string {
 	return s.Debug
 }
 
 // SetMessage sets the value of Message.
-func (s *Error) SetMessage(val string) {
+func (s *ErrorResponse) SetMessage(val string) {
 	s.Message = val
 }
 
 // SetDebug sets the value of Debug.
-func (s *Error) SetDebug(val string) {
+func (s *ErrorResponse) SetDebug(val string) {
 	s.Debug = val
 }
 
-type GetHealthNotImplemented Error
+type GetHealthNotImplemented ErrorResponse
 
 func (*GetHealthNotImplemented) getHealthRes() {}
 
@@ -184,7 +182,7 @@ func (s *GetHealthOK) SetRevision(val string) {
 
 func (*GetHealthOK) getHealthRes() {}
 
-type GetHealthServiceUnavailable Error
+type GetHealthServiceUnavailable ErrorResponse
 
 func (*GetHealthServiceUnavailable) getHealthRes() {}
 
@@ -202,15 +200,15 @@ func (s *IsAuthorized) SetAPIKey(val string) {
 	s.APIKey = val
 }
 
-type ListProjectsBadRequest Error
+type ListProjectsBadRequest ErrorResponse
 
 func (*ListProjectsBadRequest) listProjectsRes() {}
 
-type ListProjectsInternalServerError Error
+type ListProjectsInternalServerError ErrorResponse
 
 func (*ListProjectsInternalServerError) listProjectsRes() {}
 
-type ListProjectsNotImplemented Error
+type ListProjectsNotImplemented ErrorResponse
 
 func (*ListProjectsNotImplemented) listProjectsRes() {}
 
@@ -247,23 +245,23 @@ func (s *ListProjectsSort) UnmarshalText(data []byte) error {
 	}
 }
 
-type ListProjectsUnauthorized Error
+type ListProjectsUnauthorized ErrorResponse
 
 func (*ListProjectsUnauthorized) listProjectsRes() {}
 
-type ListTasksBadRequest Error
+type ListTasksBadRequest ErrorResponse
 
 func (*ListTasksBadRequest) listTasksRes() {}
 
-type ListTasksInternalServerError Error
+type ListTasksInternalServerError ErrorResponse
 
 func (*ListTasksInternalServerError) listTasksRes() {}
 
-type ListTasksNotFound Error
+type ListTasksNotFound ErrorResponse
 
 func (*ListTasksNotFound) listTasksRes() {}
 
-type ListTasksNotImplemented Error
+type ListTasksNotImplemented ErrorResponse
 
 func (*ListTasksNotImplemented) listTasksRes() {}
 
@@ -300,7 +298,7 @@ func (s *ListTasksSort) UnmarshalText(data []byte) error {
 	}
 }
 
-type ListTasksUnauthorized Error
+type ListTasksUnauthorized ErrorResponse
 
 func (*ListTasksUnauthorized) listTasksRes() {}
 
@@ -580,7 +578,7 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// Ref: #/components/schemas/project
+// Ref: #/components/schemas/Project
 type Project struct {
 	// プロジェクトID.
 	ID int64 `json:"id"`
@@ -632,37 +630,10 @@ func (s *Project) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
+func (*Project) createProjectRes() {}
 func (*Project) updateProjectRes() {}
 
-// ProjectHeaders wraps Project with response headers.
-type ProjectHeaders struct {
-	Location url.URL
-	Response Project
-}
-
-// GetLocation returns the value of Location.
-func (s *ProjectHeaders) GetLocation() url.URL {
-	return s.Location
-}
-
-// GetResponse returns the value of Response.
-func (s *ProjectHeaders) GetResponse() Project {
-	return s.Response
-}
-
-// SetLocation sets the value of Location.
-func (s *ProjectHeaders) SetLocation(val url.URL) {
-	s.Location = val
-}
-
-// SetResponse sets the value of Response.
-func (s *ProjectHeaders) SetResponse(val Project) {
-	s.Response = val
-}
-
-func (*ProjectHeaders) createProjectRes() {}
-
-// Ref: #/components/schemas/projects
+// Ref: #/components/schemas/Projects
 type Projects struct {
 	// プロジェクト一覧.
 	Projects []Project `json:"projects"`
@@ -680,7 +651,7 @@ func (s *Projects) SetProjects(val []Project) {
 
 func (*Projects) listProjectsRes() {}
 
-// Ref: #/components/schemas/task
+// Ref: #/components/schemas/Task
 type Task struct {
 	// タスクID.
 	ID int64 `json:"id"`
@@ -756,37 +727,10 @@ func (s *Task) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
+func (*Task) createTaskRes() {}
 func (*Task) updateTaskRes() {}
 
-// TaskHeaders wraps Task with response headers.
-type TaskHeaders struct {
-	Location url.URL
-	Response Task
-}
-
-// GetLocation returns the value of Location.
-func (s *TaskHeaders) GetLocation() url.URL {
-	return s.Location
-}
-
-// GetResponse returns the value of Response.
-func (s *TaskHeaders) GetResponse() Task {
-	return s.Response
-}
-
-// SetLocation sets the value of Location.
-func (s *TaskHeaders) SetLocation(val url.URL) {
-	s.Location = val
-}
-
-// SetResponse sets the value of Response.
-func (s *TaskHeaders) SetResponse(val Task) {
-	s.Response = val
-}
-
-func (*TaskHeaders) createTaskRes() {}
-
-// Ref: #/components/schemas/tasks
+// Ref: #/components/schemas/Tasks
 type Tasks struct {
 	// タスク一覧.
 	Tasks []Task `json:"tasks"`
@@ -804,19 +748,19 @@ func (s *Tasks) SetTasks(val []Task) {
 
 func (*Tasks) listTasksRes() {}
 
-type UpdateProjectBadRequest Error
+type UpdateProjectBadRequest ErrorResponse
 
 func (*UpdateProjectBadRequest) updateProjectRes() {}
 
-type UpdateProjectInternalServerError Error
+type UpdateProjectInternalServerError ErrorResponse
 
 func (*UpdateProjectInternalServerError) updateProjectRes() {}
 
-type UpdateProjectNotFound Error
+type UpdateProjectNotFound ErrorResponse
 
 func (*UpdateProjectNotFound) updateProjectRes() {}
 
-type UpdateProjectNotImplemented Error
+type UpdateProjectNotImplemented ErrorResponse
 
 func (*UpdateProjectNotImplemented) updateProjectRes() {}
 
@@ -834,23 +778,23 @@ func (s *UpdateProjectReq) SetName(val OptString) {
 	s.Name = val
 }
 
-type UpdateProjectUnauthorized Error
+type UpdateProjectUnauthorized ErrorResponse
 
 func (*UpdateProjectUnauthorized) updateProjectRes() {}
 
-type UpdateTaskBadRequest Error
+type UpdateTaskBadRequest ErrorResponse
 
 func (*UpdateTaskBadRequest) updateTaskRes() {}
 
-type UpdateTaskInternalServerError Error
+type UpdateTaskInternalServerError ErrorResponse
 
 func (*UpdateTaskInternalServerError) updateTaskRes() {}
 
-type UpdateTaskNotFound Error
+type UpdateTaskNotFound ErrorResponse
 
 func (*UpdateTaskNotFound) updateTaskRes() {}
 
-type UpdateTaskNotImplemented Error
+type UpdateTaskNotImplemented ErrorResponse
 
 func (*UpdateTaskNotImplemented) updateTaskRes() {}
 
@@ -868,6 +812,6 @@ func (s *UpdateTaskReq) SetIsCompleted(val OptBool) {
 	s.IsCompleted = val
 }
 
-type UpdateTaskUnauthorized Error
+type UpdateTaskUnauthorized ErrorResponse
 
 func (*UpdateTaskUnauthorized) updateTaskRes() {}

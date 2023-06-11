@@ -2,12 +2,16 @@ openapi: 3.0.3
 
 info:
   title: mTasks API Specification
-  description: mTasks APIの仕様を定義するドキュメント
   version: v0.1.1
 
 servers:
   - url: http://localhost:8080/
     description: ローカル環境のAPIサーバ
+
+tags:
+  - name: projects
+  - name: tasks
+  - name: monitoring
 
 paths:
   /projects:
@@ -33,26 +37,18 @@ paths:
       responses:
         201:
           description: 成功
-          headers:
-            Location:
-              description: 新しく作成したプロジェクトへのURL
-              required: true
-              schema:
-                type: string
-                format: uri
-                example: http://localhost:8080/projects/1
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/project"
+                $ref: "#/components/schemas/Project"
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
     get:
       tags:
         - projects
@@ -72,21 +68,22 @@ paths:
             enum:
               - createdAt
               - -createdAt
+            default: -createdAt
       responses:
         200:
           description: 成功
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/projects"
+                $ref: "#/components/schemas/Projects"
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
   /projects/{projectID}:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -113,17 +110,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/project"
+                $ref: "#/components/schemas/Project"
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         404:
-          $ref: "#/components/responses/NotFoundError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
     delete:
       tags:
         - projects
@@ -135,15 +132,15 @@ paths:
         204:
           description: 成功
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         404:
-          $ref: "#/components/responses/NotFoundError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
   /projects/{projectID}/tasks:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -169,28 +166,20 @@ paths:
       responses:
         201:
           description: 成功
-          headers:
-            Location:
-              description: 新しく作成したタスクへのURL
-              required: true
-              schema:
-                type: string
-                format: uri
-                example: http://localhost:8080/tasks/1
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/task"
+                $ref: "#/components/schemas/Task"
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         404:
-          $ref: "#/components/responses/NotFoundError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
     get:
       tags:
         - tasks
@@ -216,17 +205,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/tasks"
+                $ref: "#/components/schemas/Tasks"
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         404:
-          $ref: "#/components/responses/NotFoundError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
   /projects/{projectID}/tasks/{taskID}:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -253,17 +242,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/task"
+                $ref: "#/components/schemas/Task"
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         404:
-          $ref: "#/components/responses/NotFoundError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
     delete:
       tags:
         - tasks
@@ -275,15 +264,15 @@ paths:
         204:
           description: 成功
         400:
-          $ref: "#/components/responses/BadRequestError"
+          $ref: "#/components/responses/ErrorResponse"
         401:
-          $ref: "#/components/responses/UnauthorizedError"
+          $ref: "#/components/responses/ErrorResponse"
         404:
-          $ref: "#/components/responses/NotFoundError"
+          $ref: "#/components/responses/ErrorResponse"
         500:
-          $ref: "#/components/responses/InternalServerError"
+          $ref: "#/components/responses/ErrorResponse"
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
   /health:
     get:
       tags:
@@ -311,19 +300,14 @@ paths:
                     type: string
                     example: a1b2c3d
         501:
-          $ref: "#/components/responses/NotImplementedError"
+          $ref: "#/components/responses/ErrorResponse"
         503:
-          $ref: "#/components/responses/ServerUnavailableError"
+          $ref: "#/components/responses/ErrorResponse"
 
 components:
   schemas:
-    project:
+    Project:
       type: object
-      required:
-        - id
-        - name
-        - createdAt
-        - updatedAt
       properties:
         id:
           description: プロジェクトID
@@ -342,24 +326,23 @@ components:
           description: 更新日時
           type: string
           format: date-time
-    projects:
-      type: object
       required:
-        - projects
+        - id
+        - name
+        - createdAt
+        - updatedAt
+    Projects:
+      type: object
       properties:
         projects:
           description: プロジェクト一覧
           type: array
           items:
-            $ref: "#/components/schemas/project"
-    task:
-      type: object
+            $ref: "#/components/schemas/Project"
       required:
-        - id
-        - project_id
-        - title
-        - createdAt
-        - updatedAt
+        - projects
+    Task:
+      type: object
       properties:
         id:
           description: タスクID
@@ -387,28 +370,22 @@ components:
           description: 更新日時
           type: string
           format: date-time
-    tasks:
-      type: object
       required:
-        - tasks
+        - id
+        - project_id
+        - title
+        - createdAt
+        - updatedAt
+    Tasks:
+      type: object
       properties:
         tasks:
           description: タスク一覧
           type: array
           items:
-            $ref: "#/components/schemas/task"
-    error:
-      type: object
+            $ref: "#/components/schemas/Task"
       required:
-        - message
-        - debug
-      properties:
-        message:
-          description: ユーザ向けの大まかなエラーの説明
-          type: string
-        debug:
-          description: 開発者向けの詳細なエラーの説明
-          type: string
+        - tasks
   parameters:
     limit:
       name: limit
@@ -444,52 +421,24 @@ components:
         format: int64
         minimum: 1
   responses:
-    BadRequestError:
-      description: リクエストに何らかの間違いがあります。
+    ErrorResponse:
+      description: エラー時のレスポンスボディ
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/error"
-    UnauthorizedError:
-      description: ユーザの認証に失敗しました。
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/error"
-    NotFoundError:
-      description: 指定されたリソースは存在しません。
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/error"
-    InternalServerError:
-      description: サーバで何らかのエラーが発生しました。もう一度お試しください。
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/error"
-    NotImplementedError:
-      description: この機能はもうすぐ使用できます。お楽しみに♪
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/error"
-    ServerUnavailableError:
-      description: サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/error"
+            type: object
+            properties:
+              message:
+                description: ユーザ向けの大まかなエラーの説明
+                type: string
+              debug:
+                description: 開発者向けの詳細なエラーの説明
+                type: string
+            required:
+              - message
+              - debug
   securitySchemes:
     isAuthorized:
       type: apiKey
       name: X-Api-Key
       in: header
-
-tags:
-  - name: projects
-    description: プロジェクトに関するオペレーション
-  - name: tasks
-    description: タスクに関するオペレーション
-  - name: monitoring
-    description: サーバ監視に関するオペレーション

@@ -16,7 +16,7 @@ import (
 
 // Encode encodes CreateProjectBadRequest as json.
 func (s *CreateProjectBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -26,7 +26,7 @@ func (s *CreateProjectBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateProjectBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -54,7 +54,7 @@ func (s *CreateProjectBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateProjectInternalServerError as json.
 func (s *CreateProjectInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -64,7 +64,7 @@ func (s *CreateProjectInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateProjectInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -92,7 +92,7 @@ func (s *CreateProjectInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateProjectNotImplemented as json.
 func (s *CreateProjectNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -102,7 +102,7 @@ func (s *CreateProjectNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateProjectNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -226,7 +226,7 @@ func (s *CreateProjectReq) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateProjectUnauthorized as json.
 func (s *CreateProjectUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -236,7 +236,7 @@ func (s *CreateProjectUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateProjectUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -264,7 +264,7 @@ func (s *CreateProjectUnauthorized) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateTaskBadRequest as json.
 func (s *CreateTaskBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -274,7 +274,7 @@ func (s *CreateTaskBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateTaskBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -302,7 +302,7 @@ func (s *CreateTaskBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateTaskInternalServerError as json.
 func (s *CreateTaskInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -312,7 +312,7 @@ func (s *CreateTaskInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateTaskInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -340,7 +340,7 @@ func (s *CreateTaskInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateTaskNotFound as json.
 func (s *CreateTaskNotFound) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -350,7 +350,7 @@ func (s *CreateTaskNotFound) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateTaskNotFound to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -378,7 +378,7 @@ func (s *CreateTaskNotFound) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateTaskNotImplemented as json.
 func (s *CreateTaskNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -388,7 +388,7 @@ func (s *CreateTaskNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateTaskNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -512,7 +512,7 @@ func (s *CreateTaskReq) UnmarshalJSON(data []byte) error {
 
 // Encode encodes CreateTaskUnauthorized as json.
 func (s *CreateTaskUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -522,7 +522,7 @@ func (s *CreateTaskUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateTaskUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -550,7 +550,7 @@ func (s *CreateTaskUnauthorized) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteProjectBadRequest as json.
 func (s *DeleteProjectBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -560,7 +560,7 @@ func (s *DeleteProjectBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteProjectBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -588,7 +588,7 @@ func (s *DeleteProjectBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteProjectInternalServerError as json.
 func (s *DeleteProjectInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -598,7 +598,7 @@ func (s *DeleteProjectInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteProjectInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -626,7 +626,7 @@ func (s *DeleteProjectInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteProjectNotFound as json.
 func (s *DeleteProjectNotFound) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -636,7 +636,7 @@ func (s *DeleteProjectNotFound) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteProjectNotFound to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -664,7 +664,7 @@ func (s *DeleteProjectNotFound) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteProjectNotImplemented as json.
 func (s *DeleteProjectNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -674,7 +674,7 @@ func (s *DeleteProjectNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteProjectNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -702,7 +702,7 @@ func (s *DeleteProjectNotImplemented) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteProjectUnauthorized as json.
 func (s *DeleteProjectUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -712,7 +712,7 @@ func (s *DeleteProjectUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteProjectUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -740,7 +740,7 @@ func (s *DeleteProjectUnauthorized) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteTaskBadRequest as json.
 func (s *DeleteTaskBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -750,7 +750,7 @@ func (s *DeleteTaskBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteTaskBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -778,7 +778,7 @@ func (s *DeleteTaskBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteTaskInternalServerError as json.
 func (s *DeleteTaskInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -788,7 +788,7 @@ func (s *DeleteTaskInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteTaskInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -816,7 +816,7 @@ func (s *DeleteTaskInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteTaskNotFound as json.
 func (s *DeleteTaskNotFound) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -826,7 +826,7 @@ func (s *DeleteTaskNotFound) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteTaskNotFound to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -854,7 +854,7 @@ func (s *DeleteTaskNotFound) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteTaskNotImplemented as json.
 func (s *DeleteTaskNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -864,7 +864,7 @@ func (s *DeleteTaskNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteTaskNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -892,7 +892,7 @@ func (s *DeleteTaskNotImplemented) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DeleteTaskUnauthorized as json.
 func (s *DeleteTaskUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -902,7 +902,7 @@ func (s *DeleteTaskUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DeleteTaskUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -929,14 +929,14 @@ func (s *DeleteTaskUnauthorized) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *Error) Encode(e *jx.Encoder) {
+func (s *ErrorResponse) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *Error) encodeFields(e *jx.Encoder) {
+func (s *ErrorResponse) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("message")
 		e.Str(s.Message)
@@ -947,15 +947,15 @@ func (s *Error) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfError = [2]string{
+var jsonFieldsNameOfErrorResponse = [2]string{
 	0: "message",
 	1: "debug",
 }
 
-// Decode decodes Error from json.
-func (s *Error) Decode(d *jx.Decoder) error {
+// Decode decodes ErrorResponse from json.
+func (s *ErrorResponse) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode Error to nil")
+		return errors.New("invalid: unable to decode ErrorResponse to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -990,7 +990,7 @@ func (s *Error) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode Error")
+		return errors.Wrap(err, "decode ErrorResponse")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -1007,8 +1007,8 @@ func (s *Error) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfError) {
-					name = jsonFieldsNameOfError[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfErrorResponse) {
+					name = jsonFieldsNameOfErrorResponse[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1029,21 +1029,21 @@ func (s *Error) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *Error) MarshalJSON() ([]byte, error) {
+func (s *ErrorResponse) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *Error) UnmarshalJSON(data []byte) error {
+func (s *ErrorResponse) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
 
 // Encode encodes GetHealthNotImplemented as json.
 func (s *GetHealthNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1053,7 +1053,7 @@ func (s *GetHealthNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode GetHealthNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1194,7 +1194,7 @@ func (s *GetHealthOK) UnmarshalJSON(data []byte) error {
 
 // Encode encodes GetHealthServiceUnavailable as json.
 func (s *GetHealthServiceUnavailable) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1204,7 +1204,7 @@ func (s *GetHealthServiceUnavailable) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode GetHealthServiceUnavailable to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1232,7 +1232,7 @@ func (s *GetHealthServiceUnavailable) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListProjectsBadRequest as json.
 func (s *ListProjectsBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1242,7 +1242,7 @@ func (s *ListProjectsBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListProjectsBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1270,7 +1270,7 @@ func (s *ListProjectsBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListProjectsInternalServerError as json.
 func (s *ListProjectsInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1280,7 +1280,7 @@ func (s *ListProjectsInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListProjectsInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1308,7 +1308,7 @@ func (s *ListProjectsInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListProjectsNotImplemented as json.
 func (s *ListProjectsNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1318,7 +1318,7 @@ func (s *ListProjectsNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListProjectsNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1346,7 +1346,7 @@ func (s *ListProjectsNotImplemented) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListProjectsUnauthorized as json.
 func (s *ListProjectsUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1356,7 +1356,7 @@ func (s *ListProjectsUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListProjectsUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1384,7 +1384,7 @@ func (s *ListProjectsUnauthorized) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListTasksBadRequest as json.
 func (s *ListTasksBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1394,7 +1394,7 @@ func (s *ListTasksBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListTasksBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1422,7 +1422,7 @@ func (s *ListTasksBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListTasksInternalServerError as json.
 func (s *ListTasksInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1432,7 +1432,7 @@ func (s *ListTasksInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListTasksInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1460,7 +1460,7 @@ func (s *ListTasksInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListTasksNotFound as json.
 func (s *ListTasksNotFound) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1470,7 +1470,7 @@ func (s *ListTasksNotFound) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListTasksNotFound to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1498,7 +1498,7 @@ func (s *ListTasksNotFound) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListTasksNotImplemented as json.
 func (s *ListTasksNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1508,7 +1508,7 @@ func (s *ListTasksNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListTasksNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -1536,7 +1536,7 @@ func (s *ListTasksNotImplemented) UnmarshalJSON(data []byte) error {
 
 // Encode encodes ListTasksUnauthorized as json.
 func (s *ListTasksUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -1546,7 +1546,7 @@ func (s *ListTasksUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode ListTasksUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2219,7 +2219,7 @@ func (s *Tasks) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateProjectBadRequest as json.
 func (s *UpdateProjectBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2229,7 +2229,7 @@ func (s *UpdateProjectBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateProjectBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2257,7 +2257,7 @@ func (s *UpdateProjectBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateProjectInternalServerError as json.
 func (s *UpdateProjectInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2267,7 +2267,7 @@ func (s *UpdateProjectInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateProjectInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2295,7 +2295,7 @@ func (s *UpdateProjectInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateProjectNotFound as json.
 func (s *UpdateProjectNotFound) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2305,7 +2305,7 @@ func (s *UpdateProjectNotFound) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateProjectNotFound to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2333,7 +2333,7 @@ func (s *UpdateProjectNotFound) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateProjectNotImplemented as json.
 func (s *UpdateProjectNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2343,7 +2343,7 @@ func (s *UpdateProjectNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateProjectNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2434,7 +2434,7 @@ func (s *UpdateProjectReq) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateProjectUnauthorized as json.
 func (s *UpdateProjectUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2444,7 +2444,7 @@ func (s *UpdateProjectUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateProjectUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2472,7 +2472,7 @@ func (s *UpdateProjectUnauthorized) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateTaskBadRequest as json.
 func (s *UpdateTaskBadRequest) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2482,7 +2482,7 @@ func (s *UpdateTaskBadRequest) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateTaskBadRequest to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2510,7 +2510,7 @@ func (s *UpdateTaskBadRequest) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateTaskInternalServerError as json.
 func (s *UpdateTaskInternalServerError) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2520,7 +2520,7 @@ func (s *UpdateTaskInternalServerError) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateTaskInternalServerError to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2548,7 +2548,7 @@ func (s *UpdateTaskInternalServerError) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateTaskNotFound as json.
 func (s *UpdateTaskNotFound) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2558,7 +2558,7 @@ func (s *UpdateTaskNotFound) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateTaskNotFound to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2586,7 +2586,7 @@ func (s *UpdateTaskNotFound) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateTaskNotImplemented as json.
 func (s *UpdateTaskNotImplemented) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2596,7 +2596,7 @@ func (s *UpdateTaskNotImplemented) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateTaskNotImplemented to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err
@@ -2687,7 +2687,7 @@ func (s *UpdateTaskReq) UnmarshalJSON(data []byte) error {
 
 // Encode encodes UpdateTaskUnauthorized as json.
 func (s *UpdateTaskUnauthorized) Encode(e *jx.Encoder) {
-	unwrapped := (*Error)(s)
+	unwrapped := (*ErrorResponse)(s)
 
 	unwrapped.Encode(e)
 }
@@ -2697,7 +2697,7 @@ func (s *UpdateTaskUnauthorized) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode UpdateTaskUnauthorized to nil")
 	}
-	var unwrapped Error
+	var unwrapped ErrorResponse
 	if err := func() error {
 		if err := unwrapped.Decode(d); err != nil {
 			return err

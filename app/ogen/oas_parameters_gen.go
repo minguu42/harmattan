@@ -514,6 +514,11 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 			Err:  err,
 		}
 	}
+	// Set default value for query: sort.
+	{
+		val := ListProjectsSort("-createdAt")
+		params.Sort.SetTo(val)
+	}
 	// Decode query: sort.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{

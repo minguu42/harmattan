@@ -56,3 +56,12 @@ func NewServer(api *env.API, repository repository) (*http.Server, error) {
 		MaxHeaderBytes:    1 << 20,
 	}, nil
 }
+
+const (
+	messageBadRequest          = "入力に誤りがあります。今一度入力をご確認ください。"
+	messageUnauthorized        = "ユーザが認証されていません。ユーザの認証後にもう一度お試しください。"
+	messageNotFound            = "指定されたリソースが存在しません。"
+	messageInternalServerError = "不明なエラーが発生しました。もう一度お試しください。"
+	messageNotImplemented      = "この機能はもうすぐ使用できます。お楽しみに♪"
+	messageServerUnavailable   = "サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。"
+)

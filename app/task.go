@@ -16,12 +16,12 @@ type Task struct {
 }
 
 // newTaskResponse は Task から ogen.Task を生成する
-func newTaskResponse(t *Task) ogen.Task {
+func newTaskResponse(t *Task) *ogen.Task {
 	completedAt := ogen.OptDateTime{}
 	if t.CompletedAt != nil {
 		completedAt = ogen.NewOptDateTime(*t.CompletedAt)
 	}
-	return ogen.Task{
+	return &ogen.Task{
 		ID:          t.ID,
 		ProjectID:   t.ProjectID,
 		Title:       t.Title,
@@ -35,7 +35,7 @@ func newTaskResponse(t *Task) ogen.Task {
 func newTasksResponse(ts []*Task) []ogen.Task {
 	tasks := make([]ogen.Task, 0, len(ts))
 	for _, t := range ts {
-		tasks = append(tasks, newTaskResponse(t))
+		tasks = append(tasks, *newTaskResponse(t))
 	}
 	return tasks
 }
