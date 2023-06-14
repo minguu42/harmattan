@@ -412,7 +412,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 				return err
 			}
 			if err := func() error {
-				if params.Limit.Set {
+				if value, ok := params.Limit.Get(); ok {
 					if err := func() error {
 						if err := (validate.Int{
 							MinSet:        true,
@@ -423,7 +423,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
-						}).Validate(int64(params.Limit.Value)); err != nil {
+						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
 						return nil
@@ -482,7 +482,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 				return err
 			}
 			if err := func() error {
-				if params.Offset.Set {
+				if value, ok := params.Offset.Get(); ok {
 					if err := func() error {
 						if err := (validate.Int{
 							MinSet:        true,
@@ -493,7 +493,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
-						}).Validate(int64(params.Offset.Value)); err != nil {
+						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
 						return nil
@@ -552,9 +552,9 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 				return err
 			}
 			if err := func() error {
-				if params.Sort.Set {
+				if value, ok := params.Sort.Get(); ok {
 					if err := func() error {
-						if err := params.Sort.Value.Validate(); err != nil {
+						if err := value.Validate(); err != nil {
 							return err
 						}
 						return nil
@@ -667,7 +667,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 				return err
 			}
 			if err := func() error {
-				if params.Limit.Set {
+				if value, ok := params.Limit.Get(); ok {
 					if err := func() error {
 						if err := (validate.Int{
 							MinSet:        true,
@@ -678,7 +678,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
-						}).Validate(int64(params.Limit.Value)); err != nil {
+						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
 						return nil
@@ -737,7 +737,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 				return err
 			}
 			if err := func() error {
-				if params.Offset.Set {
+				if value, ok := params.Offset.Get(); ok {
 					if err := func() error {
 						if err := (validate.Int{
 							MinSet:        true,
@@ -748,7 +748,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
-						}).Validate(int64(params.Offset.Value)); err != nil {
+						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
 						return nil
@@ -768,6 +768,11 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 			In:   "query",
 			Err:  err,
 		}
+	}
+	// Set default value for query: sort.
+	{
+		val := ListTasksSort("-createdAt")
+		params.Sort.SetTo(val)
 	}
 	// Decode query: sort.
 	if err := func() error {
@@ -802,9 +807,9 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 				return err
 			}
 			if err := func() error {
-				if params.Sort.Set {
+				if value, ok := params.Sort.Get(); ok {
 					if err := func() error {
-						if err := params.Sort.Value.Validate(); err != nil {
+						if err := value.Validate(); err != nil {
 							return err
 						}
 						return nil
