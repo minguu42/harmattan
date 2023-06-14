@@ -10,6 +10,27 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+func (s ListProjectsSort) Validate() error {
+	switch s {
+	case "createdAt":
+		return nil
+	case "-createdAt":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+func (s ListTasksSort) Validate() error {
+	switch s {
+	case "createdAt":
+		return nil
+	case "-createdAt":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *Project) Validate() error {
 	var failures []validate.FieldError
 	if err := func() error {
@@ -29,24 +50,6 @@ func (s *Project) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "id",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-func (s *ProjectHeaders) Validate() error {
-	var failures []validate.FieldError
-	if err := func() error {
-		if err := s.Response.Validate(); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "Response",
 			Error: err,
 		})
 	}
@@ -129,24 +132,6 @@ func (s *Task) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "project_id",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-func (s *TaskHeaders) Validate() error {
-	var failures []validate.FieldError
-	if err := func() error {
-		if err := s.Response.Validate(); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "Response",
 			Error: err,
 		})
 	}

@@ -15,8 +15,8 @@ type Project struct {
 }
 
 // newProjectResponse は Project から ogen.Project を生成する
-func newProjectResponse(p *Project) ogen.Project {
-	return ogen.Project{
+func newProjectResponse(p *Project) *ogen.Project {
+	return &ogen.Project{
 		ID:        p.ID,
 		Name:      p.Name,
 		CreatedAt: p.CreatedAt,
@@ -28,7 +28,7 @@ func newProjectResponse(p *Project) ogen.Project {
 func newProjectsResponse(ps []*Project) []ogen.Project {
 	projects := make([]ogen.Project, 0, len(ps))
 	for _, p := range ps {
-		projects = append(projects, newProjectResponse(p))
+		projects = append(projects, *newProjectResponse(p))
 	}
 	return projects
 }

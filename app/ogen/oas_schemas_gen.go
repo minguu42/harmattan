@@ -3,15 +3,80 @@
 package ogen
 
 import (
-	"net/url"
 	"time"
+
+	"github.com/go-faster/errors"
 )
 
-type DeleteProjectBadRequest Error
+type CreateProjectBadRequest ErrorResponse
+
+func (*CreateProjectBadRequest) createProjectRes() {}
+
+type CreateProjectInternalServerError ErrorResponse
+
+func (*CreateProjectInternalServerError) createProjectRes() {}
+
+type CreateProjectNotImplemented ErrorResponse
+
+func (*CreateProjectNotImplemented) createProjectRes() {}
+
+type CreateProjectReq struct {
+	Name string `json:"name"`
+}
+
+// GetName returns the value of Name.
+func (s *CreateProjectReq) GetName() string {
+	return s.Name
+}
+
+// SetName sets the value of Name.
+func (s *CreateProjectReq) SetName(val string) {
+	s.Name = val
+}
+
+type CreateProjectUnauthorized ErrorResponse
+
+func (*CreateProjectUnauthorized) createProjectRes() {}
+
+type CreateTaskBadRequest ErrorResponse
+
+func (*CreateTaskBadRequest) createTaskRes() {}
+
+type CreateTaskInternalServerError ErrorResponse
+
+func (*CreateTaskInternalServerError) createTaskRes() {}
+
+type CreateTaskNotFound ErrorResponse
+
+func (*CreateTaskNotFound) createTaskRes() {}
+
+type CreateTaskNotImplemented ErrorResponse
+
+func (*CreateTaskNotImplemented) createTaskRes() {}
+
+type CreateTaskReq struct {
+	Title string `json:"title"`
+}
+
+// GetTitle returns the value of Title.
+func (s *CreateTaskReq) GetTitle() string {
+	return s.Title
+}
+
+// SetTitle sets the value of Title.
+func (s *CreateTaskReq) SetTitle(val string) {
+	s.Title = val
+}
+
+type CreateTaskUnauthorized ErrorResponse
+
+func (*CreateTaskUnauthorized) createTaskRes() {}
+
+type DeleteProjectBadRequest ErrorResponse
 
 func (*DeleteProjectBadRequest) deleteProjectRes() {}
 
-type DeleteProjectInternalServerError Error
+type DeleteProjectInternalServerError ErrorResponse
 
 func (*DeleteProjectInternalServerError) deleteProjectRes() {}
 
@@ -20,23 +85,23 @@ type DeleteProjectNoContent struct{}
 
 func (*DeleteProjectNoContent) deleteProjectRes() {}
 
-type DeleteProjectNotFound Error
+type DeleteProjectNotFound ErrorResponse
 
 func (*DeleteProjectNotFound) deleteProjectRes() {}
 
-type DeleteProjectNotImplemented Error
+type DeleteProjectNotImplemented ErrorResponse
 
 func (*DeleteProjectNotImplemented) deleteProjectRes() {}
 
-type DeleteProjectUnauthorized Error
+type DeleteProjectUnauthorized ErrorResponse
 
 func (*DeleteProjectUnauthorized) deleteProjectRes() {}
 
-type DeleteTaskBadRequest Error
+type DeleteTaskBadRequest ErrorResponse
 
 func (*DeleteTaskBadRequest) deleteTaskRes() {}
 
-type DeleteTaskInternalServerError Error
+type DeleteTaskInternalServerError ErrorResponse
 
 func (*DeleteTaskInternalServerError) deleteTaskRes() {}
 
@@ -45,20 +110,19 @@ type DeleteTaskNoContent struct{}
 
 func (*DeleteTaskNoContent) deleteTaskRes() {}
 
-type DeleteTaskNotFound Error
+type DeleteTaskNotFound ErrorResponse
 
 func (*DeleteTaskNotFound) deleteTaskRes() {}
 
-type DeleteTaskNotImplemented Error
+type DeleteTaskNotImplemented ErrorResponse
 
 func (*DeleteTaskNotImplemented) deleteTaskRes() {}
 
-type DeleteTaskUnauthorized Error
+type DeleteTaskUnauthorized ErrorResponse
 
 func (*DeleteTaskUnauthorized) deleteTaskRes() {}
 
-// Ref: #/components/schemas/error
-type Error struct {
+type ErrorResponse struct {
 	// ユーザ向けの大まかなエラーの説明.
 	Message string `json:"message"`
 	// 開発者向けの詳細なエラーの説明.
@@ -66,26 +130,26 @@ type Error struct {
 }
 
 // GetMessage returns the value of Message.
-func (s *Error) GetMessage() string {
+func (s *ErrorResponse) GetMessage() string {
 	return s.Message
 }
 
 // GetDebug returns the value of Debug.
-func (s *Error) GetDebug() string {
+func (s *ErrorResponse) GetDebug() string {
 	return s.Debug
 }
 
 // SetMessage sets the value of Message.
-func (s *Error) SetMessage(val string) {
+func (s *ErrorResponse) SetMessage(val string) {
 	s.Message = val
 }
 
 // SetDebug sets the value of Debug.
-func (s *Error) SetDebug(val string) {
+func (s *ErrorResponse) SetDebug(val string) {
 	s.Debug = val
 }
 
-type GetHealthNotImplemented Error
+type GetHealthNotImplemented ErrorResponse
 
 func (*GetHealthNotImplemented) getHealthRes() {}
 
@@ -118,45 +182,125 @@ func (s *GetHealthOK) SetRevision(val string) {
 
 func (*GetHealthOK) getHealthRes() {}
 
-type GetHealthServiceUnavailable Error
+type GetHealthServiceUnavailable ErrorResponse
 
 func (*GetHealthServiceUnavailable) getHealthRes() {}
 
-type GetProjectsBadRequest Error
+type IsAuthorized struct {
+	APIKey string
+}
 
-func (*GetProjectsBadRequest) getProjectsRes() {}
+// GetAPIKey returns the value of APIKey.
+func (s *IsAuthorized) GetAPIKey() string {
+	return s.APIKey
+}
 
-type GetProjectsInternalServerError Error
+// SetAPIKey sets the value of APIKey.
+func (s *IsAuthorized) SetAPIKey(val string) {
+	s.APIKey = val
+}
 
-func (*GetProjectsInternalServerError) getProjectsRes() {}
+type ListProjectsBadRequest ErrorResponse
 
-type GetProjectsNotImplemented Error
+func (*ListProjectsBadRequest) listProjectsRes() {}
 
-func (*GetProjectsNotImplemented) getProjectsRes() {}
+type ListProjectsInternalServerError ErrorResponse
 
-type GetProjectsUnauthorized Error
+func (*ListProjectsInternalServerError) listProjectsRes() {}
 
-func (*GetProjectsUnauthorized) getProjectsRes() {}
+type ListProjectsNotImplemented ErrorResponse
 
-type GetTasksBadRequest Error
+func (*ListProjectsNotImplemented) listProjectsRes() {}
 
-func (*GetTasksBadRequest) getTasksRes() {}
+type ListProjectsSort string
 
-type GetTasksInternalServerError Error
+const (
+	ListProjectsSortCreatedAt      ListProjectsSort = "createdAt"
+	ListProjectsSortMinusCreatedAt ListProjectsSort = "-createdAt"
+)
 
-func (*GetTasksInternalServerError) getTasksRes() {}
+// MarshalText implements encoding.TextMarshaler.
+func (s ListProjectsSort) MarshalText() ([]byte, error) {
+	switch s {
+	case ListProjectsSortCreatedAt:
+		return []byte(s), nil
+	case ListProjectsSortMinusCreatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
 
-type GetTasksNotFound Error
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListProjectsSort) UnmarshalText(data []byte) error {
+	switch ListProjectsSort(data) {
+	case ListProjectsSortCreatedAt:
+		*s = ListProjectsSortCreatedAt
+		return nil
+	case ListProjectsSortMinusCreatedAt:
+		*s = ListProjectsSortMinusCreatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
 
-func (*GetTasksNotFound) getTasksRes() {}
+type ListProjectsUnauthorized ErrorResponse
 
-type GetTasksNotImplemented Error
+func (*ListProjectsUnauthorized) listProjectsRes() {}
 
-func (*GetTasksNotImplemented) getTasksRes() {}
+type ListTasksBadRequest ErrorResponse
 
-type GetTasksUnauthorized Error
+func (*ListTasksBadRequest) listTasksRes() {}
 
-func (*GetTasksUnauthorized) getTasksRes() {}
+type ListTasksInternalServerError ErrorResponse
+
+func (*ListTasksInternalServerError) listTasksRes() {}
+
+type ListTasksNotFound ErrorResponse
+
+func (*ListTasksNotFound) listTasksRes() {}
+
+type ListTasksNotImplemented ErrorResponse
+
+func (*ListTasksNotImplemented) listTasksRes() {}
+
+type ListTasksSort string
+
+const (
+	ListTasksSortCreatedAt      ListTasksSort = "createdAt"
+	ListTasksSortMinusCreatedAt ListTasksSort = "-createdAt"
+)
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ListTasksSort) MarshalText() ([]byte, error) {
+	switch s {
+	case ListTasksSortCreatedAt:
+		return []byte(s), nil
+	case ListTasksSortMinusCreatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListTasksSort) UnmarshalText(data []byte) error {
+	switch ListTasksSort(data) {
+	case ListTasksSortCreatedAt:
+		*s = ListTasksSortCreatedAt
+		return nil
+	case ListTasksSortMinusCreatedAt:
+		*s = ListTasksSortMinusCreatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+type ListTasksUnauthorized ErrorResponse
+
+func (*ListTasksUnauthorized) listTasksRes() {}
 
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
@@ -296,6 +440,98 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
+// NewOptListProjectsSort returns new OptListProjectsSort with value set to v.
+func NewOptListProjectsSort(v ListProjectsSort) OptListProjectsSort {
+	return OptListProjectsSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListProjectsSort is optional ListProjectsSort.
+type OptListProjectsSort struct {
+	Value ListProjectsSort
+	Set   bool
+}
+
+// IsSet returns true if OptListProjectsSort was set.
+func (o OptListProjectsSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListProjectsSort) Reset() {
+	var v ListProjectsSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListProjectsSort) SetTo(v ListProjectsSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListProjectsSort) Get() (v ListProjectsSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListProjectsSort) Or(d ListProjectsSort) ListProjectsSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptListTasksSort returns new OptListTasksSort with value set to v.
+func NewOptListTasksSort(v ListTasksSort) OptListTasksSort {
+	return OptListTasksSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListTasksSort is optional ListTasksSort.
+type OptListTasksSort struct {
+	Value ListTasksSort
+	Set   bool
+}
+
+// IsSet returns true if OptListTasksSort was set.
+func (o OptListTasksSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListTasksSort) Reset() {
+	var v ListTasksSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListTasksSort) SetTo(v ListTasksSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListTasksSort) Get() (v ListTasksSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListTasksSort) Or(d ListTasksSort) ListTasksSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{
@@ -342,139 +578,7 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-type PatchProjectBadRequest Error
-
-func (*PatchProjectBadRequest) patchProjectRes() {}
-
-type PatchProjectInternalServerError Error
-
-func (*PatchProjectInternalServerError) patchProjectRes() {}
-
-type PatchProjectNotFound Error
-
-func (*PatchProjectNotFound) patchProjectRes() {}
-
-type PatchProjectNotImplemented Error
-
-func (*PatchProjectNotImplemented) patchProjectRes() {}
-
-type PatchProjectReq struct {
-	Name OptString `json:"name"`
-}
-
-// GetName returns the value of Name.
-func (s *PatchProjectReq) GetName() OptString {
-	return s.Name
-}
-
-// SetName sets the value of Name.
-func (s *PatchProjectReq) SetName(val OptString) {
-	s.Name = val
-}
-
-type PatchProjectUnauthorized Error
-
-func (*PatchProjectUnauthorized) patchProjectRes() {}
-
-type PatchTaskBadRequest Error
-
-func (*PatchTaskBadRequest) patchTaskRes() {}
-
-type PatchTaskInternalServerError Error
-
-func (*PatchTaskInternalServerError) patchTaskRes() {}
-
-type PatchTaskNotFound Error
-
-func (*PatchTaskNotFound) patchTaskRes() {}
-
-type PatchTaskNotImplemented Error
-
-func (*PatchTaskNotImplemented) patchTaskRes() {}
-
-type PatchTaskReq struct {
-	IsCompleted OptBool `json:"isCompleted"`
-}
-
-// GetIsCompleted returns the value of IsCompleted.
-func (s *PatchTaskReq) GetIsCompleted() OptBool {
-	return s.IsCompleted
-}
-
-// SetIsCompleted sets the value of IsCompleted.
-func (s *PatchTaskReq) SetIsCompleted(val OptBool) {
-	s.IsCompleted = val
-}
-
-type PatchTaskUnauthorized Error
-
-func (*PatchTaskUnauthorized) patchTaskRes() {}
-
-type PostProjectsBadRequest Error
-
-func (*PostProjectsBadRequest) postProjectsRes() {}
-
-type PostProjectsInternalServerError Error
-
-func (*PostProjectsInternalServerError) postProjectsRes() {}
-
-type PostProjectsNotImplemented Error
-
-func (*PostProjectsNotImplemented) postProjectsRes() {}
-
-type PostProjectsReq struct {
-	Name string `json:"name"`
-}
-
-// GetName returns the value of Name.
-func (s *PostProjectsReq) GetName() string {
-	return s.Name
-}
-
-// SetName sets the value of Name.
-func (s *PostProjectsReq) SetName(val string) {
-	s.Name = val
-}
-
-type PostProjectsUnauthorized Error
-
-func (*PostProjectsUnauthorized) postProjectsRes() {}
-
-type PostTasksBadRequest Error
-
-func (*PostTasksBadRequest) postTasksRes() {}
-
-type PostTasksInternalServerError Error
-
-func (*PostTasksInternalServerError) postTasksRes() {}
-
-type PostTasksNotFound Error
-
-func (*PostTasksNotFound) postTasksRes() {}
-
-type PostTasksNotImplemented Error
-
-func (*PostTasksNotImplemented) postTasksRes() {}
-
-type PostTasksReq struct {
-	Title string `json:"title"`
-}
-
-// GetTitle returns the value of Title.
-func (s *PostTasksReq) GetTitle() string {
-	return s.Title
-}
-
-// SetTitle sets the value of Title.
-func (s *PostTasksReq) SetTitle(val string) {
-	s.Title = val
-}
-
-type PostTasksUnauthorized Error
-
-func (*PostTasksUnauthorized) postTasksRes() {}
-
-// Ref: #/components/schemas/project
+// Ref: #/components/schemas/Project
 type Project struct {
 	// プロジェクトID.
 	ID int64 `json:"id"`
@@ -526,37 +630,10 @@ func (s *Project) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
-func (*Project) patchProjectRes() {}
+func (*Project) createProjectRes() {}
+func (*Project) updateProjectRes() {}
 
-// ProjectHeaders wraps Project with response headers.
-type ProjectHeaders struct {
-	Location url.URL
-	Response Project
-}
-
-// GetLocation returns the value of Location.
-func (s *ProjectHeaders) GetLocation() url.URL {
-	return s.Location
-}
-
-// GetResponse returns the value of Response.
-func (s *ProjectHeaders) GetResponse() Project {
-	return s.Response
-}
-
-// SetLocation sets the value of Location.
-func (s *ProjectHeaders) SetLocation(val url.URL) {
-	s.Location = val
-}
-
-// SetResponse sets the value of Response.
-func (s *ProjectHeaders) SetResponse(val Project) {
-	s.Response = val
-}
-
-func (*ProjectHeaders) postProjectsRes() {}
-
-// Ref: #/components/schemas/projects
+// Ref: #/components/schemas/Projects
 type Projects struct {
 	// プロジェクト一覧.
 	Projects []Project `json:"projects"`
@@ -572,9 +649,9 @@ func (s *Projects) SetProjects(val []Project) {
 	s.Projects = val
 }
 
-func (*Projects) getProjectsRes() {}
+func (*Projects) listProjectsRes() {}
 
-// Ref: #/components/schemas/task
+// Ref: #/components/schemas/Task
 type Task struct {
 	// タスクID.
 	ID int64 `json:"id"`
@@ -650,37 +727,10 @@ func (s *Task) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
-func (*Task) patchTaskRes() {}
+func (*Task) createTaskRes() {}
+func (*Task) updateTaskRes() {}
 
-// TaskHeaders wraps Task with response headers.
-type TaskHeaders struct {
-	Location url.URL
-	Response Task
-}
-
-// GetLocation returns the value of Location.
-func (s *TaskHeaders) GetLocation() url.URL {
-	return s.Location
-}
-
-// GetResponse returns the value of Response.
-func (s *TaskHeaders) GetResponse() Task {
-	return s.Response
-}
-
-// SetLocation sets the value of Location.
-func (s *TaskHeaders) SetLocation(val url.URL) {
-	s.Location = val
-}
-
-// SetResponse sets the value of Response.
-func (s *TaskHeaders) SetResponse(val Task) {
-	s.Response = val
-}
-
-func (*TaskHeaders) postTasksRes() {}
-
-// Ref: #/components/schemas/tasks
+// Ref: #/components/schemas/Tasks
 type Tasks struct {
 	// タスク一覧.
 	Tasks []Task `json:"tasks"`
@@ -696,4 +746,72 @@ func (s *Tasks) SetTasks(val []Task) {
 	s.Tasks = val
 }
 
-func (*Tasks) getTasksRes() {}
+func (*Tasks) listTasksRes() {}
+
+type UpdateProjectBadRequest ErrorResponse
+
+func (*UpdateProjectBadRequest) updateProjectRes() {}
+
+type UpdateProjectInternalServerError ErrorResponse
+
+func (*UpdateProjectInternalServerError) updateProjectRes() {}
+
+type UpdateProjectNotFound ErrorResponse
+
+func (*UpdateProjectNotFound) updateProjectRes() {}
+
+type UpdateProjectNotImplemented ErrorResponse
+
+func (*UpdateProjectNotImplemented) updateProjectRes() {}
+
+type UpdateProjectReq struct {
+	Name OptString `json:"name"`
+}
+
+// GetName returns the value of Name.
+func (s *UpdateProjectReq) GetName() OptString {
+	return s.Name
+}
+
+// SetName sets the value of Name.
+func (s *UpdateProjectReq) SetName(val OptString) {
+	s.Name = val
+}
+
+type UpdateProjectUnauthorized ErrorResponse
+
+func (*UpdateProjectUnauthorized) updateProjectRes() {}
+
+type UpdateTaskBadRequest ErrorResponse
+
+func (*UpdateTaskBadRequest) updateTaskRes() {}
+
+type UpdateTaskInternalServerError ErrorResponse
+
+func (*UpdateTaskInternalServerError) updateTaskRes() {}
+
+type UpdateTaskNotFound ErrorResponse
+
+func (*UpdateTaskNotFound) updateTaskRes() {}
+
+type UpdateTaskNotImplemented ErrorResponse
+
+func (*UpdateTaskNotImplemented) updateTaskRes() {}
+
+type UpdateTaskReq struct {
+	IsCompleted OptBool `json:"isCompleted"`
+}
+
+// GetIsCompleted returns the value of IsCompleted.
+func (s *UpdateTaskReq) GetIsCompleted() OptBool {
+	return s.IsCompleted
+}
+
+// SetIsCompleted sets the value of IsCompleted.
+func (s *UpdateTaskReq) SetIsCompleted(val OptBool) {
+	s.IsCompleted = val
+}
+
+type UpdateTaskUnauthorized ErrorResponse
+
+func (*UpdateTaskUnauthorized) updateTaskRes() {}

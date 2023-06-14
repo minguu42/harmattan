@@ -18,7 +18,7 @@ type userKey struct{}
 
 func (a *authMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	route, ok := a.next.FindRoute(r.Method, r.URL.Path)
-	if !ok || route.OperationID() == "getHealth" {
+	if !ok || route.OperationID() == "GetHealth" {
 		a.next.ServeHTTP(w, r)
 		return
 	}
@@ -29,7 +29,7 @@ func (a *authMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	apiKey := r.Header.Get("X-Api-Key")
 	if apiKey == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		_ = encoder.Encode(ogen.Error{
+		_ = encoder.Encode(ogen.ErrorResponse{
 			Message: "ユーザの認証に失敗しました。",
 			Debug:   "X-Api-Key is required",
 		})
@@ -40,7 +40,7 @@ func (a *authMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	u, err := a.repository.GetUserByAPIKey(ctx, apiKey)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		_ = encoder.Encode(ogen.Error{
+		_ = encoder.Encode(ogen.ErrorResponse{
 			Message: "サーバで何らかのエラーが発生しました。もう一度お試しください。",
 			Debug:   fmt.Sprintf("repository.GetUserByAPIKey failed: %v", err),
 		})

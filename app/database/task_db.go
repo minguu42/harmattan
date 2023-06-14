@@ -33,11 +33,11 @@ func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*a
 	}, nil
 }
 
-func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64, limit, offset int) ([]*app.Task, error) {
-	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE project_id = ? LIMIT ? OFFSET ?`
+func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64, sort string, limit, offset int) ([]*app.Task, error) {
+	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE project_id = ? ORDER BY ? LIMIT ? OFFSET ?`
 	logging.Debugf(q)
 
-	rows, err := db.QueryContext(ctx, q, projectID, limit, offset)
+	rows, err := db.QueryContext(ctx, q, projectID, generateOrderByClause(sort), limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("db.QueryContext failed: %w", err)
 	}

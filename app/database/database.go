@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -38,4 +39,13 @@ func Open(ctx context.Context, dsn string) (*DB, error) {
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(10)
 	return &DB{db}, nil
+}
+
+// generateOrderByClause は sort クエリから ORDER BY 句の値を生成する
+// 例: createdAt -> createdAt ASC、-createdAt -> createdAt DESC
+func generateOrderByClause(sort string) string {
+	if strings.HasPrefix(sort, "-") {
+		return fmt.Sprintf("%s DESC", strings.TrimPrefix(sort, "-"))
+	}
+	return fmt.Sprintf("%s ASC", sort)
 }
