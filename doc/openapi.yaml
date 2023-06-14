@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: mTasks API Specification
-  version: v0.1.1
+  version: v0.1.2
 
 servers:
   - url: http://localhost:8080/
