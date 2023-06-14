@@ -2,7 +2,7 @@ VERSION  := v0.1.2
 REVISION := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := help
-.PHONY: setup build run up down gen fmt lint test help
+.PHONY: setup build run gen fmt lint test help
 
 setup: ## 開発に必要なツールをインストールする
 	go install golang.org/x/tools/cmd/goimports@latest
@@ -17,12 +17,6 @@ build: ## APIサーバのコンテナイメージをビルドする
 
 run: ## APIサーバを実行する
 	@docker compose --env-file .env.local up api
-
-up: ## バックグラウンドでデータベースサーバを実行する
-	@docker compose --env-file .env.local up -d db
-
-down: ## サービスコンテナを終了する
-	@docker compose --env-file .env.local down
 
 gen: ## コードを生成する
 	@go generate ./gen
