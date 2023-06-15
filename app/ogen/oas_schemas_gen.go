@@ -3,22 +3,15 @@
 package ogen
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-faster/errors"
 )
 
-type CreateProjectBadRequest ErrorResponse
-
-func (*CreateProjectBadRequest) createProjectRes() {}
-
-type CreateProjectInternalServerError ErrorResponse
-
-func (*CreateProjectInternalServerError) createProjectRes() {}
-
-type CreateProjectNotImplemented ErrorResponse
-
-func (*CreateProjectNotImplemented) createProjectRes() {}
+func (s *ErrorStatusCode) Error() string {
+	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
 
 type CreateProjectReq struct {
 	Name string `json:"name"`
@@ -34,26 +27,6 @@ func (s *CreateProjectReq) SetName(val string) {
 	s.Name = val
 }
 
-type CreateProjectUnauthorized ErrorResponse
-
-func (*CreateProjectUnauthorized) createProjectRes() {}
-
-type CreateTaskBadRequest ErrorResponse
-
-func (*CreateTaskBadRequest) createTaskRes() {}
-
-type CreateTaskInternalServerError ErrorResponse
-
-func (*CreateTaskInternalServerError) createTaskRes() {}
-
-type CreateTaskNotFound ErrorResponse
-
-func (*CreateTaskNotFound) createTaskRes() {}
-
-type CreateTaskNotImplemented ErrorResponse
-
-func (*CreateTaskNotImplemented) createTaskRes() {}
-
 type CreateTaskReq struct {
 	Title string `json:"title"`
 }
@@ -68,61 +41,13 @@ func (s *CreateTaskReq) SetTitle(val string) {
 	s.Title = val
 }
 
-type CreateTaskUnauthorized ErrorResponse
-
-func (*CreateTaskUnauthorized) createTaskRes() {}
-
-type DeleteProjectBadRequest ErrorResponse
-
-func (*DeleteProjectBadRequest) deleteProjectRes() {}
-
-type DeleteProjectInternalServerError ErrorResponse
-
-func (*DeleteProjectInternalServerError) deleteProjectRes() {}
-
 // DeleteProjectNoContent is response for DeleteProject operation.
 type DeleteProjectNoContent struct{}
-
-func (*DeleteProjectNoContent) deleteProjectRes() {}
-
-type DeleteProjectNotFound ErrorResponse
-
-func (*DeleteProjectNotFound) deleteProjectRes() {}
-
-type DeleteProjectNotImplemented ErrorResponse
-
-func (*DeleteProjectNotImplemented) deleteProjectRes() {}
-
-type DeleteProjectUnauthorized ErrorResponse
-
-func (*DeleteProjectUnauthorized) deleteProjectRes() {}
-
-type DeleteTaskBadRequest ErrorResponse
-
-func (*DeleteTaskBadRequest) deleteTaskRes() {}
-
-type DeleteTaskInternalServerError ErrorResponse
-
-func (*DeleteTaskInternalServerError) deleteTaskRes() {}
 
 // DeleteTaskNoContent is response for DeleteTask operation.
 type DeleteTaskNoContent struct{}
 
-func (*DeleteTaskNoContent) deleteTaskRes() {}
-
-type DeleteTaskNotFound ErrorResponse
-
-func (*DeleteTaskNotFound) deleteTaskRes() {}
-
-type DeleteTaskNotImplemented ErrorResponse
-
-func (*DeleteTaskNotImplemented) deleteTaskRes() {}
-
-type DeleteTaskUnauthorized ErrorResponse
-
-func (*DeleteTaskUnauthorized) deleteTaskRes() {}
-
-type ErrorResponse struct {
+type Error struct {
 	// ユーザ向けの大まかなエラーの説明.
 	Message string `json:"message"`
 	// 開発者向けの詳細なエラーの説明.
@@ -130,28 +55,50 @@ type ErrorResponse struct {
 }
 
 // GetMessage returns the value of Message.
-func (s *ErrorResponse) GetMessage() string {
+func (s *Error) GetMessage() string {
 	return s.Message
 }
 
 // GetDebug returns the value of Debug.
-func (s *ErrorResponse) GetDebug() string {
+func (s *Error) GetDebug() string {
 	return s.Debug
 }
 
 // SetMessage sets the value of Message.
-func (s *ErrorResponse) SetMessage(val string) {
+func (s *Error) SetMessage(val string) {
 	s.Message = val
 }
 
 // SetDebug sets the value of Debug.
-func (s *ErrorResponse) SetDebug(val string) {
+func (s *Error) SetDebug(val string) {
 	s.Debug = val
 }
 
-type GetHealthNotImplemented ErrorResponse
+// ErrorStatusCode wraps Error with StatusCode.
+type ErrorStatusCode struct {
+	StatusCode int
+	Response   Error
+}
 
-func (*GetHealthNotImplemented) getHealthRes() {}
+// GetStatusCode returns the value of StatusCode.
+func (s *ErrorStatusCode) GetStatusCode() int {
+	return s.StatusCode
+}
+
+// GetResponse returns the value of Response.
+func (s *ErrorStatusCode) GetResponse() Error {
+	return s.Response
+}
+
+// SetStatusCode sets the value of StatusCode.
+func (s *ErrorStatusCode) SetStatusCode(val int) {
+	s.StatusCode = val
+}
+
+// SetResponse sets the value of Response.
+func (s *ErrorStatusCode) SetResponse(val Error) {
+	s.Response = val
+}
 
 type GetHealthOK struct {
 	// MTasks APIのバージョン.
@@ -180,12 +127,6 @@ func (s *GetHealthOK) SetRevision(val string) {
 	s.Revision = val
 }
 
-func (*GetHealthOK) getHealthRes() {}
-
-type GetHealthServiceUnavailable ErrorResponse
-
-func (*GetHealthServiceUnavailable) getHealthRes() {}
-
 type IsAuthorized struct {
 	APIKey string
 }
@@ -199,18 +140,6 @@ func (s *IsAuthorized) GetAPIKey() string {
 func (s *IsAuthorized) SetAPIKey(val string) {
 	s.APIKey = val
 }
-
-type ListProjectsBadRequest ErrorResponse
-
-func (*ListProjectsBadRequest) listProjectsRes() {}
-
-type ListProjectsInternalServerError ErrorResponse
-
-func (*ListProjectsInternalServerError) listProjectsRes() {}
-
-type ListProjectsNotImplemented ErrorResponse
-
-func (*ListProjectsNotImplemented) listProjectsRes() {}
 
 type ListProjectsSort string
 
@@ -245,26 +174,6 @@ func (s *ListProjectsSort) UnmarshalText(data []byte) error {
 	}
 }
 
-type ListProjectsUnauthorized ErrorResponse
-
-func (*ListProjectsUnauthorized) listProjectsRes() {}
-
-type ListTasksBadRequest ErrorResponse
-
-func (*ListTasksBadRequest) listTasksRes() {}
-
-type ListTasksInternalServerError ErrorResponse
-
-func (*ListTasksInternalServerError) listTasksRes() {}
-
-type ListTasksNotFound ErrorResponse
-
-func (*ListTasksNotFound) listTasksRes() {}
-
-type ListTasksNotImplemented ErrorResponse
-
-func (*ListTasksNotImplemented) listTasksRes() {}
-
 type ListTasksSort string
 
 const (
@@ -297,10 +206,6 @@ func (s *ListTasksSort) UnmarshalText(data []byte) error {
 		return errors.Errorf("invalid value: %q", data)
 	}
 }
-
-type ListTasksUnauthorized ErrorResponse
-
-func (*ListTasksUnauthorized) listTasksRes() {}
 
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
@@ -630,9 +535,6 @@ func (s *Project) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
-func (*Project) createProjectRes() {}
-func (*Project) updateProjectRes() {}
-
 // Ref: #/components/schemas/Projects
 type Projects struct {
 	// プロジェクト一覧.
@@ -660,8 +562,6 @@ func (s *Projects) SetProjects(val []Project) {
 func (s *Projects) SetHasNext(val bool) {
 	s.HasNext = val
 }
-
-func (*Projects) listProjectsRes() {}
 
 // Ref: #/components/schemas/Task
 type Task struct {
@@ -739,9 +639,6 @@ func (s *Task) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
-func (*Task) createTaskRes() {}
-func (*Task) updateTaskRes() {}
-
 // Ref: #/components/schemas/Tasks
 type Tasks struct {
 	// タスク一覧.
@@ -770,24 +667,6 @@ func (s *Tasks) SetHasNext(val bool) {
 	s.HasNext = val
 }
 
-func (*Tasks) listTasksRes() {}
-
-type UpdateProjectBadRequest ErrorResponse
-
-func (*UpdateProjectBadRequest) updateProjectRes() {}
-
-type UpdateProjectInternalServerError ErrorResponse
-
-func (*UpdateProjectInternalServerError) updateProjectRes() {}
-
-type UpdateProjectNotFound ErrorResponse
-
-func (*UpdateProjectNotFound) updateProjectRes() {}
-
-type UpdateProjectNotImplemented ErrorResponse
-
-func (*UpdateProjectNotImplemented) updateProjectRes() {}
-
 type UpdateProjectReq struct {
 	Name OptString `json:"name"`
 }
@@ -802,26 +681,6 @@ func (s *UpdateProjectReq) SetName(val OptString) {
 	s.Name = val
 }
 
-type UpdateProjectUnauthorized ErrorResponse
-
-func (*UpdateProjectUnauthorized) updateProjectRes() {}
-
-type UpdateTaskBadRequest ErrorResponse
-
-func (*UpdateTaskBadRequest) updateTaskRes() {}
-
-type UpdateTaskInternalServerError ErrorResponse
-
-func (*UpdateTaskInternalServerError) updateTaskRes() {}
-
-type UpdateTaskNotFound ErrorResponse
-
-func (*UpdateTaskNotFound) updateTaskRes() {}
-
-type UpdateTaskNotImplemented ErrorResponse
-
-func (*UpdateTaskNotImplemented) updateTaskRes() {}
-
 type UpdateTaskReq struct {
 	IsCompleted OptBool `json:"isCompleted"`
 }
@@ -835,7 +694,3 @@ func (s *UpdateTaskReq) GetIsCompleted() OptBool {
 func (s *UpdateTaskReq) SetIsCompleted(val OptBool) {
 	s.IsCompleted = val
 }
-
-type UpdateTaskUnauthorized ErrorResponse
-
-func (*UpdateTaskUnauthorized) updateTaskRes() {}

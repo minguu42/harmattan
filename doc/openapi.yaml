@@ -41,14 +41,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Project"
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
     get:
       tags:
         - projects
@@ -76,14 +70,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Projects"
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
   /projects/{projectID}:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -111,16 +99,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Project"
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        404:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
     delete:
       tags:
         - projects
@@ -131,16 +111,8 @@ paths:
       responses:
         204:
           description: 成功
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        404:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
   /projects/{projectID}/tasks:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -170,16 +142,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        404:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
     get:
       tags:
         - tasks
@@ -207,16 +171,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Tasks"
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        404:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
   /projects/{projectID}/tasks/{taskID}:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -244,16 +200,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Task"
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        404:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
     delete:
       tags:
         - tasks
@@ -264,16 +212,8 @@ paths:
       responses:
         204:
           description: 成功
-        400:
-          $ref: "#/components/responses/ErrorResponse"
-        401:
-          $ref: "#/components/responses/ErrorResponse"
-        404:
-          $ref: "#/components/responses/ErrorResponse"
-        500:
-          $ref: "#/components/responses/ErrorResponse"
-        501:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
   /health:
     get:
       tags:
@@ -300,10 +240,8 @@ paths:
                     description: mTasks APIのリビジョン
                     type: string
                     example: a1b2c3d
-        501:
-          $ref: "#/components/responses/ErrorResponse"
-        503:
-          $ref: "#/components/responses/ErrorResponse"
+        default:
+          $ref: "#/components/responses/Error"
 
 components:
   schemas:
@@ -430,8 +368,8 @@ components:
         format: int64
         minimum: 1
   responses:
-    ErrorResponse:
-      description: エラー時のレスポンスボディ
+    Error:
+      description: エラー
       content:
         application/json:
           schema:
