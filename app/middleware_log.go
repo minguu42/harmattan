@@ -2,10 +2,11 @@ package app
 
 import (
 	"fmt"
-	"github.com/minguu42/mtasks/app/logging"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/minguu42/mtasks/app/logging"
 )
 
 func logMiddleware(next http.Handler) http.HandlerFunc {
