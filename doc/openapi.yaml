@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: mTasks API Specification
-  version: v0.1.2
+  version: v0.1.3
 
 servers:
   - url: http://localhost:8080/
@@ -340,8 +340,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Project"
+        hasNext:
+          description: まだ取得可能なプロジェクトが存在するか
+          type: boolean
       required:
         - projects
+        - hasNext
     Task:
       type: object
       properties:
@@ -385,8 +389,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Task"
+        hasNext:
+          description: まだ取得可能なタスクが存在するか
+          type: boolean
       required:
         - tasks
+        - hasNext
   parameters:
     limit:
       name: limit

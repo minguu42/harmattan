@@ -637,6 +637,8 @@ func (*Project) updateProjectRes() {}
 type Projects struct {
 	// プロジェクト一覧.
 	Projects []Project `json:"projects"`
+	// まだ取得可能なプロジェクトが存在するか.
+	HasNext bool `json:"hasNext"`
 }
 
 // GetProjects returns the value of Projects.
@@ -644,9 +646,19 @@ func (s *Projects) GetProjects() []Project {
 	return s.Projects
 }
 
+// GetHasNext returns the value of HasNext.
+func (s *Projects) GetHasNext() bool {
+	return s.HasNext
+}
+
 // SetProjects sets the value of Projects.
 func (s *Projects) SetProjects(val []Project) {
 	s.Projects = val
+}
+
+// SetHasNext sets the value of HasNext.
+func (s *Projects) SetHasNext(val bool) {
+	s.HasNext = val
 }
 
 func (*Projects) listProjectsRes() {}
@@ -734,6 +746,8 @@ func (*Task) updateTaskRes() {}
 type Tasks struct {
 	// タスク一覧.
 	Tasks []Task `json:"tasks"`
+	// まだ取得可能なタスクが存在するか.
+	HasNext bool `json:"hasNext"`
 }
 
 // GetTasks returns the value of Tasks.
@@ -741,9 +755,19 @@ func (s *Tasks) GetTasks() []Task {
 	return s.Tasks
 }
 
+// GetHasNext returns the value of HasNext.
+func (s *Tasks) GetHasNext() bool {
+	return s.HasNext
+}
+
 // SetTasks sets the value of Tasks.
 func (s *Tasks) SetTasks(val []Task) {
 	s.Tasks = val
+}
+
+// SetHasNext sets the value of HasNext.
+func (s *Tasks) SetHasNext(val bool) {
+	s.HasNext = val
 }
 
 func (*Tasks) listTasksRes() {}

@@ -42,7 +42,7 @@ func (h *handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 		}, nil
 	}
 
-	ps, err := h.repository.GetProjectsByUserID(ctx, u.ID, string(params.Sort.Or(ogen.ListProjectsSortMinusCreatedAt)), params.Limit.Or(10), params.Offset.Or(0))
+	ps, err := h.repository.GetProjectsByUserID(ctx, u.ID, string(params.Sort.Or(ogen.ListProjectsSortMinusCreatedAt)), params.Limit.Or(10)+1, params.Offset.Or(0))
 	if err != nil {
 		logging.Errorf("repository.GetProjectsByUserID failed: %v", err)
 		return &ogen.ListProjectsInternalServerError{
@@ -51,7 +51,17 @@ func (h *handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 		}, nil
 	}
 
-	return &ogen.Projects{Projects: newProjectsResponse(ps)}, nil
+	hasNext := false
+	if len(ps) == params.Limit.Or(10)+1 {
+		hasNext = true
+		ps = ps[:params.Limit.Or(10)]
+	}
+	logging.Debugf("ps: %v, cap: %d, len: %d\n", ps, cap(ps), len(ps))
+
+	return &ogen.Projects{
+		Projects: newProjectsResponse(ps),
+		HasNext:  hasNext,
+	}, nil
 }
 
 // UpdateProject は PATCH /projects/{projectID} に対応するハンドラ
