@@ -74,7 +74,7 @@ func (h *handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (o
 		}, nil
 	}
 
-	ts, err := h.repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), params.Limit.Or(10), params.Offset.Or(0))
+	ts, err := h.repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), params.Limit.Or(10)+1, params.Offset.Or(0))
 	if err != nil {
 		logging.Errorf("repository.GetTasksByProjectID failed: %v", err)
 		return &ogen.ListTasksInternalServerError{
@@ -83,7 +83,16 @@ func (h *handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (o
 		}, nil
 	}
 
-	return &ogen.Tasks{Tasks: newTasksResponse(ts)}, nil
+	hasNext := false
+	if len(ts) == params.Limit.Or(10)+1 {
+		hasNext = true
+		ts = ts[:params.Limit.Or(10)]
+	}
+
+	return &ogen.Tasks{
+		Tasks:   newTasksResponse(ts),
+		HasNext: hasNext,
+	}, nil
 }
 
 // UpdateTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
