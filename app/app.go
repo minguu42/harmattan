@@ -16,14 +16,6 @@ type handler struct {
 	repository repository
 }
 
-type securityHandler struct{}
-
-// HandleIsAuthorized -
-// TODO: これを利用して authMiddleware を記述する
-func (s *securityHandler) HandleIsAuthorized(ctx context.Context, _ string, _ ogen.IsAuthorized) (context.Context, error) {
-	return ctx, nil
-}
-
 type repository interface {
 	GetUserByAPIKey(ctx context.Context, apiKey string) (*User, error)
 
@@ -42,16 +34,17 @@ type repository interface {
 
 // NewServer はサーバを初期化する
 func NewServer(api *env.API, repository repository) (*http.Server, error) {
-	s, err := ogen.NewServer(&handler{
-		repository: repository,
-	}, &securityHandler{})
+	s, err := ogen.NewServer(
+		&handler{repository: repository},
+		&securityHandler{repository: repository},
+	)
 	if err != nil {
 		return nil, fmt.Errorf("ogen.NewServer failed: %w", err)
 	}
 
 	return &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", api.Host, api.Port),
-		Handler:           logMiddleware(&authMiddleware{next: s, repository: repository}),
+		Handler:           logMiddleware(s),
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		MaxHeaderBytes:    1 << 20,
