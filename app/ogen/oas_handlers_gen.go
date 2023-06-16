@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-faster/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
 	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
 	"go.opentelemetry.io/otel/trace"
 
+	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/ogen-go/ogen/otelogen"
@@ -120,7 +122,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		}
 	}()
 
-	var response CreateProjectRes
+	var response *Project
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -134,7 +136,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		type (
 			Request  = *CreateProjectReq
 			Params   = struct{}
-			Response = CreateProjectRes
+			Response = *Project
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -154,7 +156,15 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -277,7 +287,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 		}
 	}()
 
-	var response CreateTaskRes
+	var response *Task
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -296,7 +306,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 		type (
 			Request  = *CreateTaskReq
 			Params   = CreateTaskParams
-			Response = CreateTaskRes
+			Response = *Task
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -316,7 +326,15 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -424,7 +442,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		return
 	}
 
-	var response DeleteProjectRes
+	var response *DeleteProjectNoContent
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -443,7 +461,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		type (
 			Request  = struct{}
 			Params   = DeleteProjectParams
-			Response = DeleteProjectRes
+			Response = *DeleteProjectNoContent
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -454,16 +472,24 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 			mreq,
 			unpackDeleteProjectParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.DeleteProject(ctx, params)
+				err = s.h.DeleteProject(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.DeleteProject(ctx, params)
+		err = s.h.DeleteProject(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -571,7 +597,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 		return
 	}
 
-	var response DeleteTaskRes
+	var response *DeleteTaskNoContent
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -594,7 +620,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 		type (
 			Request  = struct{}
 			Params   = DeleteTaskParams
-			Response = DeleteTaskRes
+			Response = *DeleteTaskNoContent
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -605,16 +631,24 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 			mreq,
 			unpackDeleteTaskParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.DeleteTask(ctx, params)
+				err = s.h.DeleteTask(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.DeleteTask(ctx, params)
+		err = s.h.DeleteTask(ctx, params)
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -664,7 +698,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		err error
 	)
 
-	var response GetHealthRes
+	var response *GetHealthOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -678,7 +712,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		type (
 			Request  = struct{}
 			Params   = struct{}
-			Response = GetHealthRes
+			Response = *GetHealthOK
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -698,7 +732,15 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -806,7 +848,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		return
 	}
 
-	var response ListProjectsRes
+	var response *Projects
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -833,7 +875,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		type (
 			Request  = struct{}
 			Params   = ListProjectsParams
-			Response = ListProjectsRes
+			Response = *Projects
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -853,7 +895,15 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -961,7 +1011,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		return
 	}
 
-	var response ListTasksRes
+	var response *Tasks
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -992,7 +1042,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		type (
 			Request  = struct{}
 			Params   = ListTasksParams
-			Response = ListTasksRes
+			Response = *Tasks
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1012,7 +1062,15 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -1135,7 +1193,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 		}
 	}()
 
-	var response UpdateProjectRes
+	var response *Project
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -1154,7 +1212,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 		type (
 			Request  = *UpdateProjectReq
 			Params   = UpdateProjectParams
-			Response = UpdateProjectRes
+			Response = *Project
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1174,7 +1232,15 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 
@@ -1297,7 +1363,7 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 		}
 	}()
 
-	var response UpdateTaskRes
+	var response *Task
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:       ctx,
@@ -1320,7 +1386,7 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 		type (
 			Request  = *UpdateTaskReq
 			Params   = UpdateTaskParams
-			Response = UpdateTaskRes
+			Response = *Task
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1340,7 +1406,15 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 	}
 	if err != nil {
 		recordError("Internal", err)
-		s.cfg.ErrorHandler(ctx, w, r, err)
+		if errRes, ok := errors.Into[*ErrorStatusCode](err); ok {
+			encodeErrorResponse(errRes, w, span)
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		encodeErrorResponse(s.h.NewError(ctx, err), w, span)
 		return
 	}
 

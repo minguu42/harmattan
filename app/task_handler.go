@@ -9,78 +9,54 @@ import (
 )
 
 // CreateTask は POST /projects/{projectID}/tasks に対応するハンドラ
-func (h *handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, params ogen.CreateTaskParams) (ogen.CreateTaskRes, error) {
+func (h *handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, params ogen.CreateTaskParams) (*ogen.Task, error) {
 	u, ok := ctx.Value(userKey{}).(*User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
-		return &ogen.CreateTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   "ctx.Value(userKey{}).(*User) failed",
-		}, nil
+		return nil, errUnauthorized
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
-		return &ogen.CreateTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errInternalServerError
 	}
 	if u.ID != p.UserID {
 		logging.Errorf("u.ID != p.UserID")
-		return &ogen.CreateTaskNotFound{
-			Message: messageNotFound,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errTaskNotFound
 	}
 
 	t, err := h.repository.CreateTask(ctx, params.ProjectID, req.Title)
 	if err != nil {
 		logging.Errorf("repository.Create failed: %v", err)
-		return &ogen.CreateTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errInternalServerError
 	}
 
 	return newTaskResponse(t), nil
 }
 
 // ListTasks は GET /projects/{projectID}/tasks に対応するハンドラ
-func (h *handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (ogen.ListTasksRes, error) {
+func (h *handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*ogen.Tasks, error) {
 	u, ok := ctx.Value(userKey{}).(*User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
-		return &ogen.ListTasksInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   "ctx.Value(userKey{}).(*User) failed",
-		}, nil
+		return nil, errUnauthorized
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
-		return &ogen.ListTasksInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errInternalServerError
 	}
 	if u.ID != p.UserID {
 		logging.Errorf("u.ID != p.UserID")
-		return &ogen.ListTasksNotFound{
-			Message: messageNotFound,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errTaskNotFound
 	}
 
 	ts, err := h.repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), params.Limit.Or(10)+1, params.Offset.Or(0))
 	if err != nil {
 		logging.Errorf("repository.GetTasksByProjectID failed: %v", err)
-		return &ogen.ListTasksInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errInternalServerError
 	}
 
 	hasNext := false
@@ -96,53 +72,35 @@ func (h *handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (o
 }
 
 // UpdateTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
-func (h *handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, params ogen.UpdateTaskParams) (ogen.UpdateTaskRes, error) {
+func (h *handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, params ogen.UpdateTaskParams) (*ogen.Task, error) {
 	u, ok := ctx.Value(userKey{}).(*User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
-		return &ogen.UpdateTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   "ctx.Value(userKey{}).(*User) failed",
-		}, nil
+		return nil, errUnauthorized
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
-		return &ogen.UpdateTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errInternalServerError
 	}
 	if u.ID != p.UserID {
 		logging.Errorf("u.ID != p.UserID")
-		return &ogen.UpdateTaskNotFound{
-			Message: messageNotFound,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errProjectNotFound
 	}
 	t, err := h.repository.GetTaskByID(ctx, params.TaskID)
 	if err != nil {
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
-		return &ogen.UpdateTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errInternalServerError
 	}
 	if p.ID != t.ProjectID {
 		logging.Errorf("p.ID != t.ProjectID")
-		return &ogen.UpdateTaskNotFound{
-			Message: messageNotFound,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errTaskNotFound
 	}
 
 	if !req.IsCompleted.IsSet() {
 		logging.Errorf("value contains nothing")
-		return &ogen.UpdateTaskBadRequest{
-			Message: messageBadRequest,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errBadRequest
 	}
 	now := time.Now()
 	if req.IsCompleted.Value {
@@ -153,64 +111,43 @@ func (h *handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 	t.UpdatedAt = now
 	if err := h.repository.UpdateTask(ctx, params.TaskID, t.CompletedAt, t.UpdatedAt); err != nil {
 		logging.Errorf("repository.UpdateTask failed: %v", err)
-		return &ogen.UpdateTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return nil, errInternalServerError
 	}
 
 	return newTaskResponse(t), nil
 }
 
 // DeleteTask は DELETE /projects/{projectID}/tasks/{taskID} に対応するハンドラ
-func (h *handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) (ogen.DeleteTaskRes, error) {
+func (h *handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) error {
 	u, ok := ctx.Value(userKey{}).(*User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
-		return &ogen.DeleteTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   "ctx.Value(userKey{}).(*User) failed",
-		}, nil
+		return errUnauthorized
 	}
 
 	p, err := h.repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
-		return &ogen.DeleteTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return errInternalServerError
 	}
 	if u.ID != p.UserID {
 		logging.Errorf("u.ID != p.UserID")
-		return &ogen.DeleteTaskNotFound{
-			Message: messageNotFound,
-			Debug:   err.Error(),
-		}, nil
+		return errProjectNotFound
 	}
 	t, err := h.repository.GetTaskByID(ctx, params.TaskID)
 	if err != nil {
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
-		return &ogen.DeleteTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return errInternalServerError
 	}
 	if p.ID != t.ProjectID {
 		logging.Errorf("p.ID != t.ProjectID")
-		return &ogen.DeleteTaskNotFound{
-			Message: messageNotFound,
-			Debug:   err.Error(),
-		}, nil
+		return errTaskNotFound
 	}
 
 	if err := h.repository.DeleteTask(ctx, t.ID); err != nil {
 		logging.Errorf("repository.DeleteTask failed: %v", err)
-		return &ogen.DeleteTaskInternalServerError{
-			Message: messageInternalServerError,
-			Debug:   err.Error(),
-		}, nil
+		return errInternalServerError
 	}
 
-	return &ogen.DeleteTaskNoContent{}, nil
+	return nil
 }
