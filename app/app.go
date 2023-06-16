@@ -4,16 +4,13 @@ package app
 import (
 	"context"
 	"errors"
-	"fmt"
-	"net/http"
 	"time"
 
-	"github.com/minguu42/mtasks/app/env"
 	"github.com/minguu42/mtasks/app/ogen"
 )
 
-type handler struct {
-	repository repository
+type Handler struct {
+	Repository repository
 }
 
 type repository interface {
@@ -32,25 +29,6 @@ type repository interface {
 	DeleteTask(ctx context.Context, id int64) error
 }
 
-// NewServer はサーバを初期化する
-func NewServer(api *env.API, repository repository) (*http.Server, error) {
-	s, err := ogen.NewServer(
-		&handler{repository: repository},
-		&securityHandler{repository: repository},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("ogen.NewServer failed: %w", err)
-	}
-
-	return &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", api.Host, api.Port),
-		Handler:           logMiddleware(s),
-		ReadTimeout:       10 * time.Second,
-		ReadHeaderTimeout: 10 * time.Second,
-		MaxHeaderBytes:    1 << 20,
-	}, nil
-}
-
 var (
 	errBadRequest          = errors.New("there is an input error")
 	errUnauthorized        = errors.New("user is not authenticated")
@@ -61,7 +39,8 @@ var (
 	errServerUnavailable   = errors.New("server is temporarily unavailable")
 )
 
-func (h *handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
+// NewError -
+func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
 	var (
 		statusCode int
 		message    string

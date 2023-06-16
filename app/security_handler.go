@@ -6,15 +6,15 @@ import (
 	"github.com/minguu42/mtasks/app/ogen"
 )
 
-type securityHandler struct {
-	repository repository
+type SecurityHandler struct {
+	Repository repository
 }
 
 type userKey struct{}
 
 // HandleIsAuthorized -
-func (s *securityHandler) HandleIsAuthorized(ctx context.Context, _ string, t ogen.IsAuthorized) (context.Context, error) {
-	u, err := s.repository.GetUserByAPIKey(ctx, t.APIKey)
+func (s *SecurityHandler) HandleIsAuthorized(ctx context.Context, _ string, t ogen.IsAuthorized) (context.Context, error) {
+	u, err := s.Repository.GetUserByAPIKey(ctx, t.APIKey)
 	if err != nil {
 		return nil, errUnauthorized
 	}

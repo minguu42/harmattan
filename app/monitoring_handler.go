@@ -13,7 +13,7 @@ var (
 )
 
 // GetHealth は GET /health に対応するハンドラ関数
-func (h *handler) GetHealth(_ context.Context) (*ogen.GetHealthOK, error) {
+func (h *Handler) GetHealth(_ context.Context) (*ogen.GetHealthOK, error) {
 	return &ogen.GetHealthOK{
 		Version:  version,
 		Revision: revision,
