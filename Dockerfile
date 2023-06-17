@@ -17,7 +17,7 @@ ARG API_REVISION=""
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,target=. \
     CGO_ENABLED=0 go build \
-      -ldflags "-X github.com/minguu42/mtasks/app.version=$API_VERSION -X github.com/minguu42/mtasks/app.revision=$API_REVISION" \
+      -ldflags "-X github.com/minguu42/mtasks/pkg/handler.version=$API_VERSION -X github.com/minguu42/mtasks/pkg/handler.revision=$API_REVISION" \
       -o /go/bin/api \
       ./cmd/server
 
