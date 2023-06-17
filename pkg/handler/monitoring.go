@@ -1,19 +1,19 @@
-package app
+package handler
 
 import (
 	"context"
 
-	"github.com/minguu42/mtasks/app/ogen"
+	"github.com/minguu42/mtasks/pkg/ogen"
 )
 
-// この2つの変数の値はビルド時に埋め込む
+// この2つの変数の値はビルド時に埋め込まれる
 var (
 	version  string
 	revision string
 )
 
 // GetHealth は GET /health に対応するハンドラ関数
-func (h *handler) GetHealth(_ context.Context) (*ogen.GetHealthOK, error) {
+func (h *Handler) GetHealth(_ context.Context) (*ogen.GetHealthOK, error) {
 	return &ogen.GetHealthOK{
 		Version:  version,
 		Revision: revision,

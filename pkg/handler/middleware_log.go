@@ -1,4 +1,4 @@
-package app
+package handler
 
 import (
 	"fmt"
@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/minguu42/mtasks/app/logging"
+	"github.com/minguu42/mtasks/pkg/logging"
 )
 
-func logMiddleware(next http.Handler) http.HandlerFunc {
+// MiddlewareLog -
+func MiddlewareLog(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t1 := time.Now()
 		next.ServeHTTP(w, r)

@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/mtasks/app"
-	"github.com/minguu42/mtasks/app/logging"
+	"github.com/minguu42/mtasks/pkg/entity"
+
+	"github.com/minguu42/mtasks/pkg/logging"
 )
 
-func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*app.Task, error) {
+func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*entity.Task, error) {
 	q := `INSERT INTO tasks (project_id, title, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	logging.Debugf(q)
 
@@ -24,7 +25,7 @@ func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*a
 		return nil, fmt.Errorf("result.LastInsertId failed: %w", err)
 	}
 
-	return &app.Task{
+	return &entity.Task{
 		ID:        id,
 		ProjectID: projectID,
 		Title:     title,
@@ -33,7 +34,7 @@ func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*a
 	}, nil
 }
 
-func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64, sort string, limit, offset int) ([]*app.Task, error) {
+func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64, sort string, limit, offset int) ([]*entity.Task, error) {
 	q := `SELECT id, title, completed_at, created_at, updated_at FROM tasks WHERE project_id = ? ORDER BY ? LIMIT ? OFFSET ?`
 	logging.Debugf(q)
 
@@ -43,9 +44,9 @@ func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64, sort str
 	}
 	defer rows.Close()
 
-	ts := make([]*app.Task, 0, 20)
+	ts := make([]*entity.Task, 0, 20)
 	for rows.Next() {
-		t := app.Task{ProjectID: projectID}
+		t := entity.Task{ProjectID: projectID}
 		if err := rows.Scan(&t.ID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("rows.Scan failed: %w", err)
 		}
@@ -54,11 +55,11 @@ func (db *DB) GetTasksByProjectID(ctx context.Context, projectID int64, sort str
 	return ts, nil
 }
 
-func (db *DB) GetTaskByID(ctx context.Context, id int64) (*app.Task, error) {
+func (db *DB) GetTaskByID(ctx context.Context, id int64) (*entity.Task, error) {
 	q := `SELECT project_id, title, completed_at, created_at, updated_at FROM tasks WHERE id = ?`
 	logging.Debugf(q)
 
-	t := app.Task{ID: id}
+	t := entity.Task{ID: id}
 	if err := db.QueryRowContext(ctx, q, id).Scan(&t.ProjectID, &t.Title, &t.CompletedAt, &t.CreatedAt, &t.UpdatedAt); err != nil {
 		return nil, fmt.Errorf("db.QueryRowContext failed: %w", err)
 	}

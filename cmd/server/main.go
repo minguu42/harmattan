@@ -2,15 +2,18 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
-	"github.com/minguu42/mtasks/app"
-	"github.com/minguu42/mtasks/app/database"
-	"github.com/minguu42/mtasks/app/env"
-	"github.com/minguu42/mtasks/app/logging"
+	"github.com/minguu42/mtasks/pkg/env"
+	"github.com/minguu42/mtasks/pkg/handler"
+	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/pkg/repository/database"
 )
 
 func main() {
@@ -25,9 +28,19 @@ func main() {
 	}
 	defer db.Close()
 
-	s, err := app.NewServer(appEnv.API, db)
+	h, err := ogen.NewServer(
+		&handler.Handler{Repository: db},
+		&handler.Security{Repository: db},
+	)
 	if err != nil {
-		logging.Fatalf("server.NewServer failed: %v", err)
+		logging.Fatalf("ogen.NewServer failed: %v", err)
+	}
+	s := &http.Server{
+		Addr:              fmt.Sprintf("%s:%d", appEnv.API.Host, appEnv.API.Port),
+		Handler:           handler.MiddlewareLog(h),
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		MaxHeaderBytes:    1 << 20,
 	}
 
 	shutdownErr := make(chan error, 1)
