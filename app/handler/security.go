@@ -1,19 +1,21 @@
-package app
+package handler
 
 import (
 	"context"
+
 	"github.com/minguu42/mtasks/app/ogen"
 	"github.com/minguu42/mtasks/app/repository"
 )
 
-type SecurityHandler struct {
+type userKey struct{}
+
+// Security -
+type Security struct {
 	Repository repository.Repository
 }
 
-type userKey struct{}
-
 // HandleIsAuthorized -
-func (s *SecurityHandler) HandleIsAuthorized(ctx context.Context, _ string, t ogen.IsAuthorized) (context.Context, error) {
+func (s *Security) HandleIsAuthorized(ctx context.Context, _ string, t ogen.IsAuthorized) (context.Context, error) {
 	u, err := s.Repository.GetUserByAPIKey(ctx, t.APIKey)
 	if err != nil {
 		return nil, errUnauthorized

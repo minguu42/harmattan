@@ -1,3 +1,4 @@
+// Package repository はデータベースへの操作を抽象化する
 package repository
 
 import (

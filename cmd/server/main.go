@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minguu42/mtasks/app"
 	"github.com/minguu42/mtasks/app/env"
+	"github.com/minguu42/mtasks/app/handler"
 	"github.com/minguu42/mtasks/app/logging"
 	"github.com/minguu42/mtasks/app/ogen"
 	"github.com/minguu42/mtasks/app/repository/database"
@@ -29,15 +29,15 @@ func main() {
 	defer db.Close()
 
 	h, err := ogen.NewServer(
-		&app.Handler{Repository: db},
-		&app.SecurityHandler{Repository: db},
+		&handler.Handler{Repository: db},
+		&handler.Security{Repository: db},
 	)
 	if err != nil {
 		logging.Fatalf("ogen.NewServer failed: %v", err)
 	}
 	s := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", appEnv.API.Host, appEnv.API.Port),
-		Handler:           app.LogMiddleware(h),
+		Handler:           handler.MiddlewareLog(h),
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		MaxHeaderBytes:    1 << 20,

@@ -1,4 +1,4 @@
-package app
+package handler
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/minguu42/mtasks/app/ogen"
 )
 
-// この2つの変数の値はビルド時に埋め込む
+// この2つの変数の値はビルド時に埋め込まれる
 var (
 	version  string
 	revision string
