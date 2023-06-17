@@ -95,8 +95,8 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if p.ID != t.ProjectID {
-		logging.Errorf("p.ID != t.ProjectID")
+	if !p.ContainsTask(t) {
+		logging.Errorf("project does not contain the task")
 		return nil, errTaskNotFound
 	}
 
@@ -141,8 +141,8 @@ func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) 
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
 		return errInternalServerError
 	}
-	if p.ID != t.ProjectID {
-		logging.Errorf("p.ID != t.ProjectID")
+	if !p.ContainsTask(t) {
+		logging.Errorf("project does not contain the task")
 		return errTaskNotFound
 	}
 
