@@ -2,12 +2,12 @@ package app
 
 import (
 	"context"
-
 	"github.com/minguu42/mtasks/app/ogen"
+	"github.com/minguu42/mtasks/app/repository"
 )
 
 type SecurityHandler struct {
-	Repository repository
+	Repository repository.Repository
 }
 
 type userKey struct{}

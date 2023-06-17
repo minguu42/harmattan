@@ -1,4 +1,4 @@
-// Package database はデータベースに関するアダプタパッケージ
+// Package database はデータベースに関するパッケージ
 package database
 
 import (
@@ -8,16 +8,15 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/minguu42/mtasks/app/logging"
 )
 
-// DB は app.repository インタフェースを実装する
+// DB は repository インタフェースを満たすデータベース
 type DB struct {
 	*sql.DB
 }
 
-// Open はデータベースとの接続が確立する
+// Open はデータベースとの接続を確立する
 func Open(ctx context.Context, dsn string) (*DB, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -29,9 +28,9 @@ func Open(ctx context.Context, dsn string) (*DB, error) {
 		if err := db.PingContext(ctx); err == nil {
 			break
 		} else if i == maxFailureTimes {
-			return nil, fmt.Errorf("DB.PingContext failed: %w", err)
+			return nil, fmt.Errorf("db.PingContext failed: %w", err)
 		}
-		logging.Infof("DB.PingContext failed. try again after 15 seconds")
+		logging.Infof("db.PingContext failed. try again after 15 seconds")
 		time.Sleep(15 * time.Second)
 	}
 

@@ -9,12 +9,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minguu42/mtasks/app/ogen"
-
 	"github.com/minguu42/mtasks/app"
-	"github.com/minguu42/mtasks/app/database"
 	"github.com/minguu42/mtasks/app/env"
 	"github.com/minguu42/mtasks/app/logging"
+	"github.com/minguu42/mtasks/app/ogen"
+	"github.com/minguu42/mtasks/app/repository/database"
 )
 
 func main() {
