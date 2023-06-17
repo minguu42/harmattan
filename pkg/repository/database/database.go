@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minguu42/mtasks/app/logging"
+	"github.com/minguu42/mtasks/pkg/logging"
 )
 
 // DB は repository インタフェースを満たすデータベース

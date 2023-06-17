@@ -5,9 +5,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/minguu42/mtasks/app"
-	"github.com/minguu42/mtasks/app/ogen"
-	"github.com/minguu42/mtasks/app/repository"
+	"github.com/minguu42/mtasks/pkg/entity"
+
+	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/pkg/repository"
 )
 
 var (
@@ -69,7 +70,7 @@ func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
 }
 
 // newProjectResponse は Project から ogen.Project を生成する
-func newProjectResponse(p *app.Project) *ogen.Project {
+func newProjectResponse(p *entity.Project) *ogen.Project {
 	return &ogen.Project{
 		ID:        p.ID,
 		Name:      p.Name,
@@ -79,7 +80,7 @@ func newProjectResponse(p *app.Project) *ogen.Project {
 }
 
 // newProjectsResponse は Project のスライスから ogen.Project のスライスを生成する
-func newProjectsResponse(ps []*app.Project) []ogen.Project {
+func newProjectsResponse(ps []*entity.Project) []ogen.Project {
 	projects := make([]ogen.Project, 0, len(ps))
 	for _, p := range ps {
 		projects = append(projects, *newProjectResponse(p))
@@ -88,7 +89,7 @@ func newProjectsResponse(ps []*app.Project) []ogen.Project {
 }
 
 // newTaskResponse は Task から ogen.Task を生成する
-func newTaskResponse(t *app.Task) *ogen.Task {
+func newTaskResponse(t *entity.Task) *ogen.Task {
 	completedAt := ogen.OptDateTime{}
 	if t.CompletedAt != nil {
 		completedAt = ogen.NewOptDateTime(*t.CompletedAt)
@@ -104,7 +105,7 @@ func newTaskResponse(t *app.Task) *ogen.Task {
 }
 
 // newTasksResponse は Task のスライスから ogen.Task のスライスを生成する
-func newTasksResponse(ts []*app.Task) []ogen.Task {
+func newTasksResponse(ts []*entity.Task) []ogen.Task {
 	tasks := make([]ogen.Task, 0, len(ts))
 	for _, t := range ts {
 		tasks = append(tasks, *newTaskResponse(t))

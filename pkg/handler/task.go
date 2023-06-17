@@ -4,14 +4,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/minguu42/mtasks/app"
-	"github.com/minguu42/mtasks/app/logging"
-	"github.com/minguu42/mtasks/app/ogen"
+	"github.com/minguu42/mtasks/pkg/entity"
+
+	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/ogen"
 )
 
 // CreateTask は POST /projects/{projectID}/tasks に対応するハンドラ
 func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, params ogen.CreateTaskParams) (*ogen.Task, error) {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
@@ -38,7 +39,7 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 
 // ListTasks は GET /projects/{projectID}/tasks に対応するハンドラ
 func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*ogen.Tasks, error) {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
@@ -74,7 +75,7 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 
 // UpdateTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, params ogen.UpdateTaskParams) (*ogen.Task, error) {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
@@ -120,7 +121,7 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 
 // DeleteTask は DELETE /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) error {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return errUnauthorized

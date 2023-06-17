@@ -4,14 +4,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/minguu42/mtasks/app"
-	"github.com/minguu42/mtasks/app/logging"
-	"github.com/minguu42/mtasks/app/ogen"
+	"github.com/minguu42/mtasks/pkg/entity"
+
+	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/ogen"
 )
 
 // CreateProject は POST /projects に対応するハンドラ
 func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq) (*ogen.Project, error) {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
@@ -28,7 +29,7 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 
 // ListProjects は GET /projects に対応するハンドラ
 func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsParams) (*ogen.Projects, error) {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
@@ -54,7 +55,7 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 
 // UpdateProject は PATCH /projects/{projectID} に対応するハンドラ
 func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq, params ogen.UpdateProjectParams) (*ogen.Project, error) {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
@@ -88,7 +89,7 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 
 // DeleteProject は DELETE /projects/{projectID} に対応するハンドラ
 func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectParams) error {
-	u, ok := ctx.Value(userKey{}).(*app.User)
+	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return errUnauthorized

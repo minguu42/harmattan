@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/mtasks/app"
-	"github.com/minguu42/mtasks/app/logging"
+	"github.com/minguu42/mtasks/pkg/entity"
+
+	"github.com/minguu42/mtasks/pkg/logging"
 )
 
-func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*app.Project, error) {
+func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*entity.Project, error) {
 	q := `INSERT INTO projects (user_id, name, created_at, updated_at) VALUES (?, ?, ?, ?)`
 	logging.Debugf(q)
 
@@ -24,7 +25,7 @@ func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*ap
 		return nil, fmt.Errorf("result.LastInsertId failed: %w", err)
 	}
 
-	return &app.Project{
+	return &entity.Project{
 		ID:        id,
 		UserID:    userID,
 		Name:      name,
@@ -33,7 +34,7 @@ func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*ap
 	}, nil
 }
 
-func (db *DB) GetProjectsByUserID(ctx context.Context, userID int64, sort string, limit, offset int) ([]*app.Project, error) {
+func (db *DB) GetProjectsByUserID(ctx context.Context, userID int64, sort string, limit, offset int) ([]*entity.Project, error) {
 	q := `SELECT id, name, created_at, updated_at FROM projects WHERE user_id = ? ORDER BY ? LIMIT ? OFFSET ?`
 	logging.Debugf(q)
 
@@ -43,9 +44,9 @@ func (db *DB) GetProjectsByUserID(ctx context.Context, userID int64, sort string
 	}
 	defer rows.Close()
 
-	ps := make([]*app.Project, 0, 20)
+	ps := make([]*entity.Project, 0, 20)
 	for rows.Next() {
-		p := app.Project{UserID: userID}
+		p := entity.Project{UserID: userID}
 		if err := rows.Scan(&p.ID, &p.Name, &p.CreatedAt, &p.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("rows.Scan failed: %w", err)
 		}
@@ -54,11 +55,11 @@ func (db *DB) GetProjectsByUserID(ctx context.Context, userID int64, sort string
 	return ps, nil
 }
 
-func (db *DB) GetProjectByID(ctx context.Context, id int64) (*app.Project, error) {
+func (db *DB) GetProjectByID(ctx context.Context, id int64) (*entity.Project, error) {
 	q := `SELECT user_id, name, created_at, updated_at FROM projects WHERE id = ?`
 	logging.Debugf(q)
 
-	p := app.Project{ID: id}
+	p := entity.Project{ID: id}
 	if err := db.QueryRowContext(ctx, q, id).Scan(&p.UserID, &p.Name, &p.CreatedAt, &p.UpdatedAt); err != nil {
 		return nil, fmt.Errorf("row.Scan failed: %w", err)
 	}

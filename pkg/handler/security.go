@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	"github.com/minguu42/mtasks/app/ogen"
-	"github.com/minguu42/mtasks/app/repository"
+	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/pkg/repository"
 )
 
 type userKey struct{}

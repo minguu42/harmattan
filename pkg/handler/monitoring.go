@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/minguu42/mtasks/app/ogen"
+	"github.com/minguu42/mtasks/pkg/ogen"
 )
 
 // この2つの変数の値はビルド時に埋め込まれる
