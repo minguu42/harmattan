@@ -16,10 +16,16 @@ import (
 	"github.com/minguu42/mtasks/pkg/repository/database"
 )
 
-func main() {
-	appEnv, err := env.Load()
-	if err != nil {
+func init() {
+	if err := env.Load(); err != nil {
 		logging.Fatalf("env.Load failed: %v", err)
+	}
+}
+
+func main() {
+	appEnv, err := env.Get()
+	if err != nil {
+		logging.Fatalf("env.Get failed: %v", err)
 	}
 
 	db, err := database.Open(context.Background(), appEnv.MySQL.DSN())
