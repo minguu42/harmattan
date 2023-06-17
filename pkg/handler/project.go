@@ -67,8 +67,8 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 		return nil, errInternalServerError
 	}
 
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return nil, errProjectNotFound
 	}
 
@@ -101,8 +101,8 @@ func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectPa
 		return errInternalServerError
 	}
 
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return errProjectNotFound
 	}
 

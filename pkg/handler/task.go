@@ -23,8 +23,8 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return nil, errTaskNotFound
 	}
 
@@ -50,8 +50,8 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return nil, errTaskNotFound
 	}
 
@@ -86,8 +86,8 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return nil, errProjectNotFound
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
@@ -132,8 +132,8 @@ func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) 
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return errProjectNotFound
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
