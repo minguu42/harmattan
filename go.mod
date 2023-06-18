@@ -6,6 +6,7 @@ require (
 	github.com/go-faster/errors v0.6.1
 	github.com/go-faster/jx v1.0.0
 	github.com/go-sql-driver/mysql v1.7.1
+	github.com/google/go-cmp v0.5.9
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/ogen-go/ogen v0.68.1
 	go.opentelemetry.io/otel v1.16.0
