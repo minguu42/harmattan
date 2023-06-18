@@ -23,12 +23,13 @@ func init() {
 }
 
 func main() {
-	appEnv, err := env.Get()
+	e, err := env.Get()
 	if err != nil {
 		logging.Fatalf("env.Get failed: %v", err)
 	}
 
-	db, err := database.Open(context.Background(), appEnv.MySQL.DSN())
+	dsn := database.DSN(e.MySQL.User, e.MySQL.Password, e.MySQL.Host, e.MySQL.Port, e.MySQL.Database)
+	db, err := database.Open(context.Background(), dsn)
 	if err != nil {
 		logging.Fatalf("database.Open failed: %v", err)
 	}
@@ -42,7 +43,7 @@ func main() {
 		logging.Fatalf("ogen.NewServer failed: %v", err)
 	}
 	s := &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", appEnv.API.Host, appEnv.API.Port),
+		Addr:              fmt.Sprintf("%s:%d", e.API.Host, e.API.Port),
 		Handler:           handler.MiddlewareLog(h),
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
