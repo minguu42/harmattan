@@ -22,7 +22,7 @@ func TestHandler_NewError(t *testing.T) {
 	}{
 		{
 			name: "想定されるerrが渡される",
-			args: args{ctx: nil, err: errBadRequest},
+			args: args{ctx: context.Background(), err: errBadRequest},
 			want: &ogen.ErrorStatusCode{
 				StatusCode: 400,
 				Response: ogen.Error{
@@ -33,7 +33,7 @@ func TestHandler_NewError(t *testing.T) {
 		},
 		{
 			name: "想定しないerrが渡される",
-			args: args{ctx: nil, err: errors.New("")},
+			args: args{ctx: context.Background(), err: errors.New("")},
 			want: &ogen.ErrorStatusCode{
 				StatusCode: 500,
 				Response: ogen.Error{
