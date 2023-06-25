@@ -2,41 +2,44 @@
 package database
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/logging"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-// DB は repository インタフェースを満たすデータベース
+// DB は repository.Repository インタフェースを実装するデータベース
 type DB struct {
-	*sql.DB
+	*gorm.DB
+}
+
+// Close は新しいクエリの実行を辞め、データベースとの接続を閉じる
+func (db *DB) Close() error {
+	sqlDB, err := db.DB.DB()
+	if err != nil {
+		return fmt.Errorf("db.DB failed: %w", err)
+	}
+
+	return sqlDB.Close()
 }
 
 // Open はデータベースとの接続を確立する
-func Open(ctx context.Context, dsn string) (*DB, error) {
-	db, err := sql.Open("mysql", dsn)
+func Open(dsn string) (*DB, error) {
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("sql.Open failed: %w", err)
+		return nil, fmt.Errorf("gorm.Open failed: %w", err)
 	}
 
-	maxFailureTimes := 2
-	for i := 0; i <= maxFailureTimes; i++ {
-		if err := db.PingContext(ctx); err == nil {
-			break
-		} else if i == maxFailureTimes {
-			return nil, fmt.Errorf("db.PingContext failed: %w", err)
-		}
-		logging.Infof("db.PingContext failed. try again after 15 seconds")
-		time.Sleep(15 * time.Second)
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("db.DB failed: %w", err)
 	}
+	sqlDB.SetConnMaxLifetime(3 * time.Minute)
+	sqlDB.SetMaxOpenConns(10)
+	sqlDB.SetMaxIdleConns(10)
 
-	db.SetConnMaxLifetime(3 * time.Minute)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
 	return &DB{db}, nil
 }
 

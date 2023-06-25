@@ -22,7 +22,7 @@ func main() {
 		logging.Fatalf("env.Load failed: %v", err)
 	}
 
-	db, err := database.Open(context.Background(), appEnv.MySQL.DSN())
+	db, err := database.Open(appEnv.MySQL.DSN())
 	if err != nil {
 		logging.Fatalf("database.Open failed: %v", err)
 	}
