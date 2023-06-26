@@ -44,10 +44,14 @@ func Open(dsn string) (*DB, error) {
 }
 
 // generateOrderByClause は sort クエリから ORDER BY 句の値を生成する
-// 例: createdAt -> createdAt ASC、-createdAt -> createdAt DESC
+// 例: 'createdAt' -> 'created_at ASC'、'-createdAt' -> 'created_at DESC'
 func generateOrderByClause(sort string) string {
-	if strings.HasPrefix(sort, "-") {
-		return fmt.Sprintf("%s DESC", strings.TrimPrefix(sort, "-"))
+	m := map[string]string{
+		"createdAt": "created_at",
+		"updatedAt": "updated_at",
 	}
-	return fmt.Sprintf("%s ASC", sort)
+	if strings.HasPrefix(sort, "-") {
+		return fmt.Sprintf("%s DESC", m[strings.TrimPrefix(sort, "-")])
+	}
+	return fmt.Sprintf("%s ASC", m[sort])
 }
