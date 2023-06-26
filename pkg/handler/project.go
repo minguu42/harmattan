@@ -4,17 +4,17 @@ import (
 	"context"
 	"time"
 
+	"github.com/go-faster/errors"
 	"github.com/minguu42/mtasks/pkg/entity"
-
 	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/ogen"
+	"gorm.io/gorm"
 )
 
 // CreateProject は POST /projects に対応するハンドラ
 func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq) (*ogen.Project, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
 	}
 
@@ -31,7 +31,6 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsParams) (*ogen.Projects, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
 	}
 
@@ -57,12 +56,14 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq, params ogen.UpdateProjectParams) (*ogen.Project, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errProjectNotFound
+		}
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
@@ -91,12 +92,14 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectParams) error {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errProjectNotFound
+		}
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return errInternalServerError
 	}

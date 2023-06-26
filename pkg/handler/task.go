@@ -4,22 +4,25 @@ import (
 	"context"
 	"time"
 
+	"github.com/go-faster/errors"
 	"github.com/minguu42/mtasks/pkg/entity"
-
 	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/ogen"
+	"gorm.io/gorm"
 )
 
 // CreateTask は POST /projects/{projectID}/tasks に対応するハンドラ
 func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, params ogen.CreateTaskParams) (*ogen.Task, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errProjectNotFound
+		}
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
@@ -41,12 +44,14 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*ogen.Tasks, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errProjectNotFound
+		}
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
@@ -77,12 +82,14 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, params ogen.UpdateTaskParams) (*ogen.Task, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errProjectNotFound
+		}
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
@@ -92,6 +99,9 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errTaskNotFound
+		}
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
 		return nil, errInternalServerError
 	}
@@ -123,12 +133,14 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) error {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
-		logging.Errorf("ctx.Value(userKey{}).(*User) failed")
 		return errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errProjectNotFound
+		}
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return errInternalServerError
 	}
@@ -138,6 +150,9 @@ func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) 
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errTaskNotFound
+		}
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
 		return errInternalServerError
 	}
