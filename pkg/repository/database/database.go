@@ -12,14 +12,14 @@ import (
 
 // DB は repository.Repository インタフェースを実装するデータベース
 type DB struct {
-	*gorm.DB
+	gormDB *gorm.DB
 }
 
 // Close は新しいクエリの実行を辞め、データベースとの接続を閉じる
 func (db *DB) Close() error {
-	sqlDB, err := db.DB.DB()
+	sqlDB, err := db.gormDB.DB()
 	if err != nil {
-		return fmt.Errorf("db.DB failed: %w", err)
+		return fmt.Errorf("gormDB.DB failed: %w", err)
 	}
 
 	return sqlDB.Close()
@@ -40,7 +40,7 @@ func Open(dsn string) (*DB, error) {
 	sqlDB.SetMaxOpenConns(10)
 	sqlDB.SetMaxIdleConns(10)
 
-	return &DB{db}, nil
+	return &DB{gormDB: db}, nil
 }
 
 // generateOrderByClause は sort クエリから ORDER BY 句の値を生成する

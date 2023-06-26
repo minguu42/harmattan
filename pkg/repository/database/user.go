@@ -15,7 +15,7 @@ func (db *DB) GetUserByAPIKey(ctx context.Context, apiKey string) (*entity.User,
 
 	var u entity.User
 	if err := db.QueryRowContext(ctx, q, apiKey).Scan(&u.ID, &u.Name, &u.CreatedAt, &u.UpdatedAt); err != nil {
-		return nil, fmt.Errorf("db.QueryRowContext failed: %w", err)
+		return nil, fmt.Errorf("gormDB.QueryRowContext failed: %w", err)
 	}
 	return &u, nil
 }
