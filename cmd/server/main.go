@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/handler"
 	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/ogen"
 	"github.com/minguu42/mtasks/pkg/repository/database"
 )
 

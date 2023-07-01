@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-faster/errors"
 	"github.com/google/go-cmp/cmp"
-	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/gen/ogen"
 )
 
 func TestHandler_NewError(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/go-faster/errors"
+	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
 	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/ogen"
 	"gorm.io/gorm"
 )
 

@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/repository"
 )
 

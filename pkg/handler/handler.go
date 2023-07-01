@@ -5,9 +5,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-
-	"github.com/minguu42/mtasks/pkg/ogen"
 	"github.com/minguu42/mtasks/pkg/repository"
 )
 
