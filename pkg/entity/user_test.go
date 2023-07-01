@@ -25,8 +25,8 @@ func TestUser_HasProject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.args.user.HasProject(tt.args.project); got != tt.want {
-				t.Errorf("got: %t, want: %t", got, tt.want)
+			if got := tt.args.user.HasProject(tt.args.project); tt.want != got {
+				t.Errorf("user.HasProject() want %t, but %t", tt.want, got)
 			}
 		})
 	}

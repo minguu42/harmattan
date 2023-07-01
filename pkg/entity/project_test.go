@@ -25,8 +25,8 @@ func TestProject_ContainsTask(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.args.project.ContainsTask(tt.args.task); got != tt.want {
-				t.Errorf("got: %t, want: %t", got, tt.want)
+			if got := tt.args.project.ContainsTask(tt.args.task); tt.want != got {
+				t.Errorf("project.ContainsTask() want %t, but %t", tt.want, got)
 			}
 		})
 	}
