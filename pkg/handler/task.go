@@ -28,7 +28,7 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 	}
 	if !u.HasProject(p) {
 		logging.Errorf("user does not have the project")
-		return nil, errTaskNotFound
+		return nil, errProjectNotFound
 	}
 
 	t, err := h.Repository.CreateTask(ctx, params.ProjectID, req.Title)
@@ -57,7 +57,7 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 	}
 	if !u.HasProject(p) {
 		logging.Errorf("user does not have the project")
-		return nil, errTaskNotFound
+		return nil, errProjectNotFound
 	}
 
 	ts, err := h.Repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), params.Limit.Or(10)+1, params.Offset.Or(0))
