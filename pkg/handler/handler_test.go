@@ -2,12 +2,14 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"testing"
 
-	"github.com/go-faster/errors"
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/mtasks/gen/ogen"
 )
+
+//var mockCtx = context.WithValue(context.Background(), userKey{}, &entity.User{ID: 1, Name: "ユーザ1"})
 
 func TestHandler_NewError(t *testing.T) {
 	h := Handler{}
@@ -21,7 +23,7 @@ func TestHandler_NewError(t *testing.T) {
 		want *ogen.ErrorStatusCode
 	}{
 		{
-			name: "想定されるerrが渡される",
+			name: "特定のハンドラエラーが渡される",
 			args: args{ctx: context.Background(), err: errBadRequest},
 			want: &ogen.ErrorStatusCode{
 				StatusCode: 400,
@@ -32,7 +34,7 @@ func TestHandler_NewError(t *testing.T) {
 			},
 		},
 		{
-			name: "想定しないerrが渡される",
+			name: "ハンドラエラーでないエラーが渡される",
 			args: args{ctx: context.Background(), err: errors.New("")},
 			want: &ogen.ErrorStatusCode{
 				StatusCode: 500,
