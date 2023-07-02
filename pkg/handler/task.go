@@ -80,6 +80,11 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 
 // UpdateTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, params ogen.UpdateTaskParams) (*ogen.Task, error) {
+	if !req.IsCompleted.IsSet() {
+		logging.Errorf("value contains nothing")
+		return nil, errBadRequest
+	}
+
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		return nil, errUnauthorized
@@ -110,10 +115,6 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		return nil, errTaskNotFound
 	}
 
-	if !req.IsCompleted.IsSet() {
-		logging.Errorf("value contains nothing")
-		return nil, errBadRequest
-	}
 	now := time.Now()
 	if req.IsCompleted.Value {
 		t.CompletedAt = &now
