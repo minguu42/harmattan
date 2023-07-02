@@ -7,9 +7,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/mtasks/gen/ogen"
+	"github.com/minguu42/mtasks/pkg/entity"
 )
 
-//var mockCtx = context.WithValue(context.Background(), userKey{}, &entity.User{ID: 1, Name: "ユーザ1"})
+var mockCtx = context.WithValue(context.Background(), userKey{}, &entity.User{ID: 1, Name: "ユーザ1"})
 
 func TestHandler_NewError(t *testing.T) {
 	h := Handler{}
