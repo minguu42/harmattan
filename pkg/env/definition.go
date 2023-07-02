@@ -1,7 +1,5 @@
 package env
 
-import "fmt"
-
 // Env はアプリケーションで使用する環境変数
 type Env struct {
 	API   *API
@@ -21,15 +19,4 @@ type MySQL struct {
 	Database string `envconfig:"MYSQL_DATABASE" required:"true"`
 	User     string `envconfig:"MYSQL_USER" required:"true"`
 	Password string `envconfig:"MYSQL_PASSWORD" required:"true"`
-}
-
-// DSN はデータベースとの接続に使用する Data Source Name を生成する
-func (r *MySQL) DSN() string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true",
-		r.User,
-		r.Password,
-		r.Host,
-		r.Port,
-		r.Database,
-	)
 }

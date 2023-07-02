@@ -25,6 +25,17 @@ func (db *DB) Close() error {
 	return sqlDB.Close()
 }
 
+// DSN はデータベースとの接続に使用する Data Source Name を生成する
+func DSN(user, password, host string, port int, database string) string {
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true",
+		user,
+		password,
+		host,
+		port,
+		database,
+	)
+}
+
 // Open はデータベースとの接続を確立する
 func Open(dsn string) (*DB, error) {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})

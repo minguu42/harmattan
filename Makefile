@@ -8,6 +8,8 @@ setup: ## 開発に必要なツールをインストールする
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install github.com/ogen-go/ogen/cmd/ogen@latest
+	go install github.com/golang/mock/mockgen@latest
+	go install github.com/tenntenn/testtime/cmd/testtime@latest
 
 build: ## APIサーバのコンテナイメージをビルドする
 	@docker build \
@@ -25,11 +27,11 @@ fmt: ## フォーマットを実行する
 	@goimports -w .
 
 lint: ## 静的解析を実行する
-	@go vet $$(go list ./... | grep -v /pkg/ogen)
-	@staticcheck $$(go list ./... | grep -v /pkg/ogen)
+	@go vet $$(go list ./... | grep -v /gen)
+	@staticcheck $$(go list ./... | grep -v /gen)
 
 test: ## テストを実行する
-	@go test ./...
+	@go test -overlay=`testtime` -cover $$(go list ./... | grep -v /gen)
 
 help: ## ヘルプを表示する
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

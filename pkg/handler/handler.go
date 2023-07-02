@@ -5,12 +5,12 @@ import (
 	"context"
 	"errors"
 
+	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-
-	"github.com/minguu42/mtasks/pkg/ogen"
 	"github.com/minguu42/mtasks/pkg/repository"
 )
 
+// ハンドラが返すエラー一覧
 var (
 	errBadRequest          = errors.New("there is an input error")
 	errUnauthorized        = errors.New("user is not authenticated")
@@ -21,12 +21,12 @@ var (
 	errServerUnavailable   = errors.New("server is temporarily unavailable")
 )
 
-// Handler -
+// Handler は ogen.Handler を満たすハンドラ
 type Handler struct {
 	Repository repository.Repository
 }
 
-// NewError -
+// NewError はハンドラから渡されるエラーから ogen.ErrorStatusCode を生成する
 func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
 	var (
 		statusCode int
@@ -69,7 +69,7 @@ func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
 	}
 }
 
-// newProjectResponse は Project から ogen.Project を生成する
+// newProjectResponse は entity.Project から ogen.Project を生成する
 func newProjectResponse(p *entity.Project) *ogen.Project {
 	return &ogen.Project{
 		ID:        p.ID,
@@ -79,7 +79,7 @@ func newProjectResponse(p *entity.Project) *ogen.Project {
 	}
 }
 
-// newProjectsResponse は Project のスライスから ogen.Project のスライスを生成する
+// newProjectsResponse は entity.Project のスライスから ogen.Project のスライスを生成する
 func newProjectsResponse(ps []*entity.Project) []ogen.Project {
 	projects := make([]ogen.Project, 0, len(ps))
 	for _, p := range ps {
@@ -88,7 +88,7 @@ func newProjectsResponse(ps []*entity.Project) []ogen.Project {
 	return projects
 }
 
-// newTaskResponse は Task から ogen.Task を生成する
+// newTaskResponse は entity.Task から ogen.Task を生成する
 func newTaskResponse(t *entity.Task) *ogen.Task {
 	completedAt := ogen.OptDateTime{}
 	if t.CompletedAt != nil {
@@ -104,7 +104,7 @@ func newTaskResponse(t *entity.Task) *ogen.Task {
 	}
 }
 
-// newTasksResponse は Task のスライスから ogen.Task のスライスを生成する
+// newTasksResponse は entity.Task のスライスから ogen.Task のスライスを生成する
 func newTasksResponse(ts []*entity.Task) []ogen.Task {
 	tasks := make([]ogen.Task, 0, len(ts))
 	for _, t := range ts {

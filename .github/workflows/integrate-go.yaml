@@ -1,13 +1,6 @@
 name: Integrate Go application
 
-on:
-  push:
-    paths:
-      - .github/workflows/**
-      - cmd/**
-      - gen/**
-      - pkg/**
-      - staticcheck.conf
+on: push
 
 jobs:
   check-style:
@@ -27,8 +20,8 @@ jobs:
         with:
           go-version-file: ./go.mod
       - run: go install honnef.co/go/tools/cmd/staticcheck@latest
-      - run: go vet $(go list ./... | grep -v /pkg/ogen)
-      - run: staticcheck $(go list ./... | grep -v /pkg/ogen)
+      - run: go vet $(go list ./... | grep -v /gen)
+      - run: staticcheck $(go list ./... | grep -v /gen)
   test:
     runs-on: ubuntu-22.04
     steps:
@@ -36,7 +29,8 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: ./go.mod
-      - run: go test ./...
+      - run: go install github.com/tenntenn/testtime/cmd/testtime@latest
+      - run: go test -overlay=`testtime` $(go list ./... | grep -v /gen)
   build:
     runs-on: ubuntu-22.04
     steps:

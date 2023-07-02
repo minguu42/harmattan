@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/go-faster/errors"
+	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
 	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/ogen"
 	"gorm.io/gorm"
 )
 
@@ -26,9 +26,9 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
-		return nil, errTaskNotFound
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
+		return nil, errProjectNotFound
 	}
 
 	t, err := h.Repository.CreateTask(ctx, params.ProjectID, req.Title)
@@ -55,9 +55,9 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
-		return nil, errTaskNotFound
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
+		return nil, errProjectNotFound
 	}
 
 	ts, err := h.Repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), params.Limit.Or(10)+1, params.Offset.Or(0))
@@ -80,6 +80,11 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 
 // UpdateTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, params ogen.UpdateTaskParams) (*ogen.Task, error) {
+	if !req.IsCompleted.IsSet() {
+		logging.Errorf("value contains nothing")
+		return nil, errBadRequest
+	}
+
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		return nil, errUnauthorized
@@ -93,8 +98,8 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return nil, errProjectNotFound
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
@@ -105,15 +110,11 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
 		return nil, errInternalServerError
 	}
-	if p.ID != t.ProjectID {
-		logging.Errorf("p.ID != t.ProjectID")
+	if !p.ContainsTask(t) {
+		logging.Errorf("project does not contain the task")
 		return nil, errTaskNotFound
 	}
 
-	if !req.IsCompleted.IsSet() {
-		logging.Errorf("value contains nothing")
-		return nil, errBadRequest
-	}
 	now := time.Now()
 	if req.IsCompleted.Value {
 		t.CompletedAt = &now
@@ -144,8 +145,8 @@ func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) 
 		logging.Errorf("repository.GetProjectByID failed: %v", err)
 		return errInternalServerError
 	}
-	if u.ID != p.UserID {
-		logging.Errorf("u.ID != p.UserID")
+	if !u.HasProject(p) {
+		logging.Errorf("user does not have the project")
 		return errProjectNotFound
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
@@ -156,8 +157,8 @@ func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) 
 		logging.Errorf("repository.GetTaskByID failed: %v", err)
 		return errInternalServerError
 	}
-	if p.ID != t.ProjectID {
-		logging.Errorf("p.ID != t.ProjectID")
+	if !p.ContainsTask(t) {
+		logging.Errorf("project does not contain the task")
 		return errTaskNotFound
 	}
 

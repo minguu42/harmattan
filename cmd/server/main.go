@@ -9,20 +9,27 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/handler"
 	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/ogen"
 	"github.com/minguu42/mtasks/pkg/repository/database"
 )
 
-func main() {
-	appEnv, err := env.Load()
-	if err != nil {
+func init() {
+	if err := env.Load(); err != nil {
 		logging.Fatalf("env.Load failed: %v", err)
 	}
+}
 
-	db, err := database.Open(appEnv.MySQL.DSN())
+func main() {
+	e, err := env.Get()
+	if err != nil {
+		logging.Fatalf("env.Get failed: %v", err)
+	}
+
+	dsn := database.DSN(e.MySQL.User, e.MySQL.Password, e.MySQL.Host, e.MySQL.Port, e.MySQL.Database)
+	db, err := database.Open(dsn)
 	if err != nil {
 		logging.Fatalf("database.Open failed: %v", err)
 	}
@@ -36,7 +43,7 @@ func main() {
 		logging.Fatalf("ogen.NewServer failed: %v", err)
 	}
 	s := &http.Server{
-		Addr:              fmt.Sprintf("%s:%d", appEnv.API.Host, appEnv.API.Port),
+		Addr:              fmt.Sprintf("%s:%d", e.API.Host, e.API.Port),
 		Handler:           handler.MiddlewareLog(h),
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,

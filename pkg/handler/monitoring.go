@@ -3,10 +3,10 @@ package handler
 import (
 	"context"
 
-	"github.com/minguu42/mtasks/pkg/ogen"
+	"github.com/minguu42/mtasks/gen/ogen"
 )
 
-// この2つの変数の値はビルド時に埋め込まれる
+// version と revision の値はビルド時に埋め込まれる
 var (
 	version  string
 	revision string
