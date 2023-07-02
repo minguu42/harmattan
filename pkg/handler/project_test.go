@@ -260,7 +260,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 			wantErr: errInternalServerError,
 		},
 		{
-			name: "ユーザが指定したプロジェクトを保持していない場合はエラーを返す",
+			name: "指定したプロジェクトをユーザが保持していない場合はエラーを返す",
 			args: args{
 				ctx:    mockCtx,
 				req:    &ogen.UpdateProjectReq{Name: ogen.OptString{Value: "新プロジェクト2", Set: true}},
@@ -381,7 +381,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 			want: errInternalServerError,
 		},
 		{
-			name: "ユーザが指定したプロジェクトを保持していない場合はエラーを返す",
+			name: "指定したプロジェクトをユーザが保持していない場合はエラーを返す",
 			args: args{
 				ctx:    mockCtx,
 				params: ogen.DeleteProjectParams{ProjectID: 2},
