@@ -4,12 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/mtasks/gen/ogen"
+	mockRepository "github.com/minguu42/mtasks/pkg/repository/mock"
 )
 
 func TestHandler_GetHealth(t *testing.T) {
-	h := &Handler{Repository: nil}
 	type args struct {
 		ctx context.Context
 	}
@@ -29,6 +30,12 @@ func TestHandler_GetHealth(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			c := gomock.NewController(t)
+			defer c.Finish()
+
+			r := mockRepository.NewMockRepository(c)
+			h := &Handler{Repository: r}
+
 			got, err := h.GetHealth(tt.args.ctx)
 			if err != nil {
 				t.Fatalf("h.GetHealth failed: %s", err)
