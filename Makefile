@@ -8,6 +8,7 @@ setup: ## 開発に必要なツールをインストールする
 	go install golang.org/x/tools/cmd/goimports@latest
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	go install github.com/ogen-go/ogen/cmd/ogen@latest
+	go install github.com/golang/mock/mockgen@latest
 
 build: ## APIサーバのコンテナイメージをビルドする
 	@docker build \
