@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-	"github.com/tenntenn/testtime"
 	"testing"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/tenntenn/testtime"
 	"gorm.io/gorm"
 )
 
