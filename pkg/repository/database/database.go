@@ -86,6 +86,7 @@ func Open(dsn string) (*DB, error) {
 func generateOrderByClause(sort string) string {
 	m := map[string]string{
 		"name":      "name",
+		"title":     "title",
 		"createdAt": "created_at",
 		"updatedAt": "updated_at",
 	}
