@@ -85,6 +85,7 @@ func Open(dsn string) (*DB, error) {
 // 例: 'createdAt' -> 'created_at ASC'、'-createdAt' -> 'created_at DESC'
 func generateOrderByClause(sort string) string {
 	m := map[string]string{
+		"name":      "name",
 		"createdAt": "created_at",
 		"updatedAt": "updated_at",
 	}
