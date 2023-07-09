@@ -146,7 +146,7 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 					ProjectID:   1,
 					Title:       "タスク2",
 					CompletedAt: &completedAt,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 				},
 			},
@@ -181,7 +181,7 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 				t.Errorf("testDB.GetTasksByProjectID error want '%v', but '%v'", tt.wantErr, err)
 			}
 			if diff := cmp.Diff(tt.want, got); diff != "" {
-				t.Errorf("testDB.GetTasksByProjectID mismatch (-want +got):\n%s", err)
+				t.Errorf("testDB.GetTasksByProjectID mismatch (-want +got):\n%s", diff)
 			}
 		})
 	}

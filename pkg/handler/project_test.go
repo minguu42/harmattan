@@ -11,7 +11,6 @@ import (
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-	"github.com/minguu42/mtasks/pkg/ttime"
 	"gorm.io/gorm"
 )
 
@@ -190,7 +189,6 @@ func TestHandler_UpdateProject(t *testing.T) {
 	}
 	tests := []struct {
 		name          string
-		tm            time.Time
 		args          args
 		prepareMockFn func(r *mock.MockRepository)
 		want          *ogen.Project
@@ -198,7 +196,6 @@ func TestHandler_UpdateProject(t *testing.T) {
 	}{
 		{
 			name: "プロジェクト1を変更する",
-			tm:   time.Date(2000, 1, 1, 0, 0, 0, 0, time.Local),
 			args: args{
 				ctx:    mockCtx,
 				req:    &ogen.UpdateProjectReq{Name: ogen.OptString{Value: "新プロジェクト1", Set: true}},
@@ -212,14 +209,14 @@ func TestHandler_UpdateProject(t *testing.T) {
 					CreatedAt: time.Time{},
 					UpdatedAt: time.Time{},
 				}, nil)
-				r.EXPECT().UpdateProject(mockCtx, int64(1), "新プロジェクト1", time.Date(2000, 1, 1, 0, 0, 0, 0, time.Local)).
+				r.EXPECT().UpdateProject(mockCtx, int64(1), "新プロジェクト1", time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).
 					Return(nil)
 			},
 			want: &ogen.Project{
 				ID:        1,
 				Name:      "新プロジェクト1",
 				CreatedAt: time.Time{},
-				UpdatedAt: time.Date(2000, 1, 1, 0, 0, 0, 0, time.Local),
+				UpdatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},
@@ -280,7 +277,6 @@ func TestHandler_UpdateProject(t *testing.T) {
 		},
 		{
 			name: "repository.UpdateProjectが何らかのエラーを返す場合はエラーを返す",
-			tm:   time.Date(2000, 1, 1, 0, 0, 0, 0, time.Local),
 			args: args{
 				ctx:    mockCtx,
 				req:    &ogen.UpdateProjectReq{Name: ogen.OptString{Value: "新プロジェクト1", Set: true}},
@@ -294,7 +290,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 					CreatedAt: time.Time{},
 					UpdatedAt: time.Time{},
 				}, nil)
-				r.EXPECT().UpdateProject(mockCtx, int64(1), "新プロジェクト1", time.Date(2000, 1, 1, 0, 0, 0, 0, time.Local)).
+				r.EXPECT().UpdateProject(mockCtx, int64(1), "新プロジェクト1", time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).
 					Return(errors.New("some error"))
 			},
 			want:    nil,
@@ -303,8 +299,6 @@ func TestHandler_UpdateProject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := ttime.FixTime(tt.args.ctx, tt.tm)
-
 			c := gomock.NewController(t)
 			defer c.Finish()
 
@@ -312,7 +306,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 			tt.prepareMockFn(r)
 			h := &Handler{Repository: r}
 
-			got, err := h.UpdateProject(ctx, tt.args.req, tt.args.params)
+			got, err := h.UpdateProject(tt.args.ctx, tt.args.req, tt.args.params)
 			if (tt.wantErr == nil) != (err == nil) {
 				t.Errorf("h.UpdateProject() error want '%v', but '%v'", tt.wantErr, err)
 			}

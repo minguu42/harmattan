@@ -11,7 +11,6 @@ import (
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-	"github.com/minguu42/mtasks/pkg/ttime"
 	"gorm.io/gorm"
 )
 
@@ -40,16 +39,16 @@ func TestHandler_CreateTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().CreateTask(mockCtx, int64(1), "タスク1").Return(&entity.Task{
 					ID:          1,
 					ProjectID:   1,
 					Title:       "タスク1",
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 			},
 			want: &ogen.Task{
@@ -57,8 +56,8 @@ func TestHandler_CreateTask(t *testing.T) {
 				ProjectID:   1,
 				Title:       "タスク1",
 				CompletedAt: ogen.OptDateTime{Set: false},
-				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-				UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},
@@ -107,8 +106,8 @@ func TestHandler_CreateTask(t *testing.T) {
 					ID:        2,
 					UserID:    2,
 					Name:      "プロジェクト2",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 			},
 			want:    nil,
@@ -126,8 +125,8 @@ func TestHandler_CreateTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().CreateTask(mockCtx, int64(1), "タスク1").Return(nil, errors.New("some error"))
 			},
@@ -178,8 +177,8 @@ func TestHandler_ListTasks(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTasksByProjectID(mockCtx, int64(1), "-createdAt", 11, 0).
 					Return([]*entity.Task{
@@ -188,16 +187,16 @@ func TestHandler_ListTasks(t *testing.T) {
 							ProjectID:   1,
 							Title:       "タスク1",
 							CompletedAt: nil,
-							CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-							UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+							CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+							UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 						},
 						{
 							ID:          2,
 							ProjectID:   1,
 							Title:       "タスク2",
 							CompletedAt: nil,
-							CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-							UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+							CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+							UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 						},
 					}, nil)
 			},
@@ -208,16 +207,16 @@ func TestHandler_ListTasks(t *testing.T) {
 						ProjectID:   1,
 						Title:       "タスク1",
 						CompletedAt: ogen.OptDateTime{Set: false},
-						CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-						UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+						CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+						UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 					{
 						ID:          2,
 						ProjectID:   1,
 						Title:       "タスク2",
 						CompletedAt: ogen.OptDateTime{Set: false},
-						CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-						UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+						CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+						UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 				},
 				HasNext: false,
@@ -266,8 +265,8 @@ func TestHandler_ListTasks(t *testing.T) {
 					ID:        2,
 					UserID:    2,
 					Name:      "プロジェクト2",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 			},
 			want:    nil,
@@ -284,8 +283,8 @@ func TestHandler_ListTasks(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTasksByProjectID(mockCtx, int64(1), "-createdAt", 11, 0).
 					Return(nil, errors.New("some error"))
@@ -315,7 +314,7 @@ func TestHandler_ListTasks(t *testing.T) {
 }
 
 func TestHandler_UpdateTask(t *testing.T) {
-	tm1 := time.Date(2020, 1, 2, 0, 0, 0, 0, time.Local)
+	tm1 := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	type args struct {
 		ctx    context.Context
 		req    *ogen.UpdateTaskReq
@@ -331,7 +330,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 	}{
 		{
 			name: "タスク1を更新する",
-			tm:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.Local),
+			tm:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			args: args{
 				ctx:    mockCtx,
 				req:    &ogen.UpdateTaskReq{IsCompleted: ogen.OptBool{Value: true, Set: true}},
@@ -342,26 +341,26 @@ func TestHandler_UpdateTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(1)).Return(&entity.Task{
 					ID:          1,
 					ProjectID:   1,
 					Title:       "タスク1",
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().UpdateTask(mockCtx, int64(1), &tm1, time.Date(2020, 1, 2, 0, 0, 0, 0, time.Local)).Return(nil)
+				r.EXPECT().UpdateTask(mockCtx, int64(1), &tm1, time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).Return(nil)
 			},
 			want: &ogen.Task{
 				ID:          1,
 				ProjectID:   1,
 				Title:       "タスク1",
-				CompletedAt: ogen.OptDateTime{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.Local), Set: true},
-				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.Local),
+				CompletedAt: ogen.OptDateTime{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
+				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},
@@ -425,8 +424,8 @@ func TestHandler_UpdateTask(t *testing.T) {
 					ID:        2,
 					UserID:    2,
 					Name:      "プロジェクト2",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 			},
 			want:    nil,
@@ -444,8 +443,8 @@ func TestHandler_UpdateTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(2)).Return(nil, gorm.ErrRecordNotFound)
 			},
@@ -464,8 +463,8 @@ func TestHandler_UpdateTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(1)).Return(nil, errors.New("some error"))
 			},
@@ -484,16 +483,16 @@ func TestHandler_UpdateTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(2)).Return(&entity.Task{
 					ID:          2,
 					ProjectID:   2,
 					Title:       "タスク2",
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 			},
 			want:    nil,
@@ -501,7 +500,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 		},
 		{
 			name: "r.UpdateTaskが何らかのエラーを返す場合はエラーを返す",
-			tm:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.Local),
+			tm:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			args: args{
 				ctx:    mockCtx,
 				req:    &ogen.UpdateTaskReq{IsCompleted: ogen.OptBool{Value: true, Set: true}},
@@ -512,18 +511,18 @@ func TestHandler_UpdateTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(1)).Return(&entity.Task{
 					ID:          1,
 					ProjectID:   1,
 					Title:       "タスク1",
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().UpdateTask(mockCtx, int64(1), &tm1, time.Date(2020, 1, 2, 0, 0, 0, 0, time.Local)).
+				r.EXPECT().UpdateTask(mockCtx, int64(1), &tm1, time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).
 					Return(errors.New("some error"))
 			},
 			want:    nil,
@@ -532,8 +531,6 @@ func TestHandler_UpdateTask(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := ttime.FixTime(tt.args.ctx, tt.tm)
-
 			c := gomock.NewController(t)
 			defer c.Finish()
 
@@ -541,7 +538,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 			tt.prepareMockFn(r)
 			h := &Handler{Repository: r}
 
-			got, err := h.UpdateTask(ctx, tt.args.req, tt.args.params)
+			got, err := h.UpdateTask(tt.args.ctx, tt.args.req, tt.args.params)
 			if tt.wantErr != err {
 				t.Errorf("h.UpdateTask() error want '%v', but '%v'", tt.wantErr, err)
 			}
@@ -574,16 +571,16 @@ func TestHandler_DeleteTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(1)).Return(&entity.Task{
 					ID:          1,
 					ProjectID:   1,
 					Title:       "タスク1",
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().DeleteTask(mockCtx, int64(1)).Return(nil)
 			},
@@ -631,8 +628,8 @@ func TestHandler_DeleteTask(t *testing.T) {
 					ID:        2,
 					UserID:    2,
 					Name:      "プロジェクト2",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 			},
 			want: errProjectNotFound,
@@ -648,8 +645,8 @@ func TestHandler_DeleteTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(2)).Return(nil, gorm.ErrRecordNotFound)
 			},
@@ -666,8 +663,8 @@ func TestHandler_DeleteTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(1)).Return(nil, errors.New("some error"))
 			},
@@ -684,16 +681,16 @@ func TestHandler_DeleteTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(2)).Return(&entity.Task{
 					ID:          2,
 					ProjectID:   2,
 					Title:       "タスク2",
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 			},
 			want: errTaskNotFound,
@@ -709,16 +706,16 @@ func TestHandler_DeleteTask(t *testing.T) {
 					ID:        1,
 					UserID:    1,
 					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, int64(1)).Return(&entity.Task{
 					ID:          1,
 					ProjectID:   1,
 					Title:       "タスク1",
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local),
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
 				r.EXPECT().DeleteTask(mockCtx, int64(1)).Return(errors.New("some error"))
 			},
