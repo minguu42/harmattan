@@ -17,13 +17,11 @@ import (
 	"github.com/minguu42/mtasks/pkg/repository/database"
 )
 
-func init() {
+func main() {
 	if err := env.Load(); err != nil {
 		logging.Fatalf(context.Background(), "env.Load failed: %v", err)
 	}
-}
 
-func main() {
 	ctx := context.Background()
 	e, err := env.Get()
 	if err != nil {
