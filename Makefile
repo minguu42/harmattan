@@ -21,7 +21,7 @@ run: ## APIサーバを実行する
 	@docker compose --env-file .env.local up api
 
 gen: ## コードを生成する
-	@go generate ./gen
+	@go generate ./...
 
 fmt: ## フォーマットを実行する
 	@goimports -w .
