@@ -11,7 +11,7 @@ import (
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-	"github.com/tenntenn/testtime"
+	"github.com/minguu42/mtasks/pkg/ttime"
 	"gorm.io/gorm"
 )
 
@@ -532,7 +532,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			testtime.SetTime(t, tt.tm)
+			ctx := ttime.FixTime(tt.args.ctx, tt.tm)
 
 			c := gomock.NewController(t)
 			defer c.Finish()
@@ -541,7 +541,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 			tt.prepareMockFn(r)
 			h := &Handler{Repository: r}
 
-			got, err := h.UpdateTask(tt.args.ctx, tt.args.req, tt.args.params)
+			got, err := h.UpdateTask(ctx, tt.args.req, tt.args.params)
 			if tt.wantErr != err {
 				t.Errorf("h.UpdateTask() error want '%v', but '%v'", tt.wantErr, err)
 			}

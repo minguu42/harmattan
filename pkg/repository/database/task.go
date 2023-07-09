@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/mtasks/pkg/ttime"
 )
 
 func (db *DB) CreateTask(ctx context.Context, projectID int64, title string) (*entity.Task, error) {
-	now := time.Now()
+	now := ttime.Now(ctx)
 	t := entity.Task{
 		ProjectID:   projectID,
 		Title:       title,

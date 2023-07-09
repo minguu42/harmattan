@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -13,7 +14,7 @@ func TestMain(m *testing.M) {
 	var err error
 	testDB, err = Open(DSN("root", "", "localhost", 3306, "mtasks_test"))
 	if err != nil {
-		logging.Errorf("Open failed: %s", err)
+		logging.Errorf(context.Background(), "Open failed: %s", err)
 		os.Exit(1)
 	}
 	defer testDB.Close()
