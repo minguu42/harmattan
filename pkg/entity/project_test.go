@@ -14,12 +14,12 @@ func TestProject_ContainsTask(t *testing.T) {
 	}{
 		{
 			name: "タスクはプロジェクトに含まれている",
-			args: args{project: &Project{ID: 1}, task: &Task{ProjectID: 1}},
+			args: args{project: &Project{ID: "01DXF6DT000000000000000000"}, task: &Task{ProjectID: "01DXF6DT000000000000000000"}},
 			want: true,
 		},
 		{
 			name: "タスクはプロジェクトに含まれていない",
-			args: args{project: &Project{ID: 1}, task: &Task{ProjectID: 2}},
+			args: args{project: &Project{ID: "01DXF6DT000000000000000000"}, task: &Task{ProjectID: "01DXF6DT000000000000000001"}},
 			want: false,
 		},
 	}
