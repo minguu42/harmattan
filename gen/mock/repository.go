@@ -37,7 +37,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // CreateProject mocks base method.
-func (m *MockRepository) CreateProject(ctx context.Context, userID int64, name string) (*entity.Project, error) {
+func (m *MockRepository) CreateProject(ctx context.Context, userID, name string) (*entity.Project, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateProject", ctx, userID, name)
 	ret0, _ := ret[0].(*entity.Project)
@@ -52,7 +52,7 @@ func (mr *MockRepositoryMockRecorder) CreateProject(ctx, userID, name interface{
 }
 
 // CreateTask mocks base method.
-func (m *MockRepository) CreateTask(ctx context.Context, projectID int64, title string) (*entity.Task, error) {
+func (m *MockRepository) CreateTask(ctx context.Context, projectID, title string) (*entity.Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTask", ctx, projectID, title)
 	ret0, _ := ret[0].(*entity.Task)
@@ -67,7 +67,7 @@ func (mr *MockRepositoryMockRecorder) CreateTask(ctx, projectID, title interface
 }
 
 // DeleteProject mocks base method.
-func (m *MockRepository) DeleteProject(ctx context.Context, id int64) error {
+func (m *MockRepository) DeleteProject(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteProject", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -81,7 +81,7 @@ func (mr *MockRepositoryMockRecorder) DeleteProject(ctx, id interface{}) *gomock
 }
 
 // DeleteTask mocks base method.
-func (m *MockRepository) DeleteTask(ctx context.Context, id int64) error {
+func (m *MockRepository) DeleteTask(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteTask", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -95,7 +95,7 @@ func (mr *MockRepositoryMockRecorder) DeleteTask(ctx, id interface{}) *gomock.Ca
 }
 
 // GetProjectByID mocks base method.
-func (m *MockRepository) GetProjectByID(ctx context.Context, id int64) (*entity.Project, error) {
+func (m *MockRepository) GetProjectByID(ctx context.Context, id string) (*entity.Project, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProjectByID", ctx, id)
 	ret0, _ := ret[0].(*entity.Project)
@@ -110,7 +110,7 @@ func (mr *MockRepositoryMockRecorder) GetProjectByID(ctx, id interface{}) *gomoc
 }
 
 // GetProjectsByUserID mocks base method.
-func (m *MockRepository) GetProjectsByUserID(ctx context.Context, userID int64, sort string, limit, offset int) ([]*entity.Project, error) {
+func (m *MockRepository) GetProjectsByUserID(ctx context.Context, userID, sort string, limit, offset int) ([]*entity.Project, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProjectsByUserID", ctx, userID, sort, limit, offset)
 	ret0, _ := ret[0].([]*entity.Project)
@@ -125,7 +125,7 @@ func (mr *MockRepositoryMockRecorder) GetProjectsByUserID(ctx, userID, sort, lim
 }
 
 // GetTaskByID mocks base method.
-func (m *MockRepository) GetTaskByID(ctx context.Context, id int64) (*entity.Task, error) {
+func (m *MockRepository) GetTaskByID(ctx context.Context, id string) (*entity.Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTaskByID", ctx, id)
 	ret0, _ := ret[0].(*entity.Task)
@@ -140,7 +140,7 @@ func (mr *MockRepositoryMockRecorder) GetTaskByID(ctx, id interface{}) *gomock.C
 }
 
 // GetTasksByProjectID mocks base method.
-func (m *MockRepository) GetTasksByProjectID(ctx context.Context, projectID int64, sort string, limit, offset int) ([]*entity.Task, error) {
+func (m *MockRepository) GetTasksByProjectID(ctx context.Context, projectID, sort string, limit, offset int) ([]*entity.Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTasksByProjectID", ctx, projectID, sort, limit, offset)
 	ret0, _ := ret[0].([]*entity.Task)
@@ -170,7 +170,7 @@ func (mr *MockRepositoryMockRecorder) GetUserByAPIKey(ctx, apiKey interface{}) *
 }
 
 // UpdateProject mocks base method.
-func (m *MockRepository) UpdateProject(ctx context.Context, id int64, name string, updatedAt time.Time) error {
+func (m *MockRepository) UpdateProject(ctx context.Context, id, name string, updatedAt time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateProject", ctx, id, name, updatedAt)
 	ret0, _ := ret[0].(error)
@@ -184,7 +184,7 @@ func (mr *MockRepositoryMockRecorder) UpdateProject(ctx, id, name, updatedAt int
 }
 
 // UpdateTask mocks base method.
-func (m *MockRepository) UpdateTask(ctx context.Context, id int64, completedAt *time.Time, updatedAt time.Time) error {
+func (m *MockRepository) UpdateTask(ctx context.Context, id string, completedAt *time.Time, updatedAt time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTask", ctx, id, completedAt, updatedAt)
 	ret0, _ := ret[0].(error)

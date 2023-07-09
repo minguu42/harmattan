@@ -486,7 +486,7 @@ func (o OptString) Or(d string) string {
 // Ref: #/components/schemas/Project
 type Project struct {
 	// プロジェクトID.
-	ID int64 `json:"id"`
+	ID string `json:"id"`
 	// プロジェクト名.
 	Name string `json:"name"`
 	// 作成日時.
@@ -496,7 +496,7 @@ type Project struct {
 }
 
 // GetID returns the value of ID.
-func (s *Project) GetID() int64 {
+func (s *Project) GetID() string {
 	return s.ID
 }
 
@@ -516,7 +516,7 @@ func (s *Project) GetUpdatedAt() time.Time {
 }
 
 // SetID sets the value of ID.
-func (s *Project) SetID(val int64) {
+func (s *Project) SetID(val string) {
 	s.ID = val
 }
 
@@ -566,9 +566,9 @@ func (s *Projects) SetHasNext(val bool) {
 // Ref: #/components/schemas/Task
 type Task struct {
 	// タスクID.
-	ID int64 `json:"id"`
+	ID string `json:"id"`
 	// 紐づくプロジェクトのID.
-	ProjectID int64 `json:"project_id"`
+	ProjectID string `json:"project_id"`
 	// タイトル.
 	Title string `json:"title"`
 	// 完了日時.
@@ -580,12 +580,12 @@ type Task struct {
 }
 
 // GetID returns the value of ID.
-func (s *Task) GetID() int64 {
+func (s *Task) GetID() string {
 	return s.ID
 }
 
 // GetProjectID returns the value of ProjectID.
-func (s *Task) GetProjectID() int64 {
+func (s *Task) GetProjectID() string {
 	return s.ProjectID
 }
 
@@ -610,12 +610,12 @@ func (s *Task) GetUpdatedAt() time.Time {
 }
 
 // SetID sets the value of ID.
-func (s *Task) SetID(val int64) {
+func (s *Task) SetID(val string) {
 	s.ID = val
 }
 
 // SetProjectID sets the value of ProjectID.
-func (s *Task) SetProjectID(val int64) {
+func (s *Task) SetProjectID(val string) {
 	s.ProjectID = val
 }
 

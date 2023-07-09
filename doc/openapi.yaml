@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: mTasks API Specification
-  version: v0.1.3
+  version: v0.1.4
 
 servers:
   - url: http://localhost:8080/
@@ -250,9 +250,7 @@ components:
       properties:
         id:
           description: プロジェクトID
-          type: integer
-          format: int64
-          minimum: 1
+          type: string
         name:
           description: プロジェクト名
           type: string
@@ -289,14 +287,10 @@ components:
       properties:
         id:
           description: タスクID
-          type: integer
-          format: int64
-          minimum: 1
+          type: string
         project_id:
           description: 紐づくプロジェクトのID
-          type: integer
-          format: int64
-          minimum: 1
+          type: string
         title:
           description: タイトル
           type: string
@@ -356,17 +350,13 @@ components:
       in: path
       required: true
       schema:
-        type: integer
-        format: int64
-        minimum: 1
+        type: string
     taskID:
       name: taskID
       in: path
       required: true
       schema:
-        type: integer
-        format: int64
-        minimum: 1
+        type: string
   responses:
     Error:
       description: エラー
