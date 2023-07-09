@@ -7,14 +7,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/minguu42/mtasks/pkg/idgen"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 // DB は repository.Repository インタフェースを実装するデータベース
 type DB struct {
-	_db *gorm.DB
-	_tx *gorm.DB
+	_db         *gorm.DB
+	_tx         *gorm.DB
+	idGenerator idgen.IDGenerator
 }
 
 // conn はデータベースへのコネクションを返す
@@ -24,6 +26,11 @@ func (db *DB) conn(ctx context.Context) *gorm.DB {
 		return db._tx.WithContext(ctx)
 	}
 	return db._db.WithContext(ctx)
+}
+
+// SetIDGenerator は DB に ID 生成器をセットする
+func (db *DB) SetIDGenerator(idGenerator idgen.IDGenerator) {
+	db.idGenerator = idGenerator
 }
 
 // Begin はトランザクションを開始する

@@ -6,8 +6,10 @@ import (
 	"time"
 
 	"github.com/go-faster/errors"
+	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/pkg/entity"
 )
 
@@ -16,24 +18,29 @@ var projectCmpOpt = cmpopts.IgnoreFields(entity.Project{}, "ID", "CreatedAt", "U
 func TestDB_CreateProject(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		userID int64
+		userID string
 		name   string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    *entity.Project
-		wantErr error
+		name          string
+		args          args
+		prepareMockFn func(g *mock.MockIDGenerator)
+		want          *entity.Project
+		wantErr       error
 	}{
 		{
 			name: "プロジェクトを作成する",
 			args: args{
 				ctx:    context.Background(),
-				userID: 1,
+				userID: "01DXF6DT000000000000000000",
 				name:   "プロジェクト",
 			},
+			prepareMockFn: func(g *mock.MockIDGenerator) {
+				g.EXPECT().Generate().Return("01DXF6DT000000000000000002")
+			},
 			want: &entity.Project{
-				UserID: 1,
+				ID:     "01DXF6DT000000000000000002",
+				UserID: "01DXF6DT000000000000000000",
 				Name:   "プロジェクト",
 			},
 			wantErr: nil,
@@ -41,6 +48,10 @@ func TestDB_CreateProject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := mock.NewMockIDGenerator(gomock.NewController(t))
+			tt.prepareMockFn(g)
+			testDB.SetIDGenerator(g)
+
 			if err := testDB.Begin(); err != nil {
 				t.Fatalf("testDB.Begin failed: %s", err)
 			}
@@ -60,7 +71,7 @@ func TestDB_CreateProject(t *testing.T) {
 func TestDB_GetProjectByID(t *testing.T) {
 	type args struct {
 		ctx context.Context
-		id  int64
+		id  string
 	}
 	tests := []struct {
 		name    string
@@ -72,11 +83,11 @@ func TestDB_GetProjectByID(t *testing.T) {
 			name: "プロジェクト1を取得する",
 			args: args{
 				ctx: context.Background(),
-				id:  1,
+				id:  "01DXF6DT000000000000000000",
 			},
 			want: &entity.Project{
-				ID:        1,
-				UserID:    1,
+				ID:        "01DXF6DT000000000000000000",
+				UserID:    "01DXF6DT000000000000000000",
 				Name:      "プロジェクト1",
 				CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -87,7 +98,7 @@ func TestDB_GetProjectByID(t *testing.T) {
 			name: "指定したIDのプロジェクトが存在しないので、エラーを返す",
 			args: args{
 				ctx: context.Background(),
-				id:  3,
+				id:  "01DXF6DT000000000000000002",
 			},
 			want:    nil,
 			wantErr: errors.New("some error"),
@@ -109,7 +120,7 @@ func TestDB_GetProjectByID(t *testing.T) {
 func TestDB_GetProjectsByUserID(t *testing.T) {
 	type args struct {
 		ctx    context.Context
-		userID int64
+		userID string
 		sort   string
 		limit  int
 		offset int
@@ -124,22 +135,22 @@ func TestDB_GetProjectsByUserID(t *testing.T) {
 			name: "プロジェクト一覧を取得する",
 			args: args{
 				ctx:    context.Background(),
-				userID: 1,
+				userID: "01DXF6DT000000000000000000",
 				sort:   "name",
 				limit:  11,
 				offset: 0,
 			},
 			want: []*entity.Project{
 				{
-					ID:        1,
-					UserID:    1,
+					ID:        "01DXF6DT000000000000000000",
+					UserID:    "01DXF6DT000000000000000000",
 					Name:      "プロジェクト1",
 					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				},
 				{
-					ID:        2,
-					UserID:    1,
+					ID:        "01DXF6DT000000000000000001",
+					UserID:    "01DXF6DT000000000000000000",
 					Name:      "プロジェクト2",
 					CreatedAt: time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
 					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
@@ -151,15 +162,15 @@ func TestDB_GetProjectsByUserID(t *testing.T) {
 			name: "プロジェクトを1つだけ取得する",
 			args: args{
 				ctx:    context.Background(),
-				userID: 1,
+				userID: "01DXF6DT000000000000000000",
 				sort:   "name",
 				limit:  1,
 				offset: 0,
 			},
 			want: []*entity.Project{
 				{
-					ID:        1,
-					UserID:    1,
+					ID:        "01DXF6DT000000000000000000",
+					UserID:    "01DXF6DT000000000000000000",
 					Name:      "プロジェクト1",
 					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -184,7 +195,7 @@ func TestDB_GetProjectsByUserID(t *testing.T) {
 func TestDB_UpdateProject(t *testing.T) {
 	type args struct {
 		ctx       context.Context
-		id        int64
+		id        string
 		name      string
 		updatedAt time.Time
 	}
@@ -197,7 +208,7 @@ func TestDB_UpdateProject(t *testing.T) {
 			name: "プロジェクト1を更新する",
 			args: args{
 				ctx:       context.Background(),
-				id:        1,
+				id:        "01DXF6DT000000000000000000",
 				name:      "新プロジェクト1",
 				updatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
@@ -221,7 +232,7 @@ func TestDB_UpdateProject(t *testing.T) {
 func TestDB_DeleteProject(t *testing.T) {
 	type args struct {
 		ctx context.Context
-		id  int64
+		id  string
 	}
 	tests := []struct {
 		name string
@@ -232,7 +243,7 @@ func TestDB_DeleteProject(t *testing.T) {
 			name: "プロジェクト1を削除する",
 			args: args{
 				ctx: context.Background(),
-				id:  1,
+				id:  "01DXF6DT000000000000000000",
 			},
 			want: nil,
 		},

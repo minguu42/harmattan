@@ -12,6 +12,7 @@ import (
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/handler"
+	"github.com/minguu42/mtasks/pkg/idgen/ulidgen"
 	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/repository/database"
 )
@@ -31,6 +32,7 @@ func main() {
 
 	dsn := database.DSN(e.MySQL.User, e.MySQL.Password, e.MySQL.Host, e.MySQL.Port, e.MySQL.Database)
 	db, err := database.Open(dsn)
+	db.SetIDGenerator(&ulidgen.Generator{})
 	if err != nil {
 		logging.Fatalf(ctx, "database.Open failed: %v", err)
 	}

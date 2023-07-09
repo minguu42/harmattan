@@ -6,8 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/pkg/entity"
 )
 
@@ -16,24 +18,29 @@ var taskCmpOpt = cmpopts.IgnoreFields(entity.Task{}, "ID", "CreatedAt", "Updated
 func TestDB_CreateTask(t *testing.T) {
 	type args struct {
 		ctx       context.Context
-		projectID int64
+		projectID string
 		title     string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    *entity.Task
-		wantErr error
+		name          string
+		args          args
+		prepareMockFn func(g *mock.MockIDGenerator)
+		want          *entity.Task
+		wantErr       error
 	}{
 		{
 			name: "新タスクを作成する",
 			args: args{
 				ctx:       context.Background(),
-				projectID: 1,
+				projectID: "01DXF6DT000000000000000000",
 				title:     "新タスク",
 			},
+			prepareMockFn: func(g *mock.MockIDGenerator) {
+				g.EXPECT().Generate().Return("01DXF6DT000000000000000002")
+			},
 			want: &entity.Task{
-				ProjectID:   1,
+				ID:          "01DXF6DT000000000000000002",
+				ProjectID:   "01DXF6DT000000000000000000",
 				Title:       "新タスク",
 				CompletedAt: nil,
 			},
@@ -42,6 +49,10 @@ func TestDB_CreateTask(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			g := mock.NewMockIDGenerator(gomock.NewController(t))
+			tt.prepareMockFn(g)
+			testDB.SetIDGenerator(g)
+
 			if err := testDB.Begin(); err != nil {
 				t.Fatalf("testDB.Begin failed: %s", err)
 			}
@@ -61,7 +72,7 @@ func TestDB_CreateTask(t *testing.T) {
 func TestDB_GetTaskByID(t *testing.T) {
 	type args struct {
 		ctx context.Context
-		id  int64
+		id  string
 	}
 	tests := []struct {
 		name    string
@@ -73,11 +84,11 @@ func TestDB_GetTaskByID(t *testing.T) {
 			name: "タスク1を取得する",
 			args: args{
 				ctx: context.Background(),
-				id:  1,
+				id:  "01DXF6DT000000000000000000",
 			},
 			want: &entity.Task{
-				ID:          1,
-				ProjectID:   1,
+				ID:          "01DXF6DT000000000000000000",
+				ProjectID:   "01DXF6DT000000000000000000",
 				Title:       "タスク1",
 				CompletedAt: nil,
 				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -89,7 +100,7 @@ func TestDB_GetTaskByID(t *testing.T) {
 			name: "存在しないタスクを指定した場合はエラーを返す",
 			args: args{
 				ctx: context.Background(),
-				id:  3,
+				id:  "01DXF6DT000000000000000002",
 			},
 			want:    nil,
 			wantErr: errors.New("some error"),
@@ -112,7 +123,7 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 	completedAt := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	type args struct {
 		ctx       context.Context
-		projectID int64
+		projectID string
 		sort      string
 		limit     int
 		offset    int
@@ -127,23 +138,23 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 			name: "タスク一覧を取得する",
 			args: args{
 				ctx:       context.Background(),
-				projectID: 1,
+				projectID: "01DXF6DT000000000000000000",
 				sort:      "title",
 				limit:     11,
 				offset:    0,
 			},
 			want: []*entity.Task{
 				{
-					ID:          1,
-					ProjectID:   1,
+					ID:          "01DXF6DT000000000000000000",
+					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク1",
 					CompletedAt: nil,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				},
 				{
-					ID:          2,
-					ProjectID:   1,
+					ID:          "01DXF6DT000000000000000001",
+					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク2",
 					CompletedAt: &completedAt,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
@@ -156,15 +167,15 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 			name: "タスクを1つだけ取得する",
 			args: args{
 				ctx:       context.Background(),
-				projectID: 1,
+				projectID: "01DXF6DT000000000000000000",
 				sort:      "title",
 				limit:     1,
 				offset:    0,
 			},
 			want: []*entity.Task{
 				{
-					ID:          1,
-					ProjectID:   1,
+					ID:          "01DXF6DT000000000000000000",
+					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク1",
 					CompletedAt: nil,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -191,7 +202,7 @@ func TestDB_UpdateTask(t *testing.T) {
 	completedAt := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	type args struct {
 		ctx         context.Context
-		id          int64
+		id          string
 		completedAt *time.Time
 		updatedAt   time.Time
 	}
@@ -204,7 +215,7 @@ func TestDB_UpdateTask(t *testing.T) {
 			name: "タスク1を更新する",
 			args: args{
 				ctx:         context.Background(),
-				id:          1,
+				id:          "01DXF6DT000000000000000000",
 				completedAt: &completedAt,
 				updatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
@@ -228,7 +239,7 @@ func TestDB_UpdateTask(t *testing.T) {
 func TestDB_DeleteTask(t *testing.T) {
 	type args struct {
 		ctx context.Context
-		id  int64
+		id  string
 	}
 	tests := []struct {
 		name string
@@ -239,7 +250,7 @@ func TestDB_DeleteTask(t *testing.T) {
 			name: "タスク1を削除する",
 			args: args{
 				ctx: context.Background(),
-				id:  1,
+				id:  "01DXF6DT000000000000000000",
 			},
 			want: nil,
 		},
