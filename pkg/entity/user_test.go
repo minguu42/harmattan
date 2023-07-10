@@ -14,12 +14,12 @@ func TestUser_HasProject(t *testing.T) {
 	}{
 		{
 			name: "ユーザはプロジェクトを所有している",
-			args: args{user: &User{ID: 1}, project: &Project{UserID: 1}},
+			args: args{user: &User{ID: "01DXF6DT000000000000000000"}, project: &Project{UserID: "01DXF6DT000000000000000000"}},
 			want: true,
 		},
 		{
 			name: "ユーザはプロジェクトを所有していない",
-			args: args{user: &User{ID: 1}, project: &Project{UserID: 2}},
+			args: args{user: &User{ID: "01DXF6DT000000000000000000"}, project: &Project{UserID: "01DXF6DT000000000000000001"}},
 			want: false,
 		},
 	}

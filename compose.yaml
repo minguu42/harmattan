@@ -18,14 +18,16 @@ services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: mtasks_local
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
     container_name: mtasks-db-local
     restart: always
     ports:
       - 3306:3306
     volumes:
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./import.sql:/import.sql
+      - ./schema.sql:/schema.sql
+      - ./create_local_db.sh:/docker-entrypoint-initdb.d/create_local_db.sh
+      - ./create_test_db.sh:/docker-entrypoint-initdb.d/create_test_db.sh
       - db-data-local:/var/lib/mysql
 
 volumes:

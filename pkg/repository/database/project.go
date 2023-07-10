@@ -6,50 +6,52 @@ import (
 	"time"
 
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/mtasks/pkg/ttime"
 )
 
-func (db *DB) CreateProject(ctx context.Context, userID int64, name string) (*entity.Project, error) {
-	now := time.Now()
+func (db *DB) CreateProject(ctx context.Context, userID string, name string) (*entity.Project, error) {
+	now := ttime.Now(ctx)
 	p := entity.Project{
+		ID:        db.idGenerator.Generate(),
 		UserID:    userID,
 		Name:      name,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
 
-	if err := db.gormDB.WithContext(ctx).Create(&p).Error; err != nil {
+	if err := db.conn(ctx).Create(&p).Error; err != nil {
 		return nil, fmt.Errorf("gormDB.Create failed: %w", err)
 	}
 	return &p, nil
 }
 
-func (db *DB) GetProjectByID(ctx context.Context, id int64) (*entity.Project, error) {
+func (db *DB) GetProjectByID(ctx context.Context, id string) (*entity.Project, error) {
 	var p entity.Project
-	if err := db.gormDB.WithContext(ctx).First(&p, id).Error; err != nil {
+	if err := db.conn(ctx).First(&p, "id = ?", id).Error; err != nil {
 		return nil, fmt.Errorf("gormDB.First failed: %w", err)
 	}
 	return &p, nil
 }
 
-func (db *DB) GetProjectsByUserID(ctx context.Context, userID int64, sort string, limit, offset int) ([]*entity.Project, error) {
+func (db *DB) GetProjectsByUserID(ctx context.Context, userID string, sort string, limit, offset int) ([]*entity.Project, error) {
 	ps := make([]*entity.Project, 0, limit)
-	if err := db.gormDB.WithContext(ctx).Where("user_id = ?", userID).
+	if err := db.conn(ctx).Where("user_id = ?", userID).
 		Order(generateOrderByClause(sort)).Limit(limit).Offset(offset).Find(&ps).Error; err != nil {
 		return nil, fmt.Errorf("gormDB.Find failed: %w", err)
 	}
 	return ps, nil
 }
 
-func (db *DB) UpdateProject(ctx context.Context, id int64, name string, updatedAt time.Time) error {
+func (db *DB) UpdateProject(ctx context.Context, id string, name string, updatedAt time.Time) error {
 	p := entity.Project{ID: id}
-	if err := db.gormDB.WithContext(ctx).Model(&p).Updates(entity.Project{Name: name, UpdatedAt: updatedAt}).Error; err != nil {
+	if err := db.conn(ctx).Model(&p).Updates(entity.Project{Name: name, UpdatedAt: updatedAt}).Error; err != nil {
 		return fmt.Errorf("gormDB.Updates failed: %w", err)
 	}
 	return nil
 }
 
-func (db *DB) DeleteProject(ctx context.Context, id int64) error {
-	if err := db.gormDB.WithContext(ctx).Delete(&entity.Project{}, id).Error; err != nil {
+func (db *DB) DeleteProject(ctx context.Context, id string) error {
+	if err := db.conn(ctx).Delete(&entity.Project{ID: id}).Error; err != nil {
 		return fmt.Errorf("gormDB.Delete failed: %w", err)
 	}
 	return nil

@@ -12,26 +12,27 @@ import (
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/env"
 	"github.com/minguu42/mtasks/pkg/handler"
+	"github.com/minguu42/mtasks/pkg/idgen/ulidgen"
 	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/repository/database"
 )
 
-func init() {
-	if err := env.Load(); err != nil {
-		logging.Fatalf("env.Load failed: %v", err)
-	}
-}
-
 func main() {
+	if err := env.Load(); err != nil {
+		logging.Fatalf(context.Background(), "env.Load failed: %v", err)
+	}
+
+	ctx := context.Background()
 	e, err := env.Get()
 	if err != nil {
-		logging.Fatalf("env.Get failed: %v", err)
+		logging.Fatalf(ctx, "env.Get failed: %v", err)
 	}
 
 	dsn := database.DSN(e.MySQL.User, e.MySQL.Password, e.MySQL.Host, e.MySQL.Port, e.MySQL.Database)
 	db, err := database.Open(dsn)
+	db.SetIDGenerator(&ulidgen.Generator{})
 	if err != nil {
-		logging.Fatalf("database.Open failed: %v", err)
+		logging.Fatalf(ctx, "database.Open failed: %v", err)
 	}
 	defer db.Close()
 
@@ -40,7 +41,7 @@ func main() {
 		&handler.Security{Repository: db},
 	)
 	if err != nil {
-		logging.Fatalf("ogen.NewServer failed: %v", err)
+		logging.Fatalf(ctx, "ogen.NewServer failed: %v", err)
 	}
 	s := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", e.API.Host, e.API.Port),
@@ -63,13 +64,13 @@ func main() {
 		shutdownErr <- nil
 	}()
 
-	logging.Infof("Start accepting requests")
+	logging.Infof(ctx, "Start accepting requests")
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
-		logging.Fatalf("s.ListenAndServe failed: %v", err)
+		logging.Fatalf(ctx, "s.ListenAndServe failed: %v", err)
 	}
 
 	if err := <-shutdownErr; err != nil {
-		logging.Fatalf("s.Shutdown failed: %v", err)
+		logging.Fatalf(ctx, "s.Shutdown failed: %v", err)
 	}
-	logging.Infof("Stop accepting requests")
+	logging.Infof(ctx, "Stop accepting requests")
 }

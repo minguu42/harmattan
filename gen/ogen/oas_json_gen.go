@@ -548,7 +548,7 @@ func (s *Project) Encode(e *jx.Encoder) {
 func (s *Project) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("id")
-		e.Int64(s.ID)
+		e.Str(s.ID)
 	}
 	{
 		e.FieldStart("name")
@@ -583,8 +583,8 @@ func (s *Project) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Int64()
-				s.ID = int64(v)
+				v, err := d.Str()
+				s.ID = string(v)
 				if err != nil {
 					return err
 				}
@@ -818,11 +818,11 @@ func (s *Task) Encode(e *jx.Encoder) {
 func (s *Task) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("id")
-		e.Int64(s.ID)
+		e.Str(s.ID)
 	}
 	{
 		e.FieldStart("project_id")
-		e.Int64(s.ProjectID)
+		e.Str(s.ProjectID)
 	}
 	{
 		e.FieldStart("title")
@@ -865,8 +865,8 @@ func (s *Task) Decode(d *jx.Decoder) error {
 		case "id":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Int64()
-				s.ID = int64(v)
+				v, err := d.Str()
+				s.ID = string(v)
 				if err != nil {
 					return err
 				}
@@ -877,8 +877,8 @@ func (s *Task) Decode(d *jx.Decoder) error {
 		case "project_id":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Int64()
-				s.ProjectID = int64(v)
+				v, err := d.Str()
+				s.ProjectID = string(v)
 				if err != nil {
 					return err
 				}

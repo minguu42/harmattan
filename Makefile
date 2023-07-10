@@ -1,4 +1,4 @@
-VERSION  := v0.1.2
+VERSION  := v0.1.4
 REVISION := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := help
@@ -21,7 +21,7 @@ run: ## APIサーバを実行する
 	@docker compose --env-file .env.local up api
 
 gen: ## コードを生成する
-	@go generate ./gen
+	@go generate ./...
 
 fmt: ## フォーマットを実行する
 	@goimports -w .
@@ -31,7 +31,7 @@ lint: ## 静的解析を実行する
 	@staticcheck $$(go list ./... | grep -v /gen)
 
 test: ## テストを実行する
-	@go test -overlay=`testtime` -cover $$(go list ./... | grep -v /gen)
+	@go test $$(go list ./... | grep -v /gen)
 
 help: ## ヘルプを表示する
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

@@ -35,14 +35,14 @@ func TestSecurity_HandleIsAuthorized(t *testing.T) {
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetUserByAPIKey(context.Background(), "valid api key").
 					Return(&entity.User{
-						ID:        1,
+						ID:        "01DXF6DT000000000000000000",
 						Name:      "ユーザ1",
 						CreatedAt: time.Time{},
 						UpdatedAt: time.Time{},
 					}, nil)
 			},
 			want: &entity.User{
-				ID:        1,
+				ID:        "01DXF6DT000000000000000000",
 				Name:      "ユーザ1",
 				CreatedAt: time.Time{},
 				UpdatedAt: time.Time{},

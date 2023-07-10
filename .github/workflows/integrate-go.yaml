@@ -29,8 +29,9 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: ./go.mod
-      - run: go install github.com/tenntenn/testtime/cmd/testtime@latest
-      - run: go test -overlay=`testtime` $(go list ./... | grep -v /gen)
+      - run: cp .env.example .env.local
+      - run: docker compose up -d db
+      - run: go test $(go list ./... | grep -v /gen)
   build:
     runs-on: ubuntu-22.04
     steps:

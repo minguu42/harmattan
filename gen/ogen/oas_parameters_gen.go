@@ -17,7 +17,7 @@ import (
 
 // CreateTaskParams is parameters of CreateTask operation.
 type CreateTaskParams struct {
-	ProjectID int64
+	ProjectID string
 }
 
 func unpackCreateTaskParams(packed middleware.Parameters) (params CreateTaskParams) {
@@ -26,7 +26,7 @@ func unpackCreateTaskParams(packed middleware.Parameters) (params CreateTaskPara
 			Name: "projectID",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(int64)
+		params.ProjectID = packed[key].(string)
 	}
 	return params
 }
@@ -56,29 +56,12 @@ func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err
@@ -99,7 +82,7 @@ func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 
 // DeleteProjectParams is parameters of DeleteProject operation.
 type DeleteProjectParams struct {
-	ProjectID int64
+	ProjectID string
 }
 
 func unpackDeleteProjectParams(packed middleware.Parameters) (params DeleteProjectParams) {
@@ -108,7 +91,7 @@ func unpackDeleteProjectParams(packed middleware.Parameters) (params DeleteProje
 			Name: "projectID",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(int64)
+		params.ProjectID = packed[key].(string)
 	}
 	return params
 }
@@ -138,29 +121,12 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err
@@ -181,8 +147,8 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 
 // DeleteTaskParams is parameters of DeleteTask operation.
 type DeleteTaskParams struct {
-	ProjectID int64
-	TaskID    int64
+	ProjectID string
+	TaskID    string
 }
 
 func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskParams) {
@@ -191,14 +157,14 @@ func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskPara
 			Name: "projectID",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(int64)
+		params.ProjectID = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
 			Name: "taskID",
 			In:   "path",
 		}
-		params.TaskID = packed[key].(int64)
+		params.TaskID = packed[key].(string)
 	}
 	return params
 }
@@ -228,29 +194,12 @@ func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err
@@ -290,29 +239,12 @@ func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.TaskID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.TaskID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err
@@ -586,7 +518,7 @@ type ListTasksParams struct {
 	Offset OptInt
 	// 並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
 	Sort      OptListTasksSort
-	ProjectID int64
+	ProjectID string
 }
 
 func unpackListTasksParams(packed middleware.Parameters) (params ListTasksParams) {
@@ -622,7 +554,7 @@ func unpackListTasksParams(packed middleware.Parameters) (params ListTasksParams
 			Name: "projectID",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(int64)
+		params.ProjectID = packed[key].(string)
 	}
 	return params
 }
@@ -854,29 +786,12 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err
@@ -897,7 +812,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 
 // UpdateProjectParams is parameters of UpdateProject operation.
 type UpdateProjectParams struct {
-	ProjectID int64
+	ProjectID string
 }
 
 func unpackUpdateProjectParams(packed middleware.Parameters) (params UpdateProjectParams) {
@@ -906,7 +821,7 @@ func unpackUpdateProjectParams(packed middleware.Parameters) (params UpdateProje
 			Name: "projectID",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(int64)
+		params.ProjectID = packed[key].(string)
 	}
 	return params
 }
@@ -936,29 +851,12 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err
@@ -979,8 +877,8 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 
 // UpdateTaskParams is parameters of UpdateTask operation.
 type UpdateTaskParams struct {
-	ProjectID int64
-	TaskID    int64
+	ProjectID string
+	TaskID    string
 }
 
 func unpackUpdateTaskParams(packed middleware.Parameters) (params UpdateTaskParams) {
@@ -989,14 +887,14 @@ func unpackUpdateTaskParams(packed middleware.Parameters) (params UpdateTaskPara
 			Name: "projectID",
 			In:   "path",
 		}
-		params.ProjectID = packed[key].(int64)
+		params.ProjectID = packed[key].(string)
 	}
 	{
 		key := middleware.ParameterKey{
 			Name: "taskID",
 			In:   "path",
 		}
-		params.TaskID = packed[key].(int64)
+		params.TaskID = packed[key].(string)
 	}
 	return params
 }
@@ -1026,29 +924,12 @@ func decodeUpdateTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err
@@ -1088,29 +969,12 @@ func decodeUpdateTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 					return err
 				}
 
-				c, err := conv.ToInt64(val)
+				c, err := conv.ToString(val)
 				if err != nil {
 					return err
 				}
 
 				params.TaskID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.Int{
-					MinSet:        true,
-					Min:           1,
-					MaxSet:        false,
-					Max:           0,
-					MinExclusive:  false,
-					MaxExclusive:  false,
-					MultipleOfSet: false,
-					MultipleOf:    0,
-				}).Validate(int64(params.TaskID)); err != nil {
-					return errors.Wrap(err, "int")
-				}
 				return nil
 			}(); err != nil {
 				return err

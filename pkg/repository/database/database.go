@@ -2,24 +2,58 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/minguu42/mtasks/pkg/idgen"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 // DB は repository.Repository インタフェースを実装するデータベース
 type DB struct {
-	gormDB *gorm.DB
+	_db         *gorm.DB
+	_tx         *gorm.DB
+	idGenerator idgen.IDGenerator
+}
+
+// conn はデータベースへのコネクションを返す
+// NOTE: DB 構造体の _db, _tx フィールドは直接使用せず、このメソッドの戻り値を使用する
+func (db *DB) conn(ctx context.Context) *gorm.DB {
+	if db._tx != nil {
+		return db._tx.WithContext(ctx)
+	}
+	return db._db.WithContext(ctx)
+}
+
+// SetIDGenerator は DB に ID 生成器をセットする
+func (db *DB) SetIDGenerator(idGenerator idgen.IDGenerator) {
+	db.idGenerator = idGenerator
+}
+
+// Begin はトランザクションを開始する
+func (db *DB) Begin() error {
+	tx := db._db.Begin()
+	if err := tx.Error; err != nil {
+		return err
+	}
+	db._tx = tx
+	return nil
+}
+
+// Rollback はトランザクションを終了し、トランザクション中の変更を元に戻す
+func (db *DB) Rollback() {
+	db._tx.Rollback()
+	db._tx = nil
 }
 
 // Close は新しいクエリの実行を辞め、データベースとの接続を閉じる
 func (db *DB) Close() error {
-	sqlDB, err := db.gormDB.DB()
+	sqlDB, err := db._db.DB()
 	if err != nil {
-		return fmt.Errorf("gormDB.DB failed: %w", err)
+		return fmt.Errorf("_db.DB failed: %w", err)
 	}
 
 	return sqlDB.Close()
@@ -51,13 +85,15 @@ func Open(dsn string) (*DB, error) {
 	sqlDB.SetMaxOpenConns(10)
 	sqlDB.SetMaxIdleConns(10)
 
-	return &DB{gormDB: db}, nil
+	return &DB{_db: db}, nil
 }
 
 // generateOrderByClause は sort クエリから ORDER BY 句の値を生成する
 // 例: 'createdAt' -> 'created_at ASC'、'-createdAt' -> 'created_at DESC'
 func generateOrderByClause(sort string) string {
 	m := map[string]string{
+		"name":      "name",
+		"title":     "title",
 		"createdAt": "created_at",
 		"updatedAt": "updated_at",
 	}
