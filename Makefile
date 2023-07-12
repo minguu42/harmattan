@@ -1,8 +1,8 @@
-VERSION  := v0.1.4
+VERSION  := $(shell yq '.info.version' ./doc/openapi.yaml)
 REVISION := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := help
-.PHONY: setup build run gen fmt lint test help
+.PHONY: setup build run dev gen fmt lint test help
 
 setup: ## 開発に必要なツールをインストールする
 	go install golang.org/x/tools/cmd/goimports@latest
@@ -18,7 +18,16 @@ build: ## APIサーバのコンテナイメージをビルドする
             --tag=mtasks-api --target=prod .
 
 run: ## APIサーバを実行する
-	@docker compose --env-file .env.local up api
+	@docker container run \
+            --env-file .env.local \
+            --name mtasks-api \
+            --network=mtasks_default \
+            -p 8080:8080 \
+            --rm \
+            mtasks-api
+
+dev: ## 開発用のAPIサーバを実行する
+	@docker compose up api
 
 gen: ## コードを生成する
 	@go generate ./...
