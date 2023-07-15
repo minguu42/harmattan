@@ -14,7 +14,7 @@ CREATE TABLE projects (
     id          CHAR(26) PRIMARY KEY,
     user_id     CHAR(26)    NOT NULL,
     name        VARCHAR(20) NOT NULL,
-    color       CHAR(6)     NOT NULL,
+    color       CHAR(7)     NOT NULL,
     is_archived BOOLEAN     NOT NULL,
     created_at  DATETIME    NOT NULL,
     updated_at  DATETIME    NOT NULL ON UPDATE CURRENT_TIMESTAMP
