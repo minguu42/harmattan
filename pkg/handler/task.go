@@ -60,16 +60,17 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 		return nil, errProjectNotFound
 	}
 
-	ts, err := h.Repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), params.Limit.Or(10)+1, params.Offset.Or(0))
+	limit := params.Limit.Or(defaultLimit)
+	ts, err := h.Repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), limit+1, params.Offset.Or(defaultOffset))
 	if err != nil {
 		logging.Errorf(ctx, "repository.GetTasksByProjectID failed: %v", err)
 		return nil, errInternalServerError
 	}
 
 	hasNext := false
-	if len(ts) == params.Limit.Or(10)+1 {
+	if len(ts) == limit+1 {
 		hasNext = true
-		ts = ts[:params.Limit.Or(10)]
+		ts = ts[:limit]
 	}
 
 	return &ogen.Tasks{

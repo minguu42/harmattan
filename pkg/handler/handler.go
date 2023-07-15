@@ -10,6 +10,11 @@ import (
 	"github.com/minguu42/mtasks/pkg/repository"
 )
 
+var (
+	defaultLimit  = 10
+	defaultOffset = 0
+)
+
 // ハンドラが返すエラー一覧
 var (
 	errBadRequest          = errors.New("there is an input error")

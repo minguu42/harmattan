@@ -34,16 +34,17 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 		return nil, errUnauthorized
 	}
 
-	ps, err := h.Repository.GetProjectsByUserID(ctx, u.ID, string(params.Sort.Or(ogen.ListProjectsSortMinusCreatedAt)), params.Limit.Or(10)+1, params.Offset.Or(0))
+	limit := params.Limit.Or(defaultLimit)
+	ps, err := h.Repository.GetProjectsByUserID(ctx, u.ID, string(params.Sort.Or(ogen.ListProjectsSortMinusCreatedAt)), limit+1, params.Offset.Or(defaultOffset))
 	if err != nil {
 		logging.Errorf(ctx, "repository.GetProjectsByUserID failed: %v", err)
 		return nil, errInternalServerError
 	}
 
 	hasNext := false
-	if len(ps) == params.Limit.Or(10)+1 {
+	if len(ps) == limit+1 {
 		hasNext = true
-		ps = ps[:params.Limit.Or(10)]
+		ps = ps[:limit]
 	}
 
 	return &ogen.Projects{
