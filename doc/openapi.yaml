@@ -202,6 +202,13 @@ components:
           description: プロジェクト名
           type: string
           example: プロジェクト1
+        color:
+          description: プロジェクトカラー
+          type: string
+          example: "#1A2B3C"
+        isArchived:
+          description: アーカイブ済みか
+          type: boolean
         createdAt:
           description: 作成日時
           type: string
@@ -213,6 +220,8 @@ components:
       required:
         - id
         - name
+        - color
+        - isArchived
         - createdAt
         - updatedAt
     Projects:
@@ -347,8 +356,14 @@ components:
                 minLength: 1
                 maxLength: 20
                 example: プロジェクト1
+              color:
+                type: string
+                minLength: 7
+                maxLength: 7
+                example: "#1A2B3C"
             required:
               - name
+              - color
       required: true
     UpdateProjectRequestBody:
       content:
@@ -361,6 +376,14 @@ components:
                 minLength: 1
                 maxLength: 20
                 example: プロジェクト1
+              color:
+                type: string
+                minLength: 7
+                maxLength: 7
+                example: "#1A2B3C"
+              isArchived:
+                type: boolean
+                example: true
             minProperties: 1
       required: true
     CreateTaskRequestBody:
