@@ -66,6 +66,22 @@ func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}(); err != nil {
 				return err
 			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.ProjectID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		} else {
 			return validate.ErrFieldRequired
 		}
@@ -127,6 +143,22 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 				}
 
 				params.ProjectID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.ProjectID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
 				return nil
 			}(); err != nil {
 				return err
@@ -204,6 +236,22 @@ func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 			}(); err != nil {
 				return err
 			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.ProjectID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		} else {
 			return validate.ErrFieldRequired
 		}
@@ -249,6 +297,22 @@ func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 			}(); err != nil {
 				return err
 			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.TaskID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		} else {
 			return validate.ErrFieldRequired
 		}
@@ -269,7 +333,7 @@ type ListProjectsParams struct {
 	Limit OptInt
 	// リソースの取得開始位置を指定する。.
 	Offset OptInt
-	// 並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
+	// リソースの並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
 	Sort OptListProjectsSort
 }
 
@@ -350,7 +414,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 							MinSet:        true,
 							Min:           1,
 							MaxSet:        true,
-							Max:           30,
+							Max:           25,
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,
@@ -516,7 +580,7 @@ type ListTasksParams struct {
 	Limit OptInt
 	// リソースの取得開始位置を指定する。.
 	Offset OptInt
-	// 並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
+	// リソースの並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
 	Sort      OptListTasksSort
 	ProjectID string
 }
@@ -605,7 +669,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 							MinSet:        true,
 							Min:           1,
 							MaxSet:        true,
-							Max:           30,
+							Max:           25,
 							MinExclusive:  false,
 							MaxExclusive:  false,
 							MultipleOfSet: false,
@@ -796,6 +860,22 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 			}(); err != nil {
 				return err
 			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.ProjectID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		} else {
 			return validate.ErrFieldRequired
 		}
@@ -857,6 +937,22 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 				}
 
 				params.ProjectID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.ProjectID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
 				return nil
 			}(); err != nil {
 				return err
@@ -934,6 +1030,22 @@ func decodeUpdateTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 			}(); err != nil {
 				return err
 			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.ProjectID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
 		} else {
 			return validate.ErrFieldRequired
 		}
@@ -975,6 +1087,22 @@ func decodeUpdateTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 				}
 
 				params.TaskID = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:    26,
+					MinLengthSet: true,
+					MaxLength:    26,
+					MaxLengthSet: true,
+					Email:        false,
+					Hostname:     false,
+					Regex:        nil,
+				}).Validate(string(params.TaskID)); err != nil {
+					return errors.Wrap(err, "string")
+				}
 				return nil
 			}(); err != nil {
 				return err

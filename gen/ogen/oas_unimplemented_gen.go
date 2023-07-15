@@ -60,7 +60,7 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) (r *GetHealthOK, _ er
 
 // ListProjects implements ListProjects operation.
 //
-// 作成日時の降順で取得する。.
+// プロジェクト一覧を取得する.
 //
 // GET /projects
 func (UnimplementedHandler) ListProjects(ctx context.Context, params ListProjectsParams) (r *Projects, _ error) {
@@ -69,7 +69,7 @@ func (UnimplementedHandler) ListProjects(ctx context.Context, params ListProject
 
 // ListTasks implements ListTasks operation.
 //
-// 作成日時の降順で取得する。.
+// タスク一覧を取得する.
 //
 // GET /projects/{projectID}/tasks
 func (UnimplementedHandler) ListTasks(ctx context.Context, params ListTasksParams) (r *Tasks, _ error) {

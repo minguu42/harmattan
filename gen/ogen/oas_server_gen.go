@@ -40,13 +40,13 @@ type Handler interface {
 	GetHealth(ctx context.Context) (*GetHealthOK, error)
 	// ListProjects implements ListProjects operation.
 	//
-	// 作成日時の降順で取得する。.
+	// プロジェクト一覧を取得する.
 	//
 	// GET /projects
 	ListProjects(ctx context.Context, params ListProjectsParams) (*Projects, error)
 	// ListTasks implements ListTasks operation.
 	//
-	// 作成日時の降順で取得する。.
+	// タスク一覧を取得する.
 	//
 	// GET /projects/{projectID}/tasks
 	ListTasks(ctx context.Context, params ListTasksParams) (*Tasks, error)
