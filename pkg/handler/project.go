@@ -54,11 +54,6 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 
 // UpdateProject は PATCH /projects/{projectID} に対応するハンドラ
 func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq, params ogen.UpdateProjectParams) (*ogen.Project, error) {
-	if !req.Name.IsSet() {
-		logging.Errorf(ctx, "value contains nothing")
-		return nil, errBadRequest
-	}
-
 	u, ok := ctx.Value(userKey{}).(*entity.User)
 	if !ok {
 		return nil, errUnauthorized
