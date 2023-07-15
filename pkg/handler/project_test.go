@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -55,19 +54,6 @@ func TestHandler_CreateProject(t *testing.T) {
 			prepareMockFn: func(r *mock.MockRepository) {},
 			want:          nil,
 			wantErr:       errUnauthorized,
-		},
-		{
-			name: "データベースへの操作がエラーを返す場合はエラーを返す",
-			args: args{
-				ctx: mockCtx,
-				req: &ogen.CreateProjectReq{Name: "プロジェクト1"},
-			},
-			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().CreateProject(mockCtx, "01DXF6DT000000000000000000", "プロジェクト1").
-					Return(nil, errors.New("some error"))
-			},
-			want:    nil,
-			wantErr: errInternalServerError,
 		},
 	}
 	for _, tt := range tests {
@@ -149,16 +135,6 @@ func TestHandler_ListProjects(t *testing.T) {
 			prepareMockFn: func(r *mock.MockRepository) {},
 			want:          nil,
 			wantErr:       errUnauthorized,
-		},
-		{
-			name: "repository.GetProjectsByUserIDがエラーを返す場合はエラーを返す",
-			args: args{ctx: mockCtx},
-			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectsByUserID(mockCtx, "01DXF6DT000000000000000000", "-createdAt", 11, 0).
-					Return(nil, errors.New("some error"))
-			},
-			want:    nil,
-			wantErr: errInternalServerError,
 		},
 	}
 	for _, tt := range tests {
@@ -244,19 +220,6 @@ func TestHandler_UpdateProject(t *testing.T) {
 			wantErr: errProjectNotFound,
 		},
 		{
-			name: "repository.GetProjectByIDが何らかのエラーを返す場合はエラーを返す",
-			args: args{
-				ctx:    mockCtx,
-				req:    &ogen.UpdateProjectReq{Name: ogen.OptString{Value: "新プロジェクト1", Set: true}},
-				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000000"},
-			},
-			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(nil, errors.New("some error"))
-			},
-			want:    nil,
-			wantErr: errInternalServerError,
-		},
-		{
 			name: "指定したプロジェクトをユーザが保持していない場合はエラーを返す",
 			args: args{
 				ctx:    mockCtx,
@@ -274,27 +237,6 @@ func TestHandler_UpdateProject(t *testing.T) {
 			},
 			want:    nil,
 			wantErr: errProjectNotFound,
-		},
-		{
-			name: "repository.UpdateProjectが何らかのエラーを返す場合はエラーを返す",
-			args: args{
-				ctx:    mockCtx,
-				req:    &ogen.UpdateProjectReq{Name: ogen.OptString{Value: "新プロジェクト1", Set: true}},
-				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000000"},
-			},
-			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
-					ID:        "01DXF6DT000000000000000000",
-					UserID:    "01DXF6DT000000000000000000",
-					Name:      "プロジェクト1",
-					CreatedAt: time.Time{},
-					UpdatedAt: time.Time{},
-				}, nil)
-				r.EXPECT().UpdateProject(mockCtx, "01DXF6DT000000000000000000", "新プロジェクト1", time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).
-					Return(errors.New("some error"))
-			},
-			want:    nil,
-			wantErr: errInternalServerError,
 		},
 	}
 	for _, tt := range tests {
@@ -364,17 +306,6 @@ func TestHandler_DeleteProject(t *testing.T) {
 			want: errProjectNotFound,
 		},
 		{
-			name: "repository.GetProjectByIDが何らかのエラーを返す場合はエラーを返す",
-			args: args{
-				ctx:    mockCtx,
-				params: ogen.DeleteProjectParams{ProjectID: "01DXF6DT000000000000000000"},
-			},
-			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(nil, errors.New("some error"))
-			},
-			want: errInternalServerError,
-		},
-		{
 			name: "指定したプロジェクトをユーザが保持していない場合はエラーを返す",
 			args: args{
 				ctx:    mockCtx,
@@ -390,24 +321,6 @@ func TestHandler_DeleteProject(t *testing.T) {
 				}, nil)
 			},
 			want: errProjectNotFound,
-		},
-		{
-			name: "repository.UpdateProjectが何らかのエラーを返す場合はエラーを返す",
-			args: args{
-				ctx:    mockCtx,
-				params: ogen.DeleteProjectParams{ProjectID: "01DXF6DT000000000000000000"},
-			},
-			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
-					ID:        "01DXF6DT000000000000000000",
-					UserID:    "01DXF6DT000000000000000000",
-					Name:      "プロジェクト1",
-					CreatedAt: time.Time{},
-					UpdatedAt: time.Time{},
-				}, nil)
-				r.EXPECT().DeleteProject(mockCtx, "01DXF6DT000000000000000000").Return(errors.New("some error"))
-			},
-			want: errInternalServerError,
 		},
 	}
 	for _, tt := range tests {

@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: mTasks API Specification
-  version: v0.1.4
+  version: v0.1.5
 
 servers:
   - url: http://localhost:8080/
@@ -23,17 +23,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: プロジェクト1
-              required:
-                - name
+        $ref: "#/components/requestBodies/CreateProjectRequestBody"
       responses:
         201:
           description: 成功
@@ -47,22 +37,13 @@ paths:
       tags:
         - projects
       summary: プロジェクト一覧を取得する
-      description: 作成日時の降順で取得する。
       operationId: ListProjects
       security:
         - isAuthorized: [ ]
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
-        - name: sort
-          in: query
-          description: 並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。
-          schema:
-            type: string
-            enum:
-              - createdAt
-              - -createdAt
-            default: -createdAt
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: 成功
@@ -83,15 +64,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: プロジェクト1
+        $ref: "#/components/requestBodies/UpdateProjectRequestBody"
       responses:
         200:
           description: 成功
@@ -124,17 +97,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  example: タスク1
-              required:
-                - title
+        $ref: "#/components/requestBodies/CreateTaskRequestBody"
       responses:
         201:
           description: 成功
@@ -148,22 +111,13 @@ paths:
       tags:
         - tasks
       summary: タスク一覧を取得する
-      description: 作成日時の降順で取得する。
       operationId: ListTasks
       security:
         - isAuthorized: [ ]
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
-        - name: sort
-          in: query
-          description: 並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。
-          schema:
-            type: string
-            enum:
-              - createdAt
-              - -createdAt
-            default: -createdAt
+        - $ref: "#/components/parameters/sort"
       responses:
         200:
           description: 成功
@@ -185,14 +139,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                isCompleted:
-                  type: boolean
+        $ref: "#/components/requestBodies/UpdateTaskRequestBody"
       responses:
         200:
           description: 成功
@@ -228,9 +175,6 @@ paths:
             application/json:
               schema:
                 type: object
-                required:
-                  - version
-                  - revision
                 properties:
                   version:
                     description: mTasks APIのバージョン
@@ -240,6 +184,9 @@ paths:
                     description: mTasks APIのリビジョン
                     type: string
                     example: a1b2c3d
+                required:
+                  - version
+                  - revision
         default:
           $ref: "#/components/responses/Error"
 
@@ -327,36 +274,6 @@ components:
       required:
         - tasks
         - hasNext
-  parameters:
-    limit:
-      name: limit
-      in: query
-      description: リソースの最大取得数を指定する。
-      schema:
-        type: integer
-        default: 10
-        minimum: 1
-        maximum: 30
-    offset:
-      name: offset
-      in: query
-      description: リソースの取得開始位置を指定する。
-      schema:
-        type: integer
-        default: 0
-        minimum: 0
-    projectID:
-      name: projectID
-      in: path
-      required: true
-      schema:
-        type: string
-    taskID:
-      name: taskID
-      in: path
-      required: true
-      schema:
-        type: string
   responses:
     Error:
       description: エラー
@@ -374,6 +291,102 @@ components:
             required:
               - message
               - debug
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: リソースの最大取得数を指定する。
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 25
+        default: 10
+    offset:
+      name: offset
+      in: query
+      description: リソースの取得開始位置を指定する。
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    sort:
+      name: sort
+      in: query
+      description: リソースの並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。
+      schema:
+        type: string
+        enum:
+          - createdAt
+          - -createdAt
+        default: -createdAt
+    projectID:
+      name: projectID
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 26
+        maxLength: 26
+    taskID:
+      name: taskID
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 26
+        maxLength: 26
+  requestBodies:
+    CreateProjectRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                minLength: 1
+                maxLength: 20
+                example: プロジェクト1
+            required:
+              - name
+      required: true
+    UpdateProjectRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                minLength: 1
+                maxLength: 20
+                example: プロジェクト1
+            minProperties: 1
+      required: true
+    CreateTaskRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+                minLength: 1
+                maxLength: 80
+                example: タスク1
+            required:
+              - title
+      required: true
+    UpdateTaskRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              isCompleted:
+                type: boolean
+            minProperties: 1
+      required: true
   securitySchemes:
     isAuthorized:
       type: apiKey

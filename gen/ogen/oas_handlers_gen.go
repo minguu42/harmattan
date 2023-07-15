@@ -753,7 +753,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 
 // handleListProjectsRequest handles ListProjects operation.
 //
-// 作成日時の降順で取得する。.
+// プロジェクト一覧を取得する.
 //
 // GET /projects
 func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -916,7 +916,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 
 // handleListTasksRequest handles ListTasks operation.
 //
-// 作成日時の降順で取得する。.
+// タスク一覧を取得する.
 //
 // GET /projects/{projectID}/tasks
 func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
