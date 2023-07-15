@@ -77,10 +77,12 @@ func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
 // newProjectResponse は entity.Project から ogen.Project を生成する
 func newProjectResponse(p *entity.Project) *ogen.Project {
 	return &ogen.Project{
-		ID:        p.ID,
-		Name:      p.Name,
-		CreatedAt: p.CreatedAt,
-		UpdatedAt: p.UpdatedAt,
+		ID:         p.ID,
+		Name:       p.Name,
+		Color:      p.Color,
+		IsArchived: p.IsArchived,
+		CreatedAt:  p.CreatedAt,
+		UpdatedAt:  p.UpdatedAt,
 	}
 }
 

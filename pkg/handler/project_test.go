@@ -29,23 +29,27 @@ func TestHandler_CreateProject(t *testing.T) {
 			name: "プロジェクト1を作成する",
 			args: args{
 				ctx: mockCtx,
-				req: &ogen.CreateProjectReq{Name: "プロジェクト1"},
+				req: &ogen.CreateProjectReq{Name: "プロジェクト1", Color: "#1A2B3C"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().CreateProject(mockCtx, "01DXF6DT000000000000000000", "プロジェクト1").
+				r.EXPECT().CreateProject(mockCtx, "01DXF6DT000000000000000000", "プロジェクト1", "#1A2B3C").
 					Return(&entity.Project{
-						ID:        "01DXF6DT000000000000000000",
-						UserID:    "01DXF6DT000000000000000000",
-						Name:      "プロジェクト1",
-						CreatedAt: time.Time{},
-						UpdatedAt: time.Time{},
+						ID:         "01DXF6DT000000000000000000",
+						UserID:     "01DXF6DT000000000000000000",
+						Name:       "プロジェクト1",
+						Color:      "#1A2B3C",
+						IsArchived: false,
+						CreatedAt:  time.Time{},
+						UpdatedAt:  time.Time{},
 					}, nil)
 			},
 			want: &ogen.Project{
-				ID:        "01DXF6DT000000000000000000",
-				Name:      "プロジェクト1",
-				CreatedAt: time.Time{},
-				UpdatedAt: time.Time{},
+				ID:         "01DXF6DT000000000000000000",
+				Name:       "プロジェクト1",
+				Color:      "#1A2B3C",
+				IsArchived: false,
+				CreatedAt:  time.Time{},
+				UpdatedAt:  time.Time{},
 			},
 		},
 		{

@@ -18,7 +18,7 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 		return nil, errUnauthorized
 	}
 
-	p, err := h.Repository.CreateProject(ctx, u.ID, req.Name)
+	p, err := h.Repository.CreateProject(ctx, u.ID, req.Name, req.Color)
 	if err != nil {
 		logging.Errorf(ctx, "repository.CreateProject failed: %v", err)
 		return nil, errInternalServerError
