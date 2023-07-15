@@ -37,18 +37,18 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // CreateProject mocks base method.
-func (m *MockRepository) CreateProject(ctx context.Context, userID, name string) (*entity.Project, error) {
+func (m *MockRepository) CreateProject(ctx context.Context, userID, name, color string) (*entity.Project, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateProject", ctx, userID, name)
+	ret := m.ctrl.Call(m, "CreateProject", ctx, userID, name, color)
 	ret0, _ := ret[0].(*entity.Project)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateProject indicates an expected call of CreateProject.
-func (mr *MockRepositoryMockRecorder) CreateProject(ctx, userID, name interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) CreateProject(ctx, userID, name, color interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProject", reflect.TypeOf((*MockRepository)(nil).CreateProject), ctx, userID, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProject", reflect.TypeOf((*MockRepository)(nil).CreateProject), ctx, userID, name, color)
 }
 
 // CreateTask mocks base method.

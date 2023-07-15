@@ -9,14 +9,16 @@ import (
 	"github.com/minguu42/mtasks/pkg/ttime"
 )
 
-func (db *DB) CreateProject(ctx context.Context, userID string, name string) (*entity.Project, error) {
+func (db *DB) CreateProject(ctx context.Context, userID string, name string, color string) (*entity.Project, error) {
 	now := ttime.Now(ctx)
 	p := entity.Project{
-		ID:        db.idGenerator.Generate(),
-		UserID:    userID,
-		Name:      name,
-		CreatedAt: now,
-		UpdatedAt: now,
+		ID:         db.idGenerator.Generate(),
+		UserID:     userID,
+		Name:       name,
+		Color:      color,
+		IsArchived: false,
+		CreatedAt:  now,
+		UpdatedAt:  now,
 	}
 
 	if err := db.conn(ctx).Create(&p).Error; err != nil {

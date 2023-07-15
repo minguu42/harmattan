@@ -13,7 +13,7 @@ import (
 type Repository interface {
 	GetUserByAPIKey(ctx context.Context, apiKey string) (*entity.User, error)
 
-	CreateProject(ctx context.Context, userID string, name string) (*entity.Project, error)
+	CreateProject(ctx context.Context, userID string, name string, color string) (*entity.Project, error)
 	GetProjectsByUserID(ctx context.Context, userID string, sort string, limit, offset int) ([]*entity.Project, error)
 	GetProjectByID(ctx context.Context, id string) (*entity.Project, error)
 	UpdateProject(ctx context.Context, id string, name string, updatedAt time.Time) error

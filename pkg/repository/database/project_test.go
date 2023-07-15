@@ -8,18 +8,17 @@ import (
 	"github.com/go-faster/errors"
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/mtasks/pkg/ttime"
 )
-
-var projectCmpOpt = cmpopts.IgnoreFields(entity.Project{}, "ID", "CreatedAt", "UpdatedAt")
 
 func TestDB_CreateProject(t *testing.T) {
 	type args struct {
 		ctx    context.Context
 		userID string
 		name   string
+		color  string
 	}
 	tests := []struct {
 		name          string
@@ -31,37 +30,42 @@ func TestDB_CreateProject(t *testing.T) {
 		{
 			name: "プロジェクトを作成する",
 			args: args{
-				ctx:    context.Background(),
+				ctx:    context.WithValue(context.Background(), ttime.TimeKey{}, time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)),
 				userID: "01DXF6DT000000000000000000",
 				name:   "プロジェクト",
+				color:  "#1A2B3C",
 			},
 			prepareMockFn: func(g *mock.MockIDGenerator) {
 				g.EXPECT().Generate().Return("01DXF6DT000000000000000002")
 			},
 			want: &entity.Project{
-				ID:     "01DXF6DT000000000000000002",
-				UserID: "01DXF6DT000000000000000000",
-				Name:   "プロジェクト",
+				ID:         "01DXF6DT000000000000000002",
+				UserID:     "01DXF6DT000000000000000000",
+				Name:       "プロジェクト",
+				Color:      "#1A2B3C",
+				IsArchived: false,
+				CreatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := mock.NewMockIDGenerator(gomock.NewController(t))
-			tt.prepareMockFn(g)
-			testDB.SetIDGenerator(g)
-
 			if err := testDB.Begin(); err != nil {
 				t.Fatalf("testDB.Begin failed: %s", err)
 			}
 			defer testDB.Rollback()
 
-			got, err := testDB.CreateProject(tt.args.ctx, tt.args.userID, tt.args.name)
+			g := mock.NewMockIDGenerator(gomock.NewController(t))
+			tt.prepareMockFn(g)
+			testDB.SetIDGenerator(g)
+
+			got, err := testDB.CreateProject(tt.args.ctx, tt.args.userID, tt.args.name, tt.args.color)
 			if (tt.wantErr == nil) != (err == nil) {
 				t.Errorf("testDB.CreateProject error want '%v', but '%v'", tt.wantErr, err)
 			}
-			if diff := cmp.Diff(tt.want, got, projectCmpOpt); diff != "" {
+			if diff := cmp.Diff(tt.want, got); diff != "" {
 				t.Errorf("testDB.CreateProject mismatch (-want +got):\n%s", diff)
 			}
 		})
