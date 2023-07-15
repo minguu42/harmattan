@@ -14,7 +14,8 @@ func (s *ErrorStatusCode) Error() string {
 }
 
 type CreateProjectReq struct {
-	Name string `json:"name"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
 }
 
 // GetName returns the value of Name.
@@ -22,9 +23,19 @@ func (s *CreateProjectReq) GetName() string {
 	return s.Name
 }
 
+// GetColor returns the value of Color.
+func (s *CreateProjectReq) GetColor() string {
+	return s.Color
+}
+
 // SetName sets the value of Name.
 func (s *CreateProjectReq) SetName(val string) {
 	s.Name = val
+}
+
+// SetColor sets the value of Color.
+func (s *CreateProjectReq) SetColor(val string) {
+	s.Color = val
 }
 
 type CreateTaskReq struct {
@@ -489,6 +500,10 @@ type Project struct {
 	ID string `json:"id"`
 	// プロジェクト名.
 	Name string `json:"name"`
+	// プロジェクトカラー.
+	Color string `json:"color"`
+	// アーカイブ済みか.
+	IsArchived bool `json:"isArchived"`
 	// 作成日時.
 	CreatedAt time.Time `json:"createdAt"`
 	// 更新日時.
@@ -503,6 +518,16 @@ func (s *Project) GetID() string {
 // GetName returns the value of Name.
 func (s *Project) GetName() string {
 	return s.Name
+}
+
+// GetColor returns the value of Color.
+func (s *Project) GetColor() string {
+	return s.Color
+}
+
+// GetIsArchived returns the value of IsArchived.
+func (s *Project) GetIsArchived() bool {
+	return s.IsArchived
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -523,6 +548,16 @@ func (s *Project) SetID(val string) {
 // SetName sets the value of Name.
 func (s *Project) SetName(val string) {
 	s.Name = val
+}
+
+// SetColor sets the value of Color.
+func (s *Project) SetColor(val string) {
+	s.Color = val
+}
+
+// SetIsArchived sets the value of IsArchived.
+func (s *Project) SetIsArchived(val bool) {
+	s.IsArchived = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
@@ -668,7 +703,9 @@ func (s *Tasks) SetHasNext(val bool) {
 }
 
 type UpdateProjectReq struct {
-	Name OptString `json:"name"`
+	Name       OptString `json:"name"`
+	Color      OptString `json:"color"`
+	IsArchived OptBool   `json:"isArchived"`
 }
 
 // GetName returns the value of Name.
@@ -676,9 +713,29 @@ func (s *UpdateProjectReq) GetName() OptString {
 	return s.Name
 }
 
+// GetColor returns the value of Color.
+func (s *UpdateProjectReq) GetColor() OptString {
+	return s.Color
+}
+
+// GetIsArchived returns the value of IsArchived.
+func (s *UpdateProjectReq) GetIsArchived() OptBool {
+	return s.IsArchived
+}
+
 // SetName sets the value of Name.
 func (s *UpdateProjectReq) SetName(val OptString) {
 	s.Name = val
+}
+
+// SetColor sets the value of Color.
+func (s *UpdateProjectReq) SetColor(val OptString) {
+	s.Color = val
+}
+
+// SetIsArchived sets the value of IsArchived.
+func (s *UpdateProjectReq) SetIsArchived(val OptBool) {
+	s.IsArchived = val
 }
 
 type UpdateTaskReq struct {

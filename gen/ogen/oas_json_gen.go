@@ -27,10 +27,15 @@ func (s *CreateProjectReq) encodeFields(e *jx.Encoder) {
 		e.FieldStart("name")
 		e.Str(s.Name)
 	}
+	{
+		e.FieldStart("color")
+		e.Str(s.Color)
+	}
 }
 
-var jsonFieldsNameOfCreateProjectReq = [1]string{
+var jsonFieldsNameOfCreateProjectReq = [2]string{
 	0: "name",
+	1: "color",
 }
 
 // Decode decodes CreateProjectReq from json.
@@ -54,6 +59,18 @@ func (s *CreateProjectReq) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
+		case "color":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Color = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"color\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -64,7 +81,7 @@ func (s *CreateProjectReq) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000001,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -555,6 +572,14 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 		e.Str(s.Name)
 	}
 	{
+		e.FieldStart("color")
+		e.Str(s.Color)
+	}
+	{
+		e.FieldStart("isArchived")
+		e.Bool(s.IsArchived)
+	}
+	{
 		e.FieldStart("createdAt")
 		json.EncodeDateTime(e, s.CreatedAt)
 	}
@@ -564,11 +589,13 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfProject = [4]string{
+var jsonFieldsNameOfProject = [6]string{
 	0: "id",
 	1: "name",
-	2: "createdAt",
-	3: "updatedAt",
+	2: "color",
+	3: "isArchived",
+	4: "createdAt",
+	5: "updatedAt",
 }
 
 // Decode decodes Project from json.
@@ -604,8 +631,32 @@ func (s *Project) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
-		case "createdAt":
+		case "color":
 			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.Color = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"color\"")
+			}
+		case "isArchived":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Bool()
+				s.IsArchived = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"isArchived\"")
+			}
+		case "createdAt":
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -617,7 +668,7 @@ func (s *Project) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"createdAt\"")
 			}
 		case "updatedAt":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -638,7 +689,7 @@ func (s *Project) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00001111,
+		0b00111111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -1126,10 +1177,24 @@ func (s *UpdateProjectReq) encodeFields(e *jx.Encoder) {
 			s.Name.Encode(e)
 		}
 	}
+	{
+		if s.Color.Set {
+			e.FieldStart("color")
+			s.Color.Encode(e)
+		}
+	}
+	{
+		if s.IsArchived.Set {
+			e.FieldStart("isArchived")
+			s.IsArchived.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfUpdateProjectReq = [1]string{
+var jsonFieldsNameOfUpdateProjectReq = [3]string{
 	0: "name",
+	1: "color",
+	2: "isArchived",
 }
 
 // Decode decodes UpdateProjectReq from json.
@@ -1151,6 +1216,26 @@ func (s *UpdateProjectReq) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "color":
+			if err := func() error {
+				s.Color.Reset()
+				if err := s.Color.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"color\"")
+			}
+		case "isArchived":
+			if err := func() error {
+				s.IsArchived.Reset()
+				if err := s.IsArchived.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"isArchived\"")
 			}
 		default:
 			return d.Skip()
