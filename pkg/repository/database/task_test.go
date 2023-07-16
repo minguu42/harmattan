@@ -100,6 +100,9 @@ func TestDB_GetTaskByID(t *testing.T) {
 				ID:          "01DXF6DT000000000000000000",
 				ProjectID:   "01DXF6DT000000000000000000",
 				Title:       "タスク1",
+				Content:     "Hello, 世界!",
+				Priority:    0,
+				DueOn:       nil,
 				CompletedAt: nil,
 				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -130,6 +133,7 @@ func TestDB_GetTaskByID(t *testing.T) {
 }
 
 func TestDB_GetTasksByProjectID(t *testing.T) {
+	dueOn := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	completedAt := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	type args struct {
 		ctx       context.Context
@@ -158,6 +162,9 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 					ID:          "01DXF6DT000000000000000000",
 					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク1",
+					Content:     "Hello, 世界!",
+					Priority:    0,
+					DueOn:       nil,
 					CompletedAt: nil,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -166,6 +173,9 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 					ID:          "01DXF6DT000000000000000001",
 					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク2",
+					Content:     "",
+					Priority:    3,
+					DueOn:       &dueOn,
 					CompletedAt: &completedAt,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
@@ -187,6 +197,9 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 					ID:          "01DXF6DT000000000000000000",
 					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク1",
+					Content:     "Hello, 世界!",
+					Priority:    0,
+					DueOn:       nil,
 					CompletedAt: nil,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
