@@ -185,26 +185,41 @@ func TestHandler_UpdateProject(t *testing.T) {
 		{
 			name: "プロジェクト1を変更する",
 			args: args{
-				ctx:    mockCtx,
-				req:    &ogen.UpdateProjectReq{Name: ogen.OptString{Value: "新プロジェクト1", Set: true}},
+				ctx: mockCtx,
+				req: &ogen.UpdateProjectReq{
+					Name:       ogen.OptString{Value: "新プロジェクト1", Set: true},
+					Color:      ogen.OptString{Value: "#FFFFFF", Set: true},
+					IsArchived: ogen.OptBool{Value: true, Set: true},
+				},
 				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
-					ID:        "01DXF6DT000000000000000000",
-					UserID:    "01DXF6DT000000000000000000",
-					Name:      "プロジェクト1",
-					CreatedAt: time.Time{},
-					UpdatedAt: time.Time{},
+					ID:         "01DXF6DT000000000000000000",
+					UserID:     "01DXF6DT000000000000000000",
+					Name:       "プロジェクト1",
+					Color:      "#1A2B3C",
+					IsArchived: false,
+					CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().UpdateProject(mockCtx, "01DXF6DT000000000000000000", "新プロジェクト1", time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).
-					Return(nil)
+				r.EXPECT().UpdateProject(mockCtx, &entity.Project{
+					ID:         "01DXF6DT000000000000000000",
+					UserID:     "01DXF6DT000000000000000000",
+					Name:       "新プロジェクト1",
+					Color:      "#FFFFFF",
+					IsArchived: true,
+					CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				}).Return(nil)
 			},
 			want: &ogen.Project{
-				ID:        "01DXF6DT000000000000000000",
-				Name:      "新プロジェクト1",
-				CreatedAt: time.Time{},
-				UpdatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				ID:         "01DXF6DT000000000000000000",
+				Name:       "新プロジェクト1",
+				Color:      "#FFFFFF",
+				IsArchived: true,
+				CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},

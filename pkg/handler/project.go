@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-
 	"github.com/go-faster/errors"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
@@ -53,6 +52,20 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 	}, nil
 }
 
+func updateProject(ctx context.Context, p *entity.Project, req *ogen.UpdateProjectReq) *entity.Project {
+	if req.Name.Set {
+		p.Name = req.Name.Value
+	}
+	if req.Color.Set {
+		p.Color = req.Color.Value
+	}
+	if req.IsArchived.Set {
+		p.IsArchived = req.IsArchived.Value
+	}
+	p.UpdatedAt = ttime.Now(ctx)
+	return p
+}
+
 // UpdateProject は PATCH /projects/{projectID} に対応するハンドラ
 func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq, params ogen.UpdateProjectParams) (*ogen.Project, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
@@ -74,14 +87,13 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 		return nil, errProjectNotFound
 	}
 
-	p.Name = req.Name.Value
-	p.UpdatedAt = ttime.Now(ctx)
-	if err := h.Repository.UpdateProject(ctx, params.ProjectID, p.Name, p.UpdatedAt); err != nil {
+	newProject := updateProject(ctx, p, req)
+	if err := h.Repository.UpdateProject(ctx, newProject); err != nil {
 		logging.Errorf(ctx, "repository.UpdateProject failed: %v", err)
 		return nil, errInternalServerError
 	}
 
-	return newProjectResponse(p), nil
+	return newProjectResponse(newProject), nil
 }
 
 // DeleteProject は DELETE /projects/{projectID} に対応するハンドラ

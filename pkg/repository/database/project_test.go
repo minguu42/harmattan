@@ -206,10 +206,8 @@ func TestDB_GetProjectsByUserID(t *testing.T) {
 
 func TestDB_UpdateProject(t *testing.T) {
 	type args struct {
-		ctx       context.Context
-		id        string
-		name      string
-		updatedAt time.Time
+		ctx context.Context
+		p   *entity.Project
 	}
 	tests := []struct {
 		name string
@@ -219,10 +217,16 @@ func TestDB_UpdateProject(t *testing.T) {
 		{
 			name: "プロジェクト1を更新する",
 			args: args{
-				ctx:       context.Background(),
-				id:        "01DXF6DT000000000000000000",
-				name:      "新プロジェクト1",
-				updatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				ctx: context.Background(),
+				p: &entity.Project{
+					ID:         "01DXF6DT000000000000000000",
+					UserID:     "01DXF6DT000000000000000000",
+					Name:       "新プロジェクト1",
+					Color:      "#FFFFFF",
+					IsArchived: true,
+					CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				},
 			},
 			want: nil,
 		},
@@ -234,7 +238,7 @@ func TestDB_UpdateProject(t *testing.T) {
 			}
 			defer testDB.Rollback()
 
-			if err := testDB.UpdateProject(tt.args.ctx, tt.args.id, tt.args.name, tt.args.updatedAt); (tt.want == nil) != (err == nil) {
+			if err := testDB.UpdateProject(tt.args.ctx, tt.args.p); (tt.want == nil) != (err == nil) {
 				t.Errorf("testDB.UpdateProject want '%v', but '%v'", tt.want, err)
 			}
 		})

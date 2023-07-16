@@ -170,17 +170,17 @@ func (mr *MockRepositoryMockRecorder) GetUserByAPIKey(ctx, apiKey interface{}) *
 }
 
 // UpdateProject mocks base method.
-func (m *MockRepository) UpdateProject(ctx context.Context, id, name string, updatedAt time.Time) error {
+func (m *MockRepository) UpdateProject(ctx context.Context, p *entity.Project) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateProject", ctx, id, name, updatedAt)
+	ret := m.ctrl.Call(m, "UpdateProject", ctx, p)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateProject indicates an expected call of UpdateProject.
-func (mr *MockRepositoryMockRecorder) UpdateProject(ctx, id, name, updatedAt interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) UpdateProject(ctx, p interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProject", reflect.TypeOf((*MockRepository)(nil).UpdateProject), ctx, id, name, updatedAt)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProject", reflect.TypeOf((*MockRepository)(nil).UpdateProject), ctx, p)
 }
 
 // UpdateTask mocks base method.

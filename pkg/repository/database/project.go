@@ -3,8 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/minguu42/mtasks/pkg/entity"
 	"github.com/minguu42/mtasks/pkg/ttime"
 )
@@ -44,9 +42,13 @@ func (db *DB) GetProjectsByUserID(ctx context.Context, userID string, sort strin
 	return ps, nil
 }
 
-func (db *DB) UpdateProject(ctx context.Context, id string, name string, updatedAt time.Time) error {
-	p := entity.Project{ID: id}
-	if err := db.conn(ctx).Model(&p).Updates(entity.Project{Name: name, UpdatedAt: updatedAt}).Error; err != nil {
+func (db *DB) UpdateProject(ctx context.Context, p *entity.Project) error {
+	if err := db.conn(ctx).Model(&entity.Project{ID: p.ID}).Updates(entity.Project{
+		Name:       p.Name,
+		Color:      p.Color,
+		IsArchived: p.IsArchived,
+		UpdatedAt:  p.UpdatedAt,
+	}).Error; err != nil {
 		return fmt.Errorf("gormDB.Updates failed: %w", err)
 	}
 	return nil
