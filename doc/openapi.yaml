@@ -251,6 +251,14 @@ components:
           description: タイトル
           type: string
           example: タスク1
+        content:
+          description: 内容
+          type: string
+        priority:
+          type: integer
+        dueOn:
+          type: string
+          format: date
         completedAt:
           description: 完了日時
           type: string
@@ -267,6 +275,8 @@ components:
         - id
         - project_id
         - title
+        - content
+        - priority
         - createdAt
         - updatedAt
     Tasks:
@@ -397,8 +407,20 @@ components:
                 minLength: 1
                 maxLength: 80
                 example: タスク1
+              content:
+                type: string
+                maxLength: 300
+              priority:
+                type: integer
+                minimum: 0
+                maximum: 3
+              dueOn:
+                type: string
+                format: date
             required:
               - title
+              - content
+              - priority
       required: true
     UpdateTaskRequestBody:
       content:
@@ -406,6 +428,21 @@ components:
           schema:
             type: object
             properties:
+              title:
+                type: string
+                minLength: 1
+                maxLength: 80
+                example: タスク1
+              content:
+                type: string
+                maxLength: 300
+              priority:
+                type: integer
+                minimum: 0
+                maximum: 3
+              dueOn:
+                type: string
+                format: date
               isCompleted:
                 type: boolean
             minProperties: 1
