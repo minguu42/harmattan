@@ -2,21 +2,25 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"time"
 
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/mtasks/pkg/repository"
 	"github.com/minguu42/mtasks/pkg/ttime"
+	"gorm.io/gorm"
 )
 
-func (db *DB) CreateProject(ctx context.Context, userID string, name string) (*entity.Project, error) {
+func (db *DB) CreateProject(ctx context.Context, userID string, name string, color string) (*entity.Project, error) {
 	now := ttime.Now(ctx)
 	p := entity.Project{
-		ID:        db.idGenerator.Generate(),
-		UserID:    userID,
-		Name:      name,
-		CreatedAt: now,
-		UpdatedAt: now,
+		ID:         db.idGenerator.Generate(),
+		UserID:     userID,
+		Name:       name,
+		Color:      color,
+		IsArchived: false,
+		CreatedAt:  now,
+		UpdatedAt:  now,
 	}
 
 	if err := db.conn(ctx).Create(&p).Error; err != nil {
@@ -28,6 +32,9 @@ func (db *DB) CreateProject(ctx context.Context, userID string, name string) (*e
 func (db *DB) GetProjectByID(ctx context.Context, id string) (*entity.Project, error) {
 	var p entity.Project
 	if err := db.conn(ctx).First(&p, "id = ?", id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, repository.ErrRecordNotFound
+		}
 		return nil, fmt.Errorf("gormDB.First failed: %w", err)
 	}
 	return &p, nil
@@ -42,9 +49,13 @@ func (db *DB) GetProjectsByUserID(ctx context.Context, userID string, sort strin
 	return ps, nil
 }
 
-func (db *DB) UpdateProject(ctx context.Context, id string, name string, updatedAt time.Time) error {
-	p := entity.Project{ID: id}
-	if err := db.conn(ctx).Model(&p).Updates(entity.Project{Name: name, UpdatedAt: updatedAt}).Error; err != nil {
+func (db *DB) UpdateProject(ctx context.Context, p *entity.Project) error {
+	if err := db.conn(ctx).Model(&entity.Project{ID: p.ID}).Updates(entity.Project{
+		Name:       p.Name,
+		Color:      p.Color,
+		IsArchived: p.IsArchived,
+		UpdatedAt:  p.UpdatedAt,
+	}).Error; err != nil {
 		return fmt.Errorf("gormDB.Updates failed: %w", err)
 	}
 	return nil

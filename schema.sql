@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
-    id         CHAR(26)    PRIMARY KEY,
+    id         CHAR(26) PRIMARY KEY,
     name       VARCHAR(15) NOT NULL UNIQUE,
     api_key    CHAR(64)    NOT NULL UNIQUE,
     created_at DATETIME    NOT NULL,
@@ -11,18 +11,23 @@ CREATE TABLE users (
 );
 
 CREATE TABLE projects (
-    id         CHAR(26)    PRIMARY KEY,
-    user_id    CHAR(26)    NOT NULL,
-    name       VARCHAR(20) NOT NULL,
-    created_at DATETIME    NOT NULL,
-    updated_at DATETIME    NOT NULL ON UPDATE CURRENT_TIMESTAMP
+    id          CHAR(26) PRIMARY KEY,
+    user_id     CHAR(26)    NOT NULL,
+    name        VARCHAR(20) NOT NULL,
+    color       CHAR(7)     NOT NULL,
+    is_archived BOOLEAN     NOT NULL,
+    created_at  DATETIME    NOT NULL,
+    updated_at  DATETIME    NOT NULL ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE tasks (
-    id           CHAR(26)    PRIMARY KEY,
-    project_id   CHAR(26)    NOT NULL,
-    title        VARCHAR(80) NOT NULL,
+    id           CHAR(26) PRIMARY KEY,
+    project_id   CHAR(26)            NOT NULL,
+    title        VARCHAR(80)         NOT NULL,
+    content      VARCHAR(300)        NOT NULL,
+    priority     TINYINT(2) UNSIGNED NOT NULL,
+    due_on       DATE,
     completed_at DATETIME,
-    created_at   DATETIME    NOT NULL,
-    updated_at   DATETIME    NOT NULL ON UPDATE CURRENT_TIMESTAMP
+    created_at   DATETIME            NOT NULL,
+    updated_at   DATETIME            NOT NULL ON UPDATE CURRENT_TIMESTAMP
 );

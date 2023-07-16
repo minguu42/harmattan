@@ -7,8 +7,8 @@ import (
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
 	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/repository"
 	"github.com/minguu42/mtasks/pkg/ttime"
-	"gorm.io/gorm"
 )
 
 // CreateProject は POST /projects に対応するハンドラ
@@ -18,7 +18,7 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 		return nil, errUnauthorized
 	}
 
-	p, err := h.Repository.CreateProject(ctx, u.ID, req.Name)
+	p, err := h.Repository.CreateProject(ctx, u.ID, req.Name, req.Color)
 	if err != nil {
 		logging.Errorf(ctx, "repository.CreateProject failed: %v", err)
 		return nil, errInternalServerError
@@ -53,6 +53,14 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 	}, nil
 }
 
+func updateProject(ctx context.Context, p *entity.Project, req *ogen.UpdateProjectReq) *entity.Project {
+	p.Name = req.Name.Or(p.Name)
+	p.Color = req.Color.Or(p.Color)
+	p.IsArchived = req.IsArchived.Or(p.IsArchived)
+	p.UpdatedAt = ttime.Now(ctx)
+	return p
+}
+
 // UpdateProject は PATCH /projects/{projectID} に対応するハンドラ
 func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq, params ogen.UpdateProjectParams) (*ogen.Project, error) {
 	u, ok := ctx.Value(userKey{}).(*entity.User)
@@ -62,7 +70,7 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrRecordNotFound) {
 			return nil, errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
@@ -74,14 +82,13 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 		return nil, errProjectNotFound
 	}
 
-	p.Name = req.Name.Value
-	p.UpdatedAt = ttime.Now(ctx)
-	if err := h.Repository.UpdateProject(ctx, params.ProjectID, p.Name, p.UpdatedAt); err != nil {
+	newProject := updateProject(ctx, p, req)
+	if err := h.Repository.UpdateProject(ctx, newProject); err != nil {
 		logging.Errorf(ctx, "repository.UpdateProject failed: %v", err)
 		return nil, errInternalServerError
 	}
 
-	return newProjectResponse(p), nil
+	return newProjectResponse(newProject), nil
 }
 
 // DeleteProject は DELETE /projects/{projectID} に対応するハンドラ
@@ -93,7 +100,7 @@ func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectPa
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrRecordNotFound) {
 			return errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)

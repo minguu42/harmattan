@@ -10,7 +10,7 @@ import (
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-	"gorm.io/gorm"
+	"github.com/minguu42/mtasks/pkg/repository"
 )
 
 func TestHandler_CreateProject(t *testing.T) {
@@ -29,23 +29,27 @@ func TestHandler_CreateProject(t *testing.T) {
 			name: "プロジェクト1を作成する",
 			args: args{
 				ctx: mockCtx,
-				req: &ogen.CreateProjectReq{Name: "プロジェクト1"},
+				req: &ogen.CreateProjectReq{Name: "プロジェクト1", Color: "#1A2B3C"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().CreateProject(mockCtx, "01DXF6DT000000000000000000", "プロジェクト1").
+				r.EXPECT().CreateProject(mockCtx, "01DXF6DT000000000000000000", "プロジェクト1", "#1A2B3C").
 					Return(&entity.Project{
-						ID:        "01DXF6DT000000000000000000",
-						UserID:    "01DXF6DT000000000000000000",
-						Name:      "プロジェクト1",
-						CreatedAt: time.Time{},
-						UpdatedAt: time.Time{},
+						ID:         "01DXF6DT000000000000000000",
+						UserID:     "01DXF6DT000000000000000000",
+						Name:       "プロジェクト1",
+						Color:      "#1A2B3C",
+						IsArchived: false,
+						CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+						UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					}, nil)
 			},
 			want: &ogen.Project{
-				ID:        "01DXF6DT000000000000000000",
-				Name:      "プロジェクト1",
-				CreatedAt: time.Time{},
-				UpdatedAt: time.Time{},
+				ID:         "01DXF6DT000000000000000000",
+				Name:       "プロジェクト1",
+				Color:      "#1A2B3C",
+				IsArchived: false,
+				CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 			},
 		},
 		{
@@ -95,34 +99,42 @@ func TestHandler_ListProjects(t *testing.T) {
 				r.EXPECT().GetProjectsByUserID(mockCtx, "01DXF6DT000000000000000000", "-createdAt", 11, 0).
 					Return([]*entity.Project{
 						{
-							ID:        "01DXF6DT000000000000000000",
-							UserID:    "01DXF6DT000000000000000000",
-							Name:      "プロジェクト1",
-							CreatedAt: time.Time{},
-							UpdatedAt: time.Time{},
+							ID:         "01DXF6DT000000000000000000",
+							UserID:     "01DXF6DT000000000000000000",
+							Name:       "プロジェクト1",
+							Color:      "#1A2B3C",
+							IsArchived: false,
+							CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+							UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 						},
 						{
-							ID:        "01DXF6DT000000000000000001",
-							UserID:    "01DXF6DT000000000000000000",
-							Name:      "プロジェクト2",
-							CreatedAt: time.Time{},
-							UpdatedAt: time.Time{},
+							ID:         "01DXF6DT000000000000000001",
+							UserID:     "01DXF6DT000000000000000000",
+							Name:       "プロジェクト2",
+							Color:      "#1A2B3C",
+							IsArchived: true,
+							CreatedAt:  time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
+							UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
 						},
 					}, nil)
 			},
 			want: &ogen.Projects{
 				Projects: []ogen.Project{
 					{
-						ID:        "01DXF6DT000000000000000000",
-						Name:      "プロジェクト1",
-						CreatedAt: time.Time{},
-						UpdatedAt: time.Time{},
+						ID:         "01DXF6DT000000000000000000",
+						Name:       "プロジェクト1",
+						Color:      "#1A2B3C",
+						IsArchived: false,
+						CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+						UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					},
 					{
-						ID:        "01DXF6DT000000000000000001",
-						Name:      "プロジェクト2",
-						CreatedAt: time.Time{},
-						UpdatedAt: time.Time{},
+						ID:         "01DXF6DT000000000000000001",
+						Name:       "プロジェクト2",
+						Color:      "#1A2B3C",
+						IsArchived: true,
+						CreatedAt:  time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
+						UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 1, 0, time.UTC),
 					},
 				},
 				HasNext: false,
@@ -173,26 +185,41 @@ func TestHandler_UpdateProject(t *testing.T) {
 		{
 			name: "プロジェクト1を変更する",
 			args: args{
-				ctx:    mockCtx,
-				req:    &ogen.UpdateProjectReq{Name: ogen.OptString{Value: "新プロジェクト1", Set: true}},
+				ctx: mockCtx,
+				req: &ogen.UpdateProjectReq{
+					Name:       ogen.OptString{Value: "新プロジェクト1", Set: true},
+					Color:      ogen.OptString{Value: "#FFFFFF", Set: true},
+					IsArchived: ogen.OptBool{Value: true, Set: true},
+				},
 				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
-					ID:        "01DXF6DT000000000000000000",
-					UserID:    "01DXF6DT000000000000000000",
-					Name:      "プロジェクト1",
-					CreatedAt: time.Time{},
-					UpdatedAt: time.Time{},
+					ID:         "01DXF6DT000000000000000000",
+					UserID:     "01DXF6DT000000000000000000",
+					Name:       "プロジェクト1",
+					Color:      "#1A2B3C",
+					IsArchived: false,
+					CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().UpdateProject(mockCtx, "01DXF6DT000000000000000000", "新プロジェクト1", time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).
-					Return(nil)
+				r.EXPECT().UpdateProject(mockCtx, &entity.Project{
+					ID:         "01DXF6DT000000000000000000",
+					UserID:     "01DXF6DT000000000000000000",
+					Name:       "新プロジェクト1",
+					Color:      "#FFFFFF",
+					IsArchived: true,
+					CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				}).Return(nil)
 			},
 			want: &ogen.Project{
-				ID:        "01DXF6DT000000000000000000",
-				Name:      "新プロジェクト1",
-				CreatedAt: time.Time{},
-				UpdatedAt: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				ID:         "01DXF6DT000000000000000000",
+				Name:       "新プロジェクト1",
+				Color:      "#FFFFFF",
+				IsArchived: true,
+				CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},
@@ -214,7 +241,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want:    nil,
 			wantErr: errProjectNotFound,
@@ -301,7 +328,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 				params: ogen.DeleteProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want: errProjectNotFound,
 		},
