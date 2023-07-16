@@ -140,10 +140,27 @@ func (s *CreateTaskReq) encodeFields(e *jx.Encoder) {
 		e.FieldStart("title")
 		e.Str(s.Title)
 	}
+	{
+		e.FieldStart("content")
+		e.Str(s.Content)
+	}
+	{
+		e.FieldStart("priority")
+		e.Int(s.Priority)
+	}
+	{
+		if s.DueOn.Set {
+			e.FieldStart("dueOn")
+			s.DueOn.Encode(e, json.EncodeDate)
+		}
+	}
 }
 
-var jsonFieldsNameOfCreateTaskReq = [1]string{
+var jsonFieldsNameOfCreateTaskReq = [4]string{
 	0: "title",
+	1: "content",
+	2: "priority",
+	3: "dueOn",
 }
 
 // Decode decodes CreateTaskReq from json.
@@ -167,6 +184,40 @@ func (s *CreateTaskReq) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"title\"")
 			}
+		case "content":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Content = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"content\"")
+			}
+		case "priority":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Int()
+				s.Priority = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"priority\"")
+			}
+		case "dueOn":
+			if err := func() error {
+				s.DueOn.Reset()
+				if err := s.DueOn.Decode(d, json.DecodeDate); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"dueOn\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -177,7 +228,7 @@ func (s *CreateTaskReq) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000001,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -485,6 +536,41 @@ func (s *OptBool) UnmarshalJSON(data []byte) error {
 }
 
 // Encode encodes time.Time as json.
+func (o OptDate) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
+	if !o.Set {
+		return
+	}
+	format(e, o.Value)
+}
+
+// Decode decodes time.Time from json.
+func (o *OptDate) Decode(d *jx.Decoder, format func(*jx.Decoder) (time.Time, error)) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptDate to nil")
+	}
+	o.Set = true
+	v, err := format(d)
+	if err != nil {
+		return err
+	}
+	o.Value = v
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptDate) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e, json.EncodeDate)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptDate) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d, json.DecodeDate)
+}
+
+// Encode encodes time.Time as json.
 func (o OptDateTime) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
 	if !o.Set {
 		return
@@ -517,6 +603,41 @@ func (s OptDateTime) MarshalJSON() ([]byte, error) {
 func (s *OptDateTime) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d, json.DecodeDateTime)
+}
+
+// Encode encodes int as json.
+func (o OptInt) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Int(int(o.Value))
+}
+
+// Decode decodes int from json.
+func (o *OptInt) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptInt to nil")
+	}
+	o.Set = true
+	v, err := d.Int()
+	if err != nil {
+		return err
+	}
+	o.Value = int(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptInt) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptInt) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
 }
 
 // Encode encodes string as json.
@@ -880,6 +1001,20 @@ func (s *Task) encodeFields(e *jx.Encoder) {
 		e.Str(s.Title)
 	}
 	{
+		e.FieldStart("content")
+		e.Str(s.Content)
+	}
+	{
+		e.FieldStart("priority")
+		e.Int(s.Priority)
+	}
+	{
+		if s.DueOn.Set {
+			e.FieldStart("dueOn")
+			s.DueOn.Encode(e, json.EncodeDate)
+		}
+	}
+	{
 		if s.CompletedAt.Set {
 			e.FieldStart("completedAt")
 			s.CompletedAt.Encode(e, json.EncodeDateTime)
@@ -895,13 +1030,16 @@ func (s *Task) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfTask = [6]string{
+var jsonFieldsNameOfTask = [9]string{
 	0: "id",
 	1: "project_id",
 	2: "title",
-	3: "completedAt",
-	4: "createdAt",
-	5: "updatedAt",
+	3: "content",
+	4: "priority",
+	5: "dueOn",
+	6: "completedAt",
+	7: "createdAt",
+	8: "updatedAt",
 }
 
 // Decode decodes Task from json.
@@ -909,7 +1047,7 @@ func (s *Task) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode Task to nil")
 	}
-	var requiredBitSet [1]uint8
+	var requiredBitSet [2]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
@@ -949,6 +1087,40 @@ func (s *Task) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"title\"")
 			}
+		case "content":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Str()
+				s.Content = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"content\"")
+			}
+		case "priority":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				v, err := d.Int()
+				s.Priority = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"priority\"")
+			}
+		case "dueOn":
+			if err := func() error {
+				s.DueOn.Reset()
+				if err := s.DueOn.Decode(d, json.DecodeDate); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"dueOn\"")
+			}
 		case "completedAt":
 			if err := func() error {
 				s.CompletedAt.Reset()
@@ -960,7 +1132,7 @@ func (s *Task) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"completedAt\"")
 			}
 		case "createdAt":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 7
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -972,7 +1144,7 @@ func (s *Task) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"createdAt\"")
 			}
 		case "updatedAt":
-			requiredBitSet[0] |= 1 << 5
+			requiredBitSet[1] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -992,8 +1164,9 @@ func (s *Task) Decode(d *jx.Decoder) error {
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b00110111,
+	for i, mask := range [2]uint8{
+		0b10011111,
+		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -1280,6 +1453,30 @@ func (s *UpdateTaskReq) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *UpdateTaskReq) encodeFields(e *jx.Encoder) {
 	{
+		if s.Title.Set {
+			e.FieldStart("title")
+			s.Title.Encode(e)
+		}
+	}
+	{
+		if s.Content.Set {
+			e.FieldStart("content")
+			s.Content.Encode(e)
+		}
+	}
+	{
+		if s.Priority.Set {
+			e.FieldStart("priority")
+			s.Priority.Encode(e)
+		}
+	}
+	{
+		if s.DueOn.Set {
+			e.FieldStart("dueOn")
+			s.DueOn.Encode(e, json.EncodeDate)
+		}
+	}
+	{
 		if s.IsCompleted.Set {
 			e.FieldStart("isCompleted")
 			s.IsCompleted.Encode(e)
@@ -1287,8 +1484,12 @@ func (s *UpdateTaskReq) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfUpdateTaskReq = [1]string{
-	0: "isCompleted",
+var jsonFieldsNameOfUpdateTaskReq = [5]string{
+	0: "title",
+	1: "content",
+	2: "priority",
+	3: "dueOn",
+	4: "isCompleted",
 }
 
 // Decode decodes UpdateTaskReq from json.
@@ -1301,6 +1502,46 @@ func (s *UpdateTaskReq) Decode(d *jx.Decoder) error {
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		propertiesCount++
 		switch string(k) {
+		case "title":
+			if err := func() error {
+				s.Title.Reset()
+				if err := s.Title.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"title\"")
+			}
+		case "content":
+			if err := func() error {
+				s.Content.Reset()
+				if err := s.Content.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"content\"")
+			}
+		case "priority":
+			if err := func() error {
+				s.Priority.Reset()
+				if err := s.Priority.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"priority\"")
+			}
+		case "dueOn":
+			if err := func() error {
+				s.DueOn.Reset()
+				if err := s.DueOn.Decode(d, json.DecodeDate); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"dueOn\"")
+			}
 		case "isCompleted":
 			if err := func() error {
 				s.IsCompleted.Reset()

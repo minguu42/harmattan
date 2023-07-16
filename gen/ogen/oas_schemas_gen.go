@@ -39,7 +39,10 @@ func (s *CreateProjectReq) SetColor(val string) {
 }
 
 type CreateTaskReq struct {
-	Title string `json:"title"`
+	Title    string  `json:"title"`
+	Content  string  `json:"content"`
+	Priority int     `json:"priority"`
+	DueOn    OptDate `json:"dueOn"`
 }
 
 // GetTitle returns the value of Title.
@@ -47,9 +50,39 @@ func (s *CreateTaskReq) GetTitle() string {
 	return s.Title
 }
 
+// GetContent returns the value of Content.
+func (s *CreateTaskReq) GetContent() string {
+	return s.Content
+}
+
+// GetPriority returns the value of Priority.
+func (s *CreateTaskReq) GetPriority() int {
+	return s.Priority
+}
+
+// GetDueOn returns the value of DueOn.
+func (s *CreateTaskReq) GetDueOn() OptDate {
+	return s.DueOn
+}
+
 // SetTitle sets the value of Title.
 func (s *CreateTaskReq) SetTitle(val string) {
 	s.Title = val
+}
+
+// SetContent sets the value of Content.
+func (s *CreateTaskReq) SetContent(val string) {
+	s.Content = val
+}
+
+// SetPriority sets the value of Priority.
+func (s *CreateTaskReq) SetPriority(val int) {
+	s.Priority = val
+}
+
+// SetDueOn sets the value of DueOn.
+func (s *CreateTaskReq) SetDueOn(val OptDate) {
+	s.DueOn = val
 }
 
 // DeleteProjectNoContent is response for DeleteProject operation.
@@ -258,6 +291,52 @@ func (o OptBool) Get() (v bool, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDate returns new OptDate with value set to v.
+func NewOptDate(v time.Time) OptDate {
+	return OptDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDate is optional time.Time.
+type OptDate struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDate was set.
+func (o OptDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDate) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDate) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDate) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDate) Or(d time.Time) time.Time {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -606,6 +685,10 @@ type Task struct {
 	ProjectID string `json:"project_id"`
 	// タイトル.
 	Title string `json:"title"`
+	// 内容.
+	Content  string  `json:"content"`
+	Priority int     `json:"priority"`
+	DueOn    OptDate `json:"dueOn"`
 	// 完了日時.
 	CompletedAt OptDateTime `json:"completedAt"`
 	// 作成日時.
@@ -627,6 +710,21 @@ func (s *Task) GetProjectID() string {
 // GetTitle returns the value of Title.
 func (s *Task) GetTitle() string {
 	return s.Title
+}
+
+// GetContent returns the value of Content.
+func (s *Task) GetContent() string {
+	return s.Content
+}
+
+// GetPriority returns the value of Priority.
+func (s *Task) GetPriority() int {
+	return s.Priority
+}
+
+// GetDueOn returns the value of DueOn.
+func (s *Task) GetDueOn() OptDate {
+	return s.DueOn
 }
 
 // GetCompletedAt returns the value of CompletedAt.
@@ -657,6 +755,21 @@ func (s *Task) SetProjectID(val string) {
 // SetTitle sets the value of Title.
 func (s *Task) SetTitle(val string) {
 	s.Title = val
+}
+
+// SetContent sets the value of Content.
+func (s *Task) SetContent(val string) {
+	s.Content = val
+}
+
+// SetPriority sets the value of Priority.
+func (s *Task) SetPriority(val int) {
+	s.Priority = val
+}
+
+// SetDueOn sets the value of DueOn.
+func (s *Task) SetDueOn(val OptDate) {
+	s.DueOn = val
 }
 
 // SetCompletedAt sets the value of CompletedAt.
@@ -739,12 +852,56 @@ func (s *UpdateProjectReq) SetIsArchived(val OptBool) {
 }
 
 type UpdateTaskReq struct {
-	IsCompleted OptBool `json:"isCompleted"`
+	Title       OptString `json:"title"`
+	Content     OptString `json:"content"`
+	Priority    OptInt    `json:"priority"`
+	DueOn       OptDate   `json:"dueOn"`
+	IsCompleted OptBool   `json:"isCompleted"`
+}
+
+// GetTitle returns the value of Title.
+func (s *UpdateTaskReq) GetTitle() OptString {
+	return s.Title
+}
+
+// GetContent returns the value of Content.
+func (s *UpdateTaskReq) GetContent() OptString {
+	return s.Content
+}
+
+// GetPriority returns the value of Priority.
+func (s *UpdateTaskReq) GetPriority() OptInt {
+	return s.Priority
+}
+
+// GetDueOn returns the value of DueOn.
+func (s *UpdateTaskReq) GetDueOn() OptDate {
+	return s.DueOn
 }
 
 // GetIsCompleted returns the value of IsCompleted.
 func (s *UpdateTaskReq) GetIsCompleted() OptBool {
 	return s.IsCompleted
+}
+
+// SetTitle sets the value of Title.
+func (s *UpdateTaskReq) SetTitle(val OptString) {
+	s.Title = val
+}
+
+// SetContent sets the value of Content.
+func (s *UpdateTaskReq) SetContent(val OptString) {
+	s.Content = val
+}
+
+// SetPriority sets the value of Priority.
+func (s *UpdateTaskReq) SetPriority(val OptInt) {
+	s.Priority = val
+}
+
+// SetDueOn sets the value of DueOn.
+func (s *UpdateTaskReq) SetDueOn(val OptDate) {
+	s.DueOn = val
 }
 
 // SetIsCompleted sets the value of IsCompleted.

@@ -52,18 +52,18 @@ func (mr *MockRepositoryMockRecorder) CreateProject(ctx, userID, name, color int
 }
 
 // CreateTask mocks base method.
-func (m *MockRepository) CreateTask(ctx context.Context, projectID, title string) (*entity.Task, error) {
+func (m *MockRepository) CreateTask(ctx context.Context, projectID, title, content string, priority int, dueOn *time.Time) (*entity.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTask", ctx, projectID, title)
+	ret := m.ctrl.Call(m, "CreateTask", ctx, projectID, title, content, priority, dueOn)
 	ret0, _ := ret[0].(*entity.Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateTask indicates an expected call of CreateTask.
-func (mr *MockRepositoryMockRecorder) CreateTask(ctx, projectID, title interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) CreateTask(ctx, projectID, title, content, priority, dueOn interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTask", reflect.TypeOf((*MockRepository)(nil).CreateTask), ctx, projectID, title)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTask", reflect.TypeOf((*MockRepository)(nil).CreateTask), ctx, projectID, title, content, priority, dueOn)
 }
 
 // DeleteProject mocks base method.
@@ -184,15 +184,15 @@ func (mr *MockRepositoryMockRecorder) UpdateProject(ctx, p interface{}) *gomock.
 }
 
 // UpdateTask mocks base method.
-func (m *MockRepository) UpdateTask(ctx context.Context, id string, completedAt *time.Time, updatedAt time.Time) error {
+func (m *MockRepository) UpdateTask(ctx context.Context, t *entity.Task) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateTask", ctx, id, completedAt, updatedAt)
+	ret := m.ctrl.Call(m, "UpdateTask", ctx, t)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateTask indicates an expected call of UpdateTask.
-func (mr *MockRepositoryMockRecorder) UpdateTask(ctx, id, completedAt, updatedAt interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) UpdateTask(ctx, t interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTask", reflect.TypeOf((*MockRepository)(nil).UpdateTask), ctx, id, completedAt, updatedAt)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTask", reflect.TypeOf((*MockRepository)(nil).UpdateTask), ctx, t)
 }
