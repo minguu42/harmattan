@@ -10,7 +10,7 @@ import (
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-	"gorm.io/gorm"
+	"github.com/minguu42/mtasks/pkg/repository"
 )
 
 func TestHandler_CreateProject(t *testing.T) {
@@ -241,7 +241,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want:    nil,
 			wantErr: errProjectNotFound,
@@ -328,7 +328,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 				params: ogen.DeleteProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want: errProjectNotFound,
 		},

@@ -2,11 +2,14 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/mtasks/pkg/repository"
 	"github.com/minguu42/mtasks/pkg/ttime"
+	"gorm.io/gorm"
 )
 
 func (db *DB) CreateTask(ctx context.Context, projectID string, title, content string, priority int, dueOn *time.Time) (*entity.Task, error) {
@@ -41,6 +44,9 @@ func (db *DB) GetTasksByProjectID(ctx context.Context, projectID string, sort st
 	ts := make([]*entity.Task, 0, limit)
 	if err := db.conn(ctx).Where("project_id = ?", projectID).
 		Order(generateOrderByClause(sort)).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, repository.ErrRecordNotFound
+		}
 		return nil, fmt.Errorf("gormDB.Find failed: %w", err)
 	}
 	return ts, nil

@@ -5,6 +5,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/minguu42/mtasks/pkg/entity"
@@ -25,3 +26,5 @@ type Repository interface {
 	UpdateTask(ctx context.Context, t *entity.Task) error
 	DeleteTask(ctx context.Context, id string) error
 }
+
+var ErrRecordNotFound = errors.New("")

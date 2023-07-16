@@ -7,8 +7,8 @@ import (
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
 	"github.com/minguu42/mtasks/pkg/logging"
+	"github.com/minguu42/mtasks/pkg/repository"
 	"github.com/minguu42/mtasks/pkg/ttime"
-	"gorm.io/gorm"
 )
 
 // CreateProject は POST /projects に対応するハンドラ
@@ -70,7 +70,7 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrRecordNotFound) {
 			return nil, errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
@@ -100,7 +100,7 @@ func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectPa
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrRecordNotFound) {
 			return errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)

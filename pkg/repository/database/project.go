@@ -2,10 +2,13 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/mtasks/pkg/repository"
 	"github.com/minguu42/mtasks/pkg/ttime"
+	"gorm.io/gorm"
 )
 
 func (db *DB) CreateProject(ctx context.Context, userID string, name string, color string) (*entity.Project, error) {
@@ -29,6 +32,9 @@ func (db *DB) CreateProject(ctx context.Context, userID string, name string, col
 func (db *DB) GetProjectByID(ctx context.Context, id string) (*entity.Project, error) {
 	var p entity.Project
 	if err := db.conn(ctx).First(&p, "id = ?", id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, repository.ErrRecordNotFound
+		}
 		return nil, fmt.Errorf("gormDB.First failed: %w", err)
 	}
 	return &p, nil

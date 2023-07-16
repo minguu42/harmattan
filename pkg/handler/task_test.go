@@ -10,7 +10,7 @@ import (
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/gen/ogen"
 	"github.com/minguu42/mtasks/pkg/entity"
-	"gorm.io/gorm"
+	"github.com/minguu42/mtasks/pkg/repository"
 )
 
 func TestHandler_CreateTask(t *testing.T) {
@@ -85,7 +85,7 @@ func TestHandler_CreateTask(t *testing.T) {
 				params: ogen.CreateTaskParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want:    nil,
 			wantErr: errProjectNotFound,
@@ -210,7 +210,7 @@ func TestHandler_ListTasks(t *testing.T) {
 				params: ogen.ListTasksParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want:    nil,
 			wantErr: errProjectNotFound,
@@ -344,7 +344,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 				params: ogen.UpdateTaskParams{ProjectID: "01DXF6DT000000000000000001", TaskID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want:    nil,
 			wantErr: errProjectNotFound,
@@ -383,7 +383,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().GetTaskByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetTaskByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want:    nil,
 			wantErr: errTaskNotFound,
@@ -489,7 +489,7 @@ func TestHandler_DeleteTask(t *testing.T) {
 				params: ogen.DeleteTaskParams{ProjectID: "01DXF6DT000000000000000001", TaskID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want: errProjectNotFound,
 		},
@@ -524,7 +524,7 @@ func TestHandler_DeleteTask(t *testing.T) {
 					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().GetTaskByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, gorm.ErrRecordNotFound)
+				r.EXPECT().GetTaskByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want: errTaskNotFound,
 		},
