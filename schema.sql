@@ -22,9 +22,12 @@ CREATE TABLE projects (
 
 CREATE TABLE tasks (
     id           CHAR(26) PRIMARY KEY,
-    project_id   CHAR(26)    NOT NULL,
-    title        VARCHAR(80) NOT NULL,
+    project_id   CHAR(26)            NOT NULL,
+    title        VARCHAR(80)         NOT NULL,
+    content      VARCHAR(300)        NOT NULL,
+    priority     TINYINT(2) UNSIGNED NOT NULL,
+    due_on       DATE,
     completed_at DATETIME,
-    created_at   DATETIME    NOT NULL,
-    updated_at   DATETIME    NOT NULL ON UPDATE CURRENT_TIMESTAMP
+    created_at   DATETIME            NOT NULL,
+    updated_at   DATETIME            NOT NULL ON UPDATE CURRENT_TIMESTAMP
 );
