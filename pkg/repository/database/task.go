@@ -46,9 +46,15 @@ func (db *DB) GetTasksByProjectID(ctx context.Context, projectID string, sort st
 	return ts, nil
 }
 
-func (db *DB) UpdateTask(ctx context.Context, id string, completedAt *time.Time, updatedAt time.Time) error {
-	t := entity.Task{ID: id}
-	if err := db.conn(ctx).Model(&t).Updates(entity.Task{CompletedAt: completedAt, UpdatedAt: updatedAt}).Error; err != nil {
+func (db *DB) UpdateTask(ctx context.Context, t *entity.Task) error {
+	if err := db.conn(ctx).Model(&entity.Task{ID: t.ID}).Updates(entity.Task{
+		Title:       t.Title,
+		Content:     t.Content,
+		Priority:    t.Priority,
+		DueOn:       t.DueOn,
+		CompletedAt: t.CompletedAt,
+		UpdatedAt:   t.UpdatedAt,
+	}).Error; err != nil {
 		return fmt.Errorf("gormDB.Updates failed: %w", err)
 	}
 	return nil

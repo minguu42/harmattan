@@ -222,12 +222,11 @@ func TestDB_GetTasksByProjectID(t *testing.T) {
 }
 
 func TestDB_UpdateTask(t *testing.T) {
+	dueOn := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	completedAt := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	type args struct {
-		ctx         context.Context
-		id          string
-		completedAt *time.Time
-		updatedAt   time.Time
+		ctx context.Context
+		t   *entity.Task
 	}
 	tests := []struct {
 		name string
@@ -237,10 +236,16 @@ func TestDB_UpdateTask(t *testing.T) {
 		{
 			name: "タスク1を更新する",
 			args: args{
-				ctx:         context.Background(),
-				id:          "01DXF6DT000000000000000000",
-				completedAt: &completedAt,
-				updatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				ctx: context.Background(),
+				t: &entity.Task{
+					ID:          "01DXF6DT000000000000000000",
+					Title:       "新タスク1",
+					Content:     "Goodbye",
+					Priority:    3,
+					DueOn:       &dueOn,
+					CompletedAt: &completedAt,
+					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				},
 			},
 			want: nil,
 		},
@@ -252,7 +257,7 @@ func TestDB_UpdateTask(t *testing.T) {
 			}
 			defer testDB.Rollback()
 
-			if err := testDB.UpdateTask(tt.args.ctx, tt.args.id, tt.args.completedAt, tt.args.updatedAt); (tt.want == nil) != (err == nil) {
+			if err := testDB.UpdateTask(tt.args.ctx, tt.args.t); (tt.want == nil) != (err == nil) {
 				t.Errorf("testDB.UpdateTask want '%v', but '%v'", tt.want, err)
 			}
 		})
