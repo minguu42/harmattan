@@ -9,12 +9,15 @@ import (
 	"github.com/minguu42/mtasks/pkg/ttime"
 )
 
-func (db *DB) CreateTask(ctx context.Context, projectID string, title string) (*entity.Task, error) {
+func (db *DB) CreateTask(ctx context.Context, projectID string, title, content string, priority int, dueOn *time.Time) (*entity.Task, error) {
 	now := ttime.Now(ctx)
 	t := entity.Task{
 		ID:          db.idGenerator.Generate(),
 		ProjectID:   projectID,
 		Title:       title,
+		Content:     content,
+		Priority:    priority,
+		DueOn:       dueOn,
 		CompletedAt: nil,
 		CreatedAt:   now,
 		UpdatedAt:   now,

@@ -19,7 +19,7 @@ type Repository interface {
 	UpdateProject(ctx context.Context, p *entity.Project) error
 	DeleteProject(ctx context.Context, id string) error
 
-	CreateTask(ctx context.Context, projectID string, title string) (*entity.Task, error)
+	CreateTask(ctx context.Context, projectID string, title, content string, priority int, dueOn *time.Time) (*entity.Task, error)
 	GetTasksByProjectID(ctx context.Context, projectID string, sort string, limit, offset int) ([]*entity.Task, error)
 	GetTaskByID(ctx context.Context, id string) (*entity.Task, error)
 	UpdateTask(ctx context.Context, id string, completedAt *time.Time, updatedAt time.Time) error

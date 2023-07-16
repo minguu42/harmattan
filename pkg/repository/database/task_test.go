@@ -8,18 +8,20 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/minguu42/mtasks/gen/mock"
 	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/mtasks/pkg/ttime"
 )
 
-var taskCmpOpt = cmpopts.IgnoreFields(entity.Task{}, "ID", "CreatedAt", "UpdatedAt")
-
 func TestDB_CreateTask(t *testing.T) {
+	dueOn := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	type args struct {
 		ctx       context.Context
 		projectID string
 		title     string
+		content   string
+		priority  int
+		dueOn     *time.Time
 	}
 	tests := []struct {
 		name          string
@@ -31,9 +33,12 @@ func TestDB_CreateTask(t *testing.T) {
 		{
 			name: "新タスクを作成する",
 			args: args{
-				ctx:       context.Background(),
+				ctx:       context.WithValue(context.Background(), ttime.TimeKey{}, time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)),
 				projectID: "01DXF6DT000000000000000000",
 				title:     "新タスク",
+				content:   "Hello, 世界!",
+				priority:  3,
+				dueOn:     &dueOn,
 			},
 			prepareMockFn: func(g *mock.MockIDGenerator) {
 				g.EXPECT().Generate().Return("01DXF6DT000000000000000002")
@@ -42,27 +47,32 @@ func TestDB_CreateTask(t *testing.T) {
 				ID:          "01DXF6DT000000000000000002",
 				ProjectID:   "01DXF6DT000000000000000000",
 				Title:       "新タスク",
+				Content:     "Hello, 世界!",
+				Priority:    3,
+				DueOn:       &dueOn,
 				CompletedAt: nil,
+				CreatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := mock.NewMockIDGenerator(gomock.NewController(t))
-			tt.prepareMockFn(g)
-			testDB.SetIDGenerator(g)
-
 			if err := testDB.Begin(); err != nil {
 				t.Fatalf("testDB.Begin failed: %s", err)
 			}
 			defer testDB.Rollback()
 
-			got, err := testDB.CreateTask(tt.args.ctx, tt.args.projectID, tt.args.title)
+			g := mock.NewMockIDGenerator(gomock.NewController(t))
+			tt.prepareMockFn(g)
+			testDB.SetIDGenerator(g)
+
+			got, err := testDB.CreateTask(tt.args.ctx, tt.args.projectID, tt.args.title, tt.args.content, tt.args.priority, tt.args.dueOn)
 			if (tt.wantErr == nil) != (err == nil) {
 				t.Errorf("testDB.CreateTask error want '%v', but '%v'", tt.wantErr, err)
 			}
-			if diff := cmp.Diff(tt.want, got, taskCmpOpt); diff != "" {
+			if diff := cmp.Diff(tt.want, got); diff != "" {
 				t.Errorf("testDB.CreateTask mismatch (-want +got):\n%s", diff)
 			}
 		})
