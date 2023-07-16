@@ -97,6 +97,10 @@ func newProjectsResponse(ps []*entity.Project) []ogen.Project {
 
 // newTaskResponse は entity.Task から ogen.Task を生成する
 func newTaskResponse(t *entity.Task) *ogen.Task {
+	dueOn := ogen.OptDate{}
+	if t.DueOn != nil {
+		dueOn = ogen.NewOptDate(*t.DueOn)
+	}
 	completedAt := ogen.OptDateTime{}
 	if t.CompletedAt != nil {
 		completedAt = ogen.NewOptDateTime(*t.CompletedAt)
@@ -105,6 +109,9 @@ func newTaskResponse(t *entity.Task) *ogen.Task {
 		ID:          t.ID,
 		ProjectID:   t.ProjectID,
 		Title:       t.Title,
+		Content:     t.Content,
+		Priority:    t.Priority,
+		DueOn:       dueOn,
 		CompletedAt: completedAt,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,

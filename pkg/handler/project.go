@@ -54,15 +54,9 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 }
 
 func updateProject(ctx context.Context, p *entity.Project, req *ogen.UpdateProjectReq) *entity.Project {
-	if req.Name.Set {
-		p.Name = req.Name.Value
-	}
-	if req.Color.Set {
-		p.Color = req.Color.Value
-	}
-	if req.IsArchived.Set {
-		p.IsArchived = req.IsArchived.Value
-	}
+	p.Name = req.Name.Or(p.Name)
+	p.Color = req.Color.Or(p.Color)
+	p.IsArchived = req.IsArchived.Or(p.IsArchived)
 	p.UpdatedAt = ttime.Now(ctx)
 	return p
 }

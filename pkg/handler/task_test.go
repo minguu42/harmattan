@@ -14,6 +14,7 @@ import (
 )
 
 func TestHandler_CreateTask(t *testing.T) {
+	dueOn := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	type args struct {
 		ctx    context.Context
 		req    *ogen.CreateTaskReq
@@ -29,22 +30,28 @@ func TestHandler_CreateTask(t *testing.T) {
 		{
 			name: "タスク1を作成する",
 			args: args{
-				ctx:    mockCtx,
-				req:    &ogen.CreateTaskReq{Title: "タスク1"},
+				ctx: mockCtx,
+				req: &ogen.CreateTaskReq{
+					Title:    "タスク1",
+					Content:  "Hello, 世界!",
+					Priority: 3,
+					DueOn:    ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
+				},
 				params: ogen.CreateTaskParams{ProjectID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
-					ID:        "01DXF6DT000000000000000000",
-					UserID:    "01DXF6DT000000000000000000",
-					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					ID:     "01DXF6DT000000000000000000",
+					UserID: "01DXF6DT000000000000000000",
+					Name:   "プロジェクト1",
 				}, nil)
-				r.EXPECT().CreateTask(mockCtx, "01DXF6DT000000000000000000", "タスク1").Return(&entity.Task{
+				r.EXPECT().CreateTask(mockCtx, "01DXF6DT000000000000000000", "タスク1", "Hello, 世界!", 3, &dueOn).Return(&entity.Task{
 					ID:          "01DXF6DT000000000000000000",
 					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク1",
+					Content:     "Hello, 世界!",
+					Priority:    3,
+					DueOn:       &dueOn,
 					CompletedAt: nil,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -54,6 +61,9 @@ func TestHandler_CreateTask(t *testing.T) {
 				ID:          "01DXF6DT000000000000000000",
 				ProjectID:   "01DXF6DT000000000000000000",
 				Title:       "タスク1",
+				Content:     "Hello, 世界!",
+				Priority:    3,
+				DueOn:       ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
 				CompletedAt: ogen.OptDateTime{Set: false},
 				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
@@ -89,11 +99,8 @@ func TestHandler_CreateTask(t *testing.T) {
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(&entity.Project{
-					ID:        "01DXF6DT000000000000000001",
-					UserID:    "01DXF6DT000000000000000001",
-					Name:      "プロジェクト2",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					ID:     "01DXF6DT000000000000000001",
+					UserID: "01DXF6DT000000000000000001",
 				}, nil)
 			},
 			want:    nil,
@@ -266,32 +273,52 @@ func TestHandler_UpdateTask(t *testing.T) {
 			name: "タスク1を更新する",
 			tm:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			args: args{
-				ctx:    mockCtx,
-				req:    &ogen.UpdateTaskReq{IsCompleted: ogen.OptBool{Value: true, Set: true}},
+				ctx: mockCtx,
+				req: &ogen.UpdateTaskReq{
+					Title:       ogen.OptString{Value: "新タスク1", Set: true},
+					Content:     ogen.OptString{Value: "Goodbye", Set: true},
+					Priority:    ogen.OptInt{Value: 3, Set: true},
+					DueOn:       ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
+					IsCompleted: ogen.OptBool{Value: true, Set: true},
+				},
 				params: ogen.UpdateTaskParams{ProjectID: "01DXF6DT000000000000000000", TaskID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
-					ID:        "01DXF6DT000000000000000000",
-					UserID:    "01DXF6DT000000000000000000",
-					Name:      "プロジェクト1",
-					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					ID:     "01DXF6DT000000000000000000",
+					UserID: "01DXF6DT000000000000000000",
+					Name:   "プロジェクト1",
 				}, nil)
 				r.EXPECT().GetTaskByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Task{
 					ID:          "01DXF6DT000000000000000000",
 					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク1",
+					Content:     "",
+					Priority:    0,
+					DueOn:       nil,
 					CompletedAt: nil,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().UpdateTask(mockCtx, "01DXF6DT000000000000000000", &tm1, time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)).Return(nil)
+				r.EXPECT().UpdateTask(mockCtx, &entity.Task{
+					ID:          "01DXF6DT000000000000000000",
+					ProjectID:   "01DXF6DT000000000000000000",
+					Title:       "新タスク1",
+					Content:     "Goodbye",
+					Priority:    3,
+					DueOn:       &tm1,
+					CompletedAt: &tm1,
+					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				}).Return(nil)
 			},
 			want: &ogen.Task{
 				ID:          "01DXF6DT000000000000000000",
 				ProjectID:   "01DXF6DT000000000000000000",
-				Title:       "タスク1",
+				Title:       "新タスク1",
+				Content:     "Goodbye",
+				Priority:    3,
+				DueOn:       ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
 				CompletedAt: ogen.OptDateTime{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
 				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
