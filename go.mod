@@ -10,6 +10,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/ogen-go/ogen v0.68.1
 	github.com/oklog/ulid/v2 v2.1.0
+	github.com/sebdah/goldie/v2 v2.5.3
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/metric v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
@@ -33,7 +34,6 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sebdah/goldie/v2 v2.5.3 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/sergi/go-diff v1.0.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
