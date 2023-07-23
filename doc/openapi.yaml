@@ -19,7 +19,7 @@ paths:
       tags:
         - projects
       summary: 新しいプロジェクトを作成する
-      operationId: CreateProject
+      operationId: createProject
       security:
         - isAuthorized: [ ]
       requestBody:
@@ -37,7 +37,7 @@ paths:
       tags:
         - projects
       summary: プロジェクト一覧を取得する
-      operationId: ListProjects
+      operationId: listProjects
       security:
         - isAuthorized: [ ]
       parameters:
@@ -60,7 +60,7 @@ paths:
       tags:
         - projects
       summary: プロジェクトを更新する
-      operationId: UpdateProject
+      operationId: updateProject
       security:
         - isAuthorized: [ ]
       requestBody:
@@ -78,7 +78,7 @@ paths:
       tags:
         - projects
       summary: プロジェクトを削除する
-      operationId: DeleteProject
+      operationId: deleteProject
       security:
         - isAuthorized: [ ]
       responses:
@@ -93,7 +93,7 @@ paths:
       tags:
         - tasks
       summary: 新しいタスクを作成する
-      operationId: CreateTask
+      operationId: createTask
       security:
         - isAuthorized: [ ]
       requestBody:
@@ -111,7 +111,7 @@ paths:
       tags:
         - tasks
       summary: タスク一覧を取得する
-      operationId: ListTasks
+      operationId: listTasks
       security:
         - isAuthorized: [ ]
       parameters:
@@ -135,7 +135,7 @@ paths:
       tags:
         - tasks
       summary: タスクを更新する
-      operationId: UpdateTask
+      operationId: updateTask
       security:
         - isAuthorized: [ ]
       requestBody:
@@ -153,7 +153,7 @@ paths:
       tags:
         - tasks
       summary: タスクを削除する
-      operationId: DeleteTask
+      operationId: deleteTask
       security:
         - isAuthorized: [ ]
       responses:
@@ -166,7 +166,7 @@ paths:
       tags:
         - monitoring
       summary: サーバの状態を取得する
-      operationId: GetHealth
+      operationId: getHealth
       security: [ ]
       responses:
         200:

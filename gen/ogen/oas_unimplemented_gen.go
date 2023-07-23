@@ -13,7 +13,7 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// CreateProject implements CreateProject operation.
+// CreateProject implements createProject operation.
 //
 // 新しいプロジェクトを作成する.
 //
@@ -22,7 +22,7 @@ func (UnimplementedHandler) CreateProject(ctx context.Context, req *CreateProjec
 	return r, ht.ErrNotImplemented
 }
 
-// CreateTask implements CreateTask operation.
+// CreateTask implements createTask operation.
 //
 // 新しいタスクを作成する.
 //
@@ -31,7 +31,7 @@ func (UnimplementedHandler) CreateTask(ctx context.Context, req *CreateTaskReq, 
 	return r, ht.ErrNotImplemented
 }
 
-// DeleteProject implements DeleteProject operation.
+// DeleteProject implements deleteProject operation.
 //
 // プロジェクトを削除する.
 //
@@ -40,7 +40,7 @@ func (UnimplementedHandler) DeleteProject(ctx context.Context, params DeleteProj
 	return ht.ErrNotImplemented
 }
 
-// DeleteTask implements DeleteTask operation.
+// DeleteTask implements deleteTask operation.
 //
 // タスクを削除する.
 //
@@ -49,7 +49,7 @@ func (UnimplementedHandler) DeleteTask(ctx context.Context, params DeleteTaskPar
 	return ht.ErrNotImplemented
 }
 
-// GetHealth implements GetHealth operation.
+// GetHealth implements getHealth operation.
 //
 // サーバの状態を取得する.
 //
@@ -58,7 +58,7 @@ func (UnimplementedHandler) GetHealth(ctx context.Context) (r *GetHealthOK, _ er
 	return r, ht.ErrNotImplemented
 }
 
-// ListProjects implements ListProjects operation.
+// ListProjects implements listProjects operation.
 //
 // プロジェクト一覧を取得する.
 //
@@ -67,7 +67,7 @@ func (UnimplementedHandler) ListProjects(ctx context.Context, params ListProject
 	return r, ht.ErrNotImplemented
 }
 
-// ListTasks implements ListTasks operation.
+// ListTasks implements listTasks operation.
 //
 // タスク一覧を取得する.
 //
@@ -76,7 +76,7 @@ func (UnimplementedHandler) ListTasks(ctx context.Context, params ListTasksParam
 	return r, ht.ErrNotImplemented
 }
 
-// UpdateProject implements UpdateProject operation.
+// UpdateProject implements updateProject operation.
 //
 // プロジェクトを更新する.
 //
@@ -85,7 +85,7 @@ func (UnimplementedHandler) UpdateProject(ctx context.Context, req *UpdateProjec
 	return r, ht.ErrNotImplemented
 }
 
-// UpdateTask implements UpdateTask operation.
+// UpdateTask implements updateTask operation.
 //
 // タスクを更新する.
 //

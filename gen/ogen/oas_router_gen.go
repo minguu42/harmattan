@@ -277,7 +277,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					case "GET":
 						// Leaf: GetHealth
 						r.name = "GetHealth"
-						r.operationID = "GetHealth"
+						r.operationID = "getHealth"
 						r.pathPattern = "/health"
 						r.args = args
 						r.count = 0
@@ -297,14 +297,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					switch method {
 					case "GET":
 						r.name = "ListProjects"
-						r.operationID = "ListProjects"
+						r.operationID = "listProjects"
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
 						return r, true
 					case "POST":
 						r.name = "CreateProject"
-						r.operationID = "CreateProject"
+						r.operationID = "createProject"
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
@@ -334,14 +334,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						switch method {
 						case "DELETE":
 							r.name = "DeleteProject"
-							r.operationID = "DeleteProject"
+							r.operationID = "deleteProject"
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
 							return r, true
 						case "PATCH":
 							r.name = "UpdateProject"
-							r.operationID = "UpdateProject"
+							r.operationID = "updateProject"
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
@@ -362,14 +362,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							switch method {
 							case "GET":
 								r.name = "ListTasks"
-								r.operationID = "ListTasks"
+								r.operationID = "listTasks"
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
 								return r, true
 							case "POST":
 								r.name = "CreateTask"
-								r.operationID = "CreateTask"
+								r.operationID = "createTask"
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
@@ -396,7 +396,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								case "DELETE":
 									// Leaf: DeleteTask
 									r.name = "DeleteTask"
-									r.operationID = "DeleteTask"
+									r.operationID = "deleteTask"
 									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
 									r.args = args
 									r.count = 2
@@ -404,7 +404,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								case "PATCH":
 									// Leaf: UpdateTask
 									r.name = "UpdateTask"
-									r.operationID = "UpdateTask"
+									r.operationID = "updateTask"
 									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
 									r.args = args
 									r.count = 2

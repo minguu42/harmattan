@@ -15,6 +15,7 @@ import (
 	"github.com/minguu42/mtasks/pkg/logging"
 	"github.com/minguu42/mtasks/pkg/repository/database"
 	"github.com/minguu42/mtasks/pkg/ttime"
+	"github.com/sebdah/goldie/v2"
 )
 
 var (
@@ -45,48 +46,79 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-type request struct {
-	method string
-	path   string
-	body   io.Reader
-}
-
-type response struct {
-	statusCode int
-	body       any
-}
-
 type test struct {
-	name     string
-	request  request
-	response response
+	id            string             // テストID（goldenファイル名）
+	method        string             // リクエストメソッド
+	path          string             // リクエストのURLパス
+	body          io.Reader          // リクエストボディ
+	statusCode    int                // ステータスコード
+	prepareMockFn func(t *testing.T) // モック関数を準備する
+	needsRollback bool               // この値がtrueの場合はテスト時にトランザクションをかけて、テスト後にロールバックを行う
 }
 
-func doTestRequest(req request, got any) (*http.Response, error) {
-	r, err := http.NewRequest(req.method, ts.URL+req.path, req.body)
+func run(t *testing.T, tests []test) {
+	for _, tt := range tests {
+		t.Run(tt.id, func(t *testing.T) {
+			if tt.needsRollback {
+				if err := tdb.Begin(); err != nil {
+					t.Fatalf("tdb.Begin failed: %s", err)
+				}
+				defer tdb.Rollback()
+			}
+
+			if tt.prepareMockFn != nil {
+				tt.prepareMockFn(t)
+			}
+
+			var respBody any
+			statusCode, err := doRequest(tt.method, tt.path, tt.body, &respBody)
+			if err != nil {
+				t.Fatalf("doRequest failed: %s", err)
+			}
+
+			if tt.statusCode != statusCode {
+				t.Fatalf("status code want %d, but %d", tt.statusCode, statusCode)
+			}
+
+			if statusCode == http.StatusNoContent ||
+				statusCode < 200 || 300 <= statusCode {
+				return
+			}
+
+			g := goldie.New(t,
+				goldie.WithFixtureDir("../../testdata"),
+				goldie.WithNameSuffix(".golden.json"))
+			g.AssertJson(t, tt.id, respBody)
+		})
+	}
+}
+
+func doRequest(method, path string, body io.Reader, respBody any) (statusCode int, err error) {
+	r, err := http.NewRequest(method, ts.URL+path, body)
 	if err != nil {
-		return nil, fmt.Errorf("http.NewRequest failed: %w", err)
+		return 0, fmt.Errorf("http.NewRequest failed: %w", err)
 	}
 	r.Header.Set("Content-Type", "application/json")
 	r.Header.Set("X-Api-Key", "rAM9Fm9huuWEKLdCwHBcju9Ty_-TL2tDsAicmMrXmUnaCGp3RtywzYpMDPdEtYtR")
 
-	c := &http.Client{}
+	c := http.Client{}
 	resp, err := c.Do(r)
 	if err != nil {
-		return nil, fmt.Errorf("c.Do failed: %w", err)
+		return 0, fmt.Errorf("c.Do failed: %w", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusNoContent {
-		return resp, nil
+	if resp.StatusCode == http.StatusNoContent ||
+		resp.StatusCode < 200 || 300 <= resp.StatusCode {
+		return resp.StatusCode, nil
 	}
 
-	bs, err := io.ReadAll(resp.Body)
+	raw, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("io.ReadAll failed: %w", err)
+		return 0, fmt.Errorf("io.ReadAll failed: %w", err)
 	}
-	if err := json.Unmarshal(bs, got); err != nil {
-		return nil, fmt.Errorf("json.Unmarshal failed: %w", err)
+	if err := json.Unmarshal(raw, respBody); err != nil {
+		return 0, fmt.Errorf("json.Unmarshal failed: %w", err)
 	}
-	return resp, nil
+	return resp.StatusCode, nil
 }
