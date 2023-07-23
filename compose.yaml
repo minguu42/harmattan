@@ -1,11 +1,11 @@
 services:
   api:
-    image: mtasks-api-local
+    image: opepe-api-local
     build:
       context: .
       dockerfile: Dockerfile
       target: local
-    container_name: mtasks-api-local
+    container_name: opepe-api-local
     env_file:
       - .env.local
     tty: true
@@ -19,7 +19,7 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
-    container_name: mtasks-db-local
+    container_name: opepe-db-local
     restart: always
     ports:
       - 3306:3306

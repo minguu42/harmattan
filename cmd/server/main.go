@@ -9,12 +9,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minguu42/mtasks/gen/ogen"
-	"github.com/minguu42/mtasks/pkg/env"
-	"github.com/minguu42/mtasks/pkg/handler"
-	"github.com/minguu42/mtasks/pkg/idgen/ulidgen"
-	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/repository/database"
+	"github.com/minguu42/opepe/gen/ogen"
+	"github.com/minguu42/opepe/pkg/env"
+	"github.com/minguu42/opepe/pkg/handler"
+	"github.com/minguu42/opepe/pkg/idgen/ulidgen"
+	"github.com/minguu42/opepe/pkg/logging"
+	"github.com/minguu42/opepe/pkg/repository/database"
 )
 
 func main() {

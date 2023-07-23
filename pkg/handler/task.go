@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/go-faster/errors"
-	"github.com/minguu42/mtasks/gen/ogen"
-	"github.com/minguu42/mtasks/pkg/entity"
-	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/repository"
-	"github.com/minguu42/mtasks/pkg/ttime"
+	"github.com/minguu42/opepe/gen/ogen"
+	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/logging"
+	"github.com/minguu42/opepe/pkg/repository"
+	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 // CreateTask は POST /projects/{projectID}/tasks に対応するハンドラ

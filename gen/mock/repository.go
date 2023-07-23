@@ -10,7 +10,7 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
-	entity "github.com/minguu42/mtasks/pkg/entity"
+	entity "github.com/minguu42/opepe/pkg/entity"
 )
 
 // MockRepository is a mock of Repository interface.

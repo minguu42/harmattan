@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/minguu42/mtasks/pkg/ttime"
+	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 var (

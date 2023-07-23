@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/minguu42/mtasks/gen/mock"
+	"github.com/minguu42/opepe/gen/mock"
 )
 
 func TestTask(t *testing.T) {

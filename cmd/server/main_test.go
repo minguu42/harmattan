@@ -10,11 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/mtasks/gen/ogen"
-	"github.com/minguu42/mtasks/pkg/handler"
-	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/repository/database"
-	"github.com/minguu42/mtasks/pkg/ttime"
+	"github.com/minguu42/opepe/gen/ogen"
+	"github.com/minguu42/opepe/pkg/handler"
+	"github.com/minguu42/opepe/pkg/logging"
+	"github.com/minguu42/opepe/pkg/repository/database"
+	"github.com/minguu42/opepe/pkg/ttime"
 	"github.com/sebdah/goldie/v2"
 )
 
@@ -25,7 +25,7 @@ var (
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
-	dsn := database.DSN("root", "", "localhost", 3306, "mtasks_test")
+	dsn := database.DSN("root", "", "localhost", 3306, "opepe_test")
 	var err error
 	tdb, err = database.Open(dsn)
 	if err != nil {

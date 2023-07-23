@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	"github.com/minguu42/mtasks/gen/mock"
-	"github.com/minguu42/mtasks/gen/ogen"
+	"github.com/minguu42/opepe/gen/mock"
+	"github.com/minguu42/opepe/gen/ogen"
 )
 
 func TestHandler_GetHealth(t *testing.T) {

@@ -15,16 +15,16 @@ build: ## APIサーバのコンテナイメージをビルドする
 	@docker build \
             --build-arg="API_VERSION=$(VERSION)" \
             --build-arg="API_REVISION=$(REVISION)" \
-            --tag=mtasks-api --target=prod .
+            --tag=opepe-api --target=prod .
 
 run: ## APIサーバを実行する
 	@docker container run \
             --env-file .env.local \
-            --name mtasks-api \
-            --network=mtasks_default \
+            --name opepe-api \
+            --network=opepe_default \
             -p 8080:8080 \
             --rm \
-            mtasks-api
+            opepe-api
 
 dev: ## 開発用のAPIサーバを実行する
 	@docker compose up api

@@ -8,9 +8,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	"github.com/minguu42/mtasks/gen/mock"
-	"github.com/minguu42/mtasks/pkg/entity"
-	"github.com/minguu42/mtasks/pkg/ttime"
+	"github.com/minguu42/opepe/gen/mock"
+	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 func TestDB_CreateTask(t *testing.T) {
