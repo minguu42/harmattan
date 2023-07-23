@@ -20,14 +20,14 @@ import (
 	"github.com/ogen-go/ogen/otelogen"
 )
 
-// handleCreateProjectRequest handles CreateProject operation.
+// handleCreateProjectRequest handles createProject operation.
 //
 // 新しいプロジェクトを作成する.
 //
 // POST /projects
 func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("CreateProject"),
+		otelogen.OperationID("createProject"),
 		semconv.HTTPMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/projects"),
 	}
@@ -59,7 +59,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "CreateProject",
-			ID:   "CreateProject",
+			ID:   "createProject",
 		}
 	)
 	{
@@ -127,7 +127,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "CreateProject",
-			OperationID:   "CreateProject",
+			OperationID:   "createProject",
 			Body:          request,
 			Params:        middleware.Parameters{},
 			Raw:           r,
@@ -175,14 +175,14 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 	}
 }
 
-// handleCreateTaskRequest handles CreateTask operation.
+// handleCreateTaskRequest handles createTask operation.
 //
 // 新しいタスクを作成する.
 //
 // POST /projects/{projectID}/tasks
 func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("CreateTask"),
+		otelogen.OperationID("createTask"),
 		semconv.HTTPMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks"),
 	}
@@ -214,7 +214,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "CreateTask",
-			ID:   "CreateTask",
+			ID:   "createTask",
 		}
 	)
 	{
@@ -292,7 +292,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "CreateTask",
-			OperationID:   "CreateTask",
+			OperationID:   "createTask",
 			Body:          request,
 			Params: middleware.Parameters{
 				{
@@ -345,14 +345,14 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 	}
 }
 
-// handleDeleteProjectRequest handles DeleteProject operation.
+// handleDeleteProjectRequest handles deleteProject operation.
 //
 // プロジェクトを削除する.
 //
 // DELETE /projects/{projectID}
 func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("DeleteProject"),
+		otelogen.OperationID("deleteProject"),
 		semconv.HTTPMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}"),
 	}
@@ -384,7 +384,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "DeleteProject",
-			ID:   "DeleteProject",
+			ID:   "deleteProject",
 		}
 	)
 	{
@@ -447,7 +447,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "DeleteProject",
-			OperationID:   "DeleteProject",
+			OperationID:   "deleteProject",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -500,14 +500,14 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 	}
 }
 
-// handleDeleteTaskRequest handles DeleteTask operation.
+// handleDeleteTaskRequest handles deleteTask operation.
 //
 // タスクを削除する.
 //
 // DELETE /projects/{projectID}/tasks/{taskID}
 func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("DeleteTask"),
+		otelogen.OperationID("deleteTask"),
 		semconv.HTTPMethodKey.String("DELETE"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks/{taskID}"),
 	}
@@ -539,7 +539,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "DeleteTask",
-			ID:   "DeleteTask",
+			ID:   "deleteTask",
 		}
 	)
 	{
@@ -602,7 +602,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "DeleteTask",
-			OperationID:   "DeleteTask",
+			OperationID:   "deleteTask",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -659,14 +659,14 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 	}
 }
 
-// handleGetHealthRequest handles GetHealth operation.
+// handleGetHealthRequest handles getHealth operation.
 //
 // サーバの状態を取得する.
 //
 // GET /health
 func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("GetHealth"),
+		otelogen.OperationID("getHealth"),
 		semconv.HTTPMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/health"),
 	}
@@ -703,7 +703,7 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "GetHealth",
-			OperationID:   "GetHealth",
+			OperationID:   "getHealth",
 			Body:          nil,
 			Params:        middleware.Parameters{},
 			Raw:           r,
@@ -751,14 +751,14 @@ func (s *Server) handleGetHealthRequest(args [0]string, argsEscaped bool, w http
 	}
 }
 
-// handleListProjectsRequest handles ListProjects operation.
+// handleListProjectsRequest handles listProjects operation.
 //
 // プロジェクト一覧を取得する.
 //
 // GET /projects
 func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("ListProjects"),
+		otelogen.OperationID("listProjects"),
 		semconv.HTTPMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/projects"),
 	}
@@ -790,7 +790,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "ListProjects",
-			ID:   "ListProjects",
+			ID:   "listProjects",
 		}
 	)
 	{
@@ -853,7 +853,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "ListProjects",
-			OperationID:   "ListProjects",
+			OperationID:   "listProjects",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -914,14 +914,14 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 	}
 }
 
-// handleListTasksRequest handles ListTasks operation.
+// handleListTasksRequest handles listTasks operation.
 //
 // タスク一覧を取得する.
 //
 // GET /projects/{projectID}/tasks
 func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("ListTasks"),
+		otelogen.OperationID("listTasks"),
 		semconv.HTTPMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks"),
 	}
@@ -953,7 +953,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "ListTasks",
-			ID:   "ListTasks",
+			ID:   "listTasks",
 		}
 	)
 	{
@@ -1016,7 +1016,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "ListTasks",
-			OperationID:   "ListTasks",
+			OperationID:   "listTasks",
 			Body:          nil,
 			Params: middleware.Parameters{
 				{
@@ -1081,14 +1081,14 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 	}
 }
 
-// handleUpdateProjectRequest handles UpdateProject operation.
+// handleUpdateProjectRequest handles updateProject operation.
 //
 // プロジェクトを更新する.
 //
 // PATCH /projects/{projectID}
 func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("UpdateProject"),
+		otelogen.OperationID("updateProject"),
 		semconv.HTTPMethodKey.String("PATCH"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}"),
 	}
@@ -1120,7 +1120,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "UpdateProject",
-			ID:   "UpdateProject",
+			ID:   "updateProject",
 		}
 	)
 	{
@@ -1198,7 +1198,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "UpdateProject",
-			OperationID:   "UpdateProject",
+			OperationID:   "updateProject",
 			Body:          request,
 			Params: middleware.Parameters{
 				{
@@ -1251,14 +1251,14 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 	}
 }
 
-// handleUpdateTaskRequest handles UpdateTask operation.
+// handleUpdateTaskRequest handles updateTask operation.
 //
 // タスクを更新する.
 //
 // PATCH /projects/{projectID}/tasks/{taskID}
 func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("UpdateTask"),
+		otelogen.OperationID("updateTask"),
 		semconv.HTTPMethodKey.String("PATCH"),
 		semconv.HTTPRouteKey.String("/projects/{projectID}/tasks/{taskID}"),
 	}
@@ -1290,7 +1290,7 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: "UpdateTask",
-			ID:   "UpdateTask",
+			ID:   "updateTask",
 		}
 	)
 	{
@@ -1368,7 +1368,7 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 		mreq := middleware.Request{
 			Context:       ctx,
 			OperationName: "UpdateTask",
-			OperationID:   "UpdateTask",
+			OperationID:   "updateTask",
 			Body:          request,
 			Params: middleware.Parameters{
 				{

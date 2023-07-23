@@ -15,7 +15,7 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-// CreateTaskParams is parameters of CreateTask operation.
+// CreateTaskParams is parameters of createTask operation.
 type CreateTaskParams struct {
 	ProjectID string
 }
@@ -96,7 +96,7 @@ func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// DeleteProjectParams is parameters of DeleteProject operation.
+// DeleteProjectParams is parameters of deleteProject operation.
 type DeleteProjectParams struct {
 	ProjectID string
 }
@@ -177,7 +177,7 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 	return params, nil
 }
 
-// DeleteTaskParams is parameters of DeleteTask operation.
+// DeleteTaskParams is parameters of deleteTask operation.
 type DeleteTaskParams struct {
 	ProjectID string
 	TaskID    string
@@ -327,7 +327,7 @@ func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// ListProjectsParams is parameters of ListProjects operation.
+// ListProjectsParams is parameters of listProjects operation.
 type ListProjectsParams struct {
 	// リソースの最大取得数を指定する。.
 	Limit OptInt
@@ -574,7 +574,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 	return params, nil
 }
 
-// ListTasksParams is parameters of ListTasks operation.
+// ListTasksParams is parameters of listTasks operation.
 type ListTasksParams struct {
 	// リソースの最大取得数を指定する。.
 	Limit OptInt
@@ -890,7 +890,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 	return params, nil
 }
 
-// UpdateProjectParams is parameters of UpdateProject operation.
+// UpdateProjectParams is parameters of updateProject operation.
 type UpdateProjectParams struct {
 	ProjectID string
 }
@@ -971,7 +971,7 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 	return params, nil
 }
 
-// UpdateTaskParams is parameters of UpdateTask operation.
+// UpdateTaskParams is parameters of updateTask operation.
 type UpdateTaskParams struct {
 	ProjectID string
 	TaskID    string
