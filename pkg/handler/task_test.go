@@ -7,10 +7,10 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
-	"github.com/minguu42/mtasks/gen/mock"
-	"github.com/minguu42/mtasks/gen/ogen"
-	"github.com/minguu42/mtasks/pkg/entity"
-	"github.com/minguu42/mtasks/pkg/repository"
+	"github.com/minguu42/opepe/gen/mock"
+	"github.com/minguu42/opepe/gen/ogen"
+	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/repository"
 )
 
 func TestHandler_CreateTask(t *testing.T) {

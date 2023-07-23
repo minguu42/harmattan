@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/idgen"
+	"github.com/minguu42/opepe/pkg/idgen"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

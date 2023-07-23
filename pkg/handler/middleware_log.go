@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/minguu42/mtasks/pkg/logging"
-	"github.com/minguu42/mtasks/pkg/ttime"
+	"github.com/minguu42/opepe/pkg/logging"
+	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 // MiddlewareLog -

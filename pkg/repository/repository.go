@@ -8,7 +8,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/entity"
+	"github.com/minguu42/opepe/pkg/entity"
 )
 
 type Repository interface {

@@ -1,4 +1,4 @@
-module github.com/minguu42/mtasks
+module github.com/minguu42/opepe
 
 go 1.20
 

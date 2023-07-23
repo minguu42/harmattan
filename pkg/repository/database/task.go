@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/mtasks/pkg/entity"
-	"github.com/minguu42/mtasks/pkg/repository"
-	"github.com/minguu42/mtasks/pkg/ttime"
+	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/repository"
+	"github.com/minguu42/opepe/pkg/ttime"
 	"gorm.io/gorm"
 )
 

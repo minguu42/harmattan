@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/minguu42/mtasks/gen/ogen"
+	"github.com/minguu42/opepe/gen/ogen"
 )
 
 // version と revision の値はビルド時に埋め込まれる
