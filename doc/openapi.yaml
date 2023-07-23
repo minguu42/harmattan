@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
 info:
-  title: mTasks API Specification
+  title: Opepe API Specification
   version: v0.1.5
 
 servers:
@@ -177,11 +177,11 @@ paths:
                 type: object
                 properties:
                   version:
-                    description: mTasks APIのバージョン
+                    description: Opepe APIのバージョン
                     type: string
                     example: v0.1.0
                   revision:
-                    description: mTasks APIのリビジョン
+                    description: Opepe APIのリビジョン
                     type: string
                     example: a1b2c3d
                 required:

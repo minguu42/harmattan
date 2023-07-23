@@ -3,6 +3,6 @@
 # - スキーマを作成するSQLファイル/schema.sqlが存在すること
 # - ダミーデータを投入するSQLファイル/import.sqlが存在すること
 
-mysql -u root -e "CREATE DATABASE IF NOT EXISTS mtasks_test"
-mysql -u root mtasks_test < /schema.sql
-mysql -u root mtasks_test < /import.sql
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS opepe_test"
+mysql -u root opepe_test < /schema.sql
+mysql -u root opepe_test < /import.sql
