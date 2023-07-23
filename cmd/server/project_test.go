@@ -25,7 +25,7 @@ func TestProject(t *testing.T) {
 			},
 		},
 		{
-			id:         "listProject",
+			id:         "listProjects",
 			method:     http.MethodGet,
 			path:       "/projects?sort=createdAt",
 			statusCode: http.StatusOK,

@@ -25,7 +25,7 @@ func TestTask(t *testing.T) {
 			needsRollback: true,
 		},
 		{
-			id:         "listTask",
+			id:         "listTasks",
 			method:     http.MethodGet,
 			path:       "/projects/01DXF6DT000000000000000000/tasks?sort=createdAt",
 			statusCode: http.StatusOK,
