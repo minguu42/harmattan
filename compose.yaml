@@ -1,25 +1,25 @@
 services:
   api:
-    image: opepe-api-local
+    image: opepe-api-dev
     build:
       context: .
       dockerfile: Dockerfile
-      target: local
-    container_name: opepe-api-local
+      target: dev
+    container_name: opepe-api
     env_file:
       - .env.local
     tty: true
     ports:
       - 8080:8080
     volumes:
-      - .:/go/src/api
+      - .:/go/src/app
     depends_on:
       - db
   db:
     image: mysql:8.0
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
-    container_name: opepe-db-local
+    container_name: opepe-db
     restart: always
     ports:
       - 3306:3306
@@ -28,8 +28,8 @@ services:
       - ./schema.sql:/schema.sql
       - ./create_local_db.sh:/docker-entrypoint-initdb.d/create_local_db.sh
       - ./create_test_db.sh:/docker-entrypoint-initdb.d/create_test_db.sh
-      - db-data-local:/var/lib/mysql
+      - db-data:/var/lib/mysql
 
 volumes:
-  db-data-local:
+  db-data:
     driver: local

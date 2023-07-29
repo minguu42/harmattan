@@ -21,6 +21,7 @@ build: ## APIサーバのコンテナイメージをビルドする
             --target=prod .
 
 run: ## APIサーバを実行する
+	@docker compose up -d db
 	@docker container run \
             --env-file .env.local \
             --name opepe-api \
