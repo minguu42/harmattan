@@ -28,24 +28,13 @@ func TestHandler_NewError(t *testing.T) {
 		want *ogen.ErrorStatusCode
 	}{
 		{
-			name: "特定のハンドラエラーが渡される",
-			args: args{ctx: context.Background(), err: errBadRequest},
-			want: &ogen.ErrorStatusCode{
-				StatusCode: 400,
-				Response: ogen.Error{
-					Message: "入力に誤りがあります。入力をご確認ください。",
-					Debug:   "there is an input error",
-				},
-			},
-		},
-		{
 			name: "ハンドラエラーでないエラーが渡される",
 			args: args{ctx: context.Background(), err: errors.New("")},
 			want: &ogen.ErrorStatusCode{
 				StatusCode: 500,
 				Response: ogen.Error{
+					Code:    500,
 					Message: "不明なエラーが発生しました。もう一度お試しください。",
-					Debug:   "some error occurred on the server",
 				},
 			},
 		},

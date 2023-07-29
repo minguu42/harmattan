@@ -4,6 +4,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"net/http"
 
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
@@ -17,13 +18,10 @@ var (
 
 // ハンドラが返すエラー一覧
 var (
-	errBadRequest          = errors.New("there is an input error")
-	errUnauthorized        = errors.New("user is not authenticated")
-	errTaskNotFound        = errors.New("the specified task is not found")
-	errProjectNotFound     = errors.New("the specified project is not found")
-	errInternalServerError = errors.New("some error occurred on the server")
-	errNotImplemented      = errors.New("this API operation is not yet implemented")
-	errServerUnavailable   = errors.New("server is temporarily unavailable")
+	errUnauthorized        = errors.New("ユーザが認証されていません。ユーザの認証後にもう一度お試しください。")
+	errTaskNotFound        = errors.New("指定されたプロジェクトが見つかりません。もう一度ご確認ください。")
+	errProjectNotFound     = errors.New("指定されたタスクが見つかりません。もう一度ご確認ください。")
+	errInternalServerError = errors.New("不明なエラーが発生しました。もう一度お試しください。")
 )
 
 // Handler は ogen.Handler を満たすハンドラ
@@ -33,43 +31,25 @@ type Handler struct {
 
 // NewError はハンドラから渡されるエラーから ogen.ErrorStatusCode を生成する
 func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
-	var (
-		statusCode int
-		message    string
-	)
+	var code int
 	switch {
-	case errors.Is(err, errBadRequest):
-		statusCode = 400
-		message = "入力に誤りがあります。入力をご確認ください。"
 	case errors.Is(err, errUnauthorized):
-		statusCode = 401
-		message = "ユーザが認証されていません。ユーザの認証後にもう一度お試しください。"
+		code = http.StatusUnauthorized
 	case errors.Is(err, errProjectNotFound):
-		statusCode = 404
-		message = "指定されたプロジェクトが見つかりません。もう一度ご確認ください。"
+		code = http.StatusNotFound
 	case errors.Is(err, errTaskNotFound):
-		statusCode = 404
-		message = "指定されたタスクが見つかりません。もう一度ご確認ください。"
+		code = http.StatusNotFound
 	case errors.Is(err, errInternalServerError):
-		statusCode = 500
-		message = "不明なエラーが発生しました。もう一度お試しください。"
-	case errors.Is(err, errNotImplemented):
-		statusCode = 501
-		message = "この機能はもうすぐ使用できます。お楽しみに♪"
-	case errors.Is(err, errServerUnavailable):
-		statusCode = 503
-		message = "サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。"
+		code = http.StatusInternalServerError
 	default:
-		statusCode = 500
-		message = "不明なエラーが発生しました。もう一度お試しください。"
+		code = http.StatusInternalServerError
 		err = errInternalServerError
 	}
-
 	return &ogen.ErrorStatusCode{
-		StatusCode: statusCode,
+		StatusCode: code,
 		Response: ogen.Error{
-			Message: message,
-			Debug:   err.Error(),
+			Code:    code,
+			Message: err.Error(),
 		},
 	}
 }
