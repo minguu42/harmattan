@@ -145,9 +145,9 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 }
 
 type GetHealthOK struct {
-	// MTasks APIのバージョン.
+	// Opepe APIのバージョン.
 	Version string `json:"version"`
-	// MTasks APIのリビジョン.
+	// Opepe APIのリビジョン.
 	Revision string `json:"revision"`
 }
 
