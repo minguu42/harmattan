@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"net/http"
 	"testing"
 	"time"
 
@@ -28,13 +29,13 @@ func TestHandler_NewError(t *testing.T) {
 		want *ogen.ErrorStatusCode
 	}{
 		{
-			name: "特定のハンドラエラーが渡される",
-			args: args{ctx: context.Background(), err: errBadRequest},
+			name: "ハンドラエラーが渡される",
+			args: args{ctx: context.Background(), err: errUnauthorized},
 			want: &ogen.ErrorStatusCode{
-				StatusCode: 400,
+				StatusCode: http.StatusUnauthorized,
 				Response: ogen.Error{
-					Message: "入力に誤りがあります。入力をご確認ください。",
-					Debug:   "there is an input error",
+					Code:    http.StatusUnauthorized,
+					Message: "ユーザの認証に失敗しました。もしくはユーザが認証されていません。",
 				},
 			},
 		},
@@ -42,10 +43,10 @@ func TestHandler_NewError(t *testing.T) {
 			name: "ハンドラエラーでないエラーが渡される",
 			args: args{ctx: context.Background(), err: errors.New("")},
 			want: &ogen.ErrorStatusCode{
-				StatusCode: 500,
+				StatusCode: http.StatusInternalServerError,
 				Response: ogen.Error{
-					Message: "不明なエラーが発生しました。もう一度お試しください。",
-					Debug:   "some error occurred on the server",
+					Code:    http.StatusInternalServerError,
+					Message: "不明なエラーが発生しました。",
 				},
 			},
 		},

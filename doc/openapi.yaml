@@ -23,7 +23,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        $ref: "#/components/requestBodies/CreateProjectRequestBody"
+        $ref: "#/components/requestBodies/CreateProjectRequest"
       responses:
         201:
           description: 成功
@@ -64,7 +64,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        $ref: "#/components/requestBodies/UpdateProjectRequestBody"
+        $ref: "#/components/requestBodies/UpdateProjectRequest"
       responses:
         200:
           description: 成功
@@ -97,7 +97,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        $ref: "#/components/requestBodies/CreateTaskRequestBody"
+        $ref: "#/components/requestBodies/CreateTaskRequest"
       responses:
         201:
           description: 成功
@@ -139,7 +139,7 @@ paths:
       security:
         - isAuthorized: [ ]
       requestBody:
-        $ref: "#/components/requestBodies/UpdateTaskRequestBody"
+        $ref: "#/components/requestBodies/UpdateTaskRequest"
       responses:
         200:
           description: 成功
@@ -301,15 +301,15 @@ components:
           schema:
             type: object
             properties:
+              code:
+                description: エラーコード
+                type: integer
               message:
                 description: ユーザ向けの大まかなエラーの説明
                 type: string
-              debug:
-                description: 開発者向けの詳細なエラーの説明
-                type: string
             required:
+              - code
               - message
-              - debug
   parameters:
     limit:
       name: limit
@@ -355,7 +355,7 @@ components:
         minLength: 26
         maxLength: 26
   requestBodies:
-    CreateProjectRequestBody:
+    CreateProjectRequest:
       content:
         application/json:
           schema:
@@ -375,7 +375,7 @@ components:
               - name
               - color
       required: true
-    UpdateProjectRequestBody:
+    UpdateProjectRequest:
       content:
         application/json:
           schema:
@@ -396,7 +396,7 @@ components:
                 example: true
             minProperties: 1
       required: true
-    CreateTaskRequestBody:
+    CreateTaskRequest:
       content:
         application/json:
           schema:
@@ -422,7 +422,7 @@ components:
               - content
               - priority
       required: true
-    UpdateTaskRequestBody:
+    UpdateTaskRequest:
       content:
         application/json:
           schema:
