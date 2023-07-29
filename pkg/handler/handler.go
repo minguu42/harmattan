@@ -37,26 +37,26 @@ func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
 		statusCode int
 		message    string
 	)
-	switch err {
-	case errBadRequest:
+	switch {
+	case errors.Is(err, errBadRequest):
 		statusCode = 400
 		message = "入力に誤りがあります。入力をご確認ください。"
-	case errUnauthorized:
+	case errors.Is(err, errUnauthorized):
 		statusCode = 401
 		message = "ユーザが認証されていません。ユーザの認証後にもう一度お試しください。"
-	case errProjectNotFound:
+	case errors.Is(err, errProjectNotFound):
 		statusCode = 404
 		message = "指定されたプロジェクトが見つかりません。もう一度ご確認ください。"
-	case errTaskNotFound:
+	case errors.Is(err, errTaskNotFound):
 		statusCode = 404
 		message = "指定されたタスクが見つかりません。もう一度ご確認ください。"
-	case errInternalServerError:
+	case errors.Is(err, errInternalServerError):
 		statusCode = 500
 		message = "不明なエラーが発生しました。もう一度お試しください。"
-	case errNotImplemented:
+	case errors.Is(err, errNotImplemented):
 		statusCode = 501
 		message = "この機能はもうすぐ使用できます。お楽しみに♪"
-	case errServerUnavailable:
+	case errors.Is(err, errServerUnavailable):
 		statusCode = 503
 		message = "サーバが一時的に利用できない状態です。時間を空けてから、もう一度お試しください。"
 	default:

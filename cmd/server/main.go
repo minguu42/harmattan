@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -57,6 +58,7 @@ func main() {
 				Debug:   fmt.Sprintf("このパスに対応しているメソッドは%sのみである", allowed),
 			})
 		}),
+		ogen.WithErrorHandler(handler.ErrorHandler),
 	)
 	if err != nil {
 		logging.Fatalf(ctx, "ogen.NewServer failed: %v", err)
@@ -83,7 +85,7 @@ func main() {
 	}()
 
 	logging.Infof(ctx, "Start accepting requests")
-	if err := s.ListenAndServe(); err != http.ErrServerClosed {
+	if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 		logging.Fatalf(ctx, "s.ListenAndServe failed: %v", err)
 	}
 
