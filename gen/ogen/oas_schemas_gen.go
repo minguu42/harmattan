@@ -92,10 +92,15 @@ type DeleteProjectNoContent struct{}
 type DeleteTaskNoContent struct{}
 
 type Error struct {
+	// エラーコード.
+	Code int `json:"code"`
 	// ユーザ向けの大まかなエラーの説明.
 	Message string `json:"message"`
-	// 開発者向けの詳細なエラーの説明.
-	Debug string `json:"debug"`
+}
+
+// GetCode returns the value of Code.
+func (s *Error) GetCode() int {
+	return s.Code
 }
 
 // GetMessage returns the value of Message.
@@ -103,19 +108,14 @@ func (s *Error) GetMessage() string {
 	return s.Message
 }
 
-// GetDebug returns the value of Debug.
-func (s *Error) GetDebug() string {
-	return s.Debug
+// SetCode sets the value of Code.
+func (s *Error) SetCode(val int) {
+	s.Code = val
 }
 
 // SetMessage sets the value of Message.
 func (s *Error) SetMessage(val string) {
 	s.Message = val
-}
-
-// SetDebug sets the value of Debug.
-func (s *Error) SetDebug(val string) {
-	s.Debug = val
 }
 
 // ErrorStatusCode wraps Error with StatusCode.

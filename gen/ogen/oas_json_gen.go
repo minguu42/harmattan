@@ -284,18 +284,18 @@ func (s *Error) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *Error) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("message")
-		e.Str(s.Message)
+		e.FieldStart("code")
+		e.Int(s.Code)
 	}
 	{
-		e.FieldStart("debug")
-		e.Str(s.Debug)
+		e.FieldStart("message")
+		e.Str(s.Message)
 	}
 }
 
 var jsonFieldsNameOfError = [2]string{
-	0: "message",
-	1: "debug",
+	0: "code",
+	1: "message",
 }
 
 // Decode decodes Error from json.
@@ -307,8 +307,20 @@ func (s *Error) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "message":
+		case "code":
 			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Int()
+				s.Code = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"code\"")
+			}
+		case "message":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				v, err := d.Str()
 				s.Message = string(v)
@@ -318,18 +330,6 @@ func (s *Error) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"message\"")
-			}
-		case "debug":
-			requiredBitSet[0] |= 1 << 1
-			if err := func() error {
-				v, err := d.Str()
-				s.Debug = string(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"debug\"")
 			}
 		default:
 			return d.Skip()

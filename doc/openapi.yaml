@@ -301,15 +301,15 @@ components:
           schema:
             type: object
             properties:
+              code:
+                description: エラーコード
+                type: integer
               message:
                 description: ユーザ向けの大まかなエラーの説明
                 type: string
-              debug:
-                description: 開発者向けの詳細なエラーの説明
-                type: string
             required:
+              - code
               - message
-              - debug
   parameters:
     limit:
       name: limit
