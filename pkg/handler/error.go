@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/minguu42/opepe/gen/ogen"
 	ht "github.com/ogen-go/ogen/http"
@@ -19,18 +20,18 @@ func NotFound(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(code)
 	_ = json.NewEncoder(w).Encode(ogen.Error{
 		Code:    code,
-		Message: "指定したパスに対応するエンドポイントが見つかりません。もう一度ご確認ください。",
+		Message: "指定したエンドポイントが見つかりません。",
 	})
 }
 
 func MethodNotAllowed(w http.ResponseWriter, _ *http.Request, allowed string) {
 	w.Header().Set("Allow", allowed)
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "application/json")
 	code := http.StatusMethodNotAllowed
 	w.WriteHeader(code)
 	_ = json.NewEncoder(w).Encode(ogen.Error{
 		Code:    code,
-		Message: fmt.Sprintf("このパスに対応しているメソッドは%sのみである", allowed),
+		Message: fmt.Sprintf("指定したエンドポイントが対応しているメソッドは%sのみです。", strings.ReplaceAll(allowed, ",", "、")),
 	})
 }
 
@@ -59,11 +60,11 @@ func ErrorHandler(_ context.Context, w http.ResponseWriter, _ *http.Request, err
 	var message string
 	switch code {
 	case http.StatusBadRequest:
-		message = "入力に誤りがあります。入力を確認し、もう一度お試しください。"
+		message = "入力に誤りがあります。"
 	case http.StatusUnsupportedMediaType:
 		message = "指定されたContent-Typeに対応していません。"
 	case http.StatusNotImplemented:
-		message = "この機能はもうすぐ使用できます。お楽しみに♪"
+		message = "このオペレーションはまだ実装されていません。"
 	}
 	_ = json.NewEncoder(w).Encode(ogen.Error{
 		Code:    code,

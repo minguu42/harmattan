@@ -18,10 +18,10 @@ var (
 
 // ハンドラが返すエラー一覧
 var (
-	errUnauthorized        = errors.New("ユーザが認証されていません。ユーザの認証後にもう一度お試しください。")
-	errTaskNotFound        = errors.New("指定されたプロジェクトが見つかりません。もう一度ご確認ください。")
-	errProjectNotFound     = errors.New("指定されたタスクが見つかりません。もう一度ご確認ください。")
-	errInternalServerError = errors.New("不明なエラーが発生しました。もう一度お試しください。")
+	errUnauthorized        = errors.New("ユーザの認証に失敗しました。もしくはユーザが認証されていません。")
+	errTaskNotFound        = errors.New("指定されたプロジェクトが見つかりません。")
+	errProjectNotFound     = errors.New("指定されたタスクが見つかりません。")
+	errInternalServerError = errors.New("不明なエラーが発生しました。")
 )
 
 // Handler は ogen.Handler を満たすハンドラ
