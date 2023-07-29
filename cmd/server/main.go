@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -39,6 +40,23 @@ func main() {
 	h, err := ogen.NewServer(
 		&handler.Handler{Repository: db},
 		&handler.Security{Repository: db},
+		ogen.WithNotFound(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			_ = json.NewEncoder(w).Encode(ogen.Error{
+				Message: "Not Found",
+				Debug:   "指定したパスに対応するオペレーションは存在しない",
+			})
+		}),
+		ogen.WithMethodNotAllowed(func(w http.ResponseWriter, r *http.Request, allowed string) {
+			w.Header().Set("Content-Type", "text/plain")
+			w.Header().Set("Allow", allowed)
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			_ = json.NewEncoder(w).Encode(ogen.Error{
+				Message: "Method Not Allowed",
+				Debug:   fmt.Sprintf("このパスに対応しているメソッドは%sのみである", allowed),
+			})
+		}),
 	)
 	if err != nil {
 		logging.Fatalf(ctx, "ogen.NewServer failed: %v", err)
