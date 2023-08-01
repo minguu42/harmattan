@@ -55,26 +55,18 @@ func main() {
 		MaxHeaderBytes:    1 << 20,
 	}
 
-	shutdownErr := make(chan error, 1)
 	go func() {
-		sigterm := make(chan os.Signal, 1)
-		signal.Notify(sigterm, syscall.SIGTERM)
-		<-sigterm
-
-		if err := s.Shutdown(context.Background()); err != nil {
-			shutdownErr <- err
-			return
+		logging.Infof(ctx, "Start accepting requests")
+		if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			logging.Errorf(ctx, "s.ListenAndServe failed: %s", err)
 		}
-		shutdownErr <- nil
 	}()
 
-	logging.Infof(ctx, "Start accepting requests")
-	if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-		logging.Fatalf(ctx, "s.ListenAndServe failed: %v", err)
-	}
-
-	if err := <-shutdownErr; err != nil {
-		logging.Fatalf(ctx, "s.Shutdown failed: %v", err)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-quit
+	if err := s.Shutdown(ctx); err != nil {
+		logging.Fatalf(ctx, "s.Shutdown failed: %s", err)
 	}
 	logging.Infof(ctx, "Stop accepting requests")
 }
