@@ -13,14 +13,14 @@ setup: ## 開発に必要なツールをインストールする
 gen: ## コードを生成する
 	@go generate ./...
 
-build: ## APIサーバのコンテナイメージをビルドする
+build: ## 本番用APIサーバのコンテナイメージをビルドする
 	@docker build \
             --build-arg="API_VERSION=$(VERSION)" \
             --build-arg="API_REVISION=$(REVISION)" \
             --tag=opepe-api:latest --tag=opepe-api:$(VERSION) \
             --target=prod .
 
-run: ## APIサーバを実行する
+run: ## 本番用APIサーバを実行する
 	@docker compose up -d db
 	@docker container run \
             --env-file .env.local \
@@ -30,11 +30,15 @@ run: ## APIサーバを実行する
             --rm \
             opepe-api
 
-dev: ## 開発用のAPIサーバを実行する
-	@docker compose up api
+dev: ## 開発用APIサーバを実行する
+	@docker compose run \
+            --name opepe-api \
+            -p 8080:8080 \
+            --rm \
+            api
 
 fmt: ## コードを整形する
-	@goimports -w .
+	@goimports -l -w .
 
 lint: ## 静的解析を実行する
 	@go vet $$(go list ./... | grep -v /gen)
