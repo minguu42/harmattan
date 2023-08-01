@@ -63,7 +63,7 @@ func main() {
 	}()
 
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, os.Interrupt, os.Kill)
+	signal.Notify(quit, syscall.SIGTERM, os.Interrupt)
 	<-quit
 	if err := s.Shutdown(ctx); err != nil {
 		logging.Fatalf(ctx, "s.Shutdown failed: %s", err)
