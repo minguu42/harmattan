@@ -30,8 +30,7 @@ func main() {
 	}
 
 	dsn := database.DSN(e.MySQL.User, e.MySQL.Password, e.MySQL.Host, e.MySQL.Port, e.MySQL.Database)
-	db, err := database.Open(dsn)
-	db.SetIDGenerator(&ulidgen.Generator{})
+	db, err := database.Open(dsn, &ulidgen.Generator{})
 	if err != nil {
 		logging.Fatalf(ctx, "database.Open failed: %v", err)
 	}

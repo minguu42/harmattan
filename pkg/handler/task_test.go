@@ -23,7 +23,7 @@ func TestHandler_CreateTask(t *testing.T) {
 	tests := []struct {
 		name          string
 		args          args
-		prepareMockFn func(r *mock.MockRepository)
+		prepareMockFn func(r *mock.MockRepository, g *mock.MockIDGenerator)
 		want          *ogen.Task
 		wantErr       error
 	}{
@@ -39,13 +39,14 @@ func TestHandler_CreateTask(t *testing.T) {
 				},
 				params: ogen.CreateTaskParams{ProjectID: "01DXF6DT000000000000000000"},
 			},
-			prepareMockFn: func(r *mock.MockRepository) {
+			prepareMockFn: func(r *mock.MockRepository, g *mock.MockIDGenerator) {
+				g.EXPECT().Generate().Return("01DXF6DT000000000000000000")
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
 					ID:     "01DXF6DT000000000000000000",
 					UserID: "01DXF6DT000000000000000000",
 					Name:   "プロジェクト1",
 				}, nil)
-				r.EXPECT().CreateTask(mockCtx, "01DXF6DT000000000000000000", "タスク1", "Hello, 世界!", 3, &dueOn).Return(&entity.Task{
+				r.EXPECT().CreateTask(mockCtx, &entity.Task{
 					ID:          "01DXF6DT000000000000000000",
 					ProjectID:   "01DXF6DT000000000000000000",
 					Title:       "タスク1",
@@ -53,9 +54,9 @@ func TestHandler_CreateTask(t *testing.T) {
 					Priority:    3,
 					DueOn:       &dueOn,
 					CompletedAt: nil,
-					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-					UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				}, nil)
+					CreatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				}).Return(nil)
 			},
 			want: &ogen.Task{
 				ID:          "01DXF6DT000000000000000000",
@@ -65,15 +66,15 @@ func TestHandler_CreateTask(t *testing.T) {
 				Priority:    3,
 				DueOn:       ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
 				CompletedAt: ogen.OptDateTime{Set: false},
-				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				UpdatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				CreatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 			wantErr: nil,
 		},
 		{
 			name:          "コンテキストからユーザを取得できない場合はエラーを返す",
 			args:          args{ctx: context.Background()},
-			prepareMockFn: func(r *mock.MockRepository) {},
+			prepareMockFn: func(r *mock.MockRepository, g *mock.MockIDGenerator) {},
 			want:          nil,
 			wantErr:       errUnauthorized,
 		},
@@ -84,7 +85,7 @@ func TestHandler_CreateTask(t *testing.T) {
 				req:    &ogen.CreateTaskReq{Title: "タスク1"},
 				params: ogen.CreateTaskParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
-			prepareMockFn: func(r *mock.MockRepository) {
+			prepareMockFn: func(r *mock.MockRepository, g *mock.MockIDGenerator) {
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
 			},
 			want:    nil,
@@ -97,7 +98,7 @@ func TestHandler_CreateTask(t *testing.T) {
 				req:    &ogen.CreateTaskReq{Title: "タスク1"},
 				params: ogen.CreateTaskParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
-			prepareMockFn: func(r *mock.MockRepository) {
+			prepareMockFn: func(r *mock.MockRepository, g *mock.MockIDGenerator) {
 				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(&entity.Project{
 					ID:     "01DXF6DT000000000000000001",
 					UserID: "01DXF6DT000000000000000001",
@@ -113,8 +114,9 @@ func TestHandler_CreateTask(t *testing.T) {
 			defer c.Finish()
 
 			r := mock.NewMockRepository(c)
-			tt.prepareMockFn(r)
-			h := &Handler{Repository: r}
+			g := mock.NewMockIDGenerator(c)
+			tt.prepareMockFn(r, g)
+			h := &Handler{Repository: r, idGenerator: g}
 
 			got, err := h.CreateTask(tt.args.ctx, tt.args.req, tt.args.params)
 			if tt.wantErr != err {
@@ -153,7 +155,7 @@ func TestHandler_ListTasks(t *testing.T) {
 					CreatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().GetTasksByProjectID(mockCtx, "01DXF6DT000000000000000000", "-createdAt", 11, 0).
+				r.EXPECT().GetTasksByProjectID(mockCtx, "01DXF6DT000000000000000000", 11, 0).
 					Return([]*entity.Task{
 						{
 							ID:          "01DXF6DT000000000000000000",
@@ -307,7 +309,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 					Content:     "Goodbye",
 					Priority:    3,
 					DueOn:       &tm1,
-					CompletedAt: &tm1,
+					CompletedAt: nil,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 				}).Return(nil)
@@ -319,7 +321,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 				Content:     "Goodbye",
 				Priority:    3,
 				DueOn:       ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
-				CompletedAt: ogen.OptDateTime{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
+				CompletedAt: ogen.OptDateTime{},
 				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},

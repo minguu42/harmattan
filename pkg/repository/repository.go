@@ -5,8 +5,6 @@ package repository
 
 import (
 	"context"
-	"errors"
-	"time"
 
 	"github.com/minguu42/opepe/pkg/entity"
 )
@@ -14,17 +12,15 @@ import (
 type Repository interface {
 	GetUserByAPIKey(ctx context.Context, apiKey string) (*entity.User, error)
 
-	CreateProject(ctx context.Context, userID string, name string, color string) (*entity.Project, error)
-	GetProjectsByUserID(ctx context.Context, userID string, sort string, limit, offset int) ([]*entity.Project, error)
+	CreateProject(ctx context.Context, p *entity.Project) error
+	GetProjectsByUserID(ctx context.Context, userID string, limit, offset int) ([]*entity.Project, error)
 	GetProjectByID(ctx context.Context, id string) (*entity.Project, error)
 	UpdateProject(ctx context.Context, p *entity.Project) error
 	DeleteProject(ctx context.Context, id string) error
 
-	CreateTask(ctx context.Context, projectID string, title, content string, priority int, dueOn *time.Time) (*entity.Task, error)
-	GetTasksByProjectID(ctx context.Context, projectID string, sort string, limit, offset int) ([]*entity.Task, error)
+	CreateTask(ctx context.Context, t *entity.Task) error
+	GetTasksByProjectID(ctx context.Context, projectID string, limit, offset int) ([]*entity.Task, error)
 	GetTaskByID(ctx context.Context, id string) (*entity.Task, error)
 	UpdateTask(ctx context.Context, t *entity.Task) error
 	DeleteTask(ctx context.Context, id string) error
 }
-
-var ErrRecordNotFound = errors.New("")

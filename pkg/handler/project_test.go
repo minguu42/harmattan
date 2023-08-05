@@ -21,7 +21,7 @@ func TestHandler_CreateProject(t *testing.T) {
 	tests := []struct {
 		name          string
 		args          args
-		prepareMockFn func(r *mock.MockRepository)
+		prepareMockFn func(r *mock.MockRepository, g *mock.MockIDGenerator)
 		want          *ogen.Project
 		wantErr       error
 	}{
@@ -31,31 +31,31 @@ func TestHandler_CreateProject(t *testing.T) {
 				ctx: mockCtx,
 				req: &ogen.CreateProjectReq{Name: "プロジェクト1", Color: "#1A2B3C"},
 			},
-			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().CreateProject(mockCtx, "01DXF6DT000000000000000000", "プロジェクト1", "#1A2B3C").
-					Return(&entity.Project{
-						ID:         "01DXF6DT000000000000000000",
-						UserID:     "01DXF6DT000000000000000000",
-						Name:       "プロジェクト1",
-						Color:      "#1A2B3C",
-						IsArchived: false,
-						CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-						UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-					}, nil)
+			prepareMockFn: func(r *mock.MockRepository, g *mock.MockIDGenerator) {
+				g.EXPECT().Generate().Return("01DXF6DT000000000000000000")
+				r.EXPECT().CreateProject(mockCtx, &entity.Project{
+					ID:         "01DXF6DT000000000000000000",
+					UserID:     "01DXF6DT000000000000000000",
+					Name:       "プロジェクト1",
+					Color:      "#1A2B3C",
+					IsArchived: false,
+					CreatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+					UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				}).Return(nil)
 			},
 			want: &ogen.Project{
 				ID:         "01DXF6DT000000000000000000",
 				Name:       "プロジェクト1",
 				Color:      "#1A2B3C",
 				IsArchived: false,
-				CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
-				UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+				CreatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				UpdatedAt:  time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
 		},
 		{
 			name:          "コンテキストからユーザを取得できない場合はエラーを返す",
 			args:          args{ctx: context.Background()},
-			prepareMockFn: func(r *mock.MockRepository) {},
+			prepareMockFn: func(r *mock.MockRepository, g *mock.MockIDGenerator) {},
 			want:          nil,
 			wantErr:       errUnauthorized,
 		},
@@ -66,8 +66,9 @@ func TestHandler_CreateProject(t *testing.T) {
 			defer c.Finish()
 
 			r := mock.NewMockRepository(c)
-			tt.prepareMockFn(r)
-			h := &Handler{Repository: r}
+			g := mock.NewMockIDGenerator(c)
+			tt.prepareMockFn(r, g)
+			h := &Handler{Repository: r, idGenerator: g}
 
 			got, err := h.CreateProject(tt.args.ctx, tt.args.req)
 			if (tt.wantErr == nil) != (err == nil) {
@@ -96,7 +97,7 @@ func TestHandler_ListProjects(t *testing.T) {
 			name: "プロジェクト一覧を取得する",
 			args: args{ctx: mockCtx},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectsByUserID(mockCtx, "01DXF6DT000000000000000000", "-createdAt", 11, 0).
+				r.EXPECT().GetProjectsByUserID(mockCtx, "01DXF6DT000000000000000000", 11, 0).
 					Return([]*entity.Project{
 						{
 							ID:         "01DXF6DT000000000000000000",
