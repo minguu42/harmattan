@@ -5,9 +5,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/minguu42/opepe/pkg/entity"
 )
+
+var ErrRecordNotFound = errors.New("no record found")
 
 type Repository interface {
 	GetUserByAPIKey(ctx context.Context, apiKey string) (*entity.User, error)
