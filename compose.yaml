@@ -26,10 +26,9 @@ services:
     volumes:
       - ./import.sql:/import.sql
       - ./schema.sql:/schema.sql
-      - ./create_local_db.sh:/docker-entrypoint-initdb.d/create_local_db.sh
-      - ./create_test_db.sh:/docker-entrypoint-initdb.d/create_test_db.sh
-      - db-data:/var/lib/mysql
+      - ./init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+      - db_data:/var/lib/mysql
 
 volumes:
-  db-data:
+  db_data:
     driver: local
