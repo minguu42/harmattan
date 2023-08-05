@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/minguu42/opepe/pkg/idgen"
 	"github.com/minguu42/opepe/pkg/logging"
 )
