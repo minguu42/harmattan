@@ -31,14 +31,17 @@ func main() {
 	}
 
 	dsn := database.DSN(e.MySQL.User, e.MySQL.Password, e.MySQL.Host, e.MySQL.Port, e.MySQL.Database)
-	db, err := database.Open(dsn, &ulidgen.Generator{})
+	db, err := database.Open(dsn)
 	if err != nil {
 		logging.Fatalf(ctx, "database.Open failed: %v", err)
 	}
 	defer db.Close()
 
 	h, err := ogen.NewServer(
-		&handler.Handler{Repository: db},
+		&handler.Handler{
+			Repository:  db,
+			IDGenerator: &ulidgen.Generator{},
+		},
 		&handler.Security{Repository: db},
 		ogen.WithNotFound(handler.NotFound),
 		ogen.WithMethodNotAllowed(handler.MethodNotAllowed),

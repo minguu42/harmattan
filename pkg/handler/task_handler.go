@@ -33,7 +33,7 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 
 	now := ttime.Now(ctx)
 	t := &entity.Task{
-		ID:          h.idGenerator.Generate(),
+		ID:          h.IDGenerator.Generate(),
 		ProjectID:   params.ProjectID,
 		Title:       req.Title,
 		Content:     req.Content,

@@ -20,7 +20,7 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 
 	now := ttime.Now(ctx)
 	p := entity.Project{
-		ID:         h.idGenerator.Generate(),
+		ID:         h.IDGenerator.Generate(),
 		UserID:     u.ID,
 		Name:       req.Name,
 		Color:      req.Color,

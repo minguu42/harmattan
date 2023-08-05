@@ -116,7 +116,7 @@ func TestHandler_CreateTask(t *testing.T) {
 			r := mock.NewMockRepository(c)
 			g := mock.NewMockIDGenerator(c)
 			tt.prepareMockFn(r, g)
-			h := &Handler{Repository: r, idGenerator: g}
+			h := &Handler{Repository: r, IDGenerator: g}
 
 			got, err := h.CreateTask(tt.args.ctx, tt.args.req, tt.args.params)
 			if tt.wantErr != err {

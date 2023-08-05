@@ -9,19 +9,17 @@ import (
 	"github.com/minguu42/opepe/gen/sqlc"
 	"github.com/minguu42/opepe/pkg/entity"
 	"github.com/minguu42/opepe/pkg/repository"
-	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 func (db *DB) CreateProject(ctx context.Context, p *entity.Project) error {
-	now := ttime.Now(ctx)
 	if err := sqlc.New(db._db).CreateProject(ctx, sqlc.CreateProjectParams{
 		ID:         p.ID,
 		UserID:     p.UserID,
 		Name:       p.Name,
 		Color:      p.Color,
 		IsArchived: p.IsArchived,
-		CreatedAt:  now,
-		UpdatedAt:  now,
+		CreatedAt:  p.CreatedAt,
+		UpdatedAt:  p.UpdatedAt,
 	}); err != nil {
 		return fmt.Errorf("q.CreateProject failed: %w", err)
 	}

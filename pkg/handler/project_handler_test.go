@@ -68,7 +68,7 @@ func TestHandler_CreateProject(t *testing.T) {
 			r := mock.NewMockRepository(c)
 			g := mock.NewMockIDGenerator(c)
 			tt.prepareMockFn(r, g)
-			h := &Handler{Repository: r, idGenerator: g}
+			h := &Handler{Repository: r, IDGenerator: g}
 
 			got, err := h.CreateProject(tt.args.ctx, tt.args.req)
 			if (tt.wantErr == nil) != (err == nil) {
