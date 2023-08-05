@@ -2,8 +2,8 @@ package handler
 
 import (
 	"context"
+	"errors"
 
-	"github.com/go-faster/errors"
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
 	"github.com/minguu42/opepe/pkg/logging"
@@ -31,13 +31,19 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 		return nil, errProjectNotFound
 	}
 
-	t, err := h.Repository.CreateTask(ctx, params.ProjectID, req.Title, req.Content, req.Priority, req.DueOn.Ptr())
-	if err != nil {
-		logging.Errorf(ctx, "repository.Create failed: %v", err)
+	t := entity.Task{
+		ProjectID: params.ProjectID,
+		Title:     req.Title,
+		Content:   req.Content,
+		Priority:  req.Priority,
+		DueOn:     req.DueOn.Ptr(),
+	}
+	if err := h.Repository.SaveTask(ctx, &t); err != nil {
+		logging.Errorf(ctx, "repository.SaveTask failed: %s", err)
 		return nil, errInternalServerError
 	}
 
-	return newTaskResponse(t), nil
+	return newTaskResponse(&t), nil
 }
 
 // ListTasks は GET /projects/{projectID}/tasks に対応するハンドラ
@@ -61,7 +67,7 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 	}
 
 	limit := params.Limit.Or(defaultLimit)
-	ts, err := h.Repository.GetTasksByProjectID(ctx, p.ID, string(params.Sort.Or(ogen.ListTasksSortMinusCreatedAt)), limit+1, params.Offset.Or(defaultOffset))
+	ts, err := h.Repository.GetTasksByProjectID(ctx, p.ID, limit+1, params.Offset.Or(defaultOffset))
 	if err != nil {
 		logging.Errorf(ctx, "repository.GetTasksByProjectID failed: %v", err)
 		return nil, errInternalServerError
@@ -77,25 +83,6 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 		Tasks:   newTasksResponse(ts),
 		HasNext: hasNext,
 	}, nil
-}
-
-func updateTask(ctx context.Context, t *entity.Task, req *ogen.UpdateTaskReq) *entity.Task {
-	t.Title = req.Title.Or(t.Title)
-	t.Content = req.Content.Or(t.Content)
-	t.Priority = req.Priority.Or(t.Priority)
-	if req.DueOn.IsSet() {
-		t.DueOn = req.DueOn.Ptr()
-	}
-	now := ttime.Now(ctx)
-	if req.IsCompleted.IsSet() {
-		if req.IsCompleted.Value {
-			t.CompletedAt = &now
-		} else {
-			t.CompletedAt = nil
-		}
-	}
-	t.UpdatedAt = now
-	return t
 }
 
 // UpdateTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
@@ -130,13 +117,27 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		return nil, errTaskNotFound
 	}
 
-	newTask := updateTask(ctx, t, req)
-	if err := h.Repository.UpdateTask(ctx, newTask); err != nil {
-		logging.Errorf(ctx, "repository.UpdateTask failed: %v", err)
+	dueOn := t.DueOn
+	if req.DueOn.IsSet() {
+		dueOn = req.DueOn.Ptr()
+	}
+	newTask := entity.Task{
+		ID:          t.ID,
+		ProjectID:   t.ProjectID,
+		Title:       req.Title.Or(t.Title),
+		Content:     req.Content.Or(t.Content),
+		Priority:    req.Priority.Or(t.Priority),
+		DueOn:       dueOn,
+		CompletedAt: nil,
+		CreatedAt:   t.CreatedAt,
+		UpdatedAt:   ttime.Now(ctx),
+	}
+	if err := h.Repository.SaveTask(ctx, &newTask); err != nil {
+		logging.Errorf(ctx, "repository.SaveTask failed: %s", err)
 		return nil, errInternalServerError
 	}
 
-	return newTaskResponse(newTask), nil
+	return newTaskResponse(&newTask), nil
 }
 
 // DeleteTask は DELETE /projects/{projectID}/tasks/{taskID} に対応するハンドラ

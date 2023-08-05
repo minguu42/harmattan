@@ -18,13 +18,16 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 		return nil, errUnauthorized
 	}
 
-	p, err := h.Repository.CreateProject(ctx, u.ID, req.Name, req.Color)
-	if err != nil {
-		logging.Errorf(ctx, "repository.CreateProject failed: %v", err)
+	p := entity.Project{
+		UserID: u.ID,
+		Name:   req.Name,
+		Color:  req.Color,
+	}
+	if err := h.Repository.SaveProject(ctx, &p); err != nil {
 		return nil, errInternalServerError
 	}
 
-	return newProjectResponse(p), nil
+	return newProjectResponse(&p), nil
 }
 
 // ListProjects は GET /projects に対応するハンドラ
@@ -35,7 +38,7 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 	}
 
 	limit := params.Limit.Or(defaultLimit)
-	ps, err := h.Repository.GetProjectsByUserID(ctx, u.ID, string(params.Sort.Or(ogen.ListProjectsSortMinusCreatedAt)), limit+1, params.Offset.Or(defaultOffset))
+	ps, err := h.Repository.GetProjectsByUserID(ctx, u.ID, limit+1, params.Offset.Or(defaultOffset))
 	if err != nil {
 		logging.Errorf(ctx, "repository.GetProjectsByUserID failed: %v", err)
 		return nil, errInternalServerError
@@ -51,14 +54,6 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 		Projects: newProjectsResponse(ps),
 		HasNext:  hasNext,
 	}, nil
-}
-
-func updateProject(ctx context.Context, p *entity.Project, req *ogen.UpdateProjectReq) *entity.Project {
-	p.Name = req.Name.Or(p.Name)
-	p.Color = req.Color.Or(p.Color)
-	p.IsArchived = req.IsArchived.Or(p.IsArchived)
-	p.UpdatedAt = ttime.Now(ctx)
-	return p
 }
 
 // UpdateProject は PATCH /projects/{projectID} に対応するハンドラ
@@ -82,13 +77,21 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 		return nil, errProjectNotFound
 	}
 
-	newProject := updateProject(ctx, p, req)
-	if err := h.Repository.UpdateProject(ctx, newProject); err != nil {
-		logging.Errorf(ctx, "repository.UpdateProject failed: %v", err)
+	newProject := entity.Project{
+		ID:         p.ID,
+		UserID:     p.UserID,
+		Name:       req.Name.Or(p.Name),
+		Color:      req.Color.Or(p.Color),
+		IsArchived: req.IsArchived.Or(p.IsArchived),
+		CreatedAt:  p.CreatedAt,
+		UpdatedAt:  ttime.Now(ctx),
+	}
+	if err := h.Repository.SaveProject(ctx, &newProject); err != nil {
+		logging.Errorf(ctx, "repository.SaveProject failed: %s", err)
 		return nil, errInternalServerError
 	}
 
-	return newProjectResponse(newProject), nil
+	return newProjectResponse(&newProject), nil
 }
 
 // DeleteProject は DELETE /projects/{projectID} に対応するハンドラ

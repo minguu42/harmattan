@@ -1,62 +1,28 @@
-// Package database はデータベースに関するパッケージ
+// Package database はデータベース操作に関するパッケージ
 package database
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/minguu42/opepe/pkg/idgen"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/minguu42/opepe/pkg/logging"
 )
 
 // DB は repository.Repository インタフェースを実装するデータベース
 type DB struct {
-	_db         *gorm.DB
-	_tx         *gorm.DB
+	_db         *sql.DB
 	idGenerator idgen.IDGenerator
 }
 
-// conn はデータベースへのコネクションを返す
-// NOTE: DB 構造体の _db, _tx フィールドは直接使用せず、このメソッドの戻り値を使用する
-func (db *DB) conn(ctx context.Context) *gorm.DB {
-	if db._tx != nil {
-		return db._tx.WithContext(ctx)
-	}
-	return db._db.WithContext(ctx)
-}
-
-// SetIDGenerator は DB に ID 生成器をセットする
-func (db *DB) SetIDGenerator(idGenerator idgen.IDGenerator) {
-	db.idGenerator = idGenerator
-}
-
-// Begin はトランザクションを開始する
-func (db *DB) Begin() error {
-	tx := db._db.Begin()
-	if err := tx.Error; err != nil {
-		return err
-	}
-	db._tx = tx
-	return nil
-}
-
-// Rollback はトランザクションを終了し、トランザクション中の変更を元に戻す
-func (db *DB) Rollback() {
-	db._tx.Rollback()
-	db._tx = nil
-}
-
-// Close は新しいクエリの実行を辞め、データベースとの接続を閉じる
+// Close は新しいクエリの実行を停止し、データベースとの接続を切る
 func (db *DB) Close() error {
-	sqlDB, err := db._db.DB()
-	if err != nil {
-		return fmt.Errorf("_db.DB failed: %w", err)
+	if db._db != nil {
+		return db._db.Close()
 	}
-
-	return sqlDB.Close()
+	return nil
 }
 
 // DSN はデータベースとの接続に使用する Data Source Name を生成する
@@ -71,34 +37,29 @@ func DSN(user, password, host string, port int, database string) string {
 }
 
 // Open はデータベースとの接続を確立する
-func Open(dsn string) (*DB, error) {
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+func Open(dsn string, idGenerator idgen.IDGenerator) (*DB, error) {
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("gorm.Open failed: %w", err)
+		return nil, fmt.Errorf("sql.Open failed: %w", err)
+	}
+	db.SetConnMaxLifetime(3 * time.Minute)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+
+	maxFailureTimes := 2
+	for i := 0; i <= maxFailureTimes; i++ {
+		if err := db.Ping(); err != nil && i != maxFailureTimes {
+			logging.Infof(context.Background(), "db.Ping failed. try again after 15 seconds")
+			time.Sleep(15 * time.Second)
+			continue
+		} else if err != nil && i == maxFailureTimes {
+			return nil, fmt.Errorf("db.Ping failed: %w", err)
+		}
+		break
 	}
 
-	sqlDB, err := db.DB()
-	if err != nil {
-		return nil, fmt.Errorf("db.DB failed: %w", err)
-	}
-	sqlDB.SetConnMaxLifetime(3 * time.Minute)
-	sqlDB.SetMaxOpenConns(10)
-	sqlDB.SetMaxIdleConns(10)
-
-	return &DB{_db: db}, nil
-}
-
-// generateOrderByClause は sort クエリから ORDER BY 句の値を生成する
-// 例: 'createdAt' -> 'created_at ASC'、'-createdAt' -> 'created_at DESC'
-func generateOrderByClause(sort string) string {
-	m := map[string]string{
-		"name":      "name",
-		"title":     "title",
-		"createdAt": "created_at",
-		"updatedAt": "updated_at",
-	}
-	if strings.HasPrefix(sort, "-") {
-		return fmt.Sprintf("%s DESC", m[strings.TrimPrefix(sort, "-")])
-	}
-	return fmt.Sprintf("%s ASC", m[sort])
+	return &DB{
+		_db:         db,
+		idGenerator: idGenerator,
+	}, nil
 }
