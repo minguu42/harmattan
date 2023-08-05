@@ -1,4 +1,4 @@
-package handler
+package middleware
 
 import (
 	"fmt"
@@ -9,12 +9,13 @@ import (
 	"github.com/minguu42/opepe/pkg/ttime"
 )
 
-// MiddlewareLog -
-func MiddlewareLog(next http.Handler) http.HandlerFunc {
+// LogMiddleware はリクエストの結果をログに出力するミドルウェア
+func LogMiddleware(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		t1 := ttime.Now(r.Context())
+		ctx := r.Context()
+		t1 := ttime.Now(ctx)
 		next.ServeHTTP(w, r)
-		t2 := ttime.Now(r.Context())
+		t2 := ttime.Now(ctx)
 
 		quote := "\x1b[34m\"\x1b[0m"
 		method := fmt.Sprintf("\x1b[35m%s\x1b[0m", r.Method)

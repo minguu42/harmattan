@@ -13,6 +13,7 @@ import (
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/env"
 	"github.com/minguu42/opepe/pkg/handler"
+	"github.com/minguu42/opepe/pkg/handler/middleware"
 	"github.com/minguu42/opepe/pkg/idgen/ulidgen"
 	"github.com/minguu42/opepe/pkg/logging"
 	"github.com/minguu42/opepe/pkg/repository/database"
@@ -48,7 +49,7 @@ func main() {
 	}
 	s := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", e.API.Host, e.API.Port),
-		Handler:           handler.MiddlewareLog(h),
+		Handler:           middleware.LogMiddleware(h),
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		MaxHeaderBytes:    1 << 20,
