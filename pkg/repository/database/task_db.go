@@ -9,37 +9,27 @@ import (
 
 	"github.com/minguu42/opepe/gen/sqlc"
 	"github.com/minguu42/opepe/pkg/entity"
-	"github.com/minguu42/opepe/pkg/ttime"
 )
 
-func (db *DB) SaveTask(ctx context.Context, t *entity.Task) error {
+func (db *DB) CreateTask(ctx context.Context, t *entity.Task) error {
 	var dueOn sql.NullTime
 	if t.DueOn != nil {
 		dueOn = sql.NullTime{Time: *t.DueOn, Valid: true}
 	}
-	if t.ID != "" {
-		if err := sqlc.New(db._db).UpdateTask(ctx, sqlc.UpdateTaskParams{
-			Title:    t.Title,
-			Content:  t.Content,
-			Priority: uint32(t.Priority),
-			DueOn:    dueOn,
-			ID:       t.ID,
-		}); err != nil {
-			return fmt.Errorf("q.UpdateTask failed: %w", err)
-		}
+	var completedAt sql.NullTime
+	if t.CompletedAt != nil {
+		completedAt = sql.NullTime{Time: *t.CompletedAt, Valid: true}
 	}
-
-	now := ttime.Now(ctx)
 	if err := sqlc.New(db._db).CreateTask(ctx, sqlc.CreateTaskParams{
-		ID:          db.idGenerator.Generate(),
+		ID:          t.ID,
 		ProjectID:   t.ProjectID,
 		Title:       t.Title,
 		Content:     t.Content,
 		Priority:    uint32(t.Priority),
 		DueOn:       dueOn,
-		CompletedAt: sql.NullTime{},
-		CreatedAt:   now,
-		UpdatedAt:   now,
+		CompletedAt: completedAt,
+		CreatedAt:   t.CreatedAt,
+		UpdatedAt:   t.UpdatedAt,
 	}); err != nil {
 		return fmt.Errorf("q.CreateTask failed: %w", err)
 	}
@@ -108,6 +98,23 @@ func (db *DB) GetTaskByID(ctx context.Context, id string) (*entity.Task, error) 
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
 	}, nil
+}
+
+func (db *DB) UpdateTask(ctx context.Context, t *entity.Task) error {
+	var dueOn sql.NullTime
+	if t.DueOn != nil {
+		dueOn = sql.NullTime{Time: *t.DueOn, Valid: true}
+	}
+	if err := sqlc.New(db._db).UpdateTask(ctx, sqlc.UpdateTaskParams{
+		Title:    t.Title,
+		Content:  t.Content,
+		Priority: uint32(t.Priority),
+		DueOn:    dueOn,
+		ID:       t.ID,
+	}); err != nil {
+		return fmt.Errorf("q.UpdateTask failed: %w", err)
+	}
+	return nil
 }
 
 func (db *DB) DeleteTask(ctx context.Context, id string) error {

@@ -12,25 +12,14 @@ import (
 	"github.com/minguu42/opepe/pkg/ttime"
 )
 
-func (db *DB) SaveProject(ctx context.Context, p *entity.Project) error {
+func (db *DB) CreateProject(ctx context.Context, p *entity.Project) error {
 	now := ttime.Now(ctx)
-	if p.ID != "" {
-		if err := sqlc.New(db._db).UpdateProject(ctx, sqlc.UpdateProjectParams{
-			Name:  p.Name,
-			Color: p.Color,
-			ID:    p.ID,
-		}); err != nil {
-			return fmt.Errorf("q.UpdateProject failed: %w", err)
-		}
-		return nil
-	}
-
 	if err := sqlc.New(db._db).CreateProject(ctx, sqlc.CreateProjectParams{
-		ID:         db.idGenerator.Generate(),
+		ID:         p.ID,
 		UserID:     p.UserID,
 		Name:       p.Name,
 		Color:      p.Color,
-		IsArchived: false,
+		IsArchived: p.IsArchived,
 		CreatedAt:  now,
 		UpdatedAt:  now,
 	}); err != nil {
@@ -81,6 +70,17 @@ func (db *DB) GetProjectByID(ctx context.Context, id string) (*entity.Project, e
 		CreatedAt:  p.CreatedAt,
 		UpdatedAt:  p.UpdatedAt,
 	}, nil
+}
+
+func (db *DB) UpdateProject(ctx context.Context, p *entity.Project) error {
+	if err := sqlc.New(db._db).UpdateProject(ctx, sqlc.UpdateProjectParams{
+		Name:  p.Name,
+		Color: p.Color,
+		ID:    p.ID,
+	}); err != nil {
+		return fmt.Errorf("q.UpdateProject failed: %w", err)
+	}
+	return nil
 }
 
 func (db *DB) DeleteProject(ctx context.Context, id string) error {

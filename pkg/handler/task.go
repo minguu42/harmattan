@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"errors"
-
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
 	"github.com/minguu42/opepe/pkg/logging"
@@ -31,19 +30,24 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 		return nil, errProjectNotFound
 	}
 
-	t := entity.Task{
-		ProjectID: params.ProjectID,
-		Title:     req.Title,
-		Content:   req.Content,
-		Priority:  req.Priority,
-		DueOn:     req.DueOn.Ptr(),
+	now := ttime.Now(ctx)
+	t := &entity.Task{
+		ID:          h.idGenerator.Generate(),
+		ProjectID:   params.ProjectID,
+		Title:       req.Title,
+		Content:     req.Content,
+		Priority:    req.Priority,
+		DueOn:       req.DueOn.Ptr(),
+		CompletedAt: nil,
+		CreatedAt:   now,
+		UpdatedAt:   now,
 	}
-	if err := h.Repository.SaveTask(ctx, &t); err != nil {
+	if err := h.Repository.CreateTask(ctx, t); err != nil {
 		logging.Errorf(ctx, "repository.SaveTask failed: %s", err)
 		return nil, errInternalServerError
 	}
 
-	return newTaskResponse(&t), nil
+	return newTaskResponse(t), nil
 }
 
 // ListTasks は GET /projects/{projectID}/tasks に対応するハンドラ
@@ -132,7 +136,7 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   ttime.Now(ctx),
 	}
-	if err := h.Repository.SaveTask(ctx, &newTask); err != nil {
+	if err := h.Repository.UpdateTask(ctx, &newTask); err != nil {
 		logging.Errorf(ctx, "repository.SaveTask failed: %s", err)
 		return nil, errInternalServerError
 	}

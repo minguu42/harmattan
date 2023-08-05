@@ -112,7 +112,7 @@ func (q *Queries) GetProjectByID(ctx context.Context, id string) (Project, error
 const getProjectsByUserID = `-- name: GetProjectsByUserID :many
 SELECT id, user_id, name, color, is_archived, created_at, updated_at FROM projects
 WHERE user_id = ?
-ORDER BY created_at
+ORDER BY created_at DESC
 LIMIT ? OFFSET ?
 `
 
@@ -178,7 +178,7 @@ func (q *Queries) GetTaskByID(ctx context.Context, id string) (Task, error) {
 const getTasksByProjectID = `-- name: GetTasksByProjectID :many
 SELECT id, project_id, title, content, priority, due_on, completed_at, created_at, updated_at FROM tasks
 WHERE project_id = ?
-ORDER BY created_at
+ORDER BY created_at DESC
 LIMIT ? OFFSET ?
 `
 

@@ -9,7 +9,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?);
 -- name: GetProjectsByUserID :many
 SELECT * FROM projects
 WHERE user_id = ?
-ORDER BY created_at
+ORDER BY created_at DESC
 LIMIT ? OFFSET ?;
 
 -- name: GetProjectByID :one
@@ -30,7 +30,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 -- name: GetTasksByProjectID :many
 SELECT * FROM tasks
 WHERE project_id = ?
-ORDER BY created_at
+ORDER BY created_at DESC
 LIMIT ? OFFSET ?;
 
 -- name: GetTaskByID :one

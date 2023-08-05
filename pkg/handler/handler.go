@@ -4,6 +4,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"github.com/minguu42/opepe/pkg/idgen"
 	"net/http"
 
 	"github.com/minguu42/opepe/gen/ogen"
@@ -26,7 +27,8 @@ var (
 
 // Handler は ogen.Handler を満たすハンドラ
 type Handler struct {
-	Repository repository.Repository
+	Repository  repository.Repository
+	idGenerator idgen.IDGenerator
 }
 
 // NewError はハンドラから渡されるエラーから ogen.ErrorStatusCode を生成する

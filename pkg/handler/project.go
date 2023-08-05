@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-
 	"github.com/go-faster/errors"
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
@@ -18,12 +17,17 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 		return nil, errUnauthorized
 	}
 
+	now := ttime.Now(ctx)
 	p := entity.Project{
-		UserID: u.ID,
-		Name:   req.Name,
-		Color:  req.Color,
+		ID:         h.idGenerator.Generate(),
+		UserID:     u.ID,
+		Name:       req.Name,
+		Color:      req.Color,
+		IsArchived: false,
+		UpdatedAt:  now,
+		CreatedAt:  now,
 	}
-	if err := h.Repository.SaveProject(ctx, &p); err != nil {
+	if err := h.Repository.CreateProject(ctx, &p); err != nil {
 		return nil, errInternalServerError
 	}
 
@@ -86,7 +90,7 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 		CreatedAt:  p.CreatedAt,
 		UpdatedAt:  ttime.Now(ctx),
 	}
-	if err := h.Repository.SaveProject(ctx, &newProject); err != nil {
+	if err := h.Repository.UpdateProject(ctx, &newProject); err != nil {
 		logging.Errorf(ctx, "repository.SaveProject failed: %s", err)
 		return nil, errInternalServerError
 	}

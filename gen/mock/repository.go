@@ -7,7 +7,6 @@ package mock
 import (
 	context "context"
 	reflect "reflect"
-	time "time"
 
 	gomock "github.com/golang/mock/gomock"
 	entity "github.com/minguu42/opepe/pkg/entity"
@@ -37,33 +36,31 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // CreateProject mocks base method.
-func (m *MockRepository) CreateProject(ctx context.Context, userID, name, color string) (*entity.Project, error) {
+func (m *MockRepository) CreateProject(ctx context.Context, p *entity.Project) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateProject", ctx, userID, name, color)
-	ret0, _ := ret[0].(*entity.Project)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "CreateProject", ctx, p)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // CreateProject indicates an expected call of CreateProject.
-func (mr *MockRepositoryMockRecorder) CreateProject(ctx, userID, name, color interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) CreateProject(ctx, p interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProject", reflect.TypeOf((*MockRepository)(nil).CreateProject), ctx, userID, name, color)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProject", reflect.TypeOf((*MockRepository)(nil).CreateProject), ctx, p)
 }
 
 // CreateTask mocks base method.
-func (m *MockRepository) CreateTask(ctx context.Context, projectID, title, content string, priority int, dueOn *time.Time) (*entity.Task, error) {
+func (m *MockRepository) CreateTask(ctx context.Context, t *entity.Task) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateTask", ctx, projectID, title, content, priority, dueOn)
-	ret0, _ := ret[0].(*entity.Task)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "CreateTask", ctx, t)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // CreateTask indicates an expected call of CreateTask.
-func (mr *MockRepositoryMockRecorder) CreateTask(ctx, projectID, title, content, priority, dueOn interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) CreateTask(ctx, t interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTask", reflect.TypeOf((*MockRepository)(nil).CreateTask), ctx, projectID, title, content, priority, dueOn)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTask", reflect.TypeOf((*MockRepository)(nil).CreateTask), ctx, t)
 }
 
 // DeleteProject mocks base method.
@@ -110,18 +107,18 @@ func (mr *MockRepositoryMockRecorder) GetProjectByID(ctx, id interface{}) *gomoc
 }
 
 // GetProjectsByUserID mocks base method.
-func (m *MockRepository) GetProjectsByUserID(ctx context.Context, userID, sort string, limit, offset int) ([]*entity.Project, error) {
+func (m *MockRepository) GetProjectsByUserID(ctx context.Context, userID string, limit, offset int) ([]*entity.Project, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetProjectsByUserID", ctx, userID, sort, limit, offset)
+	ret := m.ctrl.Call(m, "GetProjectsByUserID", ctx, userID, limit, offset)
 	ret0, _ := ret[0].([]*entity.Project)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetProjectsByUserID indicates an expected call of GetProjectsByUserID.
-func (mr *MockRepositoryMockRecorder) GetProjectsByUserID(ctx, userID, sort, limit, offset interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) GetProjectsByUserID(ctx, userID, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProjectsByUserID", reflect.TypeOf((*MockRepository)(nil).GetProjectsByUserID), ctx, userID, sort, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProjectsByUserID", reflect.TypeOf((*MockRepository)(nil).GetProjectsByUserID), ctx, userID, limit, offset)
 }
 
 // GetTaskByID mocks base method.
@@ -140,18 +137,18 @@ func (mr *MockRepositoryMockRecorder) GetTaskByID(ctx, id interface{}) *gomock.C
 }
 
 // GetTasksByProjectID mocks base method.
-func (m *MockRepository) GetTasksByProjectID(ctx context.Context, projectID, sort string, limit, offset int) ([]*entity.Task, error) {
+func (m *MockRepository) GetTasksByProjectID(ctx context.Context, projectID string, limit, offset int) ([]*entity.Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTasksByProjectID", ctx, projectID, sort, limit, offset)
+	ret := m.ctrl.Call(m, "GetTasksByProjectID", ctx, projectID, limit, offset)
 	ret0, _ := ret[0].([]*entity.Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetTasksByProjectID indicates an expected call of GetTasksByProjectID.
-func (mr *MockRepositoryMockRecorder) GetTasksByProjectID(ctx, projectID, sort, limit, offset interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) GetTasksByProjectID(ctx, projectID, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTasksByProjectID", reflect.TypeOf((*MockRepository)(nil).GetTasksByProjectID), ctx, projectID, sort, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTasksByProjectID", reflect.TypeOf((*MockRepository)(nil).GetTasksByProjectID), ctx, projectID, limit, offset)
 }
 
 // GetUserByAPIKey mocks base method.
