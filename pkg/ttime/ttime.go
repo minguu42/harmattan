@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+type TimeKey struct{}
+
 // Now は渡されたコンテキストに値が含まれる場合はその値を返し、含まれない場合は現在時刻を返す
 // コンテキストに固定時刻が含まれている場合はその値を返す
 func Now(ctx context.Context) time.Time {

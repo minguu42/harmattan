@@ -1,14 +1,14 @@
-// Package handler はハンドラ、ミドルウェアに関するパッケージ
+// Package handler はハンドラに関するパッケージ
 package handler
 
 import (
 	"context"
 	"errors"
-	"github.com/minguu42/opepe/pkg/idgen"
 	"net/http"
 
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/idgen"
 	"github.com/minguu42/opepe/pkg/repository"
 )
 
@@ -28,7 +28,7 @@ var (
 // Handler は ogen.Handler を満たすハンドラ
 type Handler struct {
 	Repository  repository.Repository
-	idGenerator idgen.IDGenerator
+	IDGenerator idgen.IDGenerator
 }
 
 // NewError はハンドラから渡されるエラーから ogen.ErrorStatusCode を生成する

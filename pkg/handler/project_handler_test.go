@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/opepe/gen/mock"
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
 	"github.com/minguu42/opepe/pkg/repository"
+	"go.uber.org/mock/gomock"
 )
 
 func TestHandler_CreateProject(t *testing.T) {
@@ -68,7 +68,7 @@ func TestHandler_CreateProject(t *testing.T) {
 			r := mock.NewMockRepository(c)
 			g := mock.NewMockIDGenerator(c)
 			tt.prepareMockFn(r, g)
-			h := &Handler{Repository: r, idGenerator: g}
+			h := &Handler{Repository: r, IDGenerator: g}
 
 			got, err := h.CreateProject(tt.args.ctx, tt.args.req)
 			if (tt.wantErr == nil) != (err == nil) {

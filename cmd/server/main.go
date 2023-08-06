@@ -13,6 +13,7 @@ import (
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/env"
 	"github.com/minguu42/opepe/pkg/handler"
+	"github.com/minguu42/opepe/pkg/handler/middleware"
 	"github.com/minguu42/opepe/pkg/idgen/ulidgen"
 	"github.com/minguu42/opepe/pkg/logging"
 	"github.com/minguu42/opepe/pkg/repository/database"
@@ -30,14 +31,17 @@ func main() {
 	}
 
 	dsn := database.DSN(e.MySQL.User, e.MySQL.Password, e.MySQL.Host, e.MySQL.Port, e.MySQL.Database)
-	db, err := database.Open(dsn, &ulidgen.Generator{})
+	db, err := database.Open(dsn)
 	if err != nil {
 		logging.Fatalf(ctx, "database.Open failed: %v", err)
 	}
 	defer db.Close()
 
 	h, err := ogen.NewServer(
-		&handler.Handler{Repository: db},
+		&handler.Handler{
+			Repository:  db,
+			IDGenerator: &ulidgen.Generator{},
+		},
 		&handler.Security{Repository: db},
 		ogen.WithNotFound(handler.NotFound),
 		ogen.WithMethodNotAllowed(handler.MethodNotAllowed),
@@ -48,7 +52,7 @@ func main() {
 	}
 	s := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", e.API.Host, e.API.Port),
-		Handler:           handler.MiddlewareLog(h),
+		Handler:           middleware.LogMiddleware(h),
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		MaxHeaderBytes:    1 << 20,

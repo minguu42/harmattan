@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/opepe/gen/mock"
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
+	"go.uber.org/mock/gomock"
 )
 
 func TestSecurity_HandleIsAuthorized(t *testing.T) {

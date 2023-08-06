@@ -5,8 +5,6 @@ package ogen
 import (
 	"fmt"
 	"time"
-
-	"github.com/go-faster/errors"
 )
 
 func (s *ErrorStatusCode) Error() string {
@@ -183,72 +181,6 @@ func (s *IsAuthorized) GetAPIKey() string {
 // SetAPIKey sets the value of APIKey.
 func (s *IsAuthorized) SetAPIKey(val string) {
 	s.APIKey = val
-}
-
-type ListProjectsSort string
-
-const (
-	ListProjectsSortCreatedAt      ListProjectsSort = "createdAt"
-	ListProjectsSortMinusCreatedAt ListProjectsSort = "-createdAt"
-)
-
-// MarshalText implements encoding.TextMarshaler.
-func (s ListProjectsSort) MarshalText() ([]byte, error) {
-	switch s {
-	case ListProjectsSortCreatedAt:
-		return []byte(s), nil
-	case ListProjectsSortMinusCreatedAt:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *ListProjectsSort) UnmarshalText(data []byte) error {
-	switch ListProjectsSort(data) {
-	case ListProjectsSortCreatedAt:
-		*s = ListProjectsSortCreatedAt
-		return nil
-	case ListProjectsSortMinusCreatedAt:
-		*s = ListProjectsSortMinusCreatedAt
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-type ListTasksSort string
-
-const (
-	ListTasksSortCreatedAt      ListTasksSort = "createdAt"
-	ListTasksSortMinusCreatedAt ListTasksSort = "-createdAt"
-)
-
-// MarshalText implements encoding.TextMarshaler.
-func (s ListTasksSort) MarshalText() ([]byte, error) {
-	switch s {
-	case ListTasksSortCreatedAt:
-		return []byte(s), nil
-	case ListTasksSortMinusCreatedAt:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *ListTasksSort) UnmarshalText(data []byte) error {
-	switch ListTasksSort(data) {
-	case ListTasksSortCreatedAt:
-		*s = ListTasksSortCreatedAt
-		return nil
-	case ListTasksSortMinusCreatedAt:
-		*s = ListTasksSortMinusCreatedAt
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
 }
 
 // NewOptBool returns new OptBool with value set to v.
@@ -429,98 +361,6 @@ func (o OptInt) Get() (v int, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptInt) Or(d int) int {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptListProjectsSort returns new OptListProjectsSort with value set to v.
-func NewOptListProjectsSort(v ListProjectsSort) OptListProjectsSort {
-	return OptListProjectsSort{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptListProjectsSort is optional ListProjectsSort.
-type OptListProjectsSort struct {
-	Value ListProjectsSort
-	Set   bool
-}
-
-// IsSet returns true if OptListProjectsSort was set.
-func (o OptListProjectsSort) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptListProjectsSort) Reset() {
-	var v ListProjectsSort
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptListProjectsSort) SetTo(v ListProjectsSort) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptListProjectsSort) Get() (v ListProjectsSort, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptListProjectsSort) Or(d ListProjectsSort) ListProjectsSort {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptListTasksSort returns new OptListTasksSort with value set to v.
-func NewOptListTasksSort(v ListTasksSort) OptListTasksSort {
-	return OptListTasksSort{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptListTasksSort is optional ListTasksSort.
-type OptListTasksSort struct {
-	Value ListTasksSort
-	Set   bool
-}
-
-// IsSet returns true if OptListTasksSort was set.
-func (o OptListTasksSort) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptListTasksSort) Reset() {
-	var v ListTasksSort
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptListTasksSort) SetTo(v ListTasksSort) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptListTasksSort) Get() (v ListTasksSort, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptListTasksSort) Or(d ListTasksSort) ListTasksSort {
 	if v, ok := o.Get(); ok {
 		return v
 	}

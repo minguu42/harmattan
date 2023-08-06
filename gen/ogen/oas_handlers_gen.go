@@ -864,10 +864,6 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 					Name: "offset",
 					In:   "query",
 				}: params.Offset,
-				{
-					Name: "sort",
-					In:   "query",
-				}: params.Sort,
 			},
 			Raw: r,
 		}
@@ -1027,10 +1023,6 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 					Name: "offset",
 					In:   "query",
 				}: params.Offset,
-				{
-					Name: "sort",
-					In:   "query",
-				}: params.Sort,
 				{
 					Name: "projectID",
 					In:   "path",

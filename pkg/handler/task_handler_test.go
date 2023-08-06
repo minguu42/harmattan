@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/opepe/gen/mock"
 	"github.com/minguu42/opepe/gen/ogen"
 	"github.com/minguu42/opepe/pkg/entity"
 	"github.com/minguu42/opepe/pkg/repository"
+	"go.uber.org/mock/gomock"
 )
 
 func TestHandler_CreateTask(t *testing.T) {
@@ -116,7 +116,7 @@ func TestHandler_CreateTask(t *testing.T) {
 			r := mock.NewMockRepository(c)
 			g := mock.NewMockIDGenerator(c)
 			tt.prepareMockFn(r, g)
-			h := &Handler{Repository: r, idGenerator: g}
+			h := &Handler{Repository: r, IDGenerator: g}
 
 			got, err := h.CreateTask(tt.args.ctx, tt.args.req, tt.args.params)
 			if tt.wantErr != err {
@@ -309,7 +309,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 					Content:     "Goodbye",
 					Priority:    3,
 					DueOn:       &tm1,
-					CompletedAt: nil,
+					CompletedAt: &tm1,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 				}).Return(nil)
@@ -321,7 +321,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 				Content:     "Goodbye",
 				Priority:    3,
 				DueOn:       ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
-				CompletedAt: ogen.OptDateTime{},
+				CompletedAt: ogen.OptDateTime{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
 				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},

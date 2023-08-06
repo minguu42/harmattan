@@ -7,14 +7,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/opepe/pkg/idgen"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/minguu42/opepe/pkg/logging"
 )
 
 // DB は repository.Repository インタフェースを実装するデータベース
 type DB struct {
-	_db         *sql.DB
-	idGenerator idgen.IDGenerator
+	_db *sql.DB
 }
 
 // Close は新しいクエリの実行を停止し、データベースとの接続を切る
@@ -37,7 +36,7 @@ func DSN(user, password, host string, port int, database string) string {
 }
 
 // Open はデータベースとの接続を確立する
-func Open(dsn string, idGenerator idgen.IDGenerator) (*DB, error) {
+func Open(dsn string) (*DB, error) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open failed: %w", err)
@@ -58,8 +57,5 @@ func Open(dsn string, idGenerator idgen.IDGenerator) (*DB, error) {
 		break
 	}
 
-	return &DB{
-		_db:         db,
-		idGenerator: idGenerator,
-	}, nil
+	return &DB{_db: db}, nil
 }
