@@ -126,6 +126,15 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 	if req.DueOn.IsSet() {
 		dueOn = req.DueOn.Ptr()
 	}
+	completedAt := t.CompletedAt
+	if req.IsCompleted.IsSet() {
+		if req.IsCompleted.Value {
+			now := ttime.Now(ctx)
+			completedAt = &now
+		} else {
+			completedAt = nil
+		}
+	}
 	newTask := entity.Task{
 		ID:          t.ID,
 		ProjectID:   t.ProjectID,
@@ -133,7 +142,7 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 		Content:     req.Content.Or(t.Content),
 		Priority:    req.Priority.Or(t.Priority),
 		DueOn:       dueOn,
-		CompletedAt: nil,
+		CompletedAt: completedAt,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   ttime.Now(ctx),
 	}

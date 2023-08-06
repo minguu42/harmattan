@@ -309,7 +309,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 					Content:     "Goodbye",
 					Priority:    3,
 					DueOn:       &tm1,
-					CompletedAt: nil,
+					CompletedAt: &tm1,
 					CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 				}).Return(nil)
@@ -321,7 +321,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 				Content:     "Goodbye",
 				Priority:    3,
 				DueOn:       ogen.OptDate{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
-				CompletedAt: ogen.OptDateTime{},
+				CompletedAt: ogen.OptDateTime{Value: time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC), Set: true},
 				CreatedAt:   time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				UpdatedAt:   time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
 			},
