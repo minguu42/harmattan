@@ -120,28 +120,6 @@ func (s *CreateTaskReq) Validate() error {
 	return nil
 }
 
-func (s ListProjectsSort) Validate() error {
-	switch s {
-	case "createdAt":
-		return nil
-	case "-createdAt":
-		return nil
-	default:
-		return errors.Errorf("invalid value: %v", s)
-	}
-}
-
-func (s ListTasksSort) Validate() error {
-	switch s {
-	case "createdAt":
-		return nil
-	case "-createdAt":
-		return nil
-	default:
-		return errors.Errorf("invalid value: %v", s)
-	}
-}
-
 func (s *Projects) Validate() error {
 	var failures []validate.FieldError
 	if err := func() error {

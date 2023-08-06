@@ -333,8 +333,6 @@ type ListProjectsParams struct {
 	Limit OptInt
 	// リソースの取得開始位置を指定する。.
 	Offset OptInt
-	// リソースの並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
-	Sort OptListProjectsSort
 }
 
 func unpackListProjectsParams(packed middleware.Parameters) (params ListProjectsParams) {
@@ -354,15 +352,6 @@ func unpackListProjectsParams(packed middleware.Parameters) (params ListProjects
 		}
 		if v, ok := packed[key]; ok {
 			params.Offset = v.(OptInt)
-		}
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "sort",
-			In:   "query",
-		}
-		if v, ok := packed[key]; ok {
-			params.Sort = v.(OptListProjectsSort)
 		}
 	}
 	return params
@@ -510,67 +499,6 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 			Err:  err,
 		}
 	}
-	// Set default value for query: sort.
-	{
-		val := ListProjectsSort("-createdAt")
-		params.Sort.SetTo(val)
-	}
-	// Decode query: sort.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "sort",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotSortVal ListProjectsSort
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotSortVal = ListProjectsSort(c)
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.Sort.SetTo(paramsDotSortVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-			if err := func() error {
-				if value, ok := params.Sort.Get(); ok {
-					if err := func() error {
-						if err := value.Validate(); err != nil {
-							return err
-						}
-						return nil
-					}(); err != nil {
-						return err
-					}
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "sort",
-			In:   "query",
-			Err:  err,
-		}
-	}
 	return params, nil
 }
 
@@ -579,9 +507,7 @@ type ListTasksParams struct {
 	// リソースの最大取得数を指定する。.
 	Limit OptInt
 	// リソースの取得開始位置を指定する。.
-	Offset OptInt
-	// リソースの並び順を指定する。`-`をつければ降順になり、つけなければ昇順となる。.
-	Sort      OptListTasksSort
+	Offset    OptInt
 	ProjectID string
 }
 
@@ -602,15 +528,6 @@ func unpackListTasksParams(packed middleware.Parameters) (params ListTasksParams
 		}
 		if v, ok := packed[key]; ok {
 			params.Offset = v.(OptInt)
-		}
-	}
-	{
-		key := middleware.ParameterKey{
-			Name: "sort",
-			In:   "query",
-		}
-		if v, ok := packed[key]; ok {
-			params.Sort = v.(OptListTasksSort)
 		}
 	}
 	{
@@ -761,67 +678,6 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "offset",
-			In:   "query",
-			Err:  err,
-		}
-	}
-	// Set default value for query: sort.
-	{
-		val := ListTasksSort("-createdAt")
-		params.Sort.SetTo(val)
-	}
-	// Decode query: sort.
-	if err := func() error {
-		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "sort",
-			Style:   uri.QueryStyleForm,
-			Explode: true,
-		}
-
-		if err := q.HasParam(cfg); err == nil {
-			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotSortVal ListTasksSort
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
-						return err
-					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotSortVal = ListTasksSort(c)
-					return nil
-				}(); err != nil {
-					return err
-				}
-				params.Sort.SetTo(paramsDotSortVal)
-				return nil
-			}); err != nil {
-				return err
-			}
-			if err := func() error {
-				if value, ok := params.Sort.Get(); ok {
-					if err := func() error {
-						if err := value.Validate(); err != nil {
-							return err
-						}
-						return nil
-					}(); err != nil {
-						return err
-					}
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "sort",
 			In:   "query",
 			Err:  err,
 		}

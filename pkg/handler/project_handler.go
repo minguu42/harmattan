@@ -45,7 +45,7 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 	limit := params.Limit.Or(defaultLimit)
 	ps, err := h.Repository.GetProjectsByUserID(ctx, u.ID, limit+1, params.Offset.Or(defaultOffset))
 	if err != nil {
-		logging.Errorf(ctx, "repository.GetProjectsByUserID failed: %v", err)
+		logging.Errorf(ctx, "repository.GetProjectsByUserID failed: %s", err)
 		return nil, errInternalServerError
 	}
 
@@ -73,7 +73,7 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 		if errors.Is(err, repository.ErrRecordNotFound) {
 			return nil, errProjectNotFound
 		}
-		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
+		logging.Errorf(ctx, "repository.GetProjectByID failed: %s", err)
 		return nil, errInternalServerError
 	}
 
@@ -111,7 +111,7 @@ func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectPa
 		if errors.Is(err, repository.ErrRecordNotFound) {
 			return errProjectNotFound
 		}
-		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
+		logging.Errorf(ctx, "repository.GetProjectByID failed: %s", err)
 		return errInternalServerError
 	}
 
@@ -121,7 +121,7 @@ func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectPa
 	}
 
 	if err := h.Repository.DeleteProject(ctx, p.ID); err != nil {
-		logging.Errorf(ctx, "repository.DeleteProject failed: %v", err)
+		logging.Errorf(ctx, "repository.DeleteProject failed: %s", err)
 		return errInternalServerError
 	}
 
