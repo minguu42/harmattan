@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/minguu42/opepe/gen/ogen"
-	"github.com/minguu42/opepe/pkg/entity"
-	"github.com/minguu42/opepe/pkg/idgen"
-	"github.com/minguu42/opepe/pkg/repository"
+	"github.com/minguu42/opepe/pkg/domain/idgen"
+	"github.com/minguu42/opepe/pkg/domain/model"
+	"github.com/minguu42/opepe/pkg/domain/repository"
 )
 
 var (
@@ -57,7 +57,7 @@ func (h *Handler) NewError(_ context.Context, err error) *ogen.ErrorStatusCode {
 }
 
 // newProjectResponse は entity.Project から ogen.Project を生成する
-func newProjectResponse(p *entity.Project) *ogen.Project {
+func newProjectResponse(p *model.Project) *ogen.Project {
 	return &ogen.Project{
 		ID:         p.ID,
 		Name:       p.Name,
@@ -69,16 +69,16 @@ func newProjectResponse(p *entity.Project) *ogen.Project {
 }
 
 // newProjectsResponse は entity.Project のスライスから ogen.Project のスライスを生成する
-func newProjectsResponse(ps []*entity.Project) []ogen.Project {
+func newProjectsResponse(ps []model.Project) []ogen.Project {
 	projects := make([]ogen.Project, 0, len(ps))
 	for _, p := range ps {
-		projects = append(projects, *newProjectResponse(p))
+		projects = append(projects, *newProjectResponse(&p))
 	}
 	return projects
 }
 
 // newTaskResponse は entity.Task から ogen.Task を生成する
-func newTaskResponse(t *entity.Task) *ogen.Task {
+func newTaskResponse(t *model.Task) *ogen.Task {
 	dueOn := ogen.OptDate{}
 	if t.DueOn != nil {
 		dueOn = ogen.NewOptDate(*t.DueOn)
@@ -101,10 +101,10 @@ func newTaskResponse(t *entity.Task) *ogen.Task {
 }
 
 // newTasksResponse は entity.Task のスライスから ogen.Task のスライスを生成する
-func newTasksResponse(ts []*entity.Task) []ogen.Task {
+func newTasksResponse(ts []model.Task) []ogen.Task {
 	tasks := make([]ogen.Task, 0, len(ts))
 	for _, t := range ts {
-		tasks = append(tasks, *newTaskResponse(t))
+		tasks = append(tasks, *newTaskResponse(&t))
 	}
 	return tasks
 }

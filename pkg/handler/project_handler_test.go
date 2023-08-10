@@ -2,14 +2,15 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/opepe/gen/mock"
 	"github.com/minguu42/opepe/gen/ogen"
-	"github.com/minguu42/opepe/pkg/entity"
-	"github.com/minguu42/opepe/pkg/repository"
+	"github.com/minguu42/opepe/pkg/domain/model"
+	"github.com/minguu42/opepe/pkg/domain/repository"
 	"go.uber.org/mock/gomock"
 )
 
@@ -33,7 +34,7 @@ func TestHandler_CreateProject(t *testing.T) {
 			},
 			prepareMockFn: func(r *mock.MockRepository, g *mock.MockIDGenerator) {
 				g.EXPECT().Generate().Return("01DXF6DT000000000000000000")
-				r.EXPECT().CreateProject(mockCtx, &entity.Project{
+				r.EXPECT().CreateProject(mockCtx, &model.Project{
 					ID:         "01DXF6DT000000000000000000",
 					UserID:     "01DXF6DT000000000000000000",
 					Name:       "プロジェクト1",
@@ -98,7 +99,7 @@ func TestHandler_ListProjects(t *testing.T) {
 			args: args{ctx: mockCtx},
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetProjectsByUserID(mockCtx, "01DXF6DT000000000000000000", 11, 0).
-					Return([]*entity.Project{
+					Return([]model.Project{
 						{
 							ID:         "01DXF6DT000000000000000000",
 							UserID:     "01DXF6DT000000000000000000",
@@ -195,7 +196,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&model.Project{
 					ID:         "01DXF6DT000000000000000000",
 					UserID:     "01DXF6DT000000000000000000",
 					Name:       "プロジェクト1",
@@ -204,7 +205,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 					CreatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 					UpdatedAt:  time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 				}, nil)
-				r.EXPECT().UpdateProject(mockCtx, &entity.Project{
+				r.EXPECT().UpdateProject(mockCtx, &model.Project{
 					ID:         "01DXF6DT000000000000000000",
 					UserID:     "01DXF6DT000000000000000000",
 					Name:       "新プロジェクト1",
@@ -242,7 +243,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrModelNotFound)
 			},
 			want:    nil,
 			wantErr: errProjectNotFound,
@@ -255,7 +256,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 				params: ogen.UpdateProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(&entity.Project{
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(&model.Project{
 					ID:        "01DXF6DT000000000000000001",
 					UserID:    "01DXF6DT000000000000000001",
 					Name:      "プロジェクト2",
@@ -305,7 +306,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 				params: ogen.DeleteProjectParams{ProjectID: "01DXF6DT000000000000000000"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&entity.Project{
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000000").Return(&model.Project{
 					ID:        "01DXF6DT000000000000000000",
 					UserID:    "01DXF6DT000000000000000000",
 					Name:      "プロジェクト1",
@@ -329,7 +330,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 				params: ogen.DeleteProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrRecordNotFound)
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(nil, repository.ErrModelNotFound)
 			},
 			want: errProjectNotFound,
 		},
@@ -340,7 +341,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 				params: ogen.DeleteProjectParams{ProjectID: "01DXF6DT000000000000000001"},
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
-				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(&entity.Project{
+				r.EXPECT().GetProjectByID(mockCtx, "01DXF6DT000000000000000001").Return(&model.Project{
 					ID:        "01DXF6DT000000000000000001",
 					UserID:    "01DXF6DT000000000000000001",
 					Name:      "プロジェクト2",
@@ -360,7 +361,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 			tt.prepareMockFn(r)
 			h := &Handler{Repository: r}
 
-			if err := h.DeleteProject(tt.args.ctx, tt.args.params); tt.want != err {
+			if err := h.DeleteProject(tt.args.ctx, tt.args.params); !errors.Is(tt.want, err) {
 				t.Errorf("h.DeleteProject() want '%v', but '%v'", tt.want, err)
 			}
 		})

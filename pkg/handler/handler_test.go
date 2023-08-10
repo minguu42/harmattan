@@ -9,13 +9,13 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/opepe/gen/ogen"
-	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/domain/model"
 	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 var mockCtx = context.WithValue(
 	context.WithValue(context.Background(), ttime.TimeKey{}, time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)),
-	userKey{}, &entity.User{ID: "01DXF6DT000000000000000000", Name: "ユーザ1"})
+	userKey{}, &model.User{ID: "01DXF6DT000000000000000000", Name: "ユーザ1"})
 
 func TestHandler_NewError(t *testing.T) {
 	h := Handler{}

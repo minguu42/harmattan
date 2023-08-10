@@ -9,7 +9,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/minguu42/opepe/gen/mock"
 	"github.com/minguu42/opepe/gen/ogen"
-	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/domain/model"
 	"go.uber.org/mock/gomock"
 )
 
@@ -23,7 +23,7 @@ func TestSecurity_HandleIsAuthorized(t *testing.T) {
 		name          string
 		args          args
 		prepareMockFn func(r *mock.MockRepository)
-		want          *entity.User
+		want          *model.User
 		wantErr       error
 	}{
 		{
@@ -34,14 +34,14 @@ func TestSecurity_HandleIsAuthorized(t *testing.T) {
 			},
 			prepareMockFn: func(r *mock.MockRepository) {
 				r.EXPECT().GetUserByAPIKey(context.Background(), "valid api key").
-					Return(&entity.User{
+					Return(&model.User{
 						ID:        "01DXF6DT000000000000000000",
 						Name:      "ユーザ1",
 						CreatedAt: time.Time{},
 						UpdatedAt: time.Time{},
 					}, nil)
 			},
-			want: &entity.User{
+			want: &model.User{
 				ID:        "01DXF6DT000000000000000000",
 				Name:      "ユーザ1",
 				CreatedAt: time.Time{},
@@ -73,14 +73,14 @@ func TestSecurity_HandleIsAuthorized(t *testing.T) {
 			s := &Security{Repository: r}
 
 			ctx, err := s.HandleIsAuthorized(tt.args.ctx, tt.args.operationName, tt.args.t)
-			if tt.wantErr != err {
+			if !errors.Is(tt.wantErr, err) {
 				t.Errorf("s.HandleIsAuthorized() error want '%v', but '%v'", tt.wantErr, err)
 			}
 
 			if tt.wantErr == nil {
-				got, ok := ctx.Value(userKey{}).(*entity.User)
+				got, ok := ctx.Value(userKey{}).(*model.User)
 				if !ok {
-					t.Fatalf("ctx.Value(userKey{}).(*entity.User) failed")
+					t.Fatalf("ctx.Value(userKey{}).(*model.User) failed")
 				}
 				if diff := cmp.Diff(tt.want, got); diff != "" {
 					t.Errorf("s.HandleIsAuthorized() mismatch (-want +got):\n%s", diff)

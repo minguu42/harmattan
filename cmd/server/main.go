@@ -14,9 +14,9 @@ import (
 	"github.com/minguu42/opepe/pkg/env"
 	"github.com/minguu42/opepe/pkg/handler"
 	"github.com/minguu42/opepe/pkg/handler/middleware"
-	"github.com/minguu42/opepe/pkg/idgen/ulidgen"
+	"github.com/minguu42/opepe/pkg/infra/database"
+	"github.com/minguu42/opepe/pkg/infra/ulidgen"
 	"github.com/minguu42/opepe/pkg/logging"
-	"github.com/minguu42/opepe/pkg/repository/database"
 )
 
 func main() {

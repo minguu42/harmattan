@@ -5,22 +5,22 @@ import (
 	"errors"
 
 	"github.com/minguu42/opepe/gen/ogen"
-	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/domain/model"
+	"github.com/minguu42/opepe/pkg/domain/repository"
 	"github.com/minguu42/opepe/pkg/logging"
-	"github.com/minguu42/opepe/pkg/repository"
 	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 // CreateTask は POST /projects/{projectID}/tasks に対応するハンドラ
 func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, params ogen.CreateTaskParams) (*ogen.Task, error) {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return nil, errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
@@ -32,7 +32,7 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 	}
 
 	now := ttime.Now(ctx)
-	t := &entity.Task{
+	t := &model.Task{
 		ID:          h.IDGenerator.Generate(),
 		ProjectID:   params.ProjectID,
 		Title:       req.Title,
@@ -53,14 +53,14 @@ func (h *Handler) CreateTask(ctx context.Context, req *ogen.CreateTaskReq, param
 
 // ListTasks は GET /projects/{projectID}/tasks に対応するハンドラ
 func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*ogen.Tasks, error) {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return nil, errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
@@ -92,14 +92,14 @@ func (h *Handler) ListTasks(ctx context.Context, params ogen.ListTasksParams) (*
 
 // UpdateTask は PATCH /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, params ogen.UpdateTaskParams) (*ogen.Task, error) {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return nil, errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
@@ -111,7 +111,7 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return nil, errTaskNotFound
 		}
 		logging.Errorf(ctx, "repository.GetTaskByID failed: %v", err)
@@ -135,7 +135,7 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 			completedAt = nil
 		}
 	}
-	newTask := entity.Task{
+	newTask := model.Task{
 		ID:          t.ID,
 		ProjectID:   t.ProjectID,
 		Title:       req.Title.Or(t.Title),
@@ -156,14 +156,14 @@ func (h *Handler) UpdateTask(ctx context.Context, req *ogen.UpdateTaskReq, param
 
 // DeleteTask は DELETE /projects/{projectID}/tasks/{taskID} に対応するハンドラ
 func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) error {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %v", err)
@@ -175,7 +175,7 @@ func (h *Handler) DeleteTask(ctx context.Context, params ogen.DeleteTaskParams) 
 	}
 	t, err := h.Repository.GetTaskByID(ctx, params.TaskID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return errTaskNotFound
 		}
 		logging.Errorf(ctx, "repository.GetTaskByID failed: %v", err)
