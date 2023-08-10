@@ -1,8 +1,6 @@
 // Package repository はデータベースへの操作を抽象化する
 package repository
 
-//go:generate mockgen -source=$GOFILE -destination=../../gen/mock/$GOFILE -package=mock
-
 import (
 	"context"
 	"errors"
