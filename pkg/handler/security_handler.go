@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/minguu42/opepe/gen/ogen"
-	"github.com/minguu42/opepe/pkg/repository"
+	"github.com/minguu42/opepe/pkg/domain/repository"
 )
 
 type userKey struct{}

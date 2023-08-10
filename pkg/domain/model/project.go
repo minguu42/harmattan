@@ -1,4 +1,4 @@
-package entity
+package model
 
 import "time"
 
@@ -12,7 +12,7 @@ type Project struct {
 	UpdatedAt  time.Time
 }
 
-// ContainsTask はプロジェクト p がタスク t を含むかを返す
+// ContainsTask はプロジェクトがタスクを含むかを返す
 func (p *Project) ContainsTask(t *Task) bool {
 	return p.ID == t.ProjectID
 }

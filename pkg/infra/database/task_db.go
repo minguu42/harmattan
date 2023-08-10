@@ -8,10 +8,11 @@ import (
 	"time"
 
 	"github.com/minguu42/opepe/gen/sqlc"
-	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/domain/model"
+	"github.com/minguu42/opepe/pkg/domain/repository"
 )
 
-func (db *DB) CreateTask(ctx context.Context, t *entity.Task) error {
+func (db *DB) CreateTask(ctx context.Context, t *model.Task) error {
 	var dueOn sql.NullTime
 	if t.DueOn != nil {
 		dueOn = sql.NullTime{Time: *t.DueOn, Valid: true}
@@ -20,7 +21,7 @@ func (db *DB) CreateTask(ctx context.Context, t *entity.Task) error {
 	if t.CompletedAt != nil {
 		completedAt = sql.NullTime{Time: *t.CompletedAt, Valid: true}
 	}
-	if err := sqlc.New(db._db).CreateTask(ctx, sqlc.CreateTaskParams{
+	if err := sqlc.New(db.sqlDB).CreateTask(ctx, sqlc.CreateTaskParams{
 		ID:          t.ID,
 		ProjectID:   t.ProjectID,
 		Title:       t.Title,
@@ -36,8 +37,8 @@ func (db *DB) CreateTask(ctx context.Context, t *entity.Task) error {
 	return nil
 }
 
-func (db *DB) GetTasksByProjectID(ctx context.Context, projectID string, limit, offset int) ([]*entity.Task, error) {
-	tasks, err := sqlc.New(db._db).GetTasksByProjectID(ctx, sqlc.GetTasksByProjectIDParams{
+func (db *DB) GetTasksByProjectID(ctx context.Context, projectID string, limit, offset int) ([]model.Task, error) {
+	tasks, err := sqlc.New(db.sqlDB).GetTasksByProjectID(ctx, sqlc.GetTasksByProjectIDParams{
 		ProjectID: projectID,
 		Limit:     int32(limit),
 		Offset:    int32(offset),
@@ -46,7 +47,7 @@ func (db *DB) GetTasksByProjectID(ctx context.Context, projectID string, limit, 
 		return nil, fmt.Errorf("q.GetTasksByProjectID failed: %w", err)
 	}
 
-	ts := make([]*entity.Task, 0, len(tasks))
+	ts := make([]model.Task, 0, len(tasks))
 	for _, t := range tasks {
 		var dueOn *time.Time
 		if t.DueOn.Valid {
@@ -56,7 +57,7 @@ func (db *DB) GetTasksByProjectID(ctx context.Context, projectID string, limit, 
 		if t.CompletedAt.Valid {
 			completedAt = &t.CompletedAt.Time
 		}
-		ts = append(ts, &entity.Task{
+		ts = append(ts, model.Task{
 			ID:          t.ID,
 			ProjectID:   t.ProjectID,
 			Title:       t.Title,
@@ -71,12 +72,13 @@ func (db *DB) GetTasksByProjectID(ctx context.Context, projectID string, limit, 
 	return ts, nil
 }
 
-func (db *DB) GetTaskByID(ctx context.Context, id string) (*entity.Task, error) {
-	t, err := sqlc.New(db._db).GetTaskByID(ctx, id)
+func (db *DB) GetTaskByID(ctx context.Context, id string) (*model.Task, error) {
+	t, err := sqlc.New(db.sqlDB).GetTaskByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("q.GetTaskByID failed: %w", err)
+			return nil, repository.ErrModelNotFound
 		}
+		return nil, fmt.Errorf("q.GetTaskByID failed: %w", err)
 	}
 
 	var dueOn *time.Time
@@ -87,7 +89,7 @@ func (db *DB) GetTaskByID(ctx context.Context, id string) (*entity.Task, error) 
 	if t.CompletedAt.Valid {
 		completedAt = &t.CompletedAt.Time
 	}
-	return &entity.Task{
+	return &model.Task{
 		ID:          t.ID,
 		ProjectID:   t.ProjectID,
 		Title:       t.Title,
@@ -100,12 +102,12 @@ func (db *DB) GetTaskByID(ctx context.Context, id string) (*entity.Task, error) 
 	}, nil
 }
 
-func (db *DB) UpdateTask(ctx context.Context, t *entity.Task) error {
+func (db *DB) UpdateTask(ctx context.Context, t *model.Task) error {
 	var dueOn sql.NullTime
 	if t.DueOn != nil {
 		dueOn = sql.NullTime{Time: *t.DueOn, Valid: true}
 	}
-	if err := sqlc.New(db._db).UpdateTask(ctx, sqlc.UpdateTaskParams{
+	if err := sqlc.New(db.sqlDB).UpdateTask(ctx, sqlc.UpdateTaskParams{
 		Title:    t.Title,
 		Content:  t.Content,
 		Priority: uint32(t.Priority),
@@ -118,7 +120,7 @@ func (db *DB) UpdateTask(ctx context.Context, t *entity.Task) error {
 }
 
 func (db *DB) DeleteTask(ctx context.Context, id string) error {
-	if err := sqlc.New(db._db).DeleteTask(ctx, id); err != nil {
+	if err := sqlc.New(db.sqlDB).DeleteTask(ctx, id); err != nil {
 		return fmt.Errorf("q.DeleteTask failed: %w", err)
 	}
 	return nil

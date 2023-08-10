@@ -1,4 +1,4 @@
-// Package database はデータベース操作に関するパッケージ
+// Package database はデータベースに関するパッケージ
 package database
 
 import (
@@ -11,17 +11,14 @@ import (
 	"github.com/minguu42/opepe/pkg/logging"
 )
 
-// DB は repository.Repository インタフェースを実装するデータベース
+// DB は repository.Repository インタフェースをじっそうs
 type DB struct {
-	_db *sql.DB
+	sqlDB *sql.DB
 }
 
 // Close は新しいクエリの実行を停止し、データベースとの接続を切る
 func (db *DB) Close() error {
-	if db._db != nil {
-		return db._db.Close()
-	}
-	return nil
+	return db.sqlDB.Close()
 }
 
 // DSN はデータベースとの接続に使用する Data Source Name を生成する
@@ -57,5 +54,5 @@ func Open(dsn string) (*DB, error) {
 		break
 	}
 
-	return &DB{_db: db}, nil
+	return &DB{sqlDB: db}, nil
 }

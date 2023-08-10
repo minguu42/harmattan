@@ -7,12 +7,12 @@ import (
 	"fmt"
 
 	"github.com/minguu42/opepe/gen/sqlc"
-	"github.com/minguu42/opepe/pkg/entity"
-	"github.com/minguu42/opepe/pkg/repository"
+	"github.com/minguu42/opepe/pkg/domain/model"
+	"github.com/minguu42/opepe/pkg/domain/repository"
 )
 
-func (db *DB) CreateProject(ctx context.Context, p *entity.Project) error {
-	if err := sqlc.New(db._db).CreateProject(ctx, sqlc.CreateProjectParams{
+func (db *DB) CreateProject(ctx context.Context, p *model.Project) error {
+	if err := sqlc.New(db.sqlDB).CreateProject(ctx, sqlc.CreateProjectParams{
 		ID:         p.ID,
 		UserID:     p.UserID,
 		Name:       p.Name,
@@ -26,8 +26,8 @@ func (db *DB) CreateProject(ctx context.Context, p *entity.Project) error {
 	return nil
 }
 
-func (db *DB) GetProjectsByUserID(ctx context.Context, userID string, limit, offset int) ([]*entity.Project, error) {
-	projects, err := sqlc.New(db._db).GetProjectsByUserID(ctx, sqlc.GetProjectsByUserIDParams{
+func (db *DB) GetProjectsByUserID(ctx context.Context, userID string, limit, offset int) ([]model.Project, error) {
+	projects, err := sqlc.New(db.sqlDB).GetProjectsByUserID(ctx, sqlc.GetProjectsByUserIDParams{
 		UserID: userID,
 		Limit:  int32(limit),
 		Offset: int32(offset),
@@ -36,9 +36,9 @@ func (db *DB) GetProjectsByUserID(ctx context.Context, userID string, limit, off
 		return nil, fmt.Errorf("q.GetProjectsByUserID failed: %w", err)
 	}
 
-	ps := make([]*entity.Project, 0, len(projects))
+	ps := make([]model.Project, 0, len(projects))
 	for _, p := range projects {
-		ps = append(ps, &entity.Project{
+		ps = append(ps, model.Project{
 			ID:         p.ID,
 			UserID:     p.UserID,
 			Name:       p.Name,
@@ -51,15 +51,15 @@ func (db *DB) GetProjectsByUserID(ctx context.Context, userID string, limit, off
 	return ps, nil
 }
 
-func (db *DB) GetProjectByID(ctx context.Context, id string) (*entity.Project, error) {
-	p, err := sqlc.New(db._db).GetProjectByID(ctx, id)
+func (db *DB) GetProjectByID(ctx context.Context, id string) (*model.Project, error) {
+	p, err := sqlc.New(db.sqlDB).GetProjectByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, repository.ErrRecordNotFound
+			return nil, repository.ErrModelNotFound
 		}
 		return nil, fmt.Errorf("q.GetProjectByID failed: %w", err)
 	}
-	return &entity.Project{
+	return &model.Project{
 		ID:         p.ID,
 		UserID:     p.UserID,
 		Name:       p.Name,
@@ -70,8 +70,8 @@ func (db *DB) GetProjectByID(ctx context.Context, id string) (*entity.Project, e
 	}, nil
 }
 
-func (db *DB) UpdateProject(ctx context.Context, p *entity.Project) error {
-	if err := sqlc.New(db._db).UpdateProject(ctx, sqlc.UpdateProjectParams{
+func (db *DB) UpdateProject(ctx context.Context, p *model.Project) error {
+	if err := sqlc.New(db.sqlDB).UpdateProject(ctx, sqlc.UpdateProjectParams{
 		Name:  p.Name,
 		Color: p.Color,
 		ID:    p.ID,
@@ -82,7 +82,7 @@ func (db *DB) UpdateProject(ctx context.Context, p *entity.Project) error {
 }
 
 func (db *DB) DeleteProject(ctx context.Context, id string) error {
-	if err := sqlc.New(db._db).DeleteProject(ctx, id); err != nil {
+	if err := sqlc.New(db.sqlDB).DeleteProject(ctx, id); err != nil {
 		return fmt.Errorf("q.DeleteProject failed: %w", err)
 	}
 	return nil

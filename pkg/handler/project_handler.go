@@ -2,24 +2,24 @@ package handler
 
 import (
 	"context"
+	"errors"
 
-	"github.com/go-faster/errors"
 	"github.com/minguu42/opepe/gen/ogen"
-	"github.com/minguu42/opepe/pkg/entity"
+	"github.com/minguu42/opepe/pkg/domain/model"
+	"github.com/minguu42/opepe/pkg/domain/repository"
 	"github.com/minguu42/opepe/pkg/logging"
-	"github.com/minguu42/opepe/pkg/repository"
 	"github.com/minguu42/opepe/pkg/ttime"
 )
 
 // CreateProject は POST /projects に対応するハンドラ
 func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq) (*ogen.Project, error) {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return nil, errUnauthorized
 	}
 
 	now := ttime.Now(ctx)
-	p := entity.Project{
+	p := model.Project{
 		ID:         h.IDGenerator.Generate(),
 		UserID:     u.ID,
 		Name:       req.Name,
@@ -37,7 +37,7 @@ func (h *Handler) CreateProject(ctx context.Context, req *ogen.CreateProjectReq)
 
 // ListProjects は GET /projects に対応するハンドラ
 func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsParams) (*ogen.Projects, error) {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return nil, errUnauthorized
 	}
@@ -63,14 +63,14 @@ func (h *Handler) ListProjects(ctx context.Context, params ogen.ListProjectsPara
 
 // UpdateProject は PATCH /projects/{projectID} に対応するハンドラ
 func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq, params ogen.UpdateProjectParams) (*ogen.Project, error) {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return nil, errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return nil, errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %s", err)
@@ -82,7 +82,7 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 		return nil, errProjectNotFound
 	}
 
-	newProject := entity.Project{
+	newProject := model.Project{
 		ID:         p.ID,
 		UserID:     p.UserID,
 		Name:       req.Name.Or(p.Name),
@@ -101,14 +101,14 @@ func (h *Handler) UpdateProject(ctx context.Context, req *ogen.UpdateProjectReq,
 
 // DeleteProject は DELETE /projects/{projectID} に対応するハンドラ
 func (h *Handler) DeleteProject(ctx context.Context, params ogen.DeleteProjectParams) error {
-	u, ok := ctx.Value(userKey{}).(*entity.User)
+	u, ok := ctx.Value(userKey{}).(*model.User)
 	if !ok {
 		return errUnauthorized
 	}
 
 	p, err := h.Repository.GetProjectByID(ctx, params.ProjectID)
 	if err != nil {
-		if errors.Is(err, repository.ErrRecordNotFound) {
+		if errors.Is(err, repository.ErrModelNotFound) {
 			return errProjectNotFound
 		}
 		logging.Errorf(ctx, "repository.GetProjectByID failed: %s", err)
