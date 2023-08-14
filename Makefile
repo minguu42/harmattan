@@ -18,7 +18,7 @@ build: ## 本番用APIサーバのコンテナイメージをビルドする
 	@docker build \
             --build-arg="API_VERSION=$(VERSION)" \
             --build-arg="API_REVISION=$(REVISION)" \
-            --tag=opepe-api:latest --tag=opepe-api:$(VERSION) \
+            --tag=opepe-api:$(VERSION) \
             --target=prod .
 
 run: ## 本番用APIサーバを実行する
