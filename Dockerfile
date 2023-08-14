@@ -18,6 +18,7 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,target=. \
     CGO_ENABLED=0 go build \
       -ldflags "-s -w -X github.com/minguu42/opepe/pkg/handler.version=$API_VERSION -X github.com/minguu42/opepe/pkg/handler.revision=$API_REVISION" \
+      -trimpath \
       -o /go/bin/server \
       ./cmd/server
 
