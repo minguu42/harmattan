@@ -1,5 +1,4 @@
 VERSION  := $(shell yq '.info.version' ./doc/openapi.yaml)
-REVISION := $(shell git rev-parse --short HEAD)
 
 .DEFAULT_GOAL := help
 .PHONY: setup gen build run dev fmt lint test help
@@ -16,9 +15,8 @@ gen: ## コードを生成する
 
 build: ## 本番用APIサーバのコンテナイメージをビルドする
 	@docker build \
-            --build-arg="API_VERSION=$(VERSION)" \
-            --build-arg="API_REVISION=$(REVISION)" \
-            --tag=opepe-api:$(VERSION) \
+            --build-arg="API_VERSION=v$(VERSION)" \
+            --tag=opepe-api:latest \
             --target=prod .
 
 run: ## 本番用APIサーバを実行する
