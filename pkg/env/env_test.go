@@ -14,8 +14,11 @@ func TestGet(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name:    "環境変数を取得する",
-			want:    &Env{API: &API{}},
+			name: "環境変数を取得する",
+			want: &Env{API: API{
+				Host: "www.example.com",
+				Port: 443,
+			}},
 			wantErr: nil,
 		},
 		{

@@ -9,8 +9,8 @@ import (
 	"github.com/minguu42/opepe/pkg/ttime"
 )
 
-// LogMiddleware はリクエストの結果をログに出力するミドルウェア
-func LogMiddleware(next http.Handler) http.HandlerFunc {
+// Log はリクエストの結果をログに出力するミドルウェア
+func Log(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		t1 := ttime.Now(ctx)

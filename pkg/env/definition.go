@@ -2,8 +2,8 @@ package env
 
 // Env はアプリケーションで使用する環境変数
 type Env struct {
-	API   *API
-	MySQL *MySQL
+	API   API
+	MySQL MySQL
 }
 
 // API は API に関する環境変数

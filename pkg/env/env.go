@@ -21,7 +21,7 @@ func Load() error {
 // Get は読み込んだ環境変数を取得する
 // NOTE: この関数を呼び出す前に Load 関数を呼び出し、環境変数を読み込む必要がある
 func Get() (*Env, error) {
-	if appEnv.API == nil {
+	if appEnv == (Env{}) {
 		return nil, errors.New("before calling this function, the Load function must be called")
 	}
 	return &appEnv, nil

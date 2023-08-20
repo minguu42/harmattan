@@ -59,6 +59,8 @@ func ErrorHandler(_ context.Context, w http.ResponseWriter, _ *http.Request, err
 
 	var message string
 	switch code {
+	case http.StatusUnauthorized:
+		message = "ユーザの認証に失敗しました。もしくはユーザが認証されていません。"
 	case http.StatusBadRequest:
 		message = "入力に誤りがあります。"
 	case http.StatusUnsupportedMediaType:
