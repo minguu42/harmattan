@@ -24,8 +24,8 @@ func TestHandler_GetHealth(t *testing.T) {
 			name: "サーバの状態を取得する",
 			args: args{ctx: context.Background()},
 			want: &ogen.GetHealthOK{
-				Version:  "",
-				Revision: "",
+				Version:  "v0.0.0+unknown",
+				Revision: "xxxxxxx",
 			},
 			wantErr: nil,
 		},
