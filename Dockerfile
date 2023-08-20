@@ -1,4 +1,4 @@
-FROM golang:1.20 AS base
+FROM golang:1.21 AS base
 WORKDIR /go/src/app
 
 COPY go.mod go.sum ./
@@ -12,12 +12,11 @@ RUN go install github.com/cosmtrek/air@latest
 CMD ["air", "-c", ".air.toml"]
 
 FROM base AS build
-ARG API_VERSION="v0.0.0+unknown"
-ARG API_REVISION="xxxxxxx"
+ARG API_VERSION
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,target=. \
     CGO_ENABLED=0 go build \
-      -ldflags "-s -w -X github.com/minguu42/opepe/pkg/handler.version=$API_VERSION -X github.com/minguu42/opepe/pkg/handler.revision=$API_REVISION" \
+      -ldflags "-s -w -X github.com/minguu42/opepe/pkg/handler.version=$API_VERSION" \
       -trimpath \
       -o /go/bin/server \
       ./cmd/server
