@@ -52,7 +52,7 @@ func main() {
 	}
 	s := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", e.API.Host, e.API.Port),
-		Handler:           middleware.Recover(middleware.LogMiddleware(h)),
+		Handler:           middleware.Recover(middleware.Log(h)),
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 10 * time.Second,
 		MaxHeaderBytes:    1 << 20,
