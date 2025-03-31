@@ -1,0 +1,14 @@
+.dockerignore
+.gitignore
+.idea/
+.ogen.yaml
+.private/
+.vscode/
+api/Dockerfile
+Makefile
+compose.yaml
+infra/
+staticcheck.conf
+
+# Used to retrieve the revision
+# .git/
