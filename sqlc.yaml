@@ -1,9 +1,0 @@
-version: 2
-sql:
-  - engine: mysql
-    queries: mysql/sql/query.sql
-    schema: mysql/sql/schema.sql
-    gen:
-      go:
-        package: sqlc
-        out: gen/sqlc
