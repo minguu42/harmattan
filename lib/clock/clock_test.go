@@ -5,14 +5,17 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/lib/clock"
-	"github.com/minguu42/harmattan/lib/clock/clocktest"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNow(t *testing.T) {
-	want := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
-	ctx := clocktest.WithFixedNow(t, t.Context(), want)
+	want := time.Now()
+	got := clock.Now(t.Context())
 
-	got := clock.Now(ctx)
-	assert.Equal(t, want, got)
+	diff := got.Sub(want)
+	if diff < 0 {
+		diff = -diff
+	}
+	if diff > 10*time.Millisecond {
+		t.Errorf("clock.Now() returned a time too far from want: got %s, want: %s", got, want)
+	}
 }
