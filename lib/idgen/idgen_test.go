@@ -4,14 +4,21 @@ import (
 	"testing"
 
 	"github.com/minguu42/harmattan/lib/idgen"
-	"github.com/minguu42/harmattan/lib/idgen/idgentest"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestULID(t *testing.T) {
-	want := "01JGFJJZ000000000000000000"
-	ctx := idgentest.WithFixedULID(t, t.Context(), want)
+	ctx := t.Context()
 
-	got := idgen.ULID(ctx)
-	assert.Equal(t, want, got)
+	id1 := idgen.ULID(ctx)
+	id2 := idgen.ULID(ctx)
+
+	if id1 == "" || id2 == "" {
+		t.Errorf("ULID() returned an empty string")
+	}
+	if len(id1) != 26 {
+		t.Errorf("Length of ULID = %d, want 26", len(id1))
+	}
+	if id1 == id2 {
+		t.Errorf("ULID() returned duplicate values: id1 = %s, id2 = %s", id1, id2)
+	}
 }
