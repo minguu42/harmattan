@@ -29,7 +29,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Format code
-        run: go tool goimports -w ./api ./lib/go
+        run: go tool goimports -w ./api ./internal ./lib
       - name: Check for changes
         run: git diff --exit-code
   check-generated-code:
@@ -45,7 +45,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Generate code
-        run: go generate ./api/... ./lib/go/...
+        run: go generate ./api/... ./internal/... ./lib/...
       - name: Check for changes
         run: |
           git add -N .
@@ -64,8 +64,8 @@ jobs:
           go-version-file: go.mod
       - name: Run linting
         run: |
-          go vet $(go list ./api/... ./lib/go/... | grep -v -e /zondaapi)
-          go tool staticcheck $(go list ./api/... ./lib/go/... | grep -v -e /zondaapi)
+          go vet $(go list ./api/... ./internal/... ./lib/... | grep -v -e /zondaapi)
+          go tool staticcheck $(go list ./api/... ./internal/... ./lib/... | grep -v -e /zondaapi)
   build:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
@@ -94,7 +94,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Run tests
-        run: go test -shuffle=on $(go list ./api/... ./lib/go/... | grep -v -e /zondaapi)
+        run: go test -shuffle=on ./api/... ./internal/... ./lib/...
   build-container-image:
     needs: [build]
     runs-on: ubuntu-24.04-arm
