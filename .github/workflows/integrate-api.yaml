@@ -1,0 +1,116 @@
+name: Integrate api
+on:
+  pull_request:
+    paths:
+      - .github/workflows/integrate-api.yaml
+      - "api/**"
+      - "internal/**"
+      - "lib/**"
+      - go.mod
+      - go.sum
+      - .dockerignore
+      - staticcheck.conf
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check-code-format:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Format code
+        run: go tool goimports -w ./api ./lib/go
+      - name: Check for changes
+        run: git diff --exit-code
+  check-generated-code:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Generate code
+        run: go generate ./api/... ./lib/go/...
+      - name: Check for changes
+        run: |
+          git add -N .
+          git diff --exit-code
+  lint:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Run linting
+        run: |
+          go vet $(go list ./api/... ./lib/go/... | grep -v -e /zondaapi)
+          go tool staticcheck $(go list ./api/... ./lib/go/... | grep -v -e /zondaapi)
+  build:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Build
+        run: go build -o ./bin/api ./api
+  test:
+    needs: [build]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Run tests
+        run: go test -shuffle=on $(go list ./api/... ./lib/go/... | grep -v -e /zondaapi)
+  build-container-image:
+    needs: [build]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build container image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./api/Dockerfile
+          provenance: false
+          tags: ${{ github.event.pull_request.head.ref }}
+          target: prod
