@@ -1,0 +1,5 @@
+generator:
+  features:
+    enable:
+      - "paths/server"
+    disable_all: true

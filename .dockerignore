@@ -5,7 +5,6 @@
 .private/
 .vscode/
 api/Dockerfile
-Makefile
 compose.yaml
 infra/
 staticcheck.conf
