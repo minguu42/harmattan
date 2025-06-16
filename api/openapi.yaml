@@ -28,17 +28,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  access_token:
+                  id_token:
                     type: string
-                  refresh_token:
-                    type: string
-                required: [access_token, refresh_token]
+                required: [id_token]
         default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"
+          $ref: "#/components/responses/error"
   /sign-in:
     post:
       tags: [authentication]
@@ -64,51 +58,11 @@ paths:
               schema:
                 type: object
                 properties:
-                  access_token:
+                  id_token:
                     type: string
-                  refresh_token:
-                    type: string
-                required: [access_token, refresh_token]
+                required: [id_token]
         default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"
-  /refresh-token:
-    post:
-      tags: [authentication]
-      operationId: refreshToken
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                refresh_token:
-                  type: string
-                  format: password
-              required: [refresh_token]
-        required: true
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  access_token:
-                    type: string
-                  refresh_token:
-                    type: string
-                required: [access_token, refresh_token]
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"
+          $ref: "#/components/responses/error"
   /health:
     get:
       tags: [monitoring]
@@ -125,21 +79,21 @@ paths:
                     type: string
                 required: [revision]
         default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"
+          $ref: "#/components/responses/error"
 components:
-  schemas:
+  responses:
     error:
-      type: object
-      properties:
-        code:
-          type: integer
-        message:
-          type: string
-      required: [code, message]
+      description: Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+              message:
+                type: string
+            required: [code, message]
 tags:
   - name: authentication
   - name: monitoring

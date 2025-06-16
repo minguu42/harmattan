@@ -16,10 +16,7 @@ func (h *handler) SignUp(ctx context.Context, req *oapi.SignUpReq) (*oapi.SignUp
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute SignUp usecase: %w", err)
 	}
-	return &oapi.SignUpOK{
-		AccessToken:  out.AccessToken,
-		RefreshToken: out.RefreshToken,
-	}, nil
+	return &oapi.SignUpOK{IDToken: out.IDToken}, nil
 }
 
 func (h *handler) SignIn(ctx context.Context, req *oapi.SignInReq) (*oapi.SignInOK, error) {
@@ -30,21 +27,5 @@ func (h *handler) SignIn(ctx context.Context, req *oapi.SignInReq) (*oapi.SignIn
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute SignIn usecase: %w", err)
 	}
-	return &oapi.SignInOK{
-		AccessToken:  out.AccessToken,
-		RefreshToken: out.RefreshToken,
-	}, nil
-}
-
-func (h *handler) RefreshToken(ctx context.Context, req *oapi.RefreshTokenReq) (*oapi.RefreshTokenOK, error) {
-	out, err := h.authentication.RefreshToken(ctx, &usecase.RefreshTokenInput{
-		RefreshToken: req.RefreshToken,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute RefreshToken usecase: %w", err)
-	}
-	return &oapi.RefreshTokenOK{
-		AccessToken:  out.AccessToken,
-		RefreshToken: out.RefreshToken,
-	}, nil
+	return &oapi.SignInOK{IDToken: out.IDToken}, nil
 }
