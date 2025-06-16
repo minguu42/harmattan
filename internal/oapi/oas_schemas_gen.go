@@ -24,7 +24,6 @@ func (s *CheckHealthOK) SetRevision(val string) {
 	s.Revision = val
 }
 
-// Ref: #/components/schemas/error
 type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
@@ -76,68 +75,18 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
-type RefreshTokenOK struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-// GetAccessToken returns the value of AccessToken.
-func (s *RefreshTokenOK) GetAccessToken() string {
-	return s.AccessToken
-}
-
-// GetRefreshToken returns the value of RefreshToken.
-func (s *RefreshTokenOK) GetRefreshToken() string {
-	return s.RefreshToken
-}
-
-// SetAccessToken sets the value of AccessToken.
-func (s *RefreshTokenOK) SetAccessToken(val string) {
-	s.AccessToken = val
-}
-
-// SetRefreshToken sets the value of RefreshToken.
-func (s *RefreshTokenOK) SetRefreshToken(val string) {
-	s.RefreshToken = val
-}
-
-type RefreshTokenReq struct {
-	RefreshToken string `json:"refresh_token"`
-}
-
-// GetRefreshToken returns the value of RefreshToken.
-func (s *RefreshTokenReq) GetRefreshToken() string {
-	return s.RefreshToken
-}
-
-// SetRefreshToken sets the value of RefreshToken.
-func (s *RefreshTokenReq) SetRefreshToken(val string) {
-	s.RefreshToken = val
-}
-
 type SignInOK struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	IDToken string `json:"id_token"`
 }
 
-// GetAccessToken returns the value of AccessToken.
-func (s *SignInOK) GetAccessToken() string {
-	return s.AccessToken
+// GetIDToken returns the value of IDToken.
+func (s *SignInOK) GetIDToken() string {
+	return s.IDToken
 }
 
-// GetRefreshToken returns the value of RefreshToken.
-func (s *SignInOK) GetRefreshToken() string {
-	return s.RefreshToken
-}
-
-// SetAccessToken sets the value of AccessToken.
-func (s *SignInOK) SetAccessToken(val string) {
-	s.AccessToken = val
-}
-
-// SetRefreshToken sets the value of RefreshToken.
-func (s *SignInOK) SetRefreshToken(val string) {
-	s.RefreshToken = val
+// SetIDToken sets the value of IDToken.
+func (s *SignInOK) SetIDToken(val string) {
+	s.IDToken = val
 }
 
 type SignInReq struct {
@@ -166,28 +115,17 @@ func (s *SignInReq) SetPassword(val string) {
 }
 
 type SignUpOK struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	IDToken string `json:"id_token"`
 }
 
-// GetAccessToken returns the value of AccessToken.
-func (s *SignUpOK) GetAccessToken() string {
-	return s.AccessToken
+// GetIDToken returns the value of IDToken.
+func (s *SignUpOK) GetIDToken() string {
+	return s.IDToken
 }
 
-// GetRefreshToken returns the value of RefreshToken.
-func (s *SignUpOK) GetRefreshToken() string {
-	return s.RefreshToken
-}
-
-// SetAccessToken sets the value of AccessToken.
-func (s *SignUpOK) SetAccessToken(val string) {
-	s.AccessToken = val
-}
-
-// SetRefreshToken sets the value of RefreshToken.
-func (s *SignUpOK) SetRefreshToken(val string) {
-	s.RefreshToken = val
+// SetIDToken sets the value of IDToken.
+func (s *SignUpOK) SetIDToken(val string) {
+	s.IDToken = val
 }
 
 type SignUpReq struct {
