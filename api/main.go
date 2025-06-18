@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minguu42/harmattan/api/applog"
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler"
+	"github.com/minguu42/harmattan/lib/applog"
 	"github.com/minguu42/harmattan/lib/env"
 )
 
@@ -25,13 +25,15 @@ func init() {
 
 func main() {
 	ctx := context.Background()
-	if err := mainRun(ctx); err != nil {
-		applog.Error(ctx, err.Error())
+
+	l := applog.New()
+	if err := mainRun(ctx, l); err != nil {
+		l.Error(ctx, err.Error())
 		os.Exit(1)
 	}
 }
 
-func mainRun(ctx context.Context) error {
+func mainRun(ctx context.Context, logger *applog.Logger) error {
 	var conf factory.Config
 	if err := env.Load(&conf); err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
@@ -43,7 +45,7 @@ func mainRun(ctx context.Context) error {
 	}
 	defer f.Close()
 
-	h, err := handler.New(f)
+	h, err := handler.New(f, logger)
 	if err != nil {
 		return fmt.Errorf("failed to create handler: %w", err)
 	}
@@ -56,7 +58,7 @@ func mainRun(ctx context.Context) error {
 
 	serveErr := make(chan error)
 	go func() {
-		applog.Event(ctx, "Start accepting requests")
+		logger.Event(ctx, "Start accepting requests")
 		serveErr <- s.ListenAndServe()
 	}()
 
@@ -71,10 +73,10 @@ func mainRun(ctx context.Context) error {
 	ctxWithTimeout, cancel := context.WithTimeout(ctx, conf.API.StopTimeout)
 	defer cancel()
 
-	applog.Event(ctx, "Begin graceful shutdown")
+	logger.Event(ctx, "Begin graceful shutdown")
 	if err := s.Shutdown(ctxWithTimeout); err != nil {
 		return fmt.Errorf("failed to shutdown server: %w", err)
 	}
-	applog.Event(ctx, "Stop accepting requests")
+	logger.Event(ctx, "Stop accepting requests")
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/oapi"
+	"github.com/minguu42/harmattan/lib/applog"
 )
 
 type handler struct {
@@ -16,7 +17,7 @@ type handler struct {
 	monitoring     usecase.Monitoring
 }
 
-func New(f *factory.Factory) (http.Handler, error) {
+func New(f *factory.Factory, _ *applog.Logger) (http.Handler, error) {
 	return oapi.NewServer(&handler{
 		authentication: usecase.NewAuthentication(f.Auth, f.DB),
 		monitoring:     usecase.Monitoring{},
