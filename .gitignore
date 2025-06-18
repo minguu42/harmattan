@@ -18,5 +18,8 @@
 go.work
 go.work.sum
 
+# Temporary directory for use with Air
+tmp/
+
 # Env file
 .env
