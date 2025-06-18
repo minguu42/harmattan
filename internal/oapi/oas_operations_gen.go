@@ -6,8 +6,7 @@ package oapi
 type OperationName = string
 
 const (
-	CheckHealthOperation  OperationName = "CheckHealth"
-	RefreshTokenOperation OperationName = "RefreshToken"
-	SignInOperation       OperationName = "SignIn"
-	SignUpOperation       OperationName = "SignUp"
+	CheckHealthOperation OperationName = "CheckHealth"
+	SignInOperation      OperationName = "SignIn"
+	SignUpOperation      OperationName = "SignUp"
 )

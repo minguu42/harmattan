@@ -43,8 +43,7 @@ func (in *SignUpInput) User(ctx context.Context) (*domain.User, error) {
 }
 
 type SignUpOutput struct {
-	AccessToken  string
-	RefreshToken string
+	IDToken string
 }
 
 func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpOutput, error) {
@@ -57,22 +56,15 @@ func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpO
 		return nil, fmt.Errorf("failed to generate user: %w", err)
 	}
 
-	accessToken, err := uc.auth.CreateAccessToken(ctx, user)
+	token, err := uc.auth.CreateIDToken(ctx, user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create access token: %w", err)
-	}
-	refreshToken, err := uc.auth.CreateRefreshToken(ctx, user)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create refresh token: %w", err)
+		return nil, fmt.Errorf("failed to create id token: %w", err)
 	}
 
 	if err := uc.db.CreateUser(ctx, user); err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
-	return &SignUpOutput{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}, nil
+	return &SignUpOutput{IDToken: token}, nil
 }
 
 type SignInInput struct {
@@ -81,8 +73,7 @@ type SignInInput struct {
 }
 
 type SignInOutput struct {
-	AccessToken  string
-	RefreshToken string
+	IDToken string
 }
 
 func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInOutput, error) {
@@ -95,49 +86,9 @@ func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInO
 		return nil, errors.New("password is not valid")
 	}
 
-	accessToken, err := uc.auth.CreateAccessToken(ctx, user)
+	token, err := uc.auth.CreateIDToken(ctx, user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create access token: %w", err)
+		return nil, fmt.Errorf("failed to create id token: %w", err)
 	}
-	refreshToken, err := uc.auth.CreateRefreshToken(ctx, user)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create refresh token: %w", err)
-	}
-	return &SignInOutput{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}, nil
-}
-
-type RefreshTokenInput struct {
-	RefreshToken string
-}
-
-type RefreshTokenOutput struct {
-	AccessToken  string
-	RefreshToken string
-}
-
-func (uc *Authentication) RefreshToken(ctx context.Context, in *RefreshTokenInput) (*RefreshTokenOutput, error) {
-	id, err := uc.auth.ExtractIDFromRefreshToken(in.RefreshToken)
-	if err != nil {
-		return nil, fmt.Errorf("failed to extract id from refresh token: %w", err)
-	}
-	user, err := uc.db.GetUserByID(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get user: %w", err)
-	}
-
-	accessToken, err := uc.auth.CreateAccessToken(ctx, user)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create access token: %w", err)
-	}
-	refreshToken, err := uc.auth.CreateRefreshToken(ctx, user)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create refresh token: %w", err)
-	}
-	return &RefreshTokenOutput{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-	}, nil
+	return &SignInOutput{IDToken: token}, nil
 }
