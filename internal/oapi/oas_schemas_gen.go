@@ -4,6 +4,7 @@ package oapi
 
 import (
 	"fmt"
+	"time"
 )
 
 func (s *ErrorStatusCode) Error() string {
@@ -22,6 +23,31 @@ func (s *CheckHealthOK) GetRevision() string {
 // SetRevision sets the value of Revision.
 func (s *CheckHealthOK) SetRevision(val string) {
 	s.Revision = val
+}
+
+type CreateProjectReq struct {
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+// GetName returns the value of Name.
+func (s *CreateProjectReq) GetName() string {
+	return s.Name
+}
+
+// GetColor returns the value of Color.
+func (s *CreateProjectReq) GetColor() string {
+	return s.Color
+}
+
+// SetName sets the value of Name.
+func (s *CreateProjectReq) SetName(val string) {
+	s.Name = val
+}
+
+// SetColor sets the value of Color.
+func (s *CreateProjectReq) SetColor(val string) {
+	s.Color = val
 }
 
 type Error struct {
@@ -73,6 +99,101 @@ func (s *ErrorStatusCode) SetStatusCode(val int) {
 // SetResponse sets the value of Response.
 func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
+}
+
+type IdTokenAuth struct {
+	Token string
+	Roles []string
+}
+
+// GetToken returns the value of Token.
+func (s *IdTokenAuth) GetToken() string {
+	return s.Token
+}
+
+// GetRoles returns the value of Roles.
+func (s *IdTokenAuth) GetRoles() []string {
+	return s.Roles
+}
+
+// SetToken sets the value of Token.
+func (s *IdTokenAuth) SetToken(val string) {
+	s.Token = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *IdTokenAuth) SetRoles(val []string) {
+	s.Roles = val
+}
+
+// Ref: #/components/schemas/project
+type Project struct {
+	ID         string    `json:"id"`
+	Name       string    `json:"name"`
+	Color      string    `json:"color"`
+	IsArchived bool      `json:"is_archived"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *Project) GetID() string {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *Project) GetName() string {
+	return s.Name
+}
+
+// GetColor returns the value of Color.
+func (s *Project) GetColor() string {
+	return s.Color
+}
+
+// GetIsArchived returns the value of IsArchived.
+func (s *Project) GetIsArchived() bool {
+	return s.IsArchived
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Project) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Project) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *Project) SetID(val string) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *Project) SetName(val string) {
+	s.Name = val
+}
+
+// SetColor sets the value of Color.
+func (s *Project) SetColor(val string) {
+	s.Color = val
+}
+
+// SetIsArchived sets the value of IsArchived.
+func (s *Project) SetIsArchived(val bool) {
+	s.IsArchived = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Project) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Project) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
 }
 
 type SignInOK struct {

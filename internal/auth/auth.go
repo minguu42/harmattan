@@ -61,3 +61,14 @@ func (a *Authenticator) ParseIDToken(tokenString string) (domain.UserID, error) 
 	}
 	return "", errors.New("missing or empty sub claim")
 }
+
+type userKey struct{}
+
+func ContextWithUser(ctx context.Context, u *domain.User) context.Context {
+	return context.WithValue(ctx, userKey{}, u)
+}
+
+func UserFromContext(ctx context.Context) *domain.User {
+	v, _ := ctx.Value(userKey{}).(*domain.User)
+	return v
+}

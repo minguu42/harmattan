@@ -10,18 +10,23 @@ import (
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/oapi"
 	"github.com/minguu42/harmattan/lib/applog"
+	"github.com/ogen-go/ogen/ogenerrors"
 )
 
 type handler struct {
 	authentication usecase.Authentication
 	monitoring     usecase.Monitoring
+	project        usecase.Project
 }
 
 func New(f *factory.Factory, _ *applog.Logger) (http.Handler, error) {
-	return oapi.NewServer(&handler{
+	h := handler{
 		authentication: usecase.NewAuthentication(f.Auth, f.DB),
 		monitoring:     usecase.Monitoring{},
-	})
+		project:        usecase.Project{DB: f.DB},
+	}
+	sh := securityHandler{auth: f.Auth, db: f.DB}
+	return oapi.NewServer(&h, &sh)
 }
 
 func (h *handler) NewError(_ context.Context, err error) *oapi.ErrorStatusCode {
@@ -30,6 +35,8 @@ func (h *handler) NewError(_ context.Context, err error) *oapi.ErrorStatusCode {
 	case errors.As(err, &appErr):
 	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
 		appErr = apperr.ErrDeadlineExceeded(err)
+	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
+		appErr = apperr.ErrAuthorization(err)
 	default:
 		appErr = apperr.ErrUnknown(err)
 	}
