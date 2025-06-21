@@ -115,15 +115,15 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityIdTokenAuth(ctx, CreateProjectOperation, r)
+			sctx, ok, err := s.securityBearerAuth(ctx, CreateProjectOperation, r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
-					Security:         "IdTokenAuth",
+					Security:         "BearerAuth",
 					Err:              err,
 				}
 				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w); encodeErr != nil {
-					defer recordError("Security:IdTokenAuth", err)
+					defer recordError("Security:BearerAuth", err)
 				}
 				return
 			}

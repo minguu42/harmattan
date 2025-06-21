@@ -15,7 +15,7 @@ type securityHandler struct {
 	db   *database.Client
 }
 
-func (h *securityHandler) HandleIdTokenAuth(ctx context.Context, _ oapi.OperationName, t oapi.IdTokenAuth) (context.Context, error) {
+func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ oapi.OperationName, t oapi.BearerAuth) (context.Context, error) {
 	userID, err := h.auth.ParseIDToken(t.Token)
 	if err != nil {
 		return nil, apperr.ErrAuthorization(fmt.Errorf("failed to parse id token: %w", err))

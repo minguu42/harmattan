@@ -93,7 +93,7 @@ paths:
         default:
           $ref: "#/components/responses/error"
       security:
-        - idTokenAuth: []
+        - bearerAuth: []
   /health:
     get:
       tags: [monitoring]
@@ -145,7 +145,7 @@ components:
                 type: string
             required: [code, message]
   securitySchemes:
-    idTokenAuth:
+    bearerAuth:
       type: http
       scheme: Bearer
 tags:

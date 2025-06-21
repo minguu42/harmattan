@@ -14,8 +14,8 @@ import (
 
 // SecurityHandler is handler for security parameters.
 type SecurityHandler interface {
-	// HandleIdTokenAuth handles idTokenAuth security.
-	HandleIdTokenAuth(ctx context.Context, operationName OperationName, t IdTokenAuth) (context.Context, error)
+	// HandleBearerAuth handles bearerAuth security.
+	HandleBearerAuth(ctx context.Context, operationName OperationName, t BearerAuth) (context.Context, error)
 }
 
 func findAuthorization(h http.Header, prefix string) (string, bool) {
@@ -33,19 +33,19 @@ func findAuthorization(h http.Header, prefix string) (string, bool) {
 	return "", false
 }
 
-var operationRolesIdTokenAuth = map[string][]string{
+var operationRolesBearerAuth = map[string][]string{
 	CreateProjectOperation: []string{},
 }
 
-func (s *Server) securityIdTokenAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
-	var t IdTokenAuth
+func (s *Server) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
+	var t BearerAuth
 	token, ok := findAuthorization(req.Header, "Bearer")
 	if !ok {
 		return ctx, false, nil
 	}
 	t.Token = token
-	t.Roles = operationRolesIdTokenAuth[operationName]
-	rctx, err := s.sec.HandleIdTokenAuth(ctx, operationName, t)
+	t.Roles = operationRolesBearerAuth[operationName]
+	rctx, err := s.sec.HandleBearerAuth(ctx, operationName, t)
 	if errors.Is(err, ogenerrors.ErrSkipServerSecurity) {
 		return nil, false, nil
 	} else if err != nil {
