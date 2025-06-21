@@ -14,15 +14,8 @@ import (
 )
 
 type Authentication struct {
-	auth *auth.Authenticator
-	db   *database.Client
-}
-
-func NewAuthentication(auth *auth.Authenticator, db *database.Client) Authentication {
-	return Authentication{
-		auth: auth,
-		db:   db,
-	}
+	Auth *auth.Authenticator
+	DB   *database.Client
 }
 
 type SignUpInput struct {
@@ -47,7 +40,7 @@ type SignUpOutput struct {
 }
 
 func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpOutput, error) {
-	if _, err := uc.db.GetUserByEmail(ctx, in.Email); !errors.Is(err, database.ErrModelNotFound) {
+	if _, err := uc.DB.GetUserByEmail(ctx, in.Email); !errors.Is(err, database.ErrModelNotFound) {
 		return nil, apperr.ErrDuplicateUserEmail(err)
 	}
 
@@ -56,12 +49,12 @@ func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpO
 		return nil, fmt.Errorf("failed to generate user: %w", err)
 	}
 
-	token, err := uc.auth.CreateIDToken(ctx, user.ID)
+	token, err := uc.Auth.CreateIDToken(ctx, user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create id token: %w", err)
 	}
 
-	if err := uc.db.CreateUser(ctx, user); err != nil {
+	if err := uc.DB.CreateUser(ctx, user); err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 	return &SignUpOutput{IDToken: token}, nil
@@ -77,7 +70,7 @@ type SignInOutput struct {
 }
 
 func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInOutput, error) {
-	user, err := uc.db.GetUserByEmail(ctx, in.Email)
+	user, err := uc.DB.GetUserByEmail(ctx, in.Email)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
@@ -86,7 +79,7 @@ func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInO
 		return nil, errors.New("password is not valid")
 	}
 
-	token, err := uc.auth.CreateIDToken(ctx, user.ID)
+	token, err := uc.Auth.CreateIDToken(ctx, user.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create id token: %w", err)
 	}

@@ -11,7 +11,7 @@ type CheckHealthOutput struct {
 	Revision string
 }
 
-func (m *Monitoring) CheckHealth() *CheckHealthOutput {
+func (uc *Monitoring) CheckHealth() *CheckHealthOutput {
 	revision := "xxxxxxx"
 	if info, ok := debug.ReadBuildInfo(); ok {
 		if i := slices.IndexFunc(info.Settings, func(s debug.BuildSetting) bool {
