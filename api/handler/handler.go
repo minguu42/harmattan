@@ -21,7 +21,7 @@ type handler struct {
 
 func New(f *factory.Factory, _ *applog.Logger) (http.Handler, error) {
 	h := handler{
-		authentication: usecase.NewAuthentication(f.Auth, f.DB),
+		authentication: usecase.Authentication{Auth: f.Auth, DB: f.DB},
 		monitoring:     usecase.Monitoring{},
 		project:        usecase.Project{DB: f.DB},
 	}
