@@ -12,6 +12,10 @@ type Handler interface {
 	//
 	// GET /health
 	CheckHealth(ctx context.Context) (*CheckHealthOK, error)
+	// CreateProject implements createProject operation.
+	//
+	// POST /projects
+	CreateProject(ctx context.Context, req *CreateProjectReq) (*Project, error)
 	// SignIn implements signIn operation.
 	//
 	// POST /sign-in
@@ -29,18 +33,20 @@ type Handler interface {
 // Server implements http server based on OpenAPI v3 specification and
 // calls Handler to handle requests.
 type Server struct {
-	h Handler
+	h   Handler
+	sec SecurityHandler
 	baseServer
 }
 
 // NewServer creates new Server.
-func NewServer(h Handler, opts ...ServerOption) (*Server, error) {
+func NewServer(h Handler, sec SecurityHandler, opts ...ServerOption) (*Server, error) {
 	s, err := newServerConfig(opts...).baseServer()
 	if err != nil {
 		return nil, err
 	}
 	return &Server{
 		h:          h,
+		sec:        sec,
 		baseServer: s,
 	}, nil
 }

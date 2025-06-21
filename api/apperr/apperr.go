@@ -32,6 +32,16 @@ func (e Error) APIError() *oapi.ErrorStatusCode {
 	}
 }
 
+func ErrAuthorization(err error) Error {
+	return Error{
+		err:             err,
+		id:              "authorization",
+		code:            http.StatusUnauthorized,
+		message:         "user authentication failed",
+		messageJapanese: "ユーザの認証に失敗しました",
+	}
+}
+
 func ErrDeadlineExceeded(err error) Error {
 	return Error{
 		err:             err,

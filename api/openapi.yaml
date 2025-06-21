@@ -63,6 +63,37 @@ paths:
                 required: [id_token]
         default:
           $ref: "#/components/responses/error"
+  /projects:
+    post:
+      tags: [projects]
+      operationId: createProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 20
+                color:
+                  type: string
+                  minLength: 7
+                  maxLength: 7
+              required: [name, color]
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/project"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
   /health:
     get:
       tags: [monitoring]
@@ -81,6 +112,25 @@ paths:
         default:
           $ref: "#/components/responses/error"
 components:
+  schemas:
+    project:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        is_archived:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required: [id, name, color, is_archived, created_at, updated_at]
   responses:
     error:
       description: Error
@@ -94,6 +144,11 @@ components:
               message:
                 type: string
             required: [code, message]
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: Bearer
 tags:
   - name: authentication
+  - name: projects
   - name: monitoring
