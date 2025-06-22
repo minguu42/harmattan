@@ -23,7 +23,6 @@ func nowForTest(ctx context.Context) time.Time {
 	return internal.DefaultNow(ctx)
 }
 
-func WithFixedNow(t *testing.T, ctx context.Context, tm time.Time) context.Context {
-	t.Helper()
+func WithFixedNow(ctx context.Context, tm time.Time) context.Context {
 	return context.WithValue(ctx, nowKey{}, tm)
 }
