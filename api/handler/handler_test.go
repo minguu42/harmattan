@@ -27,6 +27,7 @@ var (
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
+	time.Local = time.FixedZone("JST", 9*60*60)
 
 	var err error
 	tdb, err = databasetest.NewClientWithContainer(ctx, "maindb_test")
