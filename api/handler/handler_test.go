@@ -21,13 +21,17 @@ import (
 
 var (
 	h   http.Handler
-	now = time.Date(2025, 1, 1, 0, 10, 0, 0, time.Local)
+	now time.Time
 	tdb *databasetest.ClientWithContainer
 )
 
+func init() {
+	time.Local = time.FixedZone("JST", 9*60*60)
+	now = time.Date(2025, 1, 1, 0, 10, 0, 0, time.Local)
+}
+
 func TestMain(m *testing.M) {
 	ctx := context.Background()
-	time.Local = time.FixedZone("JST", 9*60*60)
 
 	var err error
 	tdb, err = databasetest.NewClientWithContainer(ctx, "maindb_test")
