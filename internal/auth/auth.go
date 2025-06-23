@@ -41,11 +41,12 @@ func (a *Authenticator) CreateIDToken(ctx context.Context, id domain.UserID) (st
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(a.idTokenSecret))
 }
 
-func (a *Authenticator) ParseIDToken(tokenString string) (domain.UserID, error) {
+func (a *Authenticator) ParseIDToken(ctx context.Context, tokenString string) (domain.UserID, error) {
 	parser := jwt.NewParser(
 		jwt.WithValidMethods([]string{"HS256"}),
 		jwt.WithExpirationRequired(),
 		jwt.WithIssuedAt(),
+		jwt.WithTimeFunc(func() time.Time { return clock.Now(ctx) }),
 	)
 
 	token, err := parser.Parse(tokenString, func(t *jwt.Token) (any, error) {
@@ -69,6 +70,5 @@ func ContextWithUser(ctx context.Context, u *domain.User) context.Context {
 }
 
 func UserFromContext(ctx context.Context) *domain.User {
-	v, _ := ctx.Value(userKey{}).(*domain.User)
-	return v
+	return ctx.Value(userKey{}).(*domain.User)
 }

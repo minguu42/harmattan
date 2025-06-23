@@ -10,7 +10,7 @@ import (
 
 func TestWithFixedULID(t *testing.T) {
 	want := "01JGFJJZ000000000000000000"
-	ctx := idgentest.WithFixedULID(t, t.Context(), want)
+	ctx := idgentest.WithFixedULID(t.Context(), want)
 
 	got := idgen.ULID(ctx)
 	assert.Equal(t, want, got)

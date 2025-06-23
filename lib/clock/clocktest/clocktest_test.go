@@ -11,7 +11,7 @@ import (
 
 func TestWithFixedNow(t *testing.T) {
 	want := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
-	ctx := clocktest.WithFixedNow(t, t.Context(), want)
+	ctx := clocktest.WithFixedNow(t.Context(), want)
 
 	got := clock.Now(ctx)
 	assert.Equal(t, want, got)

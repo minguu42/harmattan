@@ -16,7 +16,7 @@ type securityHandler struct {
 }
 
 func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ oapi.OperationName, t oapi.BearerAuth) (context.Context, error) {
-	userID, err := h.auth.ParseIDToken(t.Token)
+	userID, err := h.auth.ParseIDToken(ctx, t.Token)
 	if err != nil {
 		return nil, apperr.ErrAuthorization(fmt.Errorf("failed to parse id token: %w", err))
 	}

@@ -22,7 +22,6 @@ func ulidForTest(ctx context.Context) string {
 	return internal.DefaultULID(ctx)
 }
 
-func WithFixedULID(t *testing.T, ctx context.Context, ulid string) context.Context {
-	t.Helper()
+func WithFixedULID(ctx context.Context, ulid string) context.Context {
 	return context.WithValue(ctx, ulidKey{}, ulid)
 }
