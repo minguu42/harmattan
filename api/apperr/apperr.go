@@ -1,10 +1,13 @@
 package apperr
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/minguu42/harmattan/internal/oapi"
+	"github.com/ogen-go/ogen/ogenerrors"
 )
 
 type Error struct {
@@ -30,6 +33,20 @@ func (e Error) APIError() *oapi.ErrorStatusCode {
 			Message: e.messageJapanese,
 		},
 	}
+}
+
+func ToError(err error) Error {
+	var appErr Error
+	switch {
+	case errors.As(err, &appErr):
+	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
+		appErr = ErrDeadlineExceeded(err)
+	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
+		appErr = ErrAuthorization(err)
+	default:
+		appErr = ErrUnknown(err)
+	}
+	return appErr
 }
 
 func ErrAuthorization(err error) Error {

@@ -5,7 +5,9 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/lib/slogdebug"
 )
 
@@ -43,4 +45,40 @@ func (l *Logger) Event(ctx context.Context, msg string) {
 
 func (l *Logger) Error(ctx context.Context, msg string) {
 	l.logger(ctx).Log(ctx, slog.LevelError, msg)
+}
+
+type AccessFields struct {
+	ExecutionTime time.Duration
+	Err           error
+
+	OperationID string
+	Method      string
+	URL         string
+	RemoteAddr  string
+}
+
+func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
+	message := "Request accepted"
+	executionTime := slog.Int64("execution_time", fields.ExecutionTime.Milliseconds())
+	request := slog.Group("request",
+		slog.String("operation_id", fields.OperationID),
+		slog.String("method", fields.Method),
+		slog.String("url", fields.URL),
+		slog.String("remote_addr", fields.RemoteAddr),
+	)
+	if fields.Err == nil {
+		l.logger(ctx).LogAttrs(ctx, slog.LevelInfo, message, executionTime, request)
+		return
+	}
+
+	appErr := apperr.ToError(fields.Err)
+	status := appErr.APIError().StatusCode
+	level := slog.LevelWarn
+	if status >= 500 {
+		level = slog.LevelError
+	}
+	l.logger(ctx).LogAttrs(ctx, level, message, executionTime, request,
+		slog.Int("status_code", status),
+		slog.String("error_message", appErr.Error()),
+	)
 }

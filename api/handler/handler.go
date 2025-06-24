@@ -2,15 +2,14 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/factory"
+	"github.com/minguu42/harmattan/api/handler/middleware"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/oapi"
 	"github.com/minguu42/harmattan/lib/applog"
-	"github.com/ogen-go/ogen/ogenerrors"
 )
 
 type handler struct {
@@ -19,26 +18,16 @@ type handler struct {
 	project        usecase.Project
 }
 
-func New(f *factory.Factory, _ *applog.Logger) (http.Handler, error) {
+func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 	h := handler{
 		authentication: usecase.Authentication{Auth: f.Auth, DB: f.DB},
 		monitoring:     usecase.Monitoring{},
 		project:        usecase.Project{DB: f.DB},
 	}
 	sh := securityHandler{auth: f.Auth, db: f.DB}
-	return oapi.NewServer(&h, &sh)
+	return oapi.NewServer(&h, &sh, oapi.WithMiddleware(middleware.AccessLog(l)))
 }
 
 func (h *handler) NewError(_ context.Context, err error) *oapi.ErrorStatusCode {
-	var appErr apperr.Error
-	switch {
-	case errors.As(err, &appErr):
-	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
-		appErr = apperr.ErrDeadlineExceeded(err)
-	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
-		appErr = apperr.ErrAuthorization(err)
-	default:
-		appErr = apperr.ErrUnknown(err)
-	}
-	return appErr.APIError()
+	return apperr.ToError(err).APIError()
 }

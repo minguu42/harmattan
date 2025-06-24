@@ -1,0 +1,28 @@
+package middleware
+
+import (
+	"time"
+
+	"github.com/minguu42/harmattan/lib/applog"
+	"github.com/minguu42/harmattan/lib/clock"
+	"github.com/ogen-go/ogen/middleware"
+)
+
+func AccessLog(l *applog.Logger) middleware.Middleware {
+	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
+		// TODO: ヘルスチェックはスキップする
+
+		start := clock.Now(req.Context)
+		resp, err := next(req)
+
+		l.Access(req.Context, &applog.AccessFields{
+			ExecutionTime: time.Since(start),
+			Err:           err,
+			OperationID:   req.OperationID,
+			Method:        req.Raw.Method,
+			URL:           req.Raw.URL.String(),
+			RemoteAddr:    req.Raw.RemoteAddr,
+		})
+		return resp, err
+	}
+}
