@@ -11,6 +11,8 @@ import (
 )
 
 func TestHandler_CreateProject(t *testing.T) {
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.User{}, database.Project{}}))
+
 	wantResponse := &oapi.Project{
 		ID:        "01JGFJJZ000000000000000000",
 		Name:      "テストプロジェクト",
