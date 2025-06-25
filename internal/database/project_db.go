@@ -31,6 +31,14 @@ func (p *Project) ToDomain() *domain.Project {
 
 type Projects []Project
 
+func (ps Projects) ToDomain() domain.Projects {
+	projects := make(domain.Projects, 0, len(ps))
+	for _, p := range ps {
+		projects = append(projects, *p.ToDomain())
+	}
+	return projects
+}
+
 func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
 	project := Project{
 		ID:         p.ID,
@@ -42,4 +50,12 @@ func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
 		UpdatedAt:  p.UpdatedAt,
 	}
 	return c.db(ctx).Create(&project).Error
+}
+
+func (c *Client) ListProjects(ctx context.Context, id domain.UserID, limit, offset int) (domain.Projects, error) {
+	var ps Projects
+	if err := c.db(ctx).Where("user_id = ?", id).Limit(limit).Offset(offset).Find(&ps).Error; err != nil {
+		return nil, err
+	}
+	return ps.ToDomain(), nil
 }

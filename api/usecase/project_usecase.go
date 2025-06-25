@@ -19,6 +19,11 @@ type ProjectOutput struct {
 	Project *domain.Project
 }
 
+type ProjectsOutput struct {
+	Projects domain.Projects
+	HasNext  bool
+}
+
 type CreateProjectInput struct {
 	Name  string
 	Color string
@@ -41,4 +46,25 @@ func (uc *Project) CreateProject(ctx context.Context, in *CreateProjectInput) (*
 		return nil, fmt.Errorf("failed to create project: %w", err)
 	}
 	return &ProjectOutput{Project: &p}, nil
+}
+
+type ListProjectsInput struct {
+	Limit  int
+	Offset int
+}
+
+func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*ProjectsOutput, error) {
+	user := auth.UserFromContext(ctx)
+
+	ps, err := uc.DB.ListProjects(ctx, user.ID, in.Limit+1, in.Offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list projects: %w", err)
+	}
+
+	hasNext := false
+	if len(ps) == in.Limit+1 {
+		ps = ps[:in.Limit]
+		hasNext = true
+	}
+	return &ProjectsOutput{Projects: ps, HasNext: hasNext}, nil
 }
