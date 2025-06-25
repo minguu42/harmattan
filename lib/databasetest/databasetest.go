@@ -131,6 +131,16 @@ func (c *ClientWithContainer) Insert(ctx context.Context, data []any) error {
 	return nil
 }
 
+func (c *ClientWithContainer) Reset(ctx context.Context, data []any) error {
+	for _, table := range data {
+		// 何の条件もなしに一括削除を行えないため、"WHERE 1 = 1"で回避している
+		if err := c.gormDB.WithContext(ctx).Where("1 = 1").Delete(table).Error; err != nil {
+			return fmt.Errorf("failed to delete rows: %w", err)
+		}
+	}
+	return nil
+}
+
 func (c *ClientWithContainer) Assert(t *testing.T, ctx context.Context, data []any) {
 	for _, want := range data {
 		rv := reflect.ValueOf(want)
