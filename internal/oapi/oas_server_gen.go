@@ -16,6 +16,10 @@ type Handler interface {
 	//
 	// POST /projects
 	CreateProject(ctx context.Context, req *CreateProjectReq) (*Project, error)
+	// ListProjects implements listProjects operation.
+	//
+	// GET /projects
+	ListProjects(ctx context.Context, params ListProjectsParams) (*Projects, error)
 	// SignIn implements signIn operation.
 	//
 	// POST /sign-in

@@ -91,10 +91,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if len(elem) == 0 {
 					// Leaf node.
 					switch r.Method {
+					case "GET":
+						s.handleListProjectsRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
 						s.handleCreateProjectRequest([0]string{}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "POST")
+						s.notAllowed(w, r, "GET,POST")
 					}
 
 					return
@@ -283,6 +285,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					// Leaf node.
 					switch method {
+					case "GET":
+						r.name = ListProjectsOperation
+						r.summary = ""
+						r.operationID = "listProjects"
+						r.pathPattern = "/projects"
+						r.args = args
+						r.count = 0
+						return r, true
 					case "POST":
 						r.name = CreateProjectOperation
 						r.summary = ""
