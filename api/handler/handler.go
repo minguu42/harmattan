@@ -25,7 +25,11 @@ func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 		project:        usecase.Project{DB: f.DB},
 	}
 	sh := securityHandler{auth: f.Auth, db: f.DB}
-	return oapi.NewServer(&h, &sh, oapi.WithMiddleware(middleware.AccessLog(l)))
+	middlewares := []oapi.Middleware{
+		middleware.AttachRequestIDToLogger(l),
+		middleware.AccessLog(l),
+	}
+	return oapi.NewServer(&h, &sh, oapi.WithMiddleware(middlewares...))
 }
 
 func (h *handler) NewError(_ context.Context, err error) *oapi.ErrorStatusCode {
