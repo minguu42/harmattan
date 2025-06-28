@@ -10,7 +10,9 @@ import (
 
 func AccessLog(l *applog.Logger) middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
-		// TODO: ヘルスチェックはスキップする
+		if req.OperationID == "checkHealth" {
+			return next(req)
+		}
 
 		start := clock.Now(req.Context)
 		resp, err := next(req)
@@ -21,7 +23,7 @@ func AccessLog(l *applog.Logger) middleware.Middleware {
 			OperationID:   req.OperationID,
 			Method:        req.Raw.Method,
 			URL:           req.Raw.URL.String(),
-			RemoteAddr:    req.Raw.RemoteAddr,
+			IPAddress:     req.Raw.RemoteAddr,
 		})
 		return resp, err
 	}

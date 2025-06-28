@@ -30,7 +30,7 @@ type CreateProjectInput struct {
 }
 
 func (uc *Project) CreateProject(ctx context.Context, in *CreateProjectInput) (*ProjectOutput, error) {
-	user := auth.UserFromContext(ctx)
+	user := auth.MustUserFromContext(ctx)
 
 	now := clock.Now(ctx)
 	p := domain.Project{
@@ -54,7 +54,7 @@ type ListProjectsInput struct {
 }
 
 func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*ProjectsOutput, error) {
-	user := auth.UserFromContext(ctx)
+	user := auth.MustUserFromContext(ctx)
 
 	ps, err := uc.DB.ListProjects(ctx, user.ID, in.Limit+1, in.Offset)
 	if err != nil {
