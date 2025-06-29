@@ -29,23 +29,17 @@ func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 		middleware.AttachRequestIDToLogger(l),
 		middleware.AccessLog(l),
 	}
-	return oapi.NewServer(&h, &sh, oapi.WithMiddleware(middlewares...))
+	return oapi.NewServer(&h, &sh,
+		oapi.WithNotFound(notFound),
+		oapi.WithMiddleware(middlewares...),
+	)
 }
 
 func (h *handler) NewError(_ context.Context, err error) *oapi.ErrorStatusCode {
 	return apperr.ToError(err).APIError()
 }
 
-func convertOptString(o oapi.OptString) *string {
-	if o.Set {
-		return &o.Value
-	}
-	return nil
-}
-
-func convertOptBool(o oapi.OptBool) *bool {
-	if o.Set {
-		return &o.Value
-	}
-	return nil
+func notFound(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	_, _ = w.Write([]byte(`{"code":404,"message":"指定したパスは見つかりません"}`))
 }
