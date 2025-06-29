@@ -37,6 +37,12 @@ func encodeCreateProjectResponse(response *Project, w http.ResponseWriter) error
 	return nil
 }
 
+func encodeDeleteProjectResponse(response *DeleteProjectOK, w http.ResponseWriter) error {
+	w.WriteHeader(200)
+
+	return nil
+}
+
 func encodeListProjectsResponse(response *Projects, w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)

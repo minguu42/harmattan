@@ -65,3 +65,10 @@ func (h *handler) UpdateProject(ctx context.Context, req *oapi.UpdateProjectReq,
 	}
 	return convertProject(out.Project), nil
 }
+
+func (h *handler) DeleteProject(ctx context.Context, params oapi.DeleteProjectParams) error {
+	if err := h.project.DeleteProject(ctx, &usecase.DeleteProjectInput{ID: domain.ProjectID(params.ProjectID)}); err != nil {
+		return fmt.Errorf("failed to execute DeleteProject usecase: %w", err)
+	}
+	return nil
+}
