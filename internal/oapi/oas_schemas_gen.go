@@ -75,6 +75,9 @@ func (s *CreateProjectReq) SetColor(val string) {
 	s.Color = val
 }
 
+// DeleteProjectOK is response for DeleteProject operation.
+type DeleteProjectOK struct{}
+
 type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

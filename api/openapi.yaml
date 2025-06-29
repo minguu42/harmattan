@@ -145,6 +145,16 @@ paths:
           $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
+    delete:
+      tags: [projects]
+      operationId: deleteProject
+      responses:
+        200:
+          description: OK
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
   /health:
     get:
       tags: [monitoring]

@@ -107,3 +107,27 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	}
 	return &ProjectOutput{Project: p}, nil
 }
+
+type DeleteProjectInput struct {
+	ID domain.ProjectID
+}
+
+func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) error {
+	user := auth.MustUserFromContext(ctx)
+
+	p, err := uc.DB.GetProjectByID(ctx, in.ID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return apperr.ErrProjectNotFound(err)
+		}
+		return fmt.Errorf("failed to get project: %w", err)
+	}
+	if !user.HasProject(p) {
+		return apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+	}
+
+	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {
+		return fmt.Errorf("failed to delete project: %w", err)
+	}
+	return nil
+}

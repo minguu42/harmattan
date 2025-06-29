@@ -16,6 +16,10 @@ type Handler interface {
 	//
 	// POST /projects
 	CreateProject(ctx context.Context, req *CreateProjectReq) (*Project, error)
+	// DeleteProject implements deleteProject operation.
+	//
+	// DELETE /projects/{projectID}
+	DeleteProject(ctx context.Context, params DeleteProjectParams) error
 	// ListProjects implements listProjects operation.
 	//
 	// GET /projects
