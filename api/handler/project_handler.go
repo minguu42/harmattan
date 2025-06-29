@@ -52,3 +52,16 @@ func (h *handler) ListProjects(ctx context.Context, params oapi.ListProjectsPara
 		HasNext:  out.HasNext,
 	}, nil
 }
+
+func (h *handler) UpdateProject(ctx context.Context, req *oapi.UpdateProjectReq, params oapi.UpdateProjectParams) (*oapi.Project, error) {
+	out, err := h.project.UpdateProject(ctx, &usecase.UpdateProjectInput{
+		ID:         domain.ProjectID(params.ProjectID),
+		Name:       convertOptString(req.Name),
+		Color:      convertOptString(req.Color),
+		IsArchived: convertOptBool(req.IsArchived),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute UpdateProject usecase: %w", err)
+	}
+	return convertProject(out.Project), nil
+}

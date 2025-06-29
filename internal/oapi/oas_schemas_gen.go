@@ -126,6 +126,52 @@ func (s *ErrorStatusCode) SetResponse(val Error) {
 	s.Response = val
 }
 
+// NewOptBool returns new OptBool with value set to v.
+func NewOptBool(v bool) OptBool {
+	return OptBool{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptBool is optional bool.
+type OptBool struct {
+	Value bool
+	Set   bool
+}
+
+// IsSet returns true if OptBool was set.
+func (o OptBool) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptBool) Reset() {
+	var v bool
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptBool) SetTo(v bool) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptBool) Get() (v bool, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptInt returns new OptInt with value set to v.
 func NewOptInt(v int) OptInt {
 	return OptInt{
@@ -166,6 +212,52 @@ func (o OptInt) Get() (v int, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptInt) Or(d int) int {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptString returns new OptString with value set to v.
+func NewOptString(v string) OptString {
+	return OptString{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptString is optional string.
+type OptString struct {
+	Value string
+	Set   bool
+}
+
+// IsSet returns true if OptString was set.
+func (o OptString) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptString) Reset() {
+	var v string
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptString) SetTo(v string) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptString) Get() (v string, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptString) Or(d string) string {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -344,4 +436,40 @@ func (s *SignUpReq) SetEmail(val string) {
 // SetPassword sets the value of Password.
 func (s *SignUpReq) SetPassword(val string) {
 	s.Password = val
+}
+
+type UpdateProjectReq struct {
+	Name       OptString `json:"name"`
+	Color      OptString `json:"color"`
+	IsArchived OptBool   `json:"is_archived"`
+}
+
+// GetName returns the value of Name.
+func (s *UpdateProjectReq) GetName() OptString {
+	return s.Name
+}
+
+// GetColor returns the value of Color.
+func (s *UpdateProjectReq) GetColor() OptString {
+	return s.Color
+}
+
+// GetIsArchived returns the value of IsArchived.
+func (s *UpdateProjectReq) GetIsArchived() OptBool {
+	return s.IsArchived
+}
+
+// SetName sets the value of Name.
+func (s *UpdateProjectReq) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetColor sets the value of Color.
+func (s *UpdateProjectReq) SetColor(val OptString) {
+	s.Color = val
+}
+
+// SetIsArchived sets the value of IsArchived.
+func (s *UpdateProjectReq) SetIsArchived(val OptBool) {
+	s.IsArchived = val
 }

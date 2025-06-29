@@ -88,3 +88,13 @@ func ErrUnknown(err error) Error {
 		messageJapanese: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください。",
 	}
 }
+
+func ErrProjectNotFound(err error) Error {
+	return Error{
+		err:             err,
+		id:              "project-not-found",
+		code:            404,
+		message:         "the specified project is not found",
+		messageJapanese: "指定したプロジェクトは見つかりません",
+	}
+}
