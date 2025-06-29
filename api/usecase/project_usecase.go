@@ -2,8 +2,10 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -67,4 +69,41 @@ func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*Pr
 		hasNext = true
 	}
 	return &ProjectsOutput{Projects: ps, HasNext: hasNext}, nil
+}
+
+type UpdateProjectInput struct {
+	ID         domain.ProjectID
+	Name       *string
+	Color      *string
+	IsArchived *bool
+}
+
+func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*ProjectOutput, error) {
+	user := auth.MustUserFromContext(ctx)
+
+	p, err := uc.DB.GetProjectByID(ctx, in.ID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return nil, apperr.ErrProjectNotFound(err)
+		}
+		return nil, fmt.Errorf("failed to get project: %w", err)
+	}
+	if !user.HasProject(p) {
+		return nil, apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+	}
+
+	if in.Name != nil {
+		p.Name = *in.Name
+	}
+	if in.Color != nil {
+		p.Color = *in.Color
+	}
+	if in.IsArchived != nil {
+		p.IsArchived = *in.IsArchived
+	}
+	p.UpdatedAt = clock.Now(ctx)
+	if err := uc.DB.UpdateProject(ctx, p); err != nil {
+		return nil, fmt.Errorf("failed to update project: %w", err)
+	}
+	return &ProjectOutput{Project: p}, nil
 }

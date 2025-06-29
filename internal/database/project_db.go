@@ -2,9 +2,11 @@ package database
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
+	"gorm.io/gorm"
 )
 
 type Project struct {
@@ -58,4 +60,28 @@ func (c *Client) ListProjects(ctx context.Context, id domain.UserID, limit, offs
 		return nil, err
 	}
 	return ps.ToDomain(), nil
+}
+
+func (c *Client) GetProjectByID(ctx context.Context, id domain.ProjectID) (*domain.Project, error) {
+	var p Project
+	if err := c.db(ctx).Where("id = ?", id).Take(&p).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrModelNotFound
+		}
+		return nil, err
+	}
+	return p.ToDomain(), nil
+}
+
+func (c *Client) UpdateProject(ctx context.Context, p *domain.Project) error {
+	return c.db(ctx).Model(Project{}).Where("id = ?", p.ID).Updates(Project{
+		Name:       p.Name,
+		Color:      p.Color,
+		IsArchived: p.IsArchived,
+		UpdatedAt:  p.UpdatedAt,
+	}).Error
+}
+
+func (c *Client) DeleteProjectByID(ctx context.Context, id domain.ProjectID) error {
+	return c.db(ctx).Where("id = ?", id).Delete(Project{}).Error
 }

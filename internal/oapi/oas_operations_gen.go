@@ -11,4 +11,5 @@ const (
 	ListProjectsOperation  OperationName = "ListProjects"
 	SignInOperation        OperationName = "SignIn"
 	SignUpOperation        OperationName = "SignUp"
+	UpdateProjectOperation OperationName = "UpdateProject"
 )

@@ -7,3 +7,7 @@ type User struct {
 	Email          string
 	HashedPassword string
 }
+
+func (u *User) HasProject(p *Project) bool {
+	return u.ID == p.UserID
+}

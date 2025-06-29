@@ -111,6 +111,40 @@ paths:
           $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
+  /projects/{projectID}:
+    parameters:
+      - $ref: "#/components/parameters/projectID"
+    patch:
+      tags: [projects]
+      operationId: updateProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 20
+                color:
+                  type: string
+                  minLength: 7
+                  maxLength: 7
+                is_archived:
+                  type: boolean
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/project"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
   /health:
     get:
       tags: [monitoring]
@@ -174,6 +208,14 @@ components:
         type: integer
         minimum: 0
         default: 0
+    projectID:
+      name: projectID
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 26
+        maxLength: 26
   responses:
     error:
       description: Error

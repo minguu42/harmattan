@@ -28,6 +28,10 @@ type Handler interface {
 	//
 	// POST /sign-up
 	SignUp(ctx context.Context, req *SignUpReq) (*SignUpOK, error)
+	// UpdateProject implements updateProject operation.
+	//
+	// PATCH /projects/{projectID}
+	UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (*Project, error)
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.
