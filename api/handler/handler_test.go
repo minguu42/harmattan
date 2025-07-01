@@ -9,10 +9,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ikawaha/httpcheck"
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/oapi"
 	"github.com/minguu42/harmattan/lib/applog"
 	"github.com/minguu42/harmattan/lib/clock/clocktest"
 	"github.com/minguu42/harmattan/lib/databasetest"
@@ -93,5 +95,28 @@ func fixTimeMiddleware(next http.Handler, tm time.Time) http.Handler {
 		ctx = clocktest.WithFixedNow(ctx, tm)
 		ctx = idgentest.WithFixedULID(ctx, "01JGFJJZ000000000000000000")
 		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func TestHandler_NotFound(t *testing.T) {
+	httpcheck.New(h).Test(t, "GET", "/non-existent-path").
+		Check().
+		HasStatus(404).
+		HasJSON(oapi.Error{Code: 404, Message: "指定したパスは見つかりません"})
+}
+
+func TestHandler_MethodNotFound(t *testing.T) {
+	t.Run("method not allowed", func(t *testing.T) {
+		httpcheck.New(h).Test(t, "POST", "/health").
+			Check().
+			HasStatus(405).
+			HasJSON(oapi.Error{Code: 405, Message: "指定したメソッドは許可されていません"})
+	})
+	t.Run("options", func(t *testing.T) {
+		httpcheck.New(h).Test(t, "OPTIONS", "/health").
+			Check().
+			HasStatus(204).
+			HasHeader("Access-Control-Allow-Methods", "GET").
+			HasHeader("Access-Control-Allow-Headers", "Content-Type")
 	})
 }
