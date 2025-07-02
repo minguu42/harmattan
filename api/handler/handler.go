@@ -28,6 +28,7 @@ func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 	middlewares := []oapi.Middleware{
 		middleware.AttachRequestIDToLogger(l),
 		middleware.AccessLog(l),
+		middleware.Recover(),
 	}
 	return oapi.NewServer(&h, &sh,
 		oapi.WithNotFound(notFound),
