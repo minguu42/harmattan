@@ -40,7 +40,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.notFound(w, r)
 		return
 	}
-	args := [1]string{}
+	args := [3]string{}
 
 	// Static code generated router with unwrapped path search.
 	switch {
@@ -111,16 +111,15 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					// Param: "projectID"
-					// Leaf parameter, slashes are prohibited
+					// Match until "/"
 					idx := strings.IndexByte(elem, '/')
-					if idx >= 0 {
-						break
+					if idx < 0 {
+						idx = len(elem)
 					}
-					args[0] = elem
-					elem = ""
+					args[0] = elem[:idx]
+					elem = elem[idx:]
 
 					if len(elem) == 0 {
-						// Leaf node.
 						switch r.Method {
 						case "DELETE":
 							s.handleDeleteProjectRequest([1]string{
@@ -135,6 +134,136 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/tasks"
+
+						if l := len("/tasks"); len(elem) >= l && elem[0:l] == "/tasks" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch r.Method {
+							case "GET":
+								s.handleListTasksRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							case "POST":
+								s.handleCreateTaskRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET,POST")
+							}
+
+							return
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "taskID"
+							// Match until "/"
+							idx := strings.IndexByte(elem, '/')
+							if idx < 0 {
+								idx = len(elem)
+							}
+							args[1] = elem[:idx]
+							elem = elem[idx:]
+
+							if len(elem) == 0 {
+								switch r.Method {
+								case "DELETE":
+									s.handleDeleteTaskRequest([2]string{
+										args[0],
+										args[1],
+									}, elemIsEscaped, w, r)
+								case "PATCH":
+									s.handleUpdateTaskRequest([2]string{
+										args[0],
+										args[1],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "DELETE,PATCH")
+								}
+
+								return
+							}
+							switch elem[0] {
+							case '/': // Prefix: "/steps"
+
+								if l := len("/steps"); len(elem) >= l && elem[0:l] == "/steps" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									switch r.Method {
+									case "POST":
+										s.handleCreateStepRequest([2]string{
+											args[0],
+											args[1],
+										}, elemIsEscaped, w, r)
+									default:
+										s.notAllowed(w, r, "POST")
+									}
+
+									return
+								}
+								switch elem[0] {
+								case '/': // Prefix: "/"
+
+									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+										elem = elem[l:]
+									} else {
+										break
+									}
+
+									// Param: "stepID"
+									// Leaf parameter, slashes are prohibited
+									idx := strings.IndexByte(elem, '/')
+									if idx >= 0 {
+										break
+									}
+									args[2] = elem
+									elem = ""
+
+									if len(elem) == 0 {
+										// Leaf node.
+										switch r.Method {
+										case "DELETE":
+											s.handleDeleteStepRequest([3]string{
+												args[0],
+												args[1],
+												args[2],
+											}, elemIsEscaped, w, r)
+										case "PATCH":
+											s.handleUpdateStepRequest([3]string{
+												args[0],
+												args[1],
+												args[2],
+											}, elemIsEscaped, w, r)
+										default:
+											s.notAllowed(w, r, "DELETE,PATCH")
+										}
+
+										return
+									}
+
+								}
+
+							}
+
+						}
+
 					}
 
 				}
@@ -193,6 +322,64 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 				}
 
+			case 't': // Prefix: "tags"
+
+				if l := len("tags"); len(elem) >= l && elem[0:l] == "tags" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch r.Method {
+					case "GET":
+						s.handleListTagsRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateTagRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "tagID"
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "DELETE":
+							s.handleDeleteTagRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "PATCH":
+							s.handleUpdateTagRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "DELETE,PATCH")
+						}
+
+						return
+					}
+
+				}
+
 			}
 
 		}
@@ -207,7 +394,7 @@ type Route struct {
 	operationID string
 	pathPattern string
 	count       int
-	args        [1]string
+	args        [3]string
 }
 
 // Name returns ogen operation name.
@@ -351,16 +538,15 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 
 					// Param: "projectID"
-					// Leaf parameter, slashes are prohibited
+					// Match until "/"
 					idx := strings.IndexByte(elem, '/')
-					if idx >= 0 {
-						break
+					if idx < 0 {
+						idx = len(elem)
 					}
-					args[0] = elem
-					elem = ""
+					args[0] = elem[:idx]
+					elem = elem[idx:]
 
 					if len(elem) == 0 {
-						// Leaf node.
 						switch method {
 						case "DELETE":
 							r.name = DeleteProjectOperation
@@ -381,6 +567,149 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						default:
 							return
 						}
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/tasks"
+
+						if l := len("/tasks"); len(elem) >= l && elem[0:l] == "/tasks" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								r.name = ListTasksOperation
+								r.summary = ""
+								r.operationID = "listTasks"
+								r.pathPattern = "/projects/{projectID}/tasks"
+								r.args = args
+								r.count = 1
+								return r, true
+							case "POST":
+								r.name = CreateTaskOperation
+								r.summary = ""
+								r.operationID = "createTask"
+								r.pathPattern = "/projects/{projectID}/tasks"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+						switch elem[0] {
+						case '/': // Prefix: "/"
+
+							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							// Param: "taskID"
+							// Match until "/"
+							idx := strings.IndexByte(elem, '/')
+							if idx < 0 {
+								idx = len(elem)
+							}
+							args[1] = elem[:idx]
+							elem = elem[idx:]
+
+							if len(elem) == 0 {
+								switch method {
+								case "DELETE":
+									r.name = DeleteTaskOperation
+									r.summary = ""
+									r.operationID = "deleteTask"
+									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
+									r.args = args
+									r.count = 2
+									return r, true
+								case "PATCH":
+									r.name = UpdateTaskOperation
+									r.summary = ""
+									r.operationID = "updateTask"
+									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
+									r.args = args
+									r.count = 2
+									return r, true
+								default:
+									return
+								}
+							}
+							switch elem[0] {
+							case '/': // Prefix: "/steps"
+
+								if l := len("/steps"); len(elem) >= l && elem[0:l] == "/steps" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									switch method {
+									case "POST":
+										r.name = CreateStepOperation
+										r.summary = ""
+										r.operationID = "createStep"
+										r.pathPattern = "/projects/{projectID}/tasks/{taskID}/steps"
+										r.args = args
+										r.count = 2
+										return r, true
+									default:
+										return
+									}
+								}
+								switch elem[0] {
+								case '/': // Prefix: "/"
+
+									if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+										elem = elem[l:]
+									} else {
+										break
+									}
+
+									// Param: "stepID"
+									// Leaf parameter, slashes are prohibited
+									idx := strings.IndexByte(elem, '/')
+									if idx >= 0 {
+										break
+									}
+									args[2] = elem
+									elem = ""
+
+									if len(elem) == 0 {
+										// Leaf node.
+										switch method {
+										case "DELETE":
+											r.name = DeleteStepOperation
+											r.summary = ""
+											r.operationID = "deleteStep"
+											r.pathPattern = "/projects/{projectID}/tasks/{taskID}/steps/{stepID}"
+											r.args = args
+											r.count = 3
+											return r, true
+										case "PATCH":
+											r.name = UpdateStepOperation
+											r.summary = ""
+											r.operationID = "updateStep"
+											r.pathPattern = "/projects/{projectID}/tasks/{taskID}/steps/{stepID}"
+											r.args = args
+											r.count = 3
+											return r, true
+										default:
+											return
+										}
+									}
+
+								}
+
+							}
+
+						}
+
 					}
 
 				}
@@ -439,6 +768,80 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.pathPattern = "/sign-up"
 							r.args = args
 							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+				}
+
+			case 't': // Prefix: "tags"
+
+				if l := len("tags"); len(elem) >= l && elem[0:l] == "tags" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						r.name = ListTagsOperation
+						r.summary = ""
+						r.operationID = "listTags"
+						r.pathPattern = "/tags"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = CreateTagOperation
+						r.summary = ""
+						r.operationID = "createTag"
+						r.pathPattern = "/tags"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/"
+
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					// Param: "tagID"
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "DELETE":
+							r.name = DeleteTagOperation
+							r.summary = ""
+							r.operationID = "deleteTag"
+							r.pathPattern = "/tags/{tagID}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PATCH":
+							r.name = UpdateTagOperation
+							r.summary = ""
+							r.operationID = "updateTag"
+							r.pathPattern = "/tags/{tagID}"
+							r.args = args
+							r.count = 1
 							return r, true
 						default:
 							return

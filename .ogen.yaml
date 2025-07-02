@@ -2,4 +2,5 @@ generator:
   features:
     enable:
       - "paths/server"
+      - "ogen/unimplemented"
     disable_all: true

@@ -8,6 +8,7 @@ import (
 
 	"github.com/minguu42/harmattan/internal/oapi"
 	"github.com/ogen-go/ogen/ogenerrors"
+	ogenhttp "github.com/ogen-go/ogen/http"
 )
 
 type Error struct {
@@ -48,6 +49,8 @@ func ToError(err error) Error {
 		appErr = ErrDeadlineExceeded(err)
 	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
 		appErr = ErrAuthorization(err)
+	case errors.Is(err, ogenhttp.ErrNotImplemented):
+		appErr = ErrNotImplemented()
 	default:
 		appErr = ErrUnknown(err)
 	}
@@ -72,6 +75,15 @@ func ErrPanic(err error, stacktrace []string) Error {
 		code:            http.StatusInternalServerError,
 		message:         "some error has occurred on the server side. please wait a few minutes and try again",
 		messageJapanese: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください。",
+	}
+}
+
+func ErrNotImplemented() Error {
+	return Error{
+		id:              "not-implemented",
+		code:            http.StatusNotImplemented,
+		message:         "not implemented",
+		messageJapanese: "このオペレーションはまだ実装されていません",
 	}
 }
 

@@ -75,8 +75,70 @@ func (s *CreateProjectReq) SetColor(val string) {
 	s.Color = val
 }
 
+type CreateStepReq struct {
+	Name string `json:"name"`
+}
+
+// GetName returns the value of Name.
+func (s *CreateStepReq) GetName() string {
+	return s.Name
+}
+
+// SetName sets the value of Name.
+func (s *CreateStepReq) SetName(val string) {
+	s.Name = val
+}
+
+type CreateTagReq struct {
+	Name string `json:"name"`
+}
+
+// GetName returns the value of Name.
+func (s *CreateTagReq) GetName() string {
+	return s.Name
+}
+
+// SetName sets the value of Name.
+func (s *CreateTagReq) SetName(val string) {
+	s.Name = val
+}
+
+type CreateTaskReq struct {
+	Name     string `json:"name"`
+	Priority int    `json:"priority"`
+}
+
+// GetName returns the value of Name.
+func (s *CreateTaskReq) GetName() string {
+	return s.Name
+}
+
+// GetPriority returns the value of Priority.
+func (s *CreateTaskReq) GetPriority() int {
+	return s.Priority
+}
+
+// SetName sets the value of Name.
+func (s *CreateTaskReq) SetName(val string) {
+	s.Name = val
+}
+
+// SetPriority sets the value of Priority.
+func (s *CreateTaskReq) SetPriority(val int) {
+	s.Priority = val
+}
+
 // DeleteProjectOK is response for DeleteProject operation.
 type DeleteProjectOK struct{}
+
+// DeleteStepOK is response for DeleteStep operation.
+type DeleteStepOK struct{}
+
+// DeleteTagOK is response for DeleteTag operation.
+type DeleteTagOK struct{}
+
+// DeleteTaskOK is response for DeleteTask operation.
+type DeleteTaskOK struct{}
 
 type Error struct {
 	Code    int    `json:"code"`
@@ -169,6 +231,98 @@ func (o OptBool) Get() (v bool, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDate returns new OptDate with value set to v.
+func NewOptDate(v time.Time) OptDate {
+	return OptDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDate is optional time.Time.
+type OptDate struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDate was set.
+func (o OptDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDate) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDate) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDate) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDate) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDateTime returns new OptDateTime with value set to v.
+func NewOptDateTime(v time.Time) OptDateTime {
+	return OptDateTime{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDateTime is optional time.Time.
+type OptDateTime struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDateTime was set.
+func (o OptDateTime) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDateTime) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDateTime) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDateTime) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDateTime) Or(d time.Time) time.Time {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -441,6 +595,235 @@ func (s *SignUpReq) SetPassword(val string) {
 	s.Password = val
 }
 
+// Ref: #/components/schemas/step
+type Step struct {
+	ID          string      `json:"id"`
+	TaskID      string      `json:"task_id"`
+	Name        string      `json:"name"`
+	CompletedAt OptDateTime `json:"completed_at"`
+}
+
+// GetID returns the value of ID.
+func (s *Step) GetID() string {
+	return s.ID
+}
+
+// GetTaskID returns the value of TaskID.
+func (s *Step) GetTaskID() string {
+	return s.TaskID
+}
+
+// GetName returns the value of Name.
+func (s *Step) GetName() string {
+	return s.Name
+}
+
+// GetCompletedAt returns the value of CompletedAt.
+func (s *Step) GetCompletedAt() OptDateTime {
+	return s.CompletedAt
+}
+
+// SetID sets the value of ID.
+func (s *Step) SetID(val string) {
+	s.ID = val
+}
+
+// SetTaskID sets the value of TaskID.
+func (s *Step) SetTaskID(val string) {
+	s.TaskID = val
+}
+
+// SetName sets the value of Name.
+func (s *Step) SetName(val string) {
+	s.Name = val
+}
+
+// SetCompletedAt sets the value of CompletedAt.
+func (s *Step) SetCompletedAt(val OptDateTime) {
+	s.CompletedAt = val
+}
+
+// Ref: #/components/schemas/tag
+type Tag struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// GetID returns the value of ID.
+func (s *Tag) GetID() string {
+	return s.ID
+}
+
+// GetName returns the value of Name.
+func (s *Tag) GetName() string {
+	return s.Name
+}
+
+// SetID sets the value of ID.
+func (s *Tag) SetID(val string) {
+	s.ID = val
+}
+
+// SetName sets the value of Name.
+func (s *Tag) SetName(val string) {
+	s.Name = val
+}
+
+// Ref: #/components/schemas/tags
+type Tags struct {
+	Tags    []Tag `json:"tags"`
+	HasNext bool  `json:"has_next"`
+}
+
+// GetTags returns the value of Tags.
+func (s *Tags) GetTags() []Tag {
+	return s.Tags
+}
+
+// GetHasNext returns the value of HasNext.
+func (s *Tags) GetHasNext() bool {
+	return s.HasNext
+}
+
+// SetTags sets the value of Tags.
+func (s *Tags) SetTags(val []Tag) {
+	s.Tags = val
+}
+
+// SetHasNext sets the value of HasNext.
+func (s *Tags) SetHasNext(val bool) {
+	s.HasNext = val
+}
+
+// Ref: #/components/schemas/task
+type Task struct {
+	ID          string      `json:"id"`
+	ProjectID   string      `json:"project_id"`
+	Name        string      `json:"name"`
+	Content     string      `json:"content"`
+	Priority    int         `json:"priority"`
+	DueOn       OptDate     `json:"due_on"`
+	CompletedAt OptDateTime `json:"completed_at"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *Task) GetID() string {
+	return s.ID
+}
+
+// GetProjectID returns the value of ProjectID.
+func (s *Task) GetProjectID() string {
+	return s.ProjectID
+}
+
+// GetName returns the value of Name.
+func (s *Task) GetName() string {
+	return s.Name
+}
+
+// GetContent returns the value of Content.
+func (s *Task) GetContent() string {
+	return s.Content
+}
+
+// GetPriority returns the value of Priority.
+func (s *Task) GetPriority() int {
+	return s.Priority
+}
+
+// GetDueOn returns the value of DueOn.
+func (s *Task) GetDueOn() OptDate {
+	return s.DueOn
+}
+
+// GetCompletedAt returns the value of CompletedAt.
+func (s *Task) GetCompletedAt() OptDateTime {
+	return s.CompletedAt
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Task) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Task) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *Task) SetID(val string) {
+	s.ID = val
+}
+
+// SetProjectID sets the value of ProjectID.
+func (s *Task) SetProjectID(val string) {
+	s.ProjectID = val
+}
+
+// SetName sets the value of Name.
+func (s *Task) SetName(val string) {
+	s.Name = val
+}
+
+// SetContent sets the value of Content.
+func (s *Task) SetContent(val string) {
+	s.Content = val
+}
+
+// SetPriority sets the value of Priority.
+func (s *Task) SetPriority(val int) {
+	s.Priority = val
+}
+
+// SetDueOn sets the value of DueOn.
+func (s *Task) SetDueOn(val OptDate) {
+	s.DueOn = val
+}
+
+// SetCompletedAt sets the value of CompletedAt.
+func (s *Task) SetCompletedAt(val OptDateTime) {
+	s.CompletedAt = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Task) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Task) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/tasks
+type Tasks struct {
+	Tasks   []Task `json:"tasks"`
+	HasNext bool   `json:"has_next"`
+}
+
+// GetTasks returns the value of Tasks.
+func (s *Tasks) GetTasks() []Task {
+	return s.Tasks
+}
+
+// GetHasNext returns the value of HasNext.
+func (s *Tasks) GetHasNext() bool {
+	return s.HasNext
+}
+
+// SetTasks sets the value of Tasks.
+func (s *Tasks) SetTasks(val []Task) {
+	s.Tasks = val
+}
+
+// SetHasNext sets the value of HasNext.
+func (s *Tasks) SetHasNext(val bool) {
+	s.HasNext = val
+}
+
 type UpdateProjectReq struct {
 	Name       OptString `json:"name"`
 	Color      OptString `json:"color"`
@@ -475,4 +858,101 @@ func (s *UpdateProjectReq) SetColor(val OptString) {
 // SetIsArchived sets the value of IsArchived.
 func (s *UpdateProjectReq) SetIsArchived(val OptBool) {
 	s.IsArchived = val
+}
+
+type UpdateStepReq struct {
+	Name        OptString   `json:"name"`
+	CompletedAt OptDateTime `json:"completed_at"`
+}
+
+// GetName returns the value of Name.
+func (s *UpdateStepReq) GetName() OptString {
+	return s.Name
+}
+
+// GetCompletedAt returns the value of CompletedAt.
+func (s *UpdateStepReq) GetCompletedAt() OptDateTime {
+	return s.CompletedAt
+}
+
+// SetName sets the value of Name.
+func (s *UpdateStepReq) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetCompletedAt sets the value of CompletedAt.
+func (s *UpdateStepReq) SetCompletedAt(val OptDateTime) {
+	s.CompletedAt = val
+}
+
+type UpdateTagReq struct {
+	Name OptString `json:"name"`
+}
+
+// GetName returns the value of Name.
+func (s *UpdateTagReq) GetName() OptString {
+	return s.Name
+}
+
+// SetName sets the value of Name.
+func (s *UpdateTagReq) SetName(val OptString) {
+	s.Name = val
+}
+
+type UpdateTaskReq struct {
+	Name        OptString   `json:"name"`
+	Content     OptString   `json:"content"`
+	Priority    OptInt      `json:"priority"`
+	DueOn       OptDateTime `json:"due_on"`
+	CompletedAt OptDateTime `json:"completed_at"`
+}
+
+// GetName returns the value of Name.
+func (s *UpdateTaskReq) GetName() OptString {
+	return s.Name
+}
+
+// GetContent returns the value of Content.
+func (s *UpdateTaskReq) GetContent() OptString {
+	return s.Content
+}
+
+// GetPriority returns the value of Priority.
+func (s *UpdateTaskReq) GetPriority() OptInt {
+	return s.Priority
+}
+
+// GetDueOn returns the value of DueOn.
+func (s *UpdateTaskReq) GetDueOn() OptDateTime {
+	return s.DueOn
+}
+
+// GetCompletedAt returns the value of CompletedAt.
+func (s *UpdateTaskReq) GetCompletedAt() OptDateTime {
+	return s.CompletedAt
+}
+
+// SetName sets the value of Name.
+func (s *UpdateTaskReq) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetContent sets the value of Content.
+func (s *UpdateTaskReq) SetContent(val OptString) {
+	s.Content = val
+}
+
+// SetPriority sets the value of Priority.
+func (s *UpdateTaskReq) SetPriority(val OptInt) {
+	s.Priority = val
+}
+
+// SetDueOn sets the value of DueOn.
+func (s *UpdateTaskReq) SetDueOn(val OptDateTime) {
+	s.DueOn = val
+}
+
+// SetCompletedAt sets the value of CompletedAt.
+func (s *UpdateTaskReq) SetCompletedAt(val OptDateTime) {
+	s.CompletedAt = val
 }

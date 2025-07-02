@@ -3,6 +3,23 @@ info:
   title: Harmattan API
   version: 0.1.0
 paths:
+  /health:
+    get:
+      tags: [monitoring]
+      operationId: checkHealth
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  revision:
+                    type: string
+                required: [revision]
+        default:
+          $ref: "#/components/responses/error"
   /sign-up:
     post:
       tags: [authentication]
@@ -155,23 +172,260 @@ paths:
           $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
-  /health:
-    get:
-      tags: [monitoring]
-      operationId: checkHealth
+  /projects/{projectID}/tasks:
+    parameters:
+      - $ref: "#/components/parameters/projectID"
+    post:
+      tags: [tasks]
+      operationId: createTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                priority:
+                  type: integer
+                  maximum: 3
+              required: [name, priority]
+        required: true
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  revision:
-                    type: string
-                required: [revision]
+                $ref: "#/components/schemas/task"
         default:
           $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+    get:
+      tags: [tasks]
+      operationId: listTasks
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tasks"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+  /projects/{projectID}/tasks/{taskID}:
+    parameters:
+      - $ref: "#/components/parameters/projectID"
+      - $ref: "#/components/parameters/taskID"
+    patch:
+      tags: [tasks]
+      operationId: updateTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                content:
+                  type: string
+                priority:
+                  type: integer
+                  maximum: 3
+                due_on:
+                  type: string
+                  format: date-time
+                completed_at:
+                  type: string
+                  format: date-time
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/task"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+    delete:
+      tags: [tasks]
+      operationId: deleteTask
+      responses:
+        200:
+          description: OK
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+  /projects/{projectID}/tasks/{taskID}/steps:
+    parameters:
+      - $ref: "#/components/parameters/projectID"
+      - $ref: "#/components/parameters/taskID"
+    post:
+      tags: [steps]
+      operationId: createStep
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+              required: [name]
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/step"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+  /projects/{projectID}/tasks/{taskID}/steps/{stepID}:
+    parameters:
+      - $ref: "#/components/parameters/projectID"
+      - $ref: "#/components/parameters/taskID"
+      - $ref: "#/components/parameters/stepID"
+    patch:
+      tags: [steps]
+      operationId: updateStep
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                completed_at:
+                  type: string
+                  format: date-time
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/step"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+    delete:
+      tags: [steps]
+      operationId: deleteStep
+      responses:
+        200:
+          description: OK
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+  /tags:
+    post:
+      tags: [tags]
+      operationId: createTag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 20
+              required: [name]
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tag"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+    get:
+      tags: [tags]
+      operationId: listTags
+      parameters:
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/offset"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tags"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+  /tags/{tagID}:
+    parameters:
+      - $ref: "#/components/parameters/tagID"
+    patch:
+      tags: [tags]
+      operationId: updateTag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 20
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tag"
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
+    delete:
+      tags: [tags]
+      operationId: deleteTag
+      responses:
+        200:
+          description: OK
+        default:
+          $ref: "#/components/responses/error"
+      security:
+        - bearerAuth: []
 components:
   schemas:
     project:
@@ -202,6 +456,73 @@ components:
         has_next:
           type: boolean
       required: [projects, has_next]
+    task:
+      type: object
+      properties:
+        id:
+          type: string
+        project_id:
+          type: string
+        name:
+          type: string
+        content:
+          type: string
+        priority:
+          type: integer
+        due_on:
+          type: string
+          format: date
+        completed_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required: [id, project_id, name, content, priority, created_at, updated_at]
+    tasks:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/task"
+        has_next:
+          type: boolean
+      required: [tasks, has_next]
+    step:
+      type: object
+      properties:
+        id:
+          type: string
+        task_id:
+          type: string
+        name:
+          type: string
+        completed_at:
+          type: string
+          format: date-time
+      required: [id, task_id, name]
+    tag:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      required: [id, name]
+    tags:
+      type: object
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/tag"
+        has_next:
+          type: boolean
+      required: [tags, has_next]
   parameters:
     limit:
       name: limit
@@ -226,6 +547,30 @@ components:
         type: string
         minLength: 26
         maxLength: 26
+    taskID:
+      name: taskID
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 26
+        maxLength: 26
+    stepID:
+      name: stepID
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 26
+        maxLength: 26
+    tagID:
+      name: tagID
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 26
+        maxLength: 26
   responses:
     error:
       description: Error
@@ -244,6 +589,9 @@ components:
       type: http
       scheme: Bearer
 tags:
+  - name: monitoring
   - name: authentication
   - name: projects
-  - name: monitoring
+  - name: tasks
+  - name: steps
+  - name: tags

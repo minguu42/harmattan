@@ -16,14 +16,46 @@ type Handler interface {
 	//
 	// POST /projects
 	CreateProject(ctx context.Context, req *CreateProjectReq) (*Project, error)
+	// CreateStep implements createStep operation.
+	//
+	// POST /projects/{projectID}/tasks/{taskID}/steps
+	CreateStep(ctx context.Context, req *CreateStepReq, params CreateStepParams) (*Step, error)
+	// CreateTag implements createTag operation.
+	//
+	// POST /tags
+	CreateTag(ctx context.Context, req *CreateTagReq) (*Tag, error)
+	// CreateTask implements createTask operation.
+	//
+	// POST /projects/{projectID}/tasks
+	CreateTask(ctx context.Context, req *CreateTaskReq, params CreateTaskParams) (*Task, error)
 	// DeleteProject implements deleteProject operation.
 	//
 	// DELETE /projects/{projectID}
 	DeleteProject(ctx context.Context, params DeleteProjectParams) error
+	// DeleteStep implements deleteStep operation.
+	//
+	// DELETE /projects/{projectID}/tasks/{taskID}/steps/{stepID}
+	DeleteStep(ctx context.Context, params DeleteStepParams) error
+	// DeleteTag implements deleteTag operation.
+	//
+	// DELETE /tags/{tagID}
+	DeleteTag(ctx context.Context, params DeleteTagParams) error
+	// DeleteTask implements deleteTask operation.
+	//
+	// DELETE /projects/{projectID}/tasks/{taskID}
+	DeleteTask(ctx context.Context, params DeleteTaskParams) error
 	// ListProjects implements listProjects operation.
 	//
 	// GET /projects
 	ListProjects(ctx context.Context, params ListProjectsParams) (*Projects, error)
+	// ListTags implements listTags operation.
+	//
+	// GET /tags
+	ListTags(ctx context.Context, params ListTagsParams) (*Tags, error)
+	// ListTasks implements listTasks operation.
+	//
+	// GET /projects/{projectID}/tasks
+	ListTasks(ctx context.Context, params ListTasksParams) (*Tasks, error)
 	// SignIn implements signIn operation.
 	//
 	// POST /sign-in
@@ -36,6 +68,18 @@ type Handler interface {
 	//
 	// PATCH /projects/{projectID}
 	UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (*Project, error)
+	// UpdateStep implements updateStep operation.
+	//
+	// PATCH /projects/{projectID}/tasks/{taskID}/steps/{stepID}
+	UpdateStep(ctx context.Context, req *UpdateStepReq, params UpdateStepParams) (*Step, error)
+	// UpdateTag implements updateTag operation.
+	//
+	// PATCH /tags/{tagID}
+	UpdateTag(ctx context.Context, req *UpdateTagReq, params UpdateTagParams) (*Tag, error)
+	// UpdateTask implements updateTask operation.
+	//
+	// PATCH /projects/{projectID}/tasks/{taskID}
+	UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (*Task, error)
 	// NewError creates *ErrorStatusCode from error returned by handler.
 	//
 	// Used for common default response.
