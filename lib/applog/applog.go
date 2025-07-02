@@ -102,6 +102,16 @@ func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
 	if status >= 500 {
 		level = slog.LevelError
 	}
+	if stacktrace := appErr.Stacktrace(); len(stacktrace) > 0 {
+		l.logger(ctx).LogAttrs(ctx, level, message,
+			slog.Int("status_code", status),
+			slog.String("error_message", appErr.Error()),
+			slog.Any("stacktrace", stacktrace),
+			executionTime,
+			request,
+		)
+		return
+	}
 	l.logger(ctx).LogAttrs(ctx, level, message,
 		slog.Int("status_code", status),
 		slog.String("error_message", appErr.Error()),
