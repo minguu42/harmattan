@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/minguu42/harmattan/internal/oapi"
-	"github.com/ogen-go/ogen/ogenerrors"
 	ogenhttp "github.com/ogen-go/ogen/http"
+	"github.com/ogen-go/ogen/ogenerrors"
 )
 
 type Error struct {
