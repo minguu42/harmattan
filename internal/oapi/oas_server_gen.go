@@ -80,10 +80,6 @@ type Handler interface {
 	//
 	// PATCH /projects/{projectID}/tasks/{taskID}
 	UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (*Task, error)
-	// NewError creates *ErrorStatusCode from error returned by handler.
-	//
-	// Used for common default response.
-	NewError(ctx context.Context, err error) *ErrorStatusCode
 }
 
 // Server implements http server based on OpenAPI v3 specification and

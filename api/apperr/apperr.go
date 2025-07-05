@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/minguu42/harmattan/internal/oapi"
 	ogenhttp "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
@@ -15,7 +14,7 @@ type Error struct {
 	err             error
 	stacktrace      []string
 	id              string
-	code            int
+	statusCode      int
 	message         string
 	messageJapanese string
 }
@@ -31,14 +30,12 @@ func (e Error) Stacktrace() []string {
 	return e.stacktrace
 }
 
-func (e Error) APIError() *oapi.ErrorStatusCode {
-	return &oapi.ErrorStatusCode{
-		StatusCode: e.code,
-		Response: oapi.Error{
-			Code:    e.code,
-			Message: e.messageJapanese,
-		},
-	}
+func (e Error) StatusCode() int {
+	return e.statusCode
+}
+
+func (e Error) MessageJapanese() string {
+	return e.messageJapanese
 }
 
 func ToError(err error) Error {
@@ -61,7 +58,7 @@ func ErrUnknown(err error) Error {
 	return Error{
 		err:             err,
 		id:              "unknown",
-		code:            http.StatusInternalServerError,
+		statusCode:      http.StatusInternalServerError,
 		message:         "some error has occurred on the server side. please wait a few minutes and try again",
 		messageJapanese: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください",
 	}
@@ -72,18 +69,18 @@ func ErrPanic(err error, stacktrace []string) Error {
 		err:             err,
 		stacktrace:      stacktrace,
 		id:              "panic",
-		code:            http.StatusInternalServerError,
+		statusCode:      http.StatusInternalServerError,
 		message:         "some error has occurred on the server side. please wait a few minutes and try again",
-		messageJapanese: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください。",
+		messageJapanese: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください",
 	}
 }
 
 func ErrNotImplemented() Error {
 	return Error{
 		id:              "not-implemented",
-		code:            http.StatusNotImplemented,
-		message:         "not implemented",
-		messageJapanese: "このオペレーションはまだ実装されていません",
+		statusCode:      http.StatusNotImplemented,
+		message:         "this feature has not been implemented yet",
+		messageJapanese: "この機能はまだ実装されていません",
 	}
 }
 
@@ -91,7 +88,7 @@ func ErrDeadlineExceeded(err error) Error {
 	return Error{
 		err:             err,
 		id:              "deadline-exceeded",
-		code:            http.StatusGatewayTimeout,
+		statusCode:      http.StatusGatewayTimeout,
 		message:         "request was not processed within the specified time",
 		messageJapanese: "リクエストは規定時間内に処理されませんでした",
 	}
@@ -101,7 +98,7 @@ func ErrAuthorization(err error) Error {
 	return Error{
 		err:             err,
 		id:              "authorization",
-		code:            http.StatusUnauthorized,
+		statusCode:      http.StatusUnauthorized,
 		message:         "user authentication failed",
 		messageJapanese: "ユーザの認証に失敗しました",
 	}
@@ -111,7 +108,7 @@ func ErrDuplicateUserEmail(err error) Error {
 	return Error{
 		err:             err,
 		id:              "duplicate-user-email",
-		code:            http.StatusConflict,
+		statusCode:      http.StatusConflict,
 		message:         "the mail address is already in use",
 		messageJapanese: "そのメールアドレスは既に使用されています",
 	}
@@ -121,7 +118,7 @@ func ErrProjectNotFound(err error) Error {
 	return Error{
 		err:             err,
 		id:              "project-not-found",
-		code:            404,
+		statusCode:      http.StatusNotFound,
 		message:         "the specified project is not found",
 		messageJapanese: "指定したプロジェクトは見つかりません",
 	}

@@ -3,13 +3,8 @@
 package oapi
 
 import (
-	"fmt"
 	"time"
 )
-
-func (s *ErrorStatusCode) Error() string {
-	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
-}
 
 type BearerAuth struct {
 	Token string
@@ -139,57 +134,6 @@ type DeleteTagOK struct{}
 
 // DeleteTaskOK is response for DeleteTask operation.
 type DeleteTaskOK struct{}
-
-type Error struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
-// GetCode returns the value of Code.
-func (s *Error) GetCode() int {
-	return s.Code
-}
-
-// GetMessage returns the value of Message.
-func (s *Error) GetMessage() string {
-	return s.Message
-}
-
-// SetCode sets the value of Code.
-func (s *Error) SetCode(val int) {
-	s.Code = val
-}
-
-// SetMessage sets the value of Message.
-func (s *Error) SetMessage(val string) {
-	s.Message = val
-}
-
-// ErrorStatusCode wraps Error with StatusCode.
-type ErrorStatusCode struct {
-	StatusCode int
-	Response   Error
-}
-
-// GetStatusCode returns the value of StatusCode.
-func (s *ErrorStatusCode) GetStatusCode() int {
-	return s.StatusCode
-}
-
-// GetResponse returns the value of Response.
-func (s *ErrorStatusCode) GetResponse() Error {
-	return s.Response
-}
-
-// SetStatusCode sets the value of StatusCode.
-func (s *ErrorStatusCode) SetStatusCode(val int) {
-	s.StatusCode = val
-}
-
-// SetResponse sets the value of Response.
-func (s *ErrorStatusCode) SetResponse(val Error) {
-	s.Response = val
-}
 
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {

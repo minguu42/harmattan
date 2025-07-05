@@ -97,7 +97,7 @@ func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
 	}
 
 	appErr := apperr.ToError(fields.Err)
-	status := appErr.APIError().StatusCode
+	status := appErr.StatusCode()
 	level := slog.LevelWarn
 	if status >= 500 {
 		level = slog.LevelError

@@ -18,8 +18,6 @@ paths:
                   revision:
                     type: string
                 required: [revision]
-        default:
-          $ref: "#/components/responses/error"
   /sign-up:
     post:
       tags: [authentication]
@@ -48,8 +46,6 @@ paths:
                   id_token:
                     type: string
                 required: [id_token]
-        default:
-          $ref: "#/components/responses/error"
   /sign-in:
     post:
       tags: [authentication]
@@ -78,8 +74,6 @@ paths:
                   id_token:
                     type: string
                 required: [id_token]
-        default:
-          $ref: "#/components/responses/error"
   /projects:
     post:
       tags: [projects]
@@ -107,8 +101,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/project"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
     get:
@@ -124,8 +116,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/projects"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
   /projects/{projectID}:
@@ -158,8 +148,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/project"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
     delete:
@@ -168,8 +156,6 @@ paths:
       responses:
         200:
           description: OK
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
   /projects/{projectID}/tasks:
@@ -200,8 +186,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/task"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
     get:
@@ -217,8 +201,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tasks"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
   /projects/{projectID}/tasks/{taskID}:
@@ -257,8 +239,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/task"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
     delete:
@@ -267,8 +247,6 @@ paths:
       responses:
         200:
           description: OK
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
   /projects/{projectID}/tasks/{taskID}/steps:
@@ -297,8 +275,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/step"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
   /projects/{projectID}/tasks/{taskID}/steps/{stepID}:
@@ -330,8 +306,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/step"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
     delete:
@@ -340,8 +314,6 @@ paths:
       responses:
         200:
           description: OK
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
   /tags:
@@ -367,8 +339,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tag"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
     get:
@@ -384,8 +354,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tags"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
   /tags/{tagID}:
@@ -412,8 +380,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tag"
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
     delete:
@@ -422,8 +388,6 @@ paths:
       responses:
         200:
           description: OK
-        default:
-          $ref: "#/components/responses/error"
       security:
         - bearerAuth: []
 components:
@@ -571,19 +535,6 @@ components:
         type: string
         minLength: 26
         maxLength: 26
-  responses:
-    error:
-      description: Error
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-              message:
-                type: string
-            required: [code, message]
   securitySchemes:
     bearerAuth:
       type: http

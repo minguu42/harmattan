@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/minguu42/harmattan/api/apperr"
@@ -35,12 +36,9 @@ func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 	return oapi.NewServer(&h, &sh,
 		oapi.WithNotFound(notFound),
 		oapi.WithMethodNotAllowed(methodNotAllowed),
+		oapi.WithErrorHandler(errorHandler),
 		oapi.WithMiddleware(middlewares...),
 	)
-}
-
-func (h *handler) NewError(_ context.Context, err error) *oapi.ErrorStatusCode {
-	return apperr.ToError(err).APIError()
 }
 
 func notFound(w http.ResponseWriter, _ *http.Request) {
@@ -59,4 +57,19 @@ func methodNotAllowed(w http.ResponseWriter, r *http.Request, allowed string) {
 	w.Header().Set("Allow", allowed)
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	_, _ = w.Write([]byte(`{"code":405,"message":"指定したメソッドは許可されていません"}`))
+}
+
+type ErrorResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+func errorHandler(_ context.Context, w http.ResponseWriter, _ *http.Request, err error) {
+	appErr := apperr.ToError(err)
+	w.WriteHeader(appErr.StatusCode())
+	bs, _ := json.Marshal(ErrorResponse{
+		Code:    appErr.StatusCode(),
+		Message: appErr.MessageJapanese(),
+	})
+	_, _ = w.Write(bs)
 }

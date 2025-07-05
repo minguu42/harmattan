@@ -14,7 +14,6 @@ import (
 	"github.com/minguu42/harmattan/api/handler"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
-	"github.com/minguu42/harmattan/internal/oapi"
 	"github.com/minguu42/harmattan/lib/applog"
 	"github.com/minguu42/harmattan/lib/clock/clocktest"
 	"github.com/minguu42/harmattan/lib/databasetest"
@@ -102,7 +101,7 @@ func TestHandler_NotFound(t *testing.T) {
 	httpcheck.New(h).Test(t, "GET", "/non-existent-path").
 		Check().
 		HasStatus(404).
-		HasJSON(oapi.Error{Code: 404, Message: "指定したパスは見つかりません"})
+		HasJSON(handler.ErrorResponse{Code: 404, Message: "指定したパスは見つかりません"})
 }
 
 func TestHandler_MethodNotFound(t *testing.T) {
@@ -110,7 +109,7 @@ func TestHandler_MethodNotFound(t *testing.T) {
 		httpcheck.New(h).Test(t, "POST", "/health").
 			Check().
 			HasStatus(405).
-			HasJSON(oapi.Error{Code: 405, Message: "指定したメソッドは許可されていません"})
+			HasJSON(handler.ErrorResponse{Code: 405, Message: "指定したメソッドは許可されていません"})
 	})
 	t.Run("options", func(t *testing.T) {
 		httpcheck.New(h).Test(t, "OPTIONS", "/health").

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ikawaha/httpcheck"
+	"github.com/minguu42/harmattan/api/handler"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/oapi"
 	"github.com/stretchr/testify/require"
@@ -155,7 +156,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "#FFFFFF", "is_archived": true}`)).
 			Check().
 			HasStatus(404).
-			HasJSON(oapi.Error{Code: 404, Message: "指定したプロジェクトは見つかりません"})
+			HasJSON(handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"})
 	})
 	t.Run("user does not own the project", func(t *testing.T) {
 		checker := httpcheck.New(fixTimeMiddleware(h, now))
@@ -165,7 +166,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "#FFFFFF", "is_archived": true}`)).
 			Check().
 			HasStatus(404).
-			HasJSON(oapi.Error{Code: 404, Message: "指定したプロジェクトは見つかりません"})
+			HasJSON(handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"})
 	})
 }
 
@@ -214,7 +215,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 			WithHeader("Content-Type", "application/json").
 			Check().
 			HasStatus(404).
-			HasJSON(oapi.Error{Code: 404, Message: "指定したプロジェクトは見つかりません"})
+			HasJSON(handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"})
 	})
 	t.Run("user does not own the project", func(t *testing.T) {
 		checker := httpcheck.New(fixTimeMiddleware(h, now))
@@ -223,6 +224,6 @@ func TestHandler_DeleteProject(t *testing.T) {
 			WithHeader("Content-Type", "application/json").
 			Check().
 			HasStatus(404).
-			HasJSON(oapi.Error{Code: 404, Message: "指定したプロジェクトは見つかりません"})
+			HasJSON(handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"})
 	})
 }
