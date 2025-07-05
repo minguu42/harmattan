@@ -13,6 +13,7 @@ import (
 )
 
 type handler struct {
+	oapi.UnimplementedHandler
 	authentication usecase.Authentication
 	monitoring     usecase.Monitoring
 	project        usecase.Project
@@ -20,9 +21,10 @@ type handler struct {
 
 func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 	h := handler{
-		authentication: usecase.Authentication{Auth: f.Auth, DB: f.DB},
-		monitoring:     usecase.Monitoring{},
-		project:        usecase.Project{DB: f.DB},
+		UnimplementedHandler: oapi.UnimplementedHandler{},
+		authentication:       usecase.Authentication{Auth: f.Auth, DB: f.DB},
+		monitoring:           usecase.Monitoring{},
+		project:              usecase.Project{DB: f.DB},
 	}
 	sh := securityHandler{auth: f.Auth, db: f.DB}
 	middlewares := []oapi.Middleware{
