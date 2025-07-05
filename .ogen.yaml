@@ -4,3 +4,4 @@ generator:
       - "paths/server"
       - "ogen/unimplemented"
     disable_all: true
+  convenient_errors: "off"
