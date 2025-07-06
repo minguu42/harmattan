@@ -7,7 +7,7 @@ import (
 	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
-	"github.com/minguu42/harmattan/internal/oapi"
+	"github.com/minguu42/harmattan/internal/openapi"
 )
 
 type securityHandler struct {
@@ -15,7 +15,7 @@ type securityHandler struct {
 	db   *database.Client
 }
 
-func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ oapi.OperationName, t oapi.BearerAuth) (context.Context, error) {
+func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ openapi.OperationName, t openapi.BearerAuth) (context.Context, error) {
 	userID, err := h.auth.ParseIDToken(ctx, t.Token)
 	if err != nil {
 		return nil, apperr.ErrAuthorization(fmt.Errorf("failed to parse id token: %w", err))

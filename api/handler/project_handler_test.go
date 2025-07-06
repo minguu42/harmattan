@@ -7,7 +7,7 @@ import (
 	"github.com/ikawaha/httpcheck"
 	"github.com/minguu42/harmattan/api/handler"
 	"github.com/minguu42/harmattan/internal/database"
-	"github.com/minguu42/harmattan/internal/oapi"
+	"github.com/minguu42/harmattan/internal/openapi"
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,7 +23,7 @@ func TestHandler_CreateProject(t *testing.T) {
 		},
 	}))
 
-	wantResponse := &oapi.Project{
+	wantResponse := &openapi.Project{
 		ID:        "01JGFJJZ000000000000000000",
 		Name:      "テストプロジェクト",
 		Color:     "#1E3A8A",
@@ -57,8 +57,8 @@ func TestHandler_ListProjects(t *testing.T) {
 
 	t.Run("no limit and offset", func(t *testing.T) {
 		checker := httpcheck.New(fixTimeMiddleware(h, now))
-		want := &oapi.Projects{
-			Projects: []oapi.Project{
+		want := &openapi.Projects{
+			Projects: []openapi.Project{
 				{ID: "project_01", Name: "プロジェクト1", Color: "#1E3A8A", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, time.Local), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, time.Local)},
 				{ID: "project_02", Name: "プロジェクト2", Color: "#FFFFFF", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, time.Local), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, time.Local)},
 			},
@@ -72,8 +72,8 @@ func TestHandler_ListProjects(t *testing.T) {
 	})
 	t.Run("limit=1&offset=0", func(t *testing.T) {
 		checker := httpcheck.New(fixTimeMiddleware(h, now))
-		want := &oapi.Projects{
-			Projects: []oapi.Project{
+		want := &openapi.Projects{
+			Projects: []openapi.Project{
 				{ID: "project_01", Name: "プロジェクト1", Color: "#1E3A8A", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, time.Local), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, time.Local)},
 			},
 			HasNext: true,
@@ -86,8 +86,8 @@ func TestHandler_ListProjects(t *testing.T) {
 	})
 	t.Run("limit=1&offset=1", func(t *testing.T) {
 		checker := httpcheck.New(fixTimeMiddleware(h, now))
-		want := &oapi.Projects{
-			Projects: []oapi.Project{
+		want := &openapi.Projects{
+			Projects: []openapi.Project{
 				{ID: "project_02", Name: "プロジェクト2", Color: "#FFFFFF", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, time.Local), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, time.Local)},
 			},
 			HasNext: false,
@@ -131,7 +131,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 	}))
 
 	t.Run("ok", func(t *testing.T) {
-		want := &oapi.Project{
+		want := &openapi.Project{
 			ID:         "01JGFJJZ000000000000000001",
 			Name:       "更新後プロジェクト",
 			Color:      "#FFFFFF",
