@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/minguu42/harmattan/internal/auth"
@@ -12,13 +13,13 @@ type Factory struct {
 	DB   *database.Client
 }
 
-func New(conf Config) (*Factory, error) {
+func New(ctx context.Context, conf Config) (*Factory, error) {
 	authn, err := auth.NewAuthenticator(conf.Auth)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create authenticator: %w", err)
 	}
 
-	db, err := database.NewClient(conf.DB)
+	db, err := database.NewClient(ctx, conf.DB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create database client: %w", err)
 	}

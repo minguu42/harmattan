@@ -58,7 +58,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to create authenticator: %s", err)
 	}
 
-	db, err := database.NewClient(database.Config{
+	db, err := database.NewClient(ctx, database.Config{
 		Host:            tdb.Host,
 		Port:            tdb.Port,
 		Database:        tdb.Database,
