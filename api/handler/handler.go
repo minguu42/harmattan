@@ -9,12 +9,12 @@ import (
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler/middleware"
 	"github.com/minguu42/harmattan/api/usecase"
-	"github.com/minguu42/harmattan/internal/oapi"
+	"github.com/minguu42/harmattan/internal/openapi"
 	"github.com/minguu42/harmattan/lib/applog"
 )
 
 type handler struct {
-	oapi.UnimplementedHandler
+	openapi.UnimplementedHandler
 	authentication usecase.Authentication
 	monitoring     usecase.Monitoring
 	project        usecase.Project
@@ -22,22 +22,22 @@ type handler struct {
 
 func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 	h := handler{
-		UnimplementedHandler: oapi.UnimplementedHandler{},
+		UnimplementedHandler: openapi.UnimplementedHandler{},
 		authentication:       usecase.Authentication{Auth: f.Auth, DB: f.DB},
 		monitoring:           usecase.Monitoring{},
 		project:              usecase.Project{DB: f.DB},
 	}
 	sh := securityHandler{auth: f.Auth, db: f.DB}
-	middlewares := []oapi.Middleware{
+	middlewares := []openapi.Middleware{
 		middleware.AttachRequestIDToLogger(l),
 		middleware.AccessLog(l),
 		middleware.Recover(),
 	}
-	return oapi.NewServer(&h, &sh,
-		oapi.WithNotFound(notFound),
-		oapi.WithMethodNotAllowed(methodNotAllowed),
-		oapi.WithErrorHandler(errorHandler),
-		oapi.WithMiddleware(middlewares...),
+	return openapi.NewServer(&h, &sh,
+		openapi.WithNotFound(notFound),
+		openapi.WithMethodNotAllowed(methodNotAllowed),
+		openapi.WithErrorHandler(errorHandler),
+		openapi.WithMiddleware(middlewares...),
 	)
 }
 

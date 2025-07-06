@@ -6,11 +6,11 @@ import (
 
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/oapi"
+	"github.com/minguu42/harmattan/internal/openapi"
 )
 
-func convertProject(project *domain.Project) *oapi.Project {
-	return &oapi.Project{
+func convertProject(project *domain.Project) *openapi.Project {
+	return &openapi.Project{
 		ID:         string(project.ID),
 		Name:       project.Name,
 		Color:      project.Color,
@@ -20,15 +20,15 @@ func convertProject(project *domain.Project) *oapi.Project {
 	}
 }
 
-func convertProjects(projects domain.Projects) []oapi.Project {
-	ps := make([]oapi.Project, 0, len(projects))
+func convertProjects(projects domain.Projects) []openapi.Project {
+	ps := make([]openapi.Project, 0, len(projects))
 	for _, p := range projects {
 		ps = append(ps, *convertProject(&p))
 	}
 	return ps
 }
 
-func (h *handler) CreateProject(ctx context.Context, req *oapi.CreateProjectReq) (*oapi.Project, error) {
+func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectReq) (*openapi.Project, error) {
 	out, err := h.project.CreateProject(ctx, &usecase.CreateProjectInput{
 		Name:  req.Name,
 		Color: req.Color,
@@ -39,7 +39,7 @@ func (h *handler) CreateProject(ctx context.Context, req *oapi.CreateProjectReq)
 	return convertProject(out.Project), nil
 }
 
-func (h *handler) ListProjects(ctx context.Context, params oapi.ListProjectsParams) (*oapi.Projects, error) {
+func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsParams) (*openapi.Projects, error) {
 	out, err := h.project.ListProjects(ctx, &usecase.ListProjectsInput{
 		Limit:  params.Limit.Value,
 		Offset: params.Offset.Value,
@@ -47,13 +47,13 @@ func (h *handler) ListProjects(ctx context.Context, params oapi.ListProjectsPara
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute ListProjects usecase: %w", err)
 	}
-	return &oapi.Projects{
+	return &openapi.Projects{
 		Projects: convertProjects(out.Projects),
 		HasNext:  out.HasNext,
 	}, nil
 }
 
-func (h *handler) UpdateProject(ctx context.Context, req *oapi.UpdateProjectReq, params oapi.UpdateProjectParams) (*oapi.Project, error) {
+func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectReq, params openapi.UpdateProjectParams) (*openapi.Project, error) {
 	out, err := h.project.UpdateProject(ctx, &usecase.UpdateProjectInput{
 		ID:         domain.ProjectID(params.ProjectID),
 		Name:       convertOptString(req.Name),
@@ -66,7 +66,7 @@ func (h *handler) UpdateProject(ctx context.Context, req *oapi.UpdateProjectReq,
 	return convertProject(out.Project), nil
 }
 
-func (h *handler) DeleteProject(ctx context.Context, params oapi.DeleteProjectParams) error {
+func (h *handler) DeleteProject(ctx context.Context, params openapi.DeleteProjectParams) error {
 	if err := h.project.DeleteProject(ctx, &usecase.DeleteProjectInput{ID: domain.ProjectID(params.ProjectID)}); err != nil {
 		return fmt.Errorf("failed to execute DeleteProject usecase: %w", err)
 	}
