@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/avast/retry-go/v4"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -30,7 +31,7 @@ type Config struct {
 	ConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME" default:"5m"`
 }
 
-func NewClient(conf Config) (*Client, error) {
+func NewClient(ctx context.Context, conf Config) (*Client, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&loc=Local&parseTime=True",
 		conf.User,
 		conf.Password,
@@ -45,15 +46,9 @@ func NewClient(conf Config) (*Client, error) {
 	db.SetMaxIdleConns(conf.MaxIdleConns)
 	db.SetConnMaxLifetime(conf.ConnMaxLifetime)
 
-	maxRetryCount := 20
-	for i := range maxRetryCount {
-		if err := db.Ping(); err != nil {
-			break
-		}
-		if i == maxRetryCount {
-			return nil, fmt.Errorf("failed to connect to database: %w", err)
-		}
-		time.Sleep(1 * time.Second)
+	ping := func() error { return db.PingContext(ctx) }
+	if err := retry.Do(ping, retry.Attempts(10), retry.Context(ctx)); err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
 	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{TranslateError: true})

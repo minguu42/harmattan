@@ -39,7 +39,7 @@ func mainRun(ctx context.Context, logger *applog.Logger) error {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	f, err := factory.New(conf)
+	f, err := factory.New(ctx, conf)
 	if err != nil {
 		return fmt.Errorf("failed to create factory: %w", err)
 	}
