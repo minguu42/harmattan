@@ -123,3 +123,23 @@ func ErrProjectNotFound(err error) Error {
 		messageJapanese: "指定したプロジェクトは見つかりません",
 	}
 }
+
+func ErrTaskNotFound(err error) Error {
+	return Error{
+		err:             err,
+		id:              "task-not-found",
+		statusCode:      http.StatusNotFound,
+		message:         "the specified task is not found",
+		messageJapanese: "指定したタスクは見つかりません",
+	}
+}
+
+func ErrStepNotFound(err error) Error {
+	return Error{
+		err:             err,
+		id:              "step-not-found",
+		statusCode:      http.StatusNotFound,
+		message:         "the specified step is not found",
+		messageJapanese: "指定したステップは見つかりません",
+	}
+}
