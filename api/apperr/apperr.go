@@ -143,3 +143,13 @@ func ErrStepNotFound(err error) Error {
 		messageJapanese: "指定したステップは見つかりません",
 	}
 }
+
+func ErrTagNotFound(err error) Error {
+	return Error{
+		err:             err,
+		id:              "tag-not-found",
+		statusCode:      http.StatusNotFound,
+		message:         "the specified tag is not found",
+		messageJapanese: "指定したタグは見つかりません",
+	}
+}
