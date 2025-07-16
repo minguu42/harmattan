@@ -14,7 +14,7 @@ func convertStep(s *domain.Step) *openapi.Step {
 		ID:          string(s.ID),
 		TaskID:      string(s.TaskID),
 		Name:        s.Name,
-		CompletedAt: convertTimePtr(s.CompletedAt),
+		CompletedAt: convertDateTimePtr(s.CompletedAt),
 	}
 }
 

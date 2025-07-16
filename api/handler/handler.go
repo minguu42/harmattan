@@ -20,6 +20,7 @@ type handler struct {
 	project        usecase.Project
 	step           usecase.Step
 	tag            usecase.Tag
+	task           usecase.Task
 }
 
 func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
@@ -30,6 +31,7 @@ func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
 		project:              usecase.Project{DB: f.DB},
 		step:                 usecase.Step{DB: f.DB},
 		tag:                  usecase.Tag{DB: f.DB},
+		task:                 usecase.Task{DB: f.DB},
 	}
 	sh := securityHandler{auth: f.Auth, db: f.DB}
 	middlewares := []openapi.Middleware{
