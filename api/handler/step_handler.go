@@ -30,46 +30,27 @@ func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, pa
 }
 
 func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, params openapi.UpdateStepParams) (*openapi.Step, error) {
-	input := &usecase.UpdateStepInput{
-		ID: domain.StepID(params.StepID),
-	}
-
-	if req.Name.Set {
-		input.Name = &req.Name.Value
-	}
-	if req.CompletedAt.Set {
-		if req.CompletedAt.Value.IsZero() {
-			empty := ""
-			input.CompletedAt = &empty
-		} else {
-			nonEmpty := "completed"
-			input.CompletedAt = &nonEmpty
-		}
-	}
-
-	out, err := h.step.UpdateStep(ctx, input)
+	out, err := h.step.UpdateStep(ctx, &usecase.UpdateStepInput{
+		ProjectID:   domain.ProjectID(params.ProjectID),
+		TaskID:      domain.TaskID(params.TaskID),
+		ID:          domain.StepID(params.StepID),
+		Name:        convertOptString(req.Name),
+		CompletedAt: convertOptDateTime(req.CompletedAt),
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to execute UpdateStep usecase: %w", err)
 	}
-
-	step := &openapi.Step{
-		ID:     string(out.Step.ID),
-		TaskID: string(out.Step.TaskID),
-		Name:   out.Step.Name,
-	}
-
-	if out.Step.CompletedAt != nil {
-		step.CompletedAt = openapi.OptDateTime{
-			Value: *out.Step.CompletedAt,
-			Set:   true,
-		}
-	}
-
-	return step, nil
+	return convertStep(out.Step), nil
 }
 
 func (h *handler) DeleteStep(ctx context.Context, params openapi.DeleteStepParams) error {
-	return h.step.DeleteStep(ctx, &usecase.DeleteStepInput{
-		ID: domain.StepID(params.StepID),
+	err := h.step.DeleteStep(ctx, &usecase.DeleteStepInput{
+		ProjectID: domain.ProjectID(params.ProjectID),
+		TaskID:    domain.TaskID(params.TaskID),
+		ID:        domain.StepID(params.StepID),
 	})
+	if err != nil {
+		return fmt.Errorf("failed to execute DeleteStep usecase: %w", err)
+	}
+	return nil
 }
