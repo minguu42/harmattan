@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
@@ -11,6 +12,7 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/lib/clock"
 	"github.com/minguu42/harmattan/lib/idgen"
+	"github.com/minguu42/harmattan/lib/pointers"
 )
 
 type Step struct {
@@ -57,13 +59,40 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 }
 
 type UpdateStepInput struct {
+	ProjectID   domain.ProjectID
+	TaskID      domain.TaskID
 	ID          domain.StepID
 	Name        *string
-	CompletedAt *string
+	CompletedAt *time.Time
 }
 
 func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {
 	user := auth.MustUserFromContext(ctx)
+
+	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return nil, apperr.ErrProjectNotFound(err)
+		}
+		return nil, fmt.Errorf("failed to get project: %w", err)
+	}
+	if !user.HasProject(p) {
+		return nil, apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+	}
+
+	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return nil, apperr.ErrTaskNotFound(err)
+		}
+		return nil, fmt.Errorf("failed to get task: %w", err)
+	}
+	if !user.HasTask(t) {
+		return nil, apperr.ErrTaskNotFound(errors.New("user does not own the task"))
+	}
+	if p.ID != t.ProjectID {
+		return nil, apperr.ErrTaskNotFound(errors.New("task does not belong to the project"))
+	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
@@ -72,20 +101,18 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 		}
 		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
-	if s.UserID != user.ID {
+	if !user.HasStep(s) {
 		return nil, apperr.ErrStepNotFound(errors.New("user does not own the step"))
+	}
+	if t.ID != s.TaskID {
+		return nil, apperr.ErrStepNotFound(errors.New("step does not belong to the task"))
 	}
 
 	if in.Name != nil {
 		s.Name = *in.Name
 	}
 	if in.CompletedAt != nil {
-		if *in.CompletedAt == "" {
-			s.CompletedAt = nil
-		} else {
-			completedAt := clock.Now(ctx)
-			s.CompletedAt = &completedAt
-		}
+		s.CompletedAt = pointers.Ref(clock.Now(ctx))
 	}
 	s.UpdatedAt = clock.Now(ctx)
 
@@ -96,11 +123,38 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 }
 
 type DeleteStepInput struct {
-	ID domain.StepID
+	ProjectID domain.ProjectID
+	TaskID    domain.TaskID
+	ID        domain.StepID
 }
 
 func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	user := auth.MustUserFromContext(ctx)
+
+	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return apperr.ErrProjectNotFound(err)
+		}
+		return fmt.Errorf("failed to get project: %w", err)
+	}
+	if !user.HasProject(p) {
+		return apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+	}
+
+	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return apperr.ErrTaskNotFound(err)
+		}
+		return fmt.Errorf("failed to get task: %w", err)
+	}
+	if !user.HasTask(t) {
+		return apperr.ErrTaskNotFound(errors.New("user does not own the task"))
+	}
+	if p.ID != t.ProjectID {
+		return apperr.ErrTaskNotFound(errors.New("task does not belong to the project"))
+	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
@@ -109,8 +163,11 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 		}
 		return fmt.Errorf("failed to get step: %w", err)
 	}
-	if s.UserID != user.ID {
+	if !user.HasStep(s) {
 		return apperr.ErrStepNotFound(errors.New("user does not own the step"))
+	}
+	if t.ID != s.TaskID {
+		return apperr.ErrStepNotFound(errors.New("step does not belong to the task"))
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {
