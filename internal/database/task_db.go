@@ -20,6 +20,8 @@ type Task struct {
 	CompletedAt *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	Steps       Steps `gorm:"foreignKey:TaskID"`
+	Tags        Tags  `gorm:"many2many:tasks_tags;"`
 }
 
 func (t *Task) ToDomain() *domain.Task {
@@ -34,6 +36,8 @@ func (t *Task) ToDomain() *domain.Task {
 		CompletedAt: t.CompletedAt,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
+		Steps:       t.Steps.ToDomain(),
+		Tags:        t.Tags.ToDomain(),
 	}
 }
 
@@ -65,7 +69,7 @@ func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
 
 func (c *Client) ListTasks(ctx context.Context, projectID domain.ProjectID, limit, offset int) (domain.Tasks, error) {
 	var ts Tasks
-	if err := c.db(ctx).Where("project_id = ?", projectID).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
+	if err := c.db(ctx).Preload("Steps").Preload("Tags").Where("project_id = ?", projectID).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
 		return nil, err
 	}
 	return ts.ToDomain(), nil
@@ -73,7 +77,7 @@ func (c *Client) ListTasks(ctx context.Context, projectID domain.ProjectID, limi
 
 func (c *Client) GetTaskByID(ctx context.Context, id domain.TaskID) (*domain.Task, error) {
 	var t Task
-	if err := c.db(ctx).Where("id = ?", id).Take(&t).Error; err != nil {
+	if err := c.db(ctx).Preload("Steps").Preload("Tags").Where("id = ?", id).Take(&t).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}

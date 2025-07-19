@@ -694,6 +694,8 @@ type Task struct {
 	CompletedAt OptDateTime `json:"completed_at"`
 	CreatedAt   time.Time   `json:"created_at"`
 	UpdatedAt   time.Time   `json:"updated_at"`
+	Steps       []Step      `json:"steps"`
+	Tags        []Tag       `json:"tags"`
 }
 
 // GetID returns the value of ID.
@@ -741,6 +743,16 @@ func (s *Task) GetUpdatedAt() time.Time {
 	return s.UpdatedAt
 }
 
+// GetSteps returns the value of Steps.
+func (s *Task) GetSteps() []Step {
+	return s.Steps
+}
+
+// GetTags returns the value of Tags.
+func (s *Task) GetTags() []Tag {
+	return s.Tags
+}
+
 // SetID sets the value of ID.
 func (s *Task) SetID(val string) {
 	s.ID = val
@@ -784,6 +796,16 @@ func (s *Task) SetCreatedAt(val time.Time) {
 // SetUpdatedAt sets the value of UpdatedAt.
 func (s *Task) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
+}
+
+// SetSteps sets the value of Steps.
+func (s *Task) SetSteps(val []Step) {
+	s.Steps = val
+}
+
+// SetTags sets the value of Tags.
+func (s *Task) SetTags(val []Tag) {
+	s.Tags = val
 }
 
 // Ref: #/components/schemas/tasks

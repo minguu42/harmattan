@@ -445,7 +445,15 @@ components:
         updated_at:
           type: string
           format: date-time
-      required: [id, project_id, name, content, priority, created_at, updated_at]
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/step"
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/tag"
+      required: [id, project_id, name, content, priority, created_at, updated_at, steps, tags]
     tasks:
       type: object
       properties:

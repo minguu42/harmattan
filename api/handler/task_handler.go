@@ -20,6 +20,8 @@ func convertTask(task *domain.Task) *openapi.Task {
 		CompletedAt: convertDateTimePtr(task.CompletedAt),
 		CreatedAt:   task.CreatedAt,
 		UpdatedAt:   task.UpdatedAt,
+		Steps:       convertSteps(task.Steps),
+		Tags:        convertTags(task.Tags),
 	}
 }
 

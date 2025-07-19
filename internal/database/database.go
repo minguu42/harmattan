@@ -12,6 +12,7 @@ import (
 	"github.com/avast/retry-go/v4"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var ErrModelNotFound = errors.New("model not found in database")
@@ -51,7 +52,10 @@ func NewClient(ctx context.Context, conf Config) (*Client, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{TranslateError: true})
+	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{
+		Logger:         logger.Default.LogMode(logger.Info),
+		TranslateError: true,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gorm client: %w", err)
 	}

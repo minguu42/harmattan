@@ -12,7 +12,7 @@ import (
 )
 
 func TestHandler_CreateTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}}))
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Projects{
 			{
@@ -68,7 +68,7 @@ func TestHandler_CreateTask(t *testing.T) {
 }
 
 func TestHandler_ListTasks(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}}))
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Projects{
 			{
@@ -193,7 +193,7 @@ func TestHandler_ListTasks(t *testing.T) {
 }
 
 func TestHandler_UpdateTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}}))
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Projects{
 			{
@@ -316,7 +316,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 }
 
 func TestHandler_DeleteTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}}))
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Projects{
 			{
