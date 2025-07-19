@@ -43,7 +43,6 @@ func (uc *Project) CreateProject(ctx context.Context, in *CreateProjectInput) (*
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
-
 	if err := uc.DB.CreateProject(ctx, &p); err != nil {
 		return nil, fmt.Errorf("failed to create project: %w", err)
 	}

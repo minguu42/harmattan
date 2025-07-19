@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/lib/clock"
 	"gorm.io/gorm"
 )
 
@@ -20,9 +19,11 @@ type Tag struct {
 
 func (t *Tag) ToDomain() *domain.Tag {
 	return &domain.Tag{
-		ID:     t.ID,
-		UserID: t.UserID,
-		Name:   t.Name,
+		ID:        t.ID,
+		UserID:    t.UserID,
+		Name:      t.Name,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
 	}
 }
 
@@ -37,13 +38,12 @@ func (ts Tags) ToDomain() domain.Tags {
 }
 
 func (c *Client) CreateTag(ctx context.Context, t *domain.Tag) error {
-	now := clock.Now(ctx)
 	tag := Tag{
 		ID:        t.ID,
 		UserID:    t.UserID,
 		Name:      t.Name,
-		CreatedAt: now,
-		UpdatedAt: now,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
 	}
 	return c.db(ctx).Create(&tag).Error
 }
@@ -70,7 +70,7 @@ func (c *Client) GetTagByID(ctx context.Context, id domain.TagID) (*domain.Tag, 
 func (c *Client) UpdateTag(ctx context.Context, t *domain.Tag) error {
 	return c.db(ctx).Model(Tag{}).Where("id = ?", t.ID).Updates(Tag{
 		Name:      t.Name,
-		UpdatedAt: clock.Now(ctx),
+		UpdatedAt: t.UpdatedAt,
 	}).Error
 }
 

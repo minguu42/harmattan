@@ -9,6 +9,7 @@ import (
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/lib/clock"
 	"github.com/minguu42/harmattan/lib/idgen"
 )
 
@@ -32,10 +33,13 @@ type CreateTagInput struct {
 func (uc *Tag) CreateTag(ctx context.Context, in *CreateTagInput) (*TagOutput, error) {
 	user := auth.MustUserFromContext(ctx)
 
+	now := clock.Now(ctx)
 	t := domain.Tag{
-		ID:     domain.TagID(idgen.ULID(ctx)),
-		UserID: user.ID,
-		Name:   in.Name,
+		ID:        domain.TagID(idgen.ULID(ctx)),
+		UserID:    user.ID,
+		Name:      in.Name,
+		CreatedAt: now,
+		UpdatedAt: now,
 	}
 	if err := uc.DB.CreateTag(ctx, &t); err != nil {
 		return nil, fmt.Errorf("failed to create tag: %w", err)
@@ -86,6 +90,7 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 	if in.Name != nil {
 		t.Name = *in.Name
 	}
+	t.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateTag(ctx, t); err != nil {
 		return nil, fmt.Errorf("failed to update tag: %w", err)
 	}

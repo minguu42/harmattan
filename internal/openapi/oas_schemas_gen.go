@@ -545,6 +545,8 @@ type Step struct {
 	TaskID      string      `json:"task_id"`
 	Name        string      `json:"name"`
 	CompletedAt OptDateTime `json:"completed_at"`
+	CreatedAt   time.Time   `json:"created_at"`
+	UpdatedAt   time.Time   `json:"updated_at"`
 }
 
 // GetID returns the value of ID.
@@ -567,6 +569,16 @@ func (s *Step) GetCompletedAt() OptDateTime {
 	return s.CompletedAt
 }
 
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Step) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Step) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
 // SetID sets the value of ID.
 func (s *Step) SetID(val string) {
 	s.ID = val
@@ -587,10 +599,22 @@ func (s *Step) SetCompletedAt(val OptDateTime) {
 	s.CompletedAt = val
 }
 
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Step) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Step) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
 // Ref: #/components/schemas/tag
 type Tag struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // GetID returns the value of ID.
@@ -603,6 +627,16 @@ func (s *Tag) GetName() string {
 	return s.Name
 }
 
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Tag) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Tag) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
 // SetID sets the value of ID.
 func (s *Tag) SetID(val string) {
 	s.ID = val
@@ -611,6 +645,16 @@ func (s *Tag) SetID(val string) {
 // SetName sets the value of Name.
 func (s *Tag) SetName(val string) {
 	s.Name = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Tag) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Tag) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
 }
 
 // Ref: #/components/schemas/tags
