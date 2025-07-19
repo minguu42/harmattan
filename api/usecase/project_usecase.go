@@ -83,12 +83,12 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrProjectNotFound(err)
+			return nil, apperr.ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	if in.Name != nil {
@@ -117,12 +117,12 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ErrProjectNotFound(err)
+			return apperr.ProjectNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {

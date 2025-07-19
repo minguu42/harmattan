@@ -79,12 +79,12 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrTagNotFound(err)
+			return nil, apperr.TagNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return nil, apperr.ErrTagNotFound(errors.New("user does not own the tag"))
+		return nil, apperr.TagNotFoundError(errors.New("user does not own the tag"))
 	}
 
 	if in.Name != nil {
@@ -107,12 +107,12 @@ func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ErrTagNotFound(err)
+			return apperr.TagNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return apperr.ErrTagNotFound(errors.New("user does not own the tag"))
+		return apperr.TagNotFoundError(errors.New("user does not own the tag"))
 	}
 
 	if err := uc.DB.DeleteTagByID(ctx, t.ID); err != nil {

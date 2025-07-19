@@ -46,20 +46,20 @@ func ToError(err error) Error {
 	switch {
 	case errors.As(err, &appErr):
 	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
-		appErr = ErrDeadlineExceeded(err)
+		appErr = DeadlineExceededError(err)
 	case errors.As(err, &paramsErr) || errors.As(err, &requestErr):
-		appErr = ErrValidation(err)
+		appErr = ValidationError(err)
 	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
-		appErr = ErrAuthorization(err)
+		appErr = AuthorizationError(err)
 	case errors.Is(err, ogenhttp.ErrNotImplemented):
-		appErr = ErrNotImplemented()
+		appErr = NotImplementedError()
 	default:
-		appErr = ErrUnknown(err)
+		appErr = UnknownError(err)
 	}
 	return appErr
 }
 
-func ErrValidation(err error) Error {
+func ValidationError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "validation",
@@ -69,7 +69,7 @@ func ErrValidation(err error) Error {
 	}
 }
 
-func ErrUnknown(err error) Error {
+func UnknownError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "unknown",
@@ -79,7 +79,7 @@ func ErrUnknown(err error) Error {
 	}
 }
 
-func ErrPanic(err error, stacktrace []string) Error {
+func PanicError(err error, stacktrace []string) Error {
 	return Error{
 		err:             err,
 		stacktrace:      stacktrace,
@@ -90,7 +90,7 @@ func ErrPanic(err error, stacktrace []string) Error {
 	}
 }
 
-func ErrNotImplemented() Error {
+func NotImplementedError() Error {
 	return Error{
 		id:              "not-implemented",
 		statusCode:      http.StatusNotImplemented,
@@ -99,7 +99,7 @@ func ErrNotImplemented() Error {
 	}
 }
 
-func ErrDeadlineExceeded(err error) Error {
+func DeadlineExceededError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "deadline-exceeded",
@@ -109,7 +109,7 @@ func ErrDeadlineExceeded(err error) Error {
 	}
 }
 
-func ErrAuthorization(err error) Error {
+func AuthorizationError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "authorization",
@@ -119,7 +119,7 @@ func ErrAuthorization(err error) Error {
 	}
 }
 
-func ErrDuplicateUserEmail(err error) Error {
+func DuplicateUserEmailError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "duplicate-user-email",
@@ -129,7 +129,7 @@ func ErrDuplicateUserEmail(err error) Error {
 	}
 }
 
-func ErrProjectNotFound(err error) Error {
+func ProjectNotFoundError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "project-not-found",
@@ -139,7 +139,7 @@ func ErrProjectNotFound(err error) Error {
 	}
 }
 
-func ErrTaskNotFound(err error) Error {
+func TaskNotFoundError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "task-not-found",
@@ -149,7 +149,7 @@ func ErrTaskNotFound(err error) Error {
 	}
 }
 
-func ErrStepNotFound(err error) Error {
+func StepNotFoundError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "step-not-found",
@@ -159,7 +159,7 @@ func ErrStepNotFound(err error) Error {
 	}
 }
 
-func ErrTagNotFound(err error) Error {
+func TagNotFoundError(err error) Error {
 	return Error{
 		err:             err,
 		id:              "tag-not-found",

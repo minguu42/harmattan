@@ -39,12 +39,12 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrProjectNotFound(err)
+			return nil, apperr.ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	now := clock.Now(ctx)
@@ -76,12 +76,12 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*TasksOutput
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrProjectNotFound(err)
+			return nil, apperr.ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset)
@@ -113,26 +113,26 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrProjectNotFound(err)
+			return nil, apperr.ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	t, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrTaskNotFound(err)
+			return nil, apperr.TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(t) {
-		return nil, apperr.ErrTaskNotFound(errors.New("user does not own the task"))
+		return nil, apperr.TaskNotFoundError(errors.New("user does not own the task"))
 	}
 	if p.ID != t.ProjectID {
-		return nil, apperr.ErrTaskNotFound(errors.New("task does not belong to the project"))
+		return nil, apperr.TaskNotFoundError(errors.New("task does not belong to the project"))
 	}
 
 	if in.Name != nil {
@@ -168,26 +168,26 @@ func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ErrProjectNotFound(err)
+			return apperr.ProjectNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	t, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ErrTaskNotFound(err)
+			return apperr.TaskNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(t) {
-		return apperr.ErrTaskNotFound(errors.New("user does not own the task"))
+		return apperr.TaskNotFoundError(errors.New("user does not own the task"))
 	}
 	if p.ID != t.ProjectID {
-		return apperr.ErrTaskNotFound(errors.New("task does not belong to the project"))
+		return apperr.TaskNotFoundError(errors.New("task does not belong to the project"))
 	}
 
 	if err := uc.DB.DeleteTaskByID(ctx, t.ID); err != nil {

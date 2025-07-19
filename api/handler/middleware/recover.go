@@ -39,7 +39,7 @@ func Recover() middleware.Middleware {
 					funcName := fullFuncName[strings.LastIndex(fullFuncName, "/")+1:]
 					stacktrace = append(stacktrace, fmt.Sprintf("%s:%d %s", f, line, funcName))
 				}
-				err = apperr.ErrPanic(errors.New(message), stacktrace)
+				err = apperr.PanicError(errors.New(message), stacktrace)
 			}
 		}()
 
