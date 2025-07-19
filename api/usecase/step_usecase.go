@@ -34,12 +34,12 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrTaskNotFound(err)
+			return nil, apperr.TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, apperr.ErrTaskNotFound(errors.New("user does not own the task"))
+		return nil, apperr.TaskNotFoundError(errors.New("user does not own the task"))
 	}
 
 	now := clock.Now(ctx)
@@ -72,40 +72,40 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrProjectNotFound(err)
+			return nil, apperr.ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrTaskNotFound(err)
+			return nil, apperr.TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(t) {
-		return nil, apperr.ErrTaskNotFound(errors.New("user does not own the task"))
+		return nil, apperr.TaskNotFoundError(errors.New("user does not own the task"))
 	}
 	if p.ID != t.ProjectID {
-		return nil, apperr.ErrTaskNotFound(errors.New("task does not belong to the project"))
+		return nil, apperr.TaskNotFoundError(errors.New("task does not belong to the project"))
 	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ErrStepNotFound(err)
+			return nil, apperr.StepNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return nil, apperr.ErrStepNotFound(errors.New("user does not own the step"))
+		return nil, apperr.StepNotFoundError(errors.New("user does not own the step"))
 	}
 	if t.ID != s.TaskID {
-		return nil, apperr.ErrStepNotFound(errors.New("step does not belong to the task"))
+		return nil, apperr.StepNotFoundError(errors.New("step does not belong to the task"))
 	}
 
 	if in.Name != nil {
@@ -134,40 +134,40 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ErrProjectNotFound(err)
+			return apperr.ProjectNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return apperr.ErrProjectNotFound(errors.New("user does not own the project"))
+		return apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
 	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ErrTaskNotFound(err)
+			return apperr.TaskNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(t) {
-		return apperr.ErrTaskNotFound(errors.New("user does not own the task"))
+		return apperr.TaskNotFoundError(errors.New("user does not own the task"))
 	}
 	if p.ID != t.ProjectID {
-		return apperr.ErrTaskNotFound(errors.New("task does not belong to the project"))
+		return apperr.TaskNotFoundError(errors.New("task does not belong to the project"))
 	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ErrStepNotFound(err)
+			return apperr.StepNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return apperr.ErrStepNotFound(errors.New("user does not own the step"))
+		return apperr.StepNotFoundError(errors.New("user does not own the step"))
 	}
 	if t.ID != s.TaskID {
-		return apperr.ErrStepNotFound(errors.New("step does not belong to the task"))
+		return apperr.StepNotFoundError(errors.New("step does not belong to the task"))
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {

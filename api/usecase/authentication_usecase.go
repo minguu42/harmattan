@@ -41,7 +41,7 @@ type SignUpOutput struct {
 
 func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpOutput, error) {
 	if _, err := uc.DB.GetUserByEmail(ctx, in.Email); !errors.Is(err, database.ErrModelNotFound) {
-		return nil, apperr.ErrDuplicateUserEmail(err)
+		return nil, apperr.DuplicateUserEmailError(err)
 	}
 
 	user, err := in.User(ctx)
