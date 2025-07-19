@@ -39,11 +39,16 @@ func (e Error) MessageJapanese() string {
 }
 
 func ToError(err error) Error {
+	var requestErr *ogenerrors.DecodeRequestError
+	var paramsErr *ogenerrors.DecodeParamsError
+
 	var appErr Error
 	switch {
 	case errors.As(err, &appErr):
 	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
 		appErr = ErrDeadlineExceeded(err)
+	case errors.As(err, &paramsErr) || errors.As(err, &requestErr):
+		appErr = ErrValidation(err)
 	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
 		appErr = ErrAuthorization(err)
 	case errors.Is(err, ogenhttp.ErrNotImplemented):
@@ -52,6 +57,16 @@ func ToError(err error) Error {
 		appErr = ErrUnknown(err)
 	}
 	return appErr
+}
+
+func ErrValidation(err error) Error {
+	return Error{
+		err:             err,
+		id:              "validation",
+		statusCode:      http.StatusBadRequest,
+		message:         "a validation error occurred",
+		messageJapanese: "リクエストに何らかの間違いがあります",
+	}
 }
 
 func ErrUnknown(err error) Error {
