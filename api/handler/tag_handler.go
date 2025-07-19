@@ -9,10 +9,12 @@ import (
 	"github.com/minguu42/harmattan/internal/openapi"
 )
 
-func convertTag(tag *domain.Tag) *openapi.Tag {
+func convertTag(t *domain.Tag) *openapi.Tag {
 	return &openapi.Tag{
-		ID:   string(tag.ID),
-		Name: tag.Name,
+		ID:        string(t.ID),
+		Name:      t.Name,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
 	}
 }
 

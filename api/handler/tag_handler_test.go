@@ -15,8 +15,10 @@ func TestHandler_CreateTag(t *testing.T) {
 	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
 
 	want := &openapi.Tag{
-		ID:   fixedID,
-		Name: "テストタグ",
+		ID:        fixedID,
+		Name:      "テストタグ",
+		CreatedAt: fixedNow,
+		UpdatedAt: fixedNow,
 	}
 	httpcheck.New(th).Test(t, "POST", "/tags").
 		WithHeader("Authorization", "Bearer "+token).
@@ -49,8 +51,8 @@ func TestHandler_ListTags(t *testing.T) {
 	t.Run("no limit and offset", func(t *testing.T) {
 		want := &openapi.Tags{
 			Tags: []openapi.Tag{
-				{ID: "TAG-0000000000000000000001", Name: "タグ1"},
-				{ID: "TAG-0000000000000000000002", Name: "タグ2"},
+				{ID: "TAG-0000000000000000000001", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+				{ID: "TAG-0000000000000000000002", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 			},
 			HasNext: false,
 		}
@@ -60,7 +62,7 @@ func TestHandler_ListTags(t *testing.T) {
 	})
 	t.Run("limit=1&offset=0", func(t *testing.T) {
 		want := &openapi.Tags{
-			Tags:    []openapi.Tag{{ID: "TAG-0000000000000000000001", Name: "タグ1"}},
+			Tags:    []openapi.Tag{{ID: "TAG-0000000000000000000001", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)}},
 			HasNext: true,
 		}
 		httpcheck.New(th).Test(t, "GET", "/tags?limit=1&offset=0").
@@ -69,7 +71,7 @@ func TestHandler_ListTags(t *testing.T) {
 	})
 	t.Run("limit=1&offset=1", func(t *testing.T) {
 		want := &openapi.Tags{
-			Tags:    []openapi.Tag{{ID: "TAG-0000000000000000000002", Name: "タグ2"}},
+			Tags:    []openapi.Tag{{ID: "TAG-0000000000000000000002", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)}},
 			HasNext: false,
 		}
 		httpcheck.New(th).Test(t, "GET", "/tags?limit=1&offset=1").
@@ -101,8 +103,10 @@ func TestHandler_UpdateTag(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		want := &openapi.Tag{
-			ID:   "TAG-0000000000000000000001",
-			Name: "更新後タグ",
+			ID:        "TAG-0000000000000000000001",
+			Name:      "更新後タグ",
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			UpdatedAt: fixedNow,
 		}
 		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).

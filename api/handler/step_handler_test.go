@@ -35,9 +35,11 @@ func TestHandler_CreateStep(t *testing.T) {
 	}))
 
 	want := &openapi.Step{
-		ID:     fixedID,
-		TaskID: "TASK-000000000000000000001",
-		Name:   "テストステップ",
+		ID:        fixedID,
+		TaskID:    "TASK-000000000000000000001",
+		Name:      "テストステップ",
+		CreatedAt: fixedNow,
+		UpdatedAt: fixedNow,
 	}
 	httpcheck.New(th).Test(t, "POST", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001/steps").
 		WithHeader("Authorization", "Bearer "+token).
@@ -78,9 +80,11 @@ func TestHandler_UpdateStep(t *testing.T) {
 	}))
 
 	want := &openapi.Step{
-		ID:     "STEP-000000000000000000001",
-		TaskID: "TASK-000000000000000000001",
-		Name:   "更新されたステップ",
+		ID:        "STEP-000000000000000000001",
+		TaskID:    "TASK-000000000000000000001",
+		Name:      "更新されたステップ",
+		CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+		UpdatedAt: fixedNow,
 	}
 	httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
 		WithHeader("Authorization", "Bearer "+token).
