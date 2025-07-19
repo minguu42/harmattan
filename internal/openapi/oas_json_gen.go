@@ -1925,18 +1925,36 @@ func (s *Task) encodeFields(e *jx.Encoder) {
 		e.FieldStart("updated_at")
 		json.EncodeDateTime(e, s.UpdatedAt)
 	}
+	{
+		e.FieldStart("steps")
+		e.ArrStart()
+		for _, elem := range s.Steps {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+	{
+		e.FieldStart("tags")
+		e.ArrStart()
+		for _, elem := range s.Tags {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
 }
 
-var jsonFieldsNameOfTask = [9]string{
-	0: "id",
-	1: "project_id",
-	2: "name",
-	3: "content",
-	4: "priority",
-	5: "due_on",
-	6: "completed_at",
-	7: "created_at",
-	8: "updated_at",
+var jsonFieldsNameOfTask = [11]string{
+	0:  "id",
+	1:  "project_id",
+	2:  "name",
+	3:  "content",
+	4:  "priority",
+	5:  "due_on",
+	6:  "completed_at",
+	7:  "created_at",
+	8:  "updated_at",
+	9:  "steps",
+	10: "tags",
 }
 
 // Decode decodes Task from json.
@@ -2052,6 +2070,42 @@ func (s *Task) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"updated_at\"")
 			}
+		case "steps":
+			requiredBitSet[1] |= 1 << 1
+			if err := func() error {
+				s.Steps = make([]Step, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem Step
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Steps = append(s.Steps, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"steps\"")
+			}
+		case "tags":
+			requiredBitSet[1] |= 1 << 2
+			if err := func() error {
+				s.Tags = make([]Tag, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem Tag
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Tags = append(s.Tags, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tags\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -2063,7 +2117,7 @@ func (s *Task) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b10011111,
-		0b00000001,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

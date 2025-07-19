@@ -15,6 +15,8 @@ type Task struct {
 	CompletedAt *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	Steps       Steps
+	Tags        Tags
 }
 
 type Tasks []Task

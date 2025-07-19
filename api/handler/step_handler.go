@@ -20,6 +20,14 @@ func convertStep(s *domain.Step) *openapi.Step {
 	}
 }
 
+func convertSteps(steps domain.Steps) []openapi.Step {
+	s := make([]openapi.Step, 0, len(steps))
+	for _, step := range steps {
+		s = append(s, *convertStep(&step))
+	}
+	return s
+}
+
 func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, params openapi.CreateStepParams) (*openapi.Step, error) {
 	out, err := h.step.CreateStep(ctx, &usecase.CreateStepInput{
 		TaskID: domain.TaskID(params.TaskID),

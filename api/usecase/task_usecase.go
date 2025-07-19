@@ -53,7 +53,6 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 		UserID:    user.ID,
 		ProjectID: in.ProjectID,
 		Name:      in.Name,
-		Content:   "",
 		Priority:  in.Priority,
 		CreatedAt: now,
 		UpdatedAt: now,
