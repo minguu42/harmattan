@@ -26,18 +26,18 @@ func Recover() middleware.Middleware {
 
 				var stacktrace []string
 				for depth := 1; ; depth++ {
-					pc, f, line, ok := runtime.Caller(depth)
+					pc, file, line, ok := runtime.Caller(depth)
 					if !ok {
 						break
 					}
 					// 出力するスタックトレースの量を減らすために基盤部分のスタックトレースは出力しない
-					if name := f[strings.LastIndex(f, "/")+1:]; name == "oas_handlers_gen.go" {
+					if name := file[strings.LastIndex(file, "/")+1:]; name == "oas_handlers_gen.go" {
 						break
 					}
 
 					fullFuncName := runtime.FuncForPC(pc).Name()
 					funcName := fullFuncName[strings.LastIndex(fullFuncName, "/")+1:]
-					stacktrace = append(stacktrace, fmt.Sprintf("%s:%d %s", f, line, funcName))
+					stacktrace = append(stacktrace, fmt.Sprintf("%s:%d %s", file, line, funcName))
 				}
 				err = apperr.PanicError(errors.New(message), stacktrace)
 			}
