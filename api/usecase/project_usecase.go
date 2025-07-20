@@ -28,7 +28,7 @@ type ProjectsOutput struct {
 
 type CreateProjectInput struct {
 	Name  string
-	Color string
+	Color domain.ProjectColor
 }
 
 func (uc *Project) CreateProject(ctx context.Context, in *CreateProjectInput) (*ProjectOutput, error) {
@@ -73,7 +73,7 @@ func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*Pr
 type UpdateProjectInput struct {
 	ID         domain.ProjectID
 	Name       *string
-	Color      *string
+	Color      *domain.ProjectColor
 	IsArchived *bool
 }
 

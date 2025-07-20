@@ -90,8 +90,7 @@ paths:
                   maxLength: 20
                 color:
                   type: string
-                  minLength: 7
-                  maxLength: 7
+                  enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
               required: [name, color]
         required: true
       responses:
@@ -136,8 +135,7 @@ paths:
                   maxLength: 20
                 color:
                   type: string
-                  minLength: 7
-                  maxLength: 7
+                  enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
                 is_archived:
                   type: boolean
         required: true
@@ -401,6 +399,7 @@ components:
           type: string
         color:
           type: string
+          enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
         is_archived:
           type: boolean
         created_at:

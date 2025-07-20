@@ -3,7 +3,9 @@ package handler
 import (
 	"time"
 
+	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
+	"github.com/minguu42/harmattan/lib/pointers"
 )
 
 func convertOptBool(v openapi.OptBool) *bool {
@@ -23,6 +25,13 @@ func convertOptInt(o openapi.OptInt) *int {
 func convertOptString(v openapi.OptString) *string {
 	if v.Set {
 		return &v.Value
+	}
+	return nil
+}
+
+func convertOptColorString(v openapi.OptUpdateProjectReqColor) *domain.ProjectColor {
+	if v.Set {
+		return pointers.Ref(domain.ProjectColor(v.Value))
 	}
 	return nil
 }

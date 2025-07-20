@@ -125,7 +125,7 @@ func (s *CreateProjectReq) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("color")
-		e.Str(s.Color)
+		s.Color.Encode(e)
 	}
 }
 
@@ -158,9 +158,7 @@ func (s *CreateProjectReq) Decode(d *jx.Decoder) error {
 		case "color":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Str()
-				s.Color = string(v)
-				if err != nil {
+				if err := s.Color.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -219,6 +217,62 @@ func (s *CreateProjectReq) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *CreateProjectReq) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes CreateProjectReqColor as json.
+func (s CreateProjectReqColor) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes CreateProjectReqColor from json.
+func (s *CreateProjectReqColor) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CreateProjectReqColor to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch CreateProjectReqColor(v) {
+	case CreateProjectReqColorBlue:
+		*s = CreateProjectReqColorBlue
+	case CreateProjectReqColorBrown:
+		*s = CreateProjectReqColorBrown
+	case CreateProjectReqColorDefault:
+		*s = CreateProjectReqColorDefault
+	case CreateProjectReqColorGray:
+		*s = CreateProjectReqColorGray
+	case CreateProjectReqColorGreen:
+		*s = CreateProjectReqColorGreen
+	case CreateProjectReqColorOrange:
+		*s = CreateProjectReqColorOrange
+	case CreateProjectReqColorPink:
+		*s = CreateProjectReqColorPink
+	case CreateProjectReqColorPurple:
+		*s = CreateProjectReqColorPurple
+	case CreateProjectReqColorRed:
+		*s = CreateProjectReqColorRed
+	case CreateProjectReqColorYellow:
+		*s = CreateProjectReqColorYellow
+	default:
+		*s = CreateProjectReqColor(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s CreateProjectReqColor) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CreateProjectReqColor) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -703,6 +757,39 @@ func (s *OptString) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes UpdateProjectReqColor as json.
+func (o OptUpdateProjectReqColor) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes UpdateProjectReqColor from json.
+func (o *OptUpdateProjectReqColor) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptUpdateProjectReqColor to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptUpdateProjectReqColor) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptUpdateProjectReqColor) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *Project) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -722,7 +809,7 @@ func (s *Project) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("color")
-		e.Str(s.Color)
+		s.Color.Encode(e)
 	}
 	{
 		e.FieldStart("is_archived")
@@ -783,9 +870,7 @@ func (s *Project) Decode(d *jx.Decoder) error {
 		case "color":
 			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				v, err := d.Str()
-				s.Color = string(v)
-				if err != nil {
+				if err := s.Color.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -880,6 +965,62 @@ func (s *Project) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *Project) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes ProjectColor as json.
+func (s ProjectColor) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes ProjectColor from json.
+func (s *ProjectColor) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ProjectColor to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch ProjectColor(v) {
+	case ProjectColorBlue:
+		*s = ProjectColorBlue
+	case ProjectColorBrown:
+		*s = ProjectColorBrown
+	case ProjectColorDefault:
+		*s = ProjectColorDefault
+	case ProjectColorGray:
+		*s = ProjectColorGray
+	case ProjectColorGreen:
+		*s = ProjectColorGreen
+	case ProjectColorOrange:
+		*s = ProjectColorOrange
+	case ProjectColorPink:
+		*s = ProjectColorPink
+	case ProjectColorPurple:
+		*s = ProjectColorPurple
+	case ProjectColorRed:
+		*s = ProjectColorRed
+	case ProjectColorYellow:
+		*s = ProjectColorYellow
+	default:
+		*s = ProjectColor(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s ProjectColor) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ProjectColor) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -2379,6 +2520,62 @@ func (s *UpdateProjectReq) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *UpdateProjectReq) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes UpdateProjectReqColor as json.
+func (s UpdateProjectReqColor) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes UpdateProjectReqColor from json.
+func (s *UpdateProjectReqColor) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode UpdateProjectReqColor to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch UpdateProjectReqColor(v) {
+	case UpdateProjectReqColorBlue:
+		*s = UpdateProjectReqColorBlue
+	case UpdateProjectReqColorBrown:
+		*s = UpdateProjectReqColorBrown
+	case UpdateProjectReqColorDefault:
+		*s = UpdateProjectReqColorDefault
+	case UpdateProjectReqColorGray:
+		*s = UpdateProjectReqColorGray
+	case UpdateProjectReqColorGreen:
+		*s = UpdateProjectReqColorGreen
+	case UpdateProjectReqColorOrange:
+		*s = UpdateProjectReqColorOrange
+	case UpdateProjectReqColorPink:
+		*s = UpdateProjectReqColorPink
+	case UpdateProjectReqColorPurple:
+		*s = UpdateProjectReqColorPurple
+	case UpdateProjectReqColorRed:
+		*s = UpdateProjectReqColorRed
+	case UpdateProjectReqColorYellow:
+		*s = UpdateProjectReqColorYellow
+	default:
+		*s = UpdateProjectReqColor(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s UpdateProjectReqColor) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *UpdateProjectReqColor) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

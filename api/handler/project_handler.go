@@ -13,7 +13,7 @@ func convertProject(project *domain.Project) *openapi.Project {
 	return &openapi.Project{
 		ID:         string(project.ID),
 		Name:       project.Name,
-		Color:      project.Color,
+		Color:      openapi.ProjectColor(project.Color),
 		IsArchived: project.IsArchived,
 		CreatedAt:  project.CreatedAt,
 		UpdatedAt:  project.UpdatedAt,
@@ -31,7 +31,7 @@ func convertProjects(projects domain.Projects) []openapi.Project {
 func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectReq) (*openapi.Project, error) {
 	out, err := h.project.CreateProject(ctx, &usecase.CreateProjectInput{
 		Name:  req.Name,
-		Color: req.Color,
+		Color: domain.ProjectColor(req.Color),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute CreateProject usecase: %w", err)
@@ -57,7 +57,7 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 	out, err := h.project.UpdateProject(ctx, &usecase.UpdateProjectInput{
 		ID:         domain.ProjectID(params.ProjectID),
 		Name:       convertOptString(req.Name),
-		Color:      convertOptString(req.Color),
+		Color:      convertOptColorString(req.Color),
 		IsArchived: convertOptBool(req.IsArchived),
 	})
 	if err != nil {
