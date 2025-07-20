@@ -72,11 +72,14 @@ type SignInOutput struct {
 func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInOutput, error) {
 	user, err := uc.DB.GetUserByEmail(ctx, in.Email)
 	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return nil, apperr.InvalidEmailOrPasswordError(err)
+		}
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
-	if bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(in.Password)) != nil {
-		return nil, errors.New("password is not valid")
+	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(in.Password)); err != nil {
+		return nil, apperr.InvalidEmailOrPasswordError(err)
 	}
 
 	token, err := uc.Auth.CreateIDToken(ctx, user.ID)

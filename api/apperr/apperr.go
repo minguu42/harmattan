@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	ogenhttp "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/ogenerrors"
@@ -66,6 +67,37 @@ func ValidationError(err error) Error {
 		statusCode:      http.StatusBadRequest,
 		message:         "a validation error occurred",
 		messageJapanese: "リクエストに何らかの間違いがあります",
+	}
+}
+
+func DomainValidationError(errs []error) Error {
+	messageJapanese := "リクエストに何らかの間違いがあります"
+	if len(errs) == 1 {
+		messageJapanese = errs[0].Error()
+	} else if len(errs) > 1 {
+		messages := make([]string, 0, len(errs))
+		for _, err := range errs {
+			messages = append(messages, fmt.Sprintf("・%s", err.Error()))
+		}
+		messageJapanese = "リクエストに以下の問題があります。\n"
+		messageJapanese += strings.Join(messages, "\n")
+	}
+	return Error{
+		err:             errors.Join(errs...),
+		id:              "domain-validation",
+		statusCode:      http.StatusBadRequest,
+		message:         "a validation error occurred",
+		messageJapanese: messageJapanese,
+	}
+}
+
+func InvalidEmailOrPasswordError(err error) Error {
+	return Error{
+		err:             err,
+		id:              "invalid-email-or-password",
+		statusCode:      http.StatusBadRequest,
+		message:         "email or password is not valid",
+		messageJapanese: "メールアドレスかパスワードに誤りがあります",
 	}
 }
 
