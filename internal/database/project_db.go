@@ -13,7 +13,7 @@ type Project struct {
 	ID         domain.ProjectID
 	UserID     domain.UserID
 	Name       string
-	Color      string
+	Color      domain.ProjectColor
 	IsArchived bool
 	CreatedAt  time.Time
 	UpdatedAt  time.Time

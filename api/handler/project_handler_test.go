@@ -17,14 +17,14 @@ func TestHandler_CreateProject(t *testing.T) {
 	want := &openapi.Project{
 		ID:        fixedID,
 		Name:      "テストプロジェクト",
-		Color:     "#1E3A8A",
+		Color:     "blue",
 		CreatedAt: fixedNow,
 		UpdatedAt: fixedNow,
 	}
 	httpcheck.New(th).Test(t, "POST", "/projects").
 		WithHeader("Authorization", "Bearer "+token).
 		WithHeader("Content-Type", "application/json").
-		WithBody([]byte(`{"name": "テストプロジェクト", "color": "#1E3A8A"}`)).
+		WithBody([]byte(`{"name": "テストプロジェクト", "color": "blue"}`)).
 		Check().
 		HasStatus(200).
 		HasJSON(want)
@@ -38,7 +38,7 @@ func TestHandler_ListProjects(t *testing.T) {
 				ID:        "PROJECT-000000000000000001",
 				UserID:    testUserID,
 				Name:      "プロジェクト1",
-				Color:     "#1E3A8A",
+				Color:     "blue",
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
@@ -46,7 +46,7 @@ func TestHandler_ListProjects(t *testing.T) {
 				ID:        "PROJECT-000000000000000002",
 				UserID:    testUserID,
 				Name:      "プロジェクト2",
-				Color:     "#FFFFFF",
+				Color:     "gray",
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
@@ -59,14 +59,14 @@ func TestHandler_ListProjects(t *testing.T) {
 				{
 					ID:        "PROJECT-000000000000000001",
 					Name:      "プロジェクト1",
-					Color:     "#1E3A8A",
+					Color:     "blue",
 					CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 				},
 				{
 					ID:        "PROJECT-000000000000000002",
 					Name:      "プロジェクト2",
-					Color:     "#FFFFFF",
+					Color:     "gray",
 					CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 				},
@@ -83,7 +83,7 @@ func TestHandler_ListProjects(t *testing.T) {
 				{
 					ID:        "PROJECT-000000000000000001",
 					Name:      "プロジェクト1",
-					Color:     "#1E3A8A",
+					Color:     "blue",
 					CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 				},
@@ -100,7 +100,7 @@ func TestHandler_ListProjects(t *testing.T) {
 				{
 					ID:        "PROJECT-000000000000000002",
 					Name:      "プロジェクト2",
-					Color:     "#FFFFFF",
+					Color:     "gray",
 					CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 				},
@@ -121,7 +121,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 				ID:        "PROJECT-000000000000000001",
 				UserID:    testUserID,
 				Name:      "プロジェクト1",
-				Color:     "#1A2B3C",
+				Color:     "blue",
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},
@@ -129,7 +129,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 				ID:        "PROJECT-000000000000000002",
 				UserID:    "USER-000000000000000000002",
 				Name:      "プロジェクト2",
-				Color:     "#111111",
+				Color:     "gray",
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},
@@ -140,7 +140,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 		want := &openapi.Project{
 			ID:         "PROJECT-000000000000000001",
 			Name:       "更新後プロジェクト",
-			Color:      "#FFFFFF",
+			Color:      "gray",
 			IsArchived: true,
 			CreatedAt:  time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			UpdatedAt:  fixedNow,
@@ -148,7 +148,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "#FFFFFF", "is_archived": true}`)).
+			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
 			Check().HasStatus(200).HasJSON(want)
 	})
 	t.Run("project not found", func(t *testing.T) {
@@ -156,7 +156,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "#FFFFFF", "is_archived": true}`)).
+			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
 	t.Run("user does not own the project", func(t *testing.T) {
@@ -164,7 +164,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "#FFFFFF", "is_archived": true}`)).
+			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
 }
@@ -177,7 +177,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 				ID:        "PROJECT-000000000000000001",
 				UserID:    testUserID,
 				Name:      "プロジェクト1",
-				Color:     "#1A2B3C",
+				Color:     "blue",
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},
@@ -185,7 +185,7 @@ func TestHandler_DeleteProject(t *testing.T) {
 				ID:        "PROJECT-000000000000000002",
 				UserID:    "USER-000000000000000000002",
 				Name:      "プロジェクト2",
-				Color:     "#111111",
+				Color:     "gray",
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},

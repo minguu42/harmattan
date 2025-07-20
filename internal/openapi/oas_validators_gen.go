@@ -36,16 +36,8 @@ func (s *CreateProjectReq) Validate() error {
 		})
 	}
 	if err := func() error {
-		if err := (validate.String{
-			MinLength:    7,
-			MinLengthSet: true,
-			MaxLength:    7,
-			MaxLengthSet: true,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Color)); err != nil {
-			return errors.Wrap(err, "string")
+		if err := s.Color.Validate(); err != nil {
+			return err
 		}
 		return nil
 	}(); err != nil {
@@ -58,6 +50,33 @@ func (s *CreateProjectReq) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s CreateProjectReqColor) Validate() error {
+	switch s {
+	case "blue":
+		return nil
+	case "brown":
+		return nil
+	case "default":
+		return nil
+	case "gray":
+		return nil
+	case "green":
+		return nil
+	case "orange":
+		return nil
+	case "pink":
+		return nil
+	case "purple":
+		return nil
+	case "red":
+		return nil
+	case "yellow":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *CreateStepReq) Validate() error {
@@ -173,6 +192,56 @@ func (s *CreateTaskReq) Validate() error {
 	return nil
 }
 
+func (s *Project) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Color.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "color",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s ProjectColor) Validate() error {
+	switch s {
+	case "blue":
+		return nil
+	case "brown":
+		return nil
+	case "default":
+		return nil
+	case "gray":
+		return nil
+	case "green":
+		return nil
+	case "orange":
+		return nil
+	case "pink":
+		return nil
+	case "purple":
+		return nil
+	case "red":
+		return nil
+	case "yellow":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *Projects) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -182,6 +251,23 @@ func (s *Projects) Validate() error {
 	if err := func() error {
 		if s.Projects == nil {
 			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Projects {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
@@ -328,16 +414,8 @@ func (s *UpdateProjectReq) Validate() error {
 	if err := func() error {
 		if value, ok := s.Color.Get(); ok {
 			if err := func() error {
-				if err := (validate.String{
-					MinLength:    7,
-					MinLengthSet: true,
-					MaxLength:    7,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(value)); err != nil {
-					return errors.Wrap(err, "string")
+				if err := value.Validate(); err != nil {
+					return err
 				}
 				return nil
 			}(); err != nil {
@@ -355,6 +433,33 @@ func (s *UpdateProjectReq) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s UpdateProjectReqColor) Validate() error {
+	switch s {
+	case "blue":
+		return nil
+	case "brown":
+		return nil
+	case "default":
+		return nil
+	case "gray":
+		return nil
+	case "green":
+		return nil
+	case "orange":
+		return nil
+	case "pink":
+		return nil
+	case "purple":
+		return nil
+	case "red":
+		return nil
+	case "yellow":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *UpdateStepReq) Validate() error {

@@ -4,6 +4,8 @@ package openapi
 
 import (
 	"time"
+
+	"github.com/go-faster/errors"
 )
 
 type BearerAuth struct {
@@ -46,8 +48,8 @@ func (s *CheckHealthOK) SetRevision(val string) {
 }
 
 type CreateProjectReq struct {
-	Name  string `json:"name"`
-	Color string `json:"color"`
+	Name  string                `json:"name"`
+	Color CreateProjectReqColor `json:"color"`
 }
 
 // GetName returns the value of Name.
@@ -56,7 +58,7 @@ func (s *CreateProjectReq) GetName() string {
 }
 
 // GetColor returns the value of Color.
-func (s *CreateProjectReq) GetColor() string {
+func (s *CreateProjectReq) GetColor() CreateProjectReqColor {
 	return s.Color
 }
 
@@ -66,8 +68,105 @@ func (s *CreateProjectReq) SetName(val string) {
 }
 
 // SetColor sets the value of Color.
-func (s *CreateProjectReq) SetColor(val string) {
+func (s *CreateProjectReq) SetColor(val CreateProjectReqColor) {
 	s.Color = val
+}
+
+type CreateProjectReqColor string
+
+const (
+	CreateProjectReqColorBlue    CreateProjectReqColor = "blue"
+	CreateProjectReqColorBrown   CreateProjectReqColor = "brown"
+	CreateProjectReqColorDefault CreateProjectReqColor = "default"
+	CreateProjectReqColorGray    CreateProjectReqColor = "gray"
+	CreateProjectReqColorGreen   CreateProjectReqColor = "green"
+	CreateProjectReqColorOrange  CreateProjectReqColor = "orange"
+	CreateProjectReqColorPink    CreateProjectReqColor = "pink"
+	CreateProjectReqColorPurple  CreateProjectReqColor = "purple"
+	CreateProjectReqColorRed     CreateProjectReqColor = "red"
+	CreateProjectReqColorYellow  CreateProjectReqColor = "yellow"
+)
+
+// AllValues returns all CreateProjectReqColor values.
+func (CreateProjectReqColor) AllValues() []CreateProjectReqColor {
+	return []CreateProjectReqColor{
+		CreateProjectReqColorBlue,
+		CreateProjectReqColorBrown,
+		CreateProjectReqColorDefault,
+		CreateProjectReqColorGray,
+		CreateProjectReqColorGreen,
+		CreateProjectReqColorOrange,
+		CreateProjectReqColorPink,
+		CreateProjectReqColorPurple,
+		CreateProjectReqColorRed,
+		CreateProjectReqColorYellow,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s CreateProjectReqColor) MarshalText() ([]byte, error) {
+	switch s {
+	case CreateProjectReqColorBlue:
+		return []byte(s), nil
+	case CreateProjectReqColorBrown:
+		return []byte(s), nil
+	case CreateProjectReqColorDefault:
+		return []byte(s), nil
+	case CreateProjectReqColorGray:
+		return []byte(s), nil
+	case CreateProjectReqColorGreen:
+		return []byte(s), nil
+	case CreateProjectReqColorOrange:
+		return []byte(s), nil
+	case CreateProjectReqColorPink:
+		return []byte(s), nil
+	case CreateProjectReqColorPurple:
+		return []byte(s), nil
+	case CreateProjectReqColorRed:
+		return []byte(s), nil
+	case CreateProjectReqColorYellow:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *CreateProjectReqColor) UnmarshalText(data []byte) error {
+	switch CreateProjectReqColor(data) {
+	case CreateProjectReqColorBlue:
+		*s = CreateProjectReqColorBlue
+		return nil
+	case CreateProjectReqColorBrown:
+		*s = CreateProjectReqColorBrown
+		return nil
+	case CreateProjectReqColorDefault:
+		*s = CreateProjectReqColorDefault
+		return nil
+	case CreateProjectReqColorGray:
+		*s = CreateProjectReqColorGray
+		return nil
+	case CreateProjectReqColorGreen:
+		*s = CreateProjectReqColorGreen
+		return nil
+	case CreateProjectReqColorOrange:
+		*s = CreateProjectReqColorOrange
+		return nil
+	case CreateProjectReqColorPink:
+		*s = CreateProjectReqColorPink
+		return nil
+	case CreateProjectReqColorPurple:
+		*s = CreateProjectReqColorPurple
+		return nil
+	case CreateProjectReqColorRed:
+		*s = CreateProjectReqColorRed
+		return nil
+	case CreateProjectReqColorYellow:
+		*s = CreateProjectReqColorYellow
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type CreateStepReq struct {
@@ -365,14 +464,60 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+// NewOptUpdateProjectReqColor returns new OptUpdateProjectReqColor with value set to v.
+func NewOptUpdateProjectReqColor(v UpdateProjectReqColor) OptUpdateProjectReqColor {
+	return OptUpdateProjectReqColor{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptUpdateProjectReqColor is optional UpdateProjectReqColor.
+type OptUpdateProjectReqColor struct {
+	Value UpdateProjectReqColor
+	Set   bool
+}
+
+// IsSet returns true if OptUpdateProjectReqColor was set.
+func (o OptUpdateProjectReqColor) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptUpdateProjectReqColor) Reset() {
+	var v UpdateProjectReqColor
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptUpdateProjectReqColor) SetTo(v UpdateProjectReqColor) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptUpdateProjectReqColor) Get() (v UpdateProjectReqColor, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptUpdateProjectReqColor) Or(d UpdateProjectReqColor) UpdateProjectReqColor {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // Ref: #/components/schemas/project
 type Project struct {
-	ID         string    `json:"id"`
-	Name       string    `json:"name"`
-	Color      string    `json:"color"`
-	IsArchived bool      `json:"is_archived"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
+	ID         string       `json:"id"`
+	Name       string       `json:"name"`
+	Color      ProjectColor `json:"color"`
+	IsArchived bool         `json:"is_archived"`
+	CreatedAt  time.Time    `json:"created_at"`
+	UpdatedAt  time.Time    `json:"updated_at"`
 }
 
 // GetID returns the value of ID.
@@ -386,7 +531,7 @@ func (s *Project) GetName() string {
 }
 
 // GetColor returns the value of Color.
-func (s *Project) GetColor() string {
+func (s *Project) GetColor() ProjectColor {
 	return s.Color
 }
 
@@ -416,7 +561,7 @@ func (s *Project) SetName(val string) {
 }
 
 // SetColor sets the value of Color.
-func (s *Project) SetColor(val string) {
+func (s *Project) SetColor(val ProjectColor) {
 	s.Color = val
 }
 
@@ -433,6 +578,103 @@ func (s *Project) SetCreatedAt(val time.Time) {
 // SetUpdatedAt sets the value of UpdatedAt.
 func (s *Project) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
+}
+
+type ProjectColor string
+
+const (
+	ProjectColorBlue    ProjectColor = "blue"
+	ProjectColorBrown   ProjectColor = "brown"
+	ProjectColorDefault ProjectColor = "default"
+	ProjectColorGray    ProjectColor = "gray"
+	ProjectColorGreen   ProjectColor = "green"
+	ProjectColorOrange  ProjectColor = "orange"
+	ProjectColorPink    ProjectColor = "pink"
+	ProjectColorPurple  ProjectColor = "purple"
+	ProjectColorRed     ProjectColor = "red"
+	ProjectColorYellow  ProjectColor = "yellow"
+)
+
+// AllValues returns all ProjectColor values.
+func (ProjectColor) AllValues() []ProjectColor {
+	return []ProjectColor{
+		ProjectColorBlue,
+		ProjectColorBrown,
+		ProjectColorDefault,
+		ProjectColorGray,
+		ProjectColorGreen,
+		ProjectColorOrange,
+		ProjectColorPink,
+		ProjectColorPurple,
+		ProjectColorRed,
+		ProjectColorYellow,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ProjectColor) MarshalText() ([]byte, error) {
+	switch s {
+	case ProjectColorBlue:
+		return []byte(s), nil
+	case ProjectColorBrown:
+		return []byte(s), nil
+	case ProjectColorDefault:
+		return []byte(s), nil
+	case ProjectColorGray:
+		return []byte(s), nil
+	case ProjectColorGreen:
+		return []byte(s), nil
+	case ProjectColorOrange:
+		return []byte(s), nil
+	case ProjectColorPink:
+		return []byte(s), nil
+	case ProjectColorPurple:
+		return []byte(s), nil
+	case ProjectColorRed:
+		return []byte(s), nil
+	case ProjectColorYellow:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ProjectColor) UnmarshalText(data []byte) error {
+	switch ProjectColor(data) {
+	case ProjectColorBlue:
+		*s = ProjectColorBlue
+		return nil
+	case ProjectColorBrown:
+		*s = ProjectColorBrown
+		return nil
+	case ProjectColorDefault:
+		*s = ProjectColorDefault
+		return nil
+	case ProjectColorGray:
+		*s = ProjectColorGray
+		return nil
+	case ProjectColorGreen:
+		*s = ProjectColorGreen
+		return nil
+	case ProjectColorOrange:
+		*s = ProjectColorOrange
+		return nil
+	case ProjectColorPink:
+		*s = ProjectColorPink
+		return nil
+	case ProjectColorPurple:
+		*s = ProjectColorPurple
+		return nil
+	case ProjectColorRed:
+		*s = ProjectColorRed
+		return nil
+	case ProjectColorYellow:
+		*s = ProjectColorYellow
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Ref: #/components/schemas/projects
@@ -835,9 +1077,9 @@ func (s *Tasks) SetHasNext(val bool) {
 }
 
 type UpdateProjectReq struct {
-	Name       OptString `json:"name"`
-	Color      OptString `json:"color"`
-	IsArchived OptBool   `json:"is_archived"`
+	Name       OptString                `json:"name"`
+	Color      OptUpdateProjectReqColor `json:"color"`
+	IsArchived OptBool                  `json:"is_archived"`
 }
 
 // GetName returns the value of Name.
@@ -846,7 +1088,7 @@ func (s *UpdateProjectReq) GetName() OptString {
 }
 
 // GetColor returns the value of Color.
-func (s *UpdateProjectReq) GetColor() OptString {
+func (s *UpdateProjectReq) GetColor() OptUpdateProjectReqColor {
 	return s.Color
 }
 
@@ -861,13 +1103,110 @@ func (s *UpdateProjectReq) SetName(val OptString) {
 }
 
 // SetColor sets the value of Color.
-func (s *UpdateProjectReq) SetColor(val OptString) {
+func (s *UpdateProjectReq) SetColor(val OptUpdateProjectReqColor) {
 	s.Color = val
 }
 
 // SetIsArchived sets the value of IsArchived.
 func (s *UpdateProjectReq) SetIsArchived(val OptBool) {
 	s.IsArchived = val
+}
+
+type UpdateProjectReqColor string
+
+const (
+	UpdateProjectReqColorBlue    UpdateProjectReqColor = "blue"
+	UpdateProjectReqColorBrown   UpdateProjectReqColor = "brown"
+	UpdateProjectReqColorDefault UpdateProjectReqColor = "default"
+	UpdateProjectReqColorGray    UpdateProjectReqColor = "gray"
+	UpdateProjectReqColorGreen   UpdateProjectReqColor = "green"
+	UpdateProjectReqColorOrange  UpdateProjectReqColor = "orange"
+	UpdateProjectReqColorPink    UpdateProjectReqColor = "pink"
+	UpdateProjectReqColorPurple  UpdateProjectReqColor = "purple"
+	UpdateProjectReqColorRed     UpdateProjectReqColor = "red"
+	UpdateProjectReqColorYellow  UpdateProjectReqColor = "yellow"
+)
+
+// AllValues returns all UpdateProjectReqColor values.
+func (UpdateProjectReqColor) AllValues() []UpdateProjectReqColor {
+	return []UpdateProjectReqColor{
+		UpdateProjectReqColorBlue,
+		UpdateProjectReqColorBrown,
+		UpdateProjectReqColorDefault,
+		UpdateProjectReqColorGray,
+		UpdateProjectReqColorGreen,
+		UpdateProjectReqColorOrange,
+		UpdateProjectReqColorPink,
+		UpdateProjectReqColorPurple,
+		UpdateProjectReqColorRed,
+		UpdateProjectReqColorYellow,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s UpdateProjectReqColor) MarshalText() ([]byte, error) {
+	switch s {
+	case UpdateProjectReqColorBlue:
+		return []byte(s), nil
+	case UpdateProjectReqColorBrown:
+		return []byte(s), nil
+	case UpdateProjectReqColorDefault:
+		return []byte(s), nil
+	case UpdateProjectReqColorGray:
+		return []byte(s), nil
+	case UpdateProjectReqColorGreen:
+		return []byte(s), nil
+	case UpdateProjectReqColorOrange:
+		return []byte(s), nil
+	case UpdateProjectReqColorPink:
+		return []byte(s), nil
+	case UpdateProjectReqColorPurple:
+		return []byte(s), nil
+	case UpdateProjectReqColorRed:
+		return []byte(s), nil
+	case UpdateProjectReqColorYellow:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *UpdateProjectReqColor) UnmarshalText(data []byte) error {
+	switch UpdateProjectReqColor(data) {
+	case UpdateProjectReqColorBlue:
+		*s = UpdateProjectReqColorBlue
+		return nil
+	case UpdateProjectReqColorBrown:
+		*s = UpdateProjectReqColorBrown
+		return nil
+	case UpdateProjectReqColorDefault:
+		*s = UpdateProjectReqColorDefault
+		return nil
+	case UpdateProjectReqColorGray:
+		*s = UpdateProjectReqColorGray
+		return nil
+	case UpdateProjectReqColorGreen:
+		*s = UpdateProjectReqColorGreen
+		return nil
+	case UpdateProjectReqColorOrange:
+		*s = UpdateProjectReqColorOrange
+		return nil
+	case UpdateProjectReqColorPink:
+		*s = UpdateProjectReqColorPink
+		return nil
+	case UpdateProjectReqColorPurple:
+		*s = UpdateProjectReqColorPurple
+		return nil
+	case UpdateProjectReqColorRed:
+		*s = UpdateProjectReqColorRed
+		return nil
+	case UpdateProjectReqColorYellow:
+		*s = UpdateProjectReqColorYellow
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type UpdateStepReq struct {
