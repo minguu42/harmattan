@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
@@ -29,6 +30,12 @@ func convertSteps(steps domain.Steps) []openapi.Step {
 }
 
 func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, params openapi.CreateStepParams) (*openapi.Step, error) {
+	var errs []error
+	errs = append(errs, validateStepName(req.Name)...)
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.step.CreateStep(ctx, &usecase.CreateStepInput{
 		TaskID: domain.TaskID(params.TaskID),
 		Name:   req.Name,
@@ -40,6 +47,14 @@ func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, pa
 }
 
 func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, params openapi.UpdateStepParams) (*openapi.Step, error) {
+	var errs []error
+	if name, ok := req.Name.Get(); ok {
+		errs = append(errs, validateStepName(name)...)
+	}
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.step.UpdateStep(ctx, &usecase.UpdateStepInput{
 		ProjectID:   domain.ProjectID(params.ProjectID),
 		TaskID:      domain.TaskID(params.TaskID),

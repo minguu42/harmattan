@@ -9,7 +9,7 @@ create table if not exists users (
 create table if not exists projects (
     id          char(26) primary key,
     user_id     char(26)     not null references users (id) on delete cascade,
-    name        varchar(26)  not null,
+    name        varchar(80)  not null,
     color       varchar(255) not null check (color in ('blue', 'brown', 'default', 'gray', 'green', 'orange', 'pink', 'purple', 'red', 'yellow')),
     is_archived tinyint(1)   not null default 0,
     created_at  datetime     not null default current_timestamp,
@@ -20,7 +20,7 @@ create table tasks (
     id           char(26) primary key,
     user_id      char(26)            not null references users (id) on delete cascade,
     project_id   char(26)            not null references projects (id) on delete cascade,
-    name         varchar(80)         not null,
+    name         varchar(100)        not null,
     content      varchar(300)        not null,
     priority     tinyint(2) unsigned not null check (priority between 0 and 3),
     due_on       date,
@@ -31,9 +31,9 @@ create table tasks (
 
 create table steps (
     id           char(26) primary key,
-    user_id      char(26)    not null references users (id) on delete cascade,
-    task_id      char(26)    not null references tasks (id) on delete cascade,
-    name         varchar(80) not null,
+    user_id      char(26)     not null references users (id) on delete cascade,
+    task_id      char(26)     not null references tasks (id) on delete cascade,
+    name         varchar(100) not null,
     completed_at datetime,
     created_at   datetime    not null default current_timestamp,
     updated_at   datetime    not null default current_timestamp on update current_timestamp

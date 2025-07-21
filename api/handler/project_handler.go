@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
@@ -29,6 +30,12 @@ func convertProjects(projects domain.Projects) []openapi.Project {
 }
 
 func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectReq) (*openapi.Project, error) {
+	var errs []error
+	errs = append(errs, validateProjectName(req.Name)...)
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.project.CreateProject(ctx, &usecase.CreateProjectInput{
 		Name:  req.Name,
 		Color: domain.ProjectColor(req.Color),
@@ -54,6 +61,14 @@ func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsP
 }
 
 func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectReq, params openapi.UpdateProjectParams) (*openapi.Project, error) {
+	var errs []error
+	if name, ok := req.Name.Get(); ok {
+		errs = append(errs, validateProjectName(name)...)
+	}
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.project.UpdateProject(ctx, &usecase.UpdateProjectInput{
 		ID:         domain.ProjectID(params.ProjectID),
 		Name:       convertOptString(req.Name),
