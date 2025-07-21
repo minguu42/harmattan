@@ -10,25 +10,6 @@ import (
 	"github.com/minguu42/harmattan/internal/openapi"
 )
 
-func convertStep(s *domain.Step) *openapi.Step {
-	return &openapi.Step{
-		ID:          string(s.ID),
-		TaskID:      string(s.TaskID),
-		Name:        s.Name,
-		CompletedAt: convertDateTimePtr(s.CompletedAt),
-		CreatedAt:   s.CreatedAt,
-		UpdatedAt:   s.UpdatedAt,
-	}
-}
-
-func convertSteps(steps domain.Steps) []openapi.Step {
-	s := make([]openapi.Step, 0, len(steps))
-	for _, step := range steps {
-		s = append(s, *convertStep(&step))
-	}
-	return s
-}
-
 func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, params openapi.CreateStepParams) (*openapi.Step, error) {
 	var errs []error
 	errs = append(errs, validateStepName(req.Name)...)
