@@ -10,23 +10,6 @@ import (
 	"github.com/minguu42/harmattan/internal/openapi"
 )
 
-func convertTag(t *domain.Tag) *openapi.Tag {
-	return &openapi.Tag{
-		ID:        string(t.ID),
-		Name:      t.Name,
-		CreatedAt: t.CreatedAt,
-		UpdatedAt: t.UpdatedAt,
-	}
-}
-
-func convertTags(tags domain.Tags) []openapi.Tag {
-	ts := make([]openapi.Tag, 0, len(tags))
-	for _, t := range tags {
-		ts = append(ts, *convertTag(&t))
-	}
-	return ts
-}
-
 func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*openapi.Tag, error) {
 	var errs []error
 	errs = append(errs, validateTagName(req.Name)...)

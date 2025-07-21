@@ -10,30 +10,6 @@ import (
 	"github.com/minguu42/harmattan/internal/openapi"
 )
 
-func convertTask(task *domain.Task) *openapi.Task {
-	return &openapi.Task{
-		ID:          string(task.ID),
-		ProjectID:   string(task.ProjectID),
-		Name:        task.Name,
-		Content:     task.Content,
-		Priority:    task.Priority,
-		DueOn:       convertDatePtr(task.DueOn),
-		CompletedAt: convertDateTimePtr(task.CompletedAt),
-		CreatedAt:   task.CreatedAt,
-		UpdatedAt:   task.UpdatedAt,
-		Steps:       convertSteps(task.Steps),
-		Tags:        convertTags(task.Tags),
-	}
-}
-
-func convertTasks(tasks domain.Tasks) []openapi.Task {
-	ts := make([]openapi.Task, 0, len(tasks))
-	for _, t := range tasks {
-		ts = append(ts, *convertTask(&t))
-	}
-	return ts
-}
-
 func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
 	var errs []error
 	errs = append(errs, validateProjectName(req.Name)...)
