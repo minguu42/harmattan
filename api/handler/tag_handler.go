@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
@@ -27,6 +28,12 @@ func convertTags(tags domain.Tags) []openapi.Tag {
 }
 
 func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*openapi.Tag, error) {
+	var errs []error
+	errs = append(errs, validateTagName(req.Name)...)
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.tag.CreateTag(ctx, &usecase.CreateTagInput{Name: req.Name})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute CreateTag usecase: %w", err)
@@ -49,6 +56,14 @@ func (h *handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (
 }
 
 func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, params openapi.UpdateTagParams) (*openapi.Tag, error) {
+	var errs []error
+	if name, ok := req.Name.Get(); ok {
+		errs = validateTagName(name)
+	}
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.tag.UpdateTag(ctx, &usecase.UpdateTagInput{
 		ID:   domain.TagID(params.TagID),
 		Name: convertOptString(req.Name),

@@ -86,8 +86,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 20
                 color:
                   type: string
                   enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
@@ -131,8 +129,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 20
                 color:
                   type: string
                   enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
@@ -170,8 +166,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 80
                 priority:
                   type: integer
                   maximum: 3
@@ -216,8 +210,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 80
                 content:
                   type: string
                 priority:
@@ -262,8 +254,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 80
               required: [name]
         required: true
       responses:
@@ -291,8 +281,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 80
                 completed_at:
                   type: string
                   format: date-time
@@ -326,8 +314,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 20
               required: [name]
         required: true
       responses:
@@ -368,8 +354,6 @@ paths:
               properties:
                 name:
                   type: string
-                  minLength: 1
-                  maxLength: 20
         required: true
       responses:
         200:

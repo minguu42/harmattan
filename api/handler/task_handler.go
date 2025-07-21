@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
@@ -34,6 +35,12 @@ func convertTasks(tasks domain.Tasks) []openapi.Task {
 }
 
 func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
+	var errs []error
+	errs = append(errs, validateProjectName(req.Name)...)
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.task.CreateTask(ctx, &usecase.CreateTaskInput{
 		ProjectID: domain.ProjectID(params.ProjectID),
 		Name:      req.Name,
@@ -61,6 +68,14 @@ func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams)
 }
 
 func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, params openapi.UpdateTaskParams) (*openapi.Task, error) {
+	var errs []error
+	if name, ok := req.Name.Get(); ok {
+		errs = append(errs, validateTaskName(name)...)
+	}
+	if len(errs) > 0 {
+		return nil, apperr.DomainValidationError(errs)
+	}
+
 	out, err := h.task.UpdateTask(ctx, &usecase.UpdateTaskInput{
 		ID:          domain.TaskID(params.TaskID),
 		ProjectID:   domain.ProjectID(params.ProjectID),

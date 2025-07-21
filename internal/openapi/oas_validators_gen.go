@@ -17,25 +17,6 @@ func (s *CreateProjectReq) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    20,
-			MaxLengthSet: true,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Name)); err != nil {
-			return errors.Wrap(err, "string")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
-	if err := func() error {
 		if err := s.Color.Validate(); err != nil {
 			return err
 		}
@@ -79,93 +60,12 @@ func (s CreateProjectReqColor) Validate() error {
 	}
 }
 
-func (s *CreateStepReq) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    80,
-			MaxLengthSet: true,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Name)); err != nil {
-			return errors.Wrap(err, "string")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
-func (s *CreateTagReq) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    20,
-			MaxLengthSet: true,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Name)); err != nil {
-			return errors.Wrap(err, "string")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
 func (s *CreateTaskReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
 
 	var failures []validate.FieldError
-	if err := func() error {
-		if err := (validate.String{
-			MinLength:    1,
-			MinLengthSet: true,
-			MaxLength:    80,
-			MaxLengthSet: true,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
-		}).Validate(string(s.Name)); err != nil {
-			return errors.Wrap(err, "string")
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
 	if err := func() error {
 		if err := (validate.Int{
 			MinSet:        false,
@@ -386,32 +286,6 @@ func (s *UpdateProjectReq) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
-		if value, ok := s.Name.Get(); ok {
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    1,
-					MinLengthSet: true,
-					MaxLength:    20,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(value)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
-	if err := func() error {
 		if value, ok := s.Color.Get(); ok {
 			if err := func() error {
 				if err := value.Validate(); err != nil {
@@ -462,114 +336,12 @@ func (s UpdateProjectReqColor) Validate() error {
 	}
 }
 
-func (s *UpdateStepReq) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if value, ok := s.Name.Get(); ok {
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    1,
-					MinLengthSet: true,
-					MaxLength:    80,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(value)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
-func (s *UpdateTagReq) Validate() error {
-	if s == nil {
-		return validate.ErrNilPointer
-	}
-
-	var failures []validate.FieldError
-	if err := func() error {
-		if value, ok := s.Name.Get(); ok {
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    1,
-					MinLengthSet: true,
-					MaxLength:    20,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(value)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
-	}
-	return nil
-}
-
 func (s *UpdateTaskReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
 
 	var failures []validate.FieldError
-	if err := func() error {
-		if value, ok := s.Name.Get(); ok {
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    1,
-					MinLengthSet: true,
-					MaxLength:    80,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(value)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		}
-		return nil
-	}(); err != nil {
-		failures = append(failures, validate.FieldError{
-			Name:  "name",
-			Error: err,
-		})
-	}
 	if err := func() error {
 		if value, ok := s.Priority.Get(); ok {
 			if err := func() error {
