@@ -20,7 +20,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.38.0
 	golang.org/x/crypto v0.40.0
 	gorm.io/driver/mysql v1.6.0
-	gorm.io/gorm v1.30.0
+	gorm.io/gorm v1.30.1
 )
 
 require (
