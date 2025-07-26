@@ -26,7 +26,7 @@ func init() {
 func main() {
 	ctx := context.Background()
 
-	l := applog.New()
+	l := applog.New(os.Getenv("LOG_INDENT") == "true")
 	if err := mainRun(ctx, l); err != nil {
 		l.Error(ctx, err.Error())
 		os.Exit(1)

@@ -99,7 +99,7 @@ func TestMain(m *testing.M) {
 	h, err := handler.New(&factory.Factory{
 		Auth: authn,
 		DB:   db,
-	}, applog.New())
+	}, applog.New(true))
 	if err != nil {
 		log.Fatalf("failed to create handler: %s", err)
 	}

@@ -719,7 +719,7 @@ func (s *SignInOK) SetIDToken(val string) {
 
 type SignInReq struct {
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	Password string `json:"password" log:"mask"`
 }
 
 // GetEmail returns the value of Email.
@@ -758,7 +758,7 @@ func (s *SignUpOK) SetIDToken(val string) {
 
 type SignUpReq struct {
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	Password string `json:"password" log:"mask"`
 }
 
 // GetEmail returns the value of Email.
