@@ -7,8 +7,6 @@ services:
       target: local
     container_name: harmattan-api
     env_file: ./api/.env
-    environment:
-      USE_DEBUG_LOGGER: true
     ports:
       - "8080:8080"
     volumes:

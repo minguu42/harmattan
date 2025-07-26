@@ -23,6 +23,7 @@ func AccessLog(l *applog.Logger) middleware.Middleware {
 			OperationID:   req.OperationID,
 			Method:        req.Raw.Method,
 			URL:           req.Raw.URL.String(),
+			Body:          req.Body,
 			IPAddress:     req.Raw.RemoteAddr,
 		})
 		return resp, err

@@ -32,7 +32,8 @@ paths:
                   type: string
                 password:
                   type: string
-                  format: password
+                  x-oapi-codegen-extra-tags:
+                    log: mask
               required: [email, password]
         required: true
       responses:
@@ -60,7 +61,8 @@ paths:
                   type: string
                 password:
                   type: string
-                  format: password
+                  x-oapi-codegen-extra-tags:
+                    log: mask
               required: [email, password]
         required: true
       responses:
