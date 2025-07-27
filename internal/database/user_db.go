@@ -26,6 +26,8 @@ func (u *User) Domain() *domain.User {
 	}
 }
 
+type Users []User
+
 func (c *Client) CreateUser(ctx context.Context, u *domain.User) error {
 	now := clock.Now(ctx)
 	user := User{

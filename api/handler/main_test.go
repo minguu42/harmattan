@@ -58,12 +58,21 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to migrate test db: %s", err)
 	}
 
-	err = tdb.Insert(ctx, []any{database.User{
-		ID:             testUserID,
-		Email:          "user1@example.com",
-		HashedPassword: "password",
-		CreatedAt:      time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
-		UpdatedAt:      time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+	err = tdb.Insert(ctx, []any{database.Users{
+		{
+			ID:             testUserID,
+			Email:          "user1@dummy.invalid",
+			HashedPassword: "password",
+			CreatedAt:      time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+			UpdatedAt:      time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+		},
+		{
+			ID:             "USER-000000000000000000002",
+			Email:          "user2@dummy.invalid",
+			HashedPassword: "password",
+			CreatedAt:      time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+			UpdatedAt:      time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+		},
 	}})
 	if err != nil {
 		log.Fatalf("failed to insert user: %s", err)
