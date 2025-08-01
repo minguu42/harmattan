@@ -12,7 +12,7 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/lib/clock"
 	"github.com/minguu42/harmattan/lib/idgen"
-	"github.com/minguu42/harmattan/lib/pointers"
+	"github.com/minguu42/harmattan/lib/opt"
 )
 
 type Step struct {
@@ -62,8 +62,8 @@ type UpdateStepInput struct {
 	ProjectID   domain.ProjectID
 	TaskID      domain.TaskID
 	ID          domain.StepID
-	Name        *string
-	CompletedAt *time.Time
+	Name        opt.Option[string]
+	CompletedAt opt.Option[time.Time]
 }
 
 func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {
@@ -108,11 +108,11 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 		return nil, apperr.StepNotFoundError(errors.New("step does not belong to the task"))
 	}
 
-	if in.Name != nil {
-		s.Name = *in.Name
+	if in.Name.Valid {
+		s.Name = in.Name.V
 	}
-	if in.CompletedAt != nil {
-		s.CompletedAt = pointers.Ref(clock.Now(ctx))
+	if in.CompletedAt.Valid {
+		s.CompletedAt = in.CompletedAt.ToPointer() // TODO: 要修正
 	}
 	s.UpdatedAt = clock.Now(ctx)
 

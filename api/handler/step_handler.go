@@ -3,11 +3,13 @@ package handler
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
+	"github.com/minguu42/harmattan/lib/opt"
 )
 
 func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, params openapi.CreateStepParams) (*openapi.Step, error) {
@@ -40,8 +42,8 @@ func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, pa
 		ProjectID:   domain.ProjectID(params.ProjectID),
 		TaskID:      domain.TaskID(params.TaskID),
 		ID:          domain.StepID(params.StepID),
-		Name:        convertOptString(req.Name),
-		CompletedAt: convertOptDateTime(req.CompletedAt),
+		Name:        opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
+		CompletedAt: opt.Option[time.Time]{V: req.CompletedAt.Value, Valid: req.CompletedAt.Set},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateStep usecase: %w", err)

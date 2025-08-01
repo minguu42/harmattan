@@ -11,6 +11,7 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/lib/clock"
 	"github.com/minguu42/harmattan/lib/idgen"
+	"github.com/minguu42/harmattan/lib/opt"
 )
 
 type Project struct {
@@ -72,9 +73,9 @@ func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*Pr
 
 type UpdateProjectInput struct {
 	ID         domain.ProjectID
-	Name       *string
-	Color      *domain.ProjectColor
-	IsArchived *bool
+	Name       opt.Option[string]
+	Color      opt.Option[domain.ProjectColor]
+	IsArchived opt.Option[bool]
 }
 
 func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*ProjectOutput, error) {
@@ -91,14 +92,14 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
 	}
 
-	if in.Name != nil {
-		p.Name = *in.Name
+	if in.Name.Valid {
+		p.Name = in.Name.V
 	}
-	if in.Color != nil {
-		p.Color = *in.Color
+	if in.Color.Valid {
+		p.Color = in.Color.V
 	}
-	if in.IsArchived != nil {
-		p.IsArchived = *in.IsArchived
+	if in.IsArchived.Valid {
+		p.IsArchived = in.IsArchived.V
 	}
 	p.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateProject(ctx, p); err != nil {

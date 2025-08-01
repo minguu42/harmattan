@@ -8,6 +8,7 @@ import (
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
+	"github.com/minguu42/harmattan/lib/opt"
 )
 
 func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectReq) (*openapi.Project, error) {
@@ -52,9 +53,9 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 
 	out, err := h.project.UpdateProject(ctx, &usecase.UpdateProjectInput{
 		ID:         domain.ProjectID(params.ProjectID),
-		Name:       convertOptString(req.Name),
-		Color:      convertOptColorString(req.Color),
-		IsArchived: convertOptBool(req.IsArchived),
+		Name:       opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
+		Color:      opt.Option[domain.ProjectColor]{V: domain.ProjectColor(req.Color.Value), Valid: req.Color.Set},
+		IsArchived: opt.Option[bool]{V: req.IsArchived.Value, Valid: req.IsArchived.Set},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateProject usecase: %w", err)
