@@ -8,6 +8,7 @@ import (
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
+	"github.com/minguu42/harmattan/lib/opt"
 )
 
 func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*openapi.Tag, error) {
@@ -49,7 +50,7 @@ func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 
 	out, err := h.tag.UpdateTag(ctx, &usecase.UpdateTagInput{
 		ID:   domain.TagID(params.TagID),
-		Name: convertOptString(req.Name),
+		Name: opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateTag usecase: %w", err)

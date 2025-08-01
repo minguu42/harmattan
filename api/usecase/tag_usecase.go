@@ -11,6 +11,7 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/lib/clock"
 	"github.com/minguu42/harmattan/lib/idgen"
+	"github.com/minguu42/harmattan/lib/opt"
 )
 
 type Tag struct {
@@ -70,7 +71,7 @@ func (uc *Tag) ListTags(ctx context.Context, in *ListTagsInput) (*TagsOutput, er
 
 type UpdateTagInput struct {
 	ID   domain.TagID
-	Name *string
+	Name opt.Option[string]
 }
 
 func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, error) {
@@ -87,8 +88,8 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 		return nil, apperr.TagNotFoundError(errors.New("user does not own the tag"))
 	}
 
-	if in.Name != nil {
-		t.Name = *in.Name
+	if in.Name.Valid {
+		t.Name = in.Name.V
 	}
 	t.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateTag(ctx, t); err != nil {

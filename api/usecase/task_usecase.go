@@ -12,6 +12,7 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/lib/clock"
 	"github.com/minguu42/harmattan/lib/idgen"
+	"github.com/minguu42/harmattan/lib/opt"
 )
 
 type Task struct {
@@ -99,11 +100,11 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*TasksOutput
 type UpdateTaskInput struct {
 	ProjectID   domain.ProjectID
 	ID          domain.TaskID
-	Name        *string
-	Content     *string
-	Priority    *int
-	DueOn       *time.Time
-	CompletedAt *time.Time
+	Name        opt.Option[string]
+	Content     opt.Option[string]
+	Priority    opt.Option[int]
+	DueOn       opt.Option[time.Time]
+	CompletedAt opt.Option[time.Time]
 }
 
 func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutput, error) {
@@ -134,20 +135,20 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 		return nil, apperr.TaskNotFoundError(errors.New("task does not belong to the project"))
 	}
 
-	if in.Name != nil {
-		t.Name = *in.Name
+	if in.Name.Valid {
+		t.Name = in.Name.V
 	}
-	if in.Content != nil {
-		t.Content = *in.Content
+	if in.Content.Valid {
+		t.Content = in.Content.V
 	}
-	if in.Priority != nil {
-		t.Priority = *in.Priority
+	if in.Priority.Valid {
+		t.Priority = in.Priority.V
 	}
-	if in.DueOn != nil {
-		t.DueOn = in.DueOn
+	if in.DueOn.Valid {
+		t.DueOn = in.DueOn.ToPointer() // TODO: 要修正
 	}
-	if in.CompletedAt != nil {
-		t.CompletedAt = in.CompletedAt
+	if in.CompletedAt.Valid {
+		t.CompletedAt = in.CompletedAt.ToPointer() // TODO: 要修正
 	}
 	t.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateTask(ctx, t); err != nil {
