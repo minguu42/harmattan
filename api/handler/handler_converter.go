@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/openapi"
-	"github.com/minguu42/harmattan/lib/opt"
+	"github.com/minguu42/harmattan/lib/pointers"
 )
 
 func convertProject(project *domain.Project) *openapi.Project {
@@ -30,7 +30,7 @@ func convertStep(s *domain.Step) *openapi.Step {
 		ID:          string(s.ID),
 		TaskID:      string(s.TaskID),
 		Name:        s.Name,
-		CompletedAt: opt.Cond(s.CompletedAt != nil, openapi.OptDateTime{Value: *s.CompletedAt, Set: true}, openapi.OptDateTime{}),
+		CompletedAt: openapi.OptDateTime{Value: pointers.OrZero(s.CompletedAt), Set: s.CompletedAt != nil},
 		CreatedAt:   s.CreatedAt,
 		UpdatedAt:   s.UpdatedAt,
 	}
@@ -68,8 +68,8 @@ func convertTask(task *domain.Task) *openapi.Task {
 		Name:        task.Name,
 		Content:     task.Content,
 		Priority:    task.Priority,
-		DueOn:       opt.Cond(task.DueOn != nil, openapi.OptDate{Value: *task.DueOn, Set: true}, openapi.OptDate{}),
-		CompletedAt: opt.Cond(task.CompletedAt != nil, openapi.OptDateTime{Value: *task.CompletedAt, Set: true}, openapi.OptDateTime{}),
+		DueOn:       openapi.OptDate{Value: pointers.OrZero(task.DueOn), Set: task.DueOn != nil},
+		CompletedAt: openapi.OptDateTime{Value: pointers.OrZero(task.CompletedAt), Set: task.CompletedAt != nil},
 		CreatedAt:   task.CreatedAt,
 		UpdatedAt:   task.UpdatedAt,
 		Steps:       convertSteps(task.Steps),

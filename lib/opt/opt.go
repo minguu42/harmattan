@@ -18,10 +18,3 @@ func (o Option[T]) ToPointer() *T {
 	}
 	return nil
 }
-
-func Cond[T any](cond bool, trueV, falseV T) T {
-	if cond {
-		return trueV
-	}
-	return falseV
-}
