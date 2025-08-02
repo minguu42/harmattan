@@ -12,7 +12,7 @@ require (
 	github.com/avast/retry-go/v4 v4.6.1
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
-	github.com/golang-jwt/jwt/v5 v5.2.3
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/ikawaha/httpcheck v1.12.4
 	github.com/ogen-go/ogen v1.14.0
 	github.com/oklog/ulid/v2 v2.1.1
@@ -20,7 +20,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.38.0
 	golang.org/x/crypto v0.40.0
 	gorm.io/driver/mysql v1.6.0
-	gorm.io/gorm v1.30.0
+	gorm.io/gorm v1.30.1
 )
 
 require (
