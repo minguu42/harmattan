@@ -418,6 +418,69 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
+// NewOptNilDateTime returns new OptNilDateTime with value set to v.
+func NewOptNilDateTime(v time.Time) OptNilDateTime {
+	return OptNilDateTime{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilDateTime is optional nullable time.Time.
+type OptNilDateTime struct {
+	Value time.Time
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilDateTime was set.
+func (o OptNilDateTime) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilDateTime) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilDateTime) SetTo(v time.Time) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilDateTime) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilDateTime) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v time.Time
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilDateTime) Get() (v time.Time, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{
@@ -1210,8 +1273,8 @@ func (s *UpdateProjectReqColor) UnmarshalText(data []byte) error {
 }
 
 type UpdateStepReq struct {
-	Name        OptString   `json:"name"`
-	CompletedAt OptDateTime `json:"completed_at"`
+	Name        OptString      `json:"name"`
+	CompletedAt OptNilDateTime `json:"completed_at"`
 }
 
 // GetName returns the value of Name.
@@ -1220,7 +1283,7 @@ func (s *UpdateStepReq) GetName() OptString {
 }
 
 // GetCompletedAt returns the value of CompletedAt.
-func (s *UpdateStepReq) GetCompletedAt() OptDateTime {
+func (s *UpdateStepReq) GetCompletedAt() OptNilDateTime {
 	return s.CompletedAt
 }
 
@@ -1230,7 +1293,7 @@ func (s *UpdateStepReq) SetName(val OptString) {
 }
 
 // SetCompletedAt sets the value of CompletedAt.
-func (s *UpdateStepReq) SetCompletedAt(val OptDateTime) {
+func (s *UpdateStepReq) SetCompletedAt(val OptNilDateTime) {
 	s.CompletedAt = val
 }
 
@@ -1249,11 +1312,11 @@ func (s *UpdateTagReq) SetName(val OptString) {
 }
 
 type UpdateTaskReq struct {
-	Name        OptString   `json:"name"`
-	Content     OptString   `json:"content"`
-	Priority    OptInt      `json:"priority"`
-	DueOn       OptDateTime `json:"due_on"`
-	CompletedAt OptDateTime `json:"completed_at"`
+	Name        OptString      `json:"name"`
+	Content     OptString      `json:"content"`
+	Priority    OptInt         `json:"priority"`
+	DueOn       OptNilDateTime `json:"due_on"`
+	CompletedAt OptNilDateTime `json:"completed_at"`
 }
 
 // GetName returns the value of Name.
@@ -1272,12 +1335,12 @@ func (s *UpdateTaskReq) GetPriority() OptInt {
 }
 
 // GetDueOn returns the value of DueOn.
-func (s *UpdateTaskReq) GetDueOn() OptDateTime {
+func (s *UpdateTaskReq) GetDueOn() OptNilDateTime {
 	return s.DueOn
 }
 
 // GetCompletedAt returns the value of CompletedAt.
-func (s *UpdateTaskReq) GetCompletedAt() OptDateTime {
+func (s *UpdateTaskReq) GetCompletedAt() OptNilDateTime {
 	return s.CompletedAt
 }
 
@@ -1297,11 +1360,11 @@ func (s *UpdateTaskReq) SetPriority(val OptInt) {
 }
 
 // SetDueOn sets the value of DueOn.
-func (s *UpdateTaskReq) SetDueOn(val OptDateTime) {
+func (s *UpdateTaskReq) SetDueOn(val OptNilDateTime) {
 	s.DueOn = val
 }
 
 // SetCompletedAt sets the value of CompletedAt.
-func (s *UpdateTaskReq) SetCompletedAt(val OptDateTime) {
+func (s *UpdateTaskReq) SetCompletedAt(val OptNilDateTime) {
 	s.CompletedAt = val
 }

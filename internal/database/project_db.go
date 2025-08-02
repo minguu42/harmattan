@@ -74,11 +74,11 @@ func (c *Client) GetProjectByID(ctx context.Context, id domain.ProjectID) (*doma
 }
 
 func (c *Client) UpdateProject(ctx context.Context, p *domain.Project) error {
-	return c.db(ctx).Model(Project{}).Where("id = ?", p.ID).Updates(Project{
-		Name:       p.Name,
-		Color:      p.Color,
-		IsArchived: p.IsArchived,
-		UpdatedAt:  p.UpdatedAt,
+	return c.db(ctx).Model(Project{}).Where("id = ?", p.ID).Updates(map[string]any{
+		"name":        p.Name,
+		"color":       p.Color,
+		"is_archived": p.IsArchived,
+		"updated_at":  p.UpdatedAt,
 	}).Error
 }
 

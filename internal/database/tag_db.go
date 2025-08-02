@@ -68,9 +68,9 @@ func (c *Client) GetTagByID(ctx context.Context, id domain.TagID) (*domain.Tag, 
 }
 
 func (c *Client) UpdateTag(ctx context.Context, t *domain.Tag) error {
-	return c.db(ctx).Model(Tag{}).Where("id = ?", t.ID).Updates(Tag{
-		Name:      t.Name,
-		UpdatedAt: t.UpdatedAt,
+	return c.db(ctx).Model(Tag{}).Where("id = ?", t.ID).Updates(map[string]any{
+		"name":       t.Name,
+		"updated_at": t.UpdatedAt,
 	}).Error
 }
 

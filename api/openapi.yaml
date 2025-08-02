@@ -220,9 +220,11 @@ paths:
                 due_on:
                   type: string
                   format: date-time
+                  nullable: true
                 completed_at:
                   type: string
                   format: date-time
+                  nullable: true
         required: true
       responses:
         200:
@@ -286,6 +288,7 @@ paths:
                 completed_at:
                   type: string
                   format: date-time
+                  nullable: true
         required: true
       responses:
         200:

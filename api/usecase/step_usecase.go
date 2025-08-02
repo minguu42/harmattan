@@ -63,7 +63,7 @@ type UpdateStepInput struct {
 	TaskID      domain.TaskID
 	ID          domain.StepID
 	Name        opt.Option[string]
-	CompletedAt opt.Option[time.Time]
+	CompletedAt opt.Option[*time.Time]
 }
 
 func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {
@@ -112,7 +112,7 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 		s.Name = in.Name.V
 	}
 	if in.CompletedAt.Valid {
-		s.CompletedAt = in.CompletedAt.ToPointer() // TODO: 要修正
+		s.CompletedAt = in.CompletedAt.V
 	}
 	s.UpdatedAt = clock.Now(ctx)
 
