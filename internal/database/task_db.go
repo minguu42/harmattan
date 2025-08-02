@@ -87,13 +87,13 @@ func (c *Client) GetTaskByID(ctx context.Context, id domain.TaskID) (*domain.Tas
 }
 
 func (c *Client) UpdateTask(ctx context.Context, t *domain.Task) error {
-	return c.db(ctx).Model(Task{}).Where("id = ?", t.ID).Updates(Task{
-		Name:        t.Name,
-		Content:     t.Content,
-		Priority:    t.Priority,
-		DueOn:       t.DueOn,
-		CompletedAt: t.CompletedAt,
-		UpdatedAt:   t.UpdatedAt,
+	return c.db(ctx).Model(Task{}).Where("id = ?", t.ID).Updates(map[string]any{
+		"name":         t.Name,
+		"content":      t.Content,
+		"priority":     t.Priority,
+		"due_on":       t.DueOn,
+		"completed_at": t.CompletedAt,
+		"updated_at":   t.UpdatedAt,
 	}).Error
 }
 

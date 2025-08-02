@@ -103,8 +103,8 @@ type UpdateTaskInput struct {
 	Name        opt.Option[string]
 	Content     opt.Option[string]
 	Priority    opt.Option[int]
-	DueOn       opt.Option[time.Time]
-	CompletedAt opt.Option[time.Time]
+	DueOn       opt.Option[*time.Time]
+	CompletedAt opt.Option[*time.Time]
 }
 
 func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutput, error) {
@@ -145,10 +145,10 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 		t.Priority = in.Priority.V
 	}
 	if in.DueOn.Valid {
-		t.DueOn = in.DueOn.ToPointer() // TODO: 要修正
+		t.DueOn = in.DueOn.V
 	}
 	if in.CompletedAt.Valid {
-		t.CompletedAt = in.CompletedAt.ToPointer() // TODO: 要修正
+		t.CompletedAt = in.CompletedAt.V
 	}
 	t.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateTask(ctx, t); err != nil {

@@ -66,10 +66,10 @@ func (c *Client) GetStepByID(ctx context.Context, id domain.StepID) (*domain.Ste
 }
 
 func (c *Client) UpdateStep(ctx context.Context, s *domain.Step) error {
-	return c.db(ctx).Model(Step{}).Where("id = ?", s.ID).Updates(Step{
-		Name:        s.Name,
-		CompletedAt: s.CompletedAt,
-		UpdatedAt:   s.UpdatedAt,
+	return c.db(ctx).Model(Step{}).Where("id = ?", s.ID).Updates(map[string]any{
+		"name":         s.Name,
+		"completed_at": s.CompletedAt,
+		"updated_at":   s.UpdatedAt,
 	}).Error
 }
 
