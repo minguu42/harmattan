@@ -41,7 +41,7 @@ func TestHandler_CreateStep(t *testing.T) {
 		CreatedAt: fixedNow,
 		UpdatedAt: fixedNow,
 	}
-	httpcheck.New(th).Test(t, "POST", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001/steps").
+	httpcheck.New(th).Test(t, "POST", "/tasks/TASK-000000000000000000001/steps").
 		WithHeader("Authorization", "Bearer "+token).
 		WithHeader("Content-Type", "application/json").
 		WithBody([]byte(`{"name": "テストステップ"}`)).
@@ -86,7 +86,7 @@ func TestHandler_UpdateStep(t *testing.T) {
 		CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 		UpdatedAt: fixedNow,
 	}
-	httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
+	httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
 		WithHeader("Authorization", "Bearer "+token).
 		WithHeader("Content-Type", "application/json").
 		WithBody([]byte(`{"name": "更新されたステップ"}`)).
@@ -105,22 +105,6 @@ func TestHandler_UpdateStep_Validation(t *testing.T) {
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},
-			{
-				ID:        "PROJECT-000000000000000002",
-				UserID:    testUserID,
-				Name:      "テストプロジェクト2",
-				Color:     "blue",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
-			{
-				ID:        "PROJECT-000000000000000003",
-				UserID:    "USER-000000000000000000002",
-				Name:      "他のユーザーのプロジェクト",
-				Color:     "blue",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
 		},
 		database.Tasks{
 			{
@@ -129,16 +113,6 @@ func TestHandler_UpdateStep_Validation(t *testing.T) {
 				ProjectID: "PROJECT-000000000000000001",
 				Name:      "テストタスク",
 				Content:   "テストタスクの内容",
-				Priority:  1,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
-			{
-				ID:        "TASK-000000000000000000002",
-				UserID:    testUserID,
-				ProjectID: "PROJECT-000000000000000002",
-				Name:      "別プロジェクトのタスク",
-				Content:   "",
 				Priority:  1,
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
@@ -156,45 +130,17 @@ func TestHandler_UpdateStep_Validation(t *testing.T) {
 		},
 	}))
 
-	t.Run("project not found", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000099/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新されたステップ"}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-
-	t.Run("user does not own the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000003/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新されたステップ"}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-
 	t.Run("task not found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000099/steps/STEP-000000000000000000001").
+		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000099/steps/STEP-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
 			WithBody([]byte(`{"name": "更新されたステップ"}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
-
-	t.Run("task does not belong to the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000002/steps/STEP-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新されたステップ"}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-
 	t.Run("step not found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000099").
+		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
 			WithBody([]byte(`{"name": "更新されたステップ"}`)).
@@ -233,7 +179,7 @@ func TestHandler_DeleteStep(t *testing.T) {
 		},
 	}))
 
-	httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
+	httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
 		WithHeader("Authorization", "Bearer "+token).
 		Check().HasStatus(200)
 }
@@ -250,22 +196,6 @@ func TestHandler_DeleteStep_Validation(t *testing.T) {
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},
-			{
-				ID:        "PROJECT-000000000000000002",
-				UserID:    testUserID,
-				Name:      "テストプロジェクト2",
-				Color:     "blue",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
-			{
-				ID:        "PROJECT-000000000000000003",
-				UserID:    "USER-000000000000000000002",
-				Name:      "他のユーザーのプロジェクト",
-				Color:     "blue",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
 		},
 		database.Tasks{
 			{
@@ -274,16 +204,6 @@ func TestHandler_DeleteStep_Validation(t *testing.T) {
 				ProjectID: "PROJECT-000000000000000001",
 				Name:      "テストタスク",
 				Content:   "テストタスクの内容",
-				Priority:  1,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
-			{
-				ID:        "TASK-000000000000000000002",
-				UserID:    testUserID,
-				ProjectID: "PROJECT-000000000000000002",
-				Name:      "別プロジェクトのタスク",
-				Content:   "",
 				Priority:  1,
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
@@ -301,33 +221,15 @@ func TestHandler_DeleteStep_Validation(t *testing.T) {
 		},
 	}))
 
-	t.Run("project not found", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000099/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("user does not own the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000003/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
 	t.Run("task not found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000099/steps/STEP-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("task does not belong to the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000002/steps/STEP-000000000000000000001").
+		httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000099/steps/STEP-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
 	t.Run("step not found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000099").
+		httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000001/steps/STEP-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})

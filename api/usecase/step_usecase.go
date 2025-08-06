@@ -59,7 +59,6 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 }
 
 type UpdateStepInput struct {
-	ProjectID   domain.ProjectID
 	TaskID      domain.TaskID
 	ID          domain.StepID
 	Name        opt.Option[string]
@@ -68,17 +67,6 @@ type UpdateStepInput struct {
 
 func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {
 	user := auth.MustUserFromContext(ctx)
-
-	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
-	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ProjectNotFoundError(err)
-		}
-		return nil, fmt.Errorf("failed to get project: %w", err)
-	}
-	if !user.HasProject(p) {
-		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
-	}
 
 	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
@@ -89,9 +77,6 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	}
 	if !user.HasTask(t) {
 		return nil, apperr.TaskNotFoundError(errors.New("user does not own the task"))
-	}
-	if p.ID != t.ProjectID {
-		return nil, apperr.TaskNotFoundError(errors.New("task does not belong to the project"))
 	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
@@ -123,24 +108,12 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 }
 
 type DeleteStepInput struct {
-	ProjectID domain.ProjectID
-	TaskID    domain.TaskID
-	ID        domain.StepID
+	TaskID domain.TaskID
+	ID     domain.StepID
 }
 
 func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	user := auth.MustUserFromContext(ctx)
-
-	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
-	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ProjectNotFoundError(err)
-		}
-		return fmt.Errorf("failed to get project: %w", err)
-	}
-	if !user.HasProject(p) {
-		return apperr.ProjectNotFoundError(errors.New("user does not own the project"))
-	}
 
 	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
@@ -151,9 +124,6 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	}
 	if !user.HasTask(t) {
 		return apperr.TaskNotFoundError(errors.New("user does not own the task"))
-	}
-	if p.ID != t.ProjectID {
-		return apperr.TaskNotFoundError(errors.New("task does not belong to the project"))
 	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)

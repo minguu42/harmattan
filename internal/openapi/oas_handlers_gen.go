@@ -210,8 +210,8 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 
 // handleCreateStepRequest handles createStep operation.
 //
-// POST /projects/{projectID}/tasks/{taskID}/steps
-func (s *Server) handleCreateStepRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// POST /tasks/{taskID}/steps
+func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -302,10 +302,6 @@ func (s *Server) handleCreateStepRequest(args [2]string, argsEscaped bool, w htt
 			OperationID:      "createStep",
 			Body:             request,
 			Params: middleware.Parameters{
-				{
-					Name: "projectID",
-					In:   "path",
-				}: params.ProjectID,
 				{
 					Name: "taskID",
 					In:   "path",
@@ -736,8 +732,8 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 
 // handleDeleteStepRequest handles deleteStep operation.
 //
-// DELETE /projects/{projectID}/tasks/{taskID}/steps/{stepID}
-func (s *Server) handleDeleteStepRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// DELETE /tasks/{taskID}/steps/{stepID}
+func (s *Server) handleDeleteStepRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -813,10 +809,6 @@ func (s *Server) handleDeleteStepRequest(args [3]string, argsEscaped bool, w htt
 			OperationID:      "deleteStep",
 			Body:             nil,
 			Params: middleware.Parameters{
-				{
-					Name: "projectID",
-					In:   "path",
-				}: params.ProjectID,
 				{
 					Name: "taskID",
 					In:   "path",
@@ -1798,8 +1790,8 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 
 // handleUpdateStepRequest handles updateStep operation.
 //
-// PATCH /projects/{projectID}/tasks/{taskID}/steps/{stepID}
-func (s *Server) handleUpdateStepRequest(args [3]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// PATCH /tasks/{taskID}/steps/{stepID}
+func (s *Server) handleUpdateStepRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -1890,10 +1882,6 @@ func (s *Server) handleUpdateStepRequest(args [3]string, argsEscaped bool, w htt
 			OperationID:      "updateStep",
 			Body:             request,
 			Params: middleware.Parameters{
-				{
-					Name: "projectID",
-					In:   "path",
-				}: params.ProjectID,
 				{
 					Name: "taskID",
 					In:   "path",
