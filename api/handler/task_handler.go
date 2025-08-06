@@ -15,7 +15,7 @@ import (
 
 func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
 	var errs []error
-	errs = append(errs, validateProjectName(req.Name)...)
+	errs = append(errs, validateTaskName(req.Name)...)
 	if len(errs) > 0 {
 		return nil, apperr.DomainValidationError(errs)
 	}
