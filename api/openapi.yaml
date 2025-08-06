@@ -243,9 +243,8 @@ paths:
           description: OK
       security:
         - bearerAuth: []
-  /projects/{projectID}/tasks/{taskID}/steps:
+  /tasks/{taskID}/steps:
     parameters:
-      - $ref: "#/components/parameters/projectID"
       - $ref: "#/components/parameters/taskID"
     post:
       tags: [steps]
@@ -269,9 +268,8 @@ paths:
                 $ref: "#/components/schemas/step"
       security:
         - bearerAuth: []
-  /projects/{projectID}/tasks/{taskID}/steps/{stepID}:
+  /tasks/{taskID}/steps/{stepID}:
     parameters:
-      - $ref: "#/components/parameters/projectID"
       - $ref: "#/components/parameters/taskID"
       - $ref: "#/components/parameters/stepID"
     patch:

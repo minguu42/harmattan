@@ -29,7 +29,7 @@ func (UnimplementedHandler) CreateProject(ctx context.Context, req *CreateProjec
 
 // CreateStep implements createStep operation.
 //
-// POST /projects/{projectID}/tasks/{taskID}/steps
+// POST /tasks/{taskID}/steps
 func (UnimplementedHandler) CreateStep(ctx context.Context, req *CreateStepReq, params CreateStepParams) (r *Step, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -57,7 +57,7 @@ func (UnimplementedHandler) DeleteProject(ctx context.Context, params DeleteProj
 
 // DeleteStep implements deleteStep operation.
 //
-// DELETE /projects/{projectID}/tasks/{taskID}/steps/{stepID}
+// DELETE /tasks/{taskID}/steps/{stepID}
 func (UnimplementedHandler) DeleteStep(ctx context.Context, params DeleteStepParams) error {
 	return ht.ErrNotImplemented
 }
@@ -120,7 +120,7 @@ func (UnimplementedHandler) UpdateProject(ctx context.Context, req *UpdateProjec
 
 // UpdateStep implements updateStep operation.
 //
-// PATCH /projects/{projectID}/tasks/{taskID}/steps/{stepID}
+// PATCH /tasks/{taskID}/steps/{stepID}
 func (UnimplementedHandler) UpdateStep(ctx context.Context, req *UpdateStepReq, params UpdateStepParams) (r *Step, _ error) {
 	return r, ht.ErrNotImplemented
 }

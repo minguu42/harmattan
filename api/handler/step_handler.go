@@ -40,7 +40,6 @@ func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, pa
 	}
 
 	out, err := h.step.UpdateStep(ctx, &usecase.UpdateStepInput{
-		ProjectID:   domain.ProjectID(params.ProjectID),
 		TaskID:      domain.TaskID(params.TaskID),
 		ID:          domain.StepID(params.StepID),
 		Name:        opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
@@ -54,9 +53,8 @@ func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, pa
 
 func (h *handler) DeleteStep(ctx context.Context, params openapi.DeleteStepParams) error {
 	err := h.step.DeleteStep(ctx, &usecase.DeleteStepInput{
-		ProjectID: domain.ProjectID(params.ProjectID),
-		TaskID:    domain.TaskID(params.TaskID),
-		ID:        domain.StepID(params.StepID),
+		TaskID: domain.TaskID(params.TaskID),
+		ID:     domain.StepID(params.StepID),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to execute DeleteStep usecase: %w", err)

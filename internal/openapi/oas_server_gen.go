@@ -18,7 +18,7 @@ type Handler interface {
 	CreateProject(ctx context.Context, req *CreateProjectReq) (*Project, error)
 	// CreateStep implements createStep operation.
 	//
-	// POST /projects/{projectID}/tasks/{taskID}/steps
+	// POST /tasks/{taskID}/steps
 	CreateStep(ctx context.Context, req *CreateStepReq, params CreateStepParams) (*Step, error)
 	// CreateTag implements createTag operation.
 	//
@@ -34,7 +34,7 @@ type Handler interface {
 	DeleteProject(ctx context.Context, params DeleteProjectParams) error
 	// DeleteStep implements deleteStep operation.
 	//
-	// DELETE /projects/{projectID}/tasks/{taskID}/steps/{stepID}
+	// DELETE /tasks/{taskID}/steps/{stepID}
 	DeleteStep(ctx context.Context, params DeleteStepParams) error
 	// DeleteTag implements deleteTag operation.
 	//
@@ -70,7 +70,7 @@ type Handler interface {
 	UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (*Project, error)
 	// UpdateStep implements updateStep operation.
 	//
-	// PATCH /projects/{projectID}/tasks/{taskID}/steps/{stepID}
+	// PATCH /tasks/{taskID}/steps/{stepID}
 	UpdateStep(ctx context.Context, req *UpdateStepReq, params UpdateStepParams) (*Step, error)
 	// UpdateTag implements updateTag operation.
 	//
