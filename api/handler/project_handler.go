@@ -63,6 +63,16 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 	return convertProject(out.Project), nil
 }
 
+func (h *handler) GetProject(ctx context.Context, params openapi.GetProjectParams) (*openapi.Project, error) {
+	out, err := h.project.GetProject(ctx, &usecase.GetProjectInput{
+		ID: domain.ProjectID(params.ProjectID),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute GetProject usecase: %w", err)
+	}
+	return convertProject(out.Project), nil
+}
+
 func (h *handler) DeleteProject(ctx context.Context, params openapi.DeleteProjectParams) error {
 	if err := h.project.DeleteProject(ctx, &usecase.DeleteProjectInput{ID: domain.ProjectID(params.ProjectID)}); err != nil {
 		return fmt.Errorf("failed to execute DeleteProject usecase: %w", err)
