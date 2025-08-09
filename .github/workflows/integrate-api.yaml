@@ -64,8 +64,8 @@ jobs:
           go-version-file: go.mod
       - name: Run linting
         run: |
-          go vet $(go list ./api/... ./internal/... ./lib/... | grep -v -e /zondaapi)
-          go tool staticcheck $(go list ./api/... ./internal/... ./lib/... | grep -v -e /zondaapi)
+          go vet ./api/... ./internal/... ./lib/...
+          go tool staticcheck ./api/... ./internal/... ./lib/...
   build:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
