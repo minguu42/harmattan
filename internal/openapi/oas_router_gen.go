@@ -125,12 +125,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							s.handleDeleteProjectRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
+						case "GET":
+							s.handleGetProjectRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
 						case "PATCH":
 							s.handleUpdateProjectRequest([1]string{
 								args[0],
 							}, elemIsEscaped, w, r)
 						default:
-							s.notAllowed(w, r, "DELETE,PATCH")
+							s.notAllowed(w, r, "DELETE,GET,PATCH")
 						}
 
 						return
@@ -186,13 +190,18 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 										args[0],
 										args[1],
 									}, elemIsEscaped, w, r)
+								case "GET":
+									s.handleGetTaskRequest([2]string{
+										args[0],
+										args[1],
+									}, elemIsEscaped, w, r)
 								case "PATCH":
 									s.handleUpdateTaskRequest([2]string{
 										args[0],
 										args[1],
 									}, elemIsEscaped, w, r)
 								default:
-									s.notAllowed(w, r, "DELETE,PATCH")
+									s.notAllowed(w, r, "DELETE,GET,PATCH")
 								}
 
 								return
@@ -315,12 +324,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								s.handleDeleteTagRequest([1]string{
 									args[0],
 								}, elemIsEscaped, w, r)
+							case "GET":
+								s.handleGetTagRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
 							case "PATCH":
 								s.handleUpdateTagRequest([1]string{
 									args[0],
 								}, elemIsEscaped, w, r)
 							default:
-								s.notAllowed(w, r, "DELETE,PATCH")
+								s.notAllowed(w, r, "DELETE,GET,PATCH")
 							}
 
 							return
@@ -589,6 +602,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.args = args
 							r.count = 1
 							return r, true
+						case "GET":
+							r.name = GetProjectOperation
+							r.summary = ""
+							r.operationID = "GetProject"
+							r.pathPattern = "/projects/{projectID}"
+							r.args = args
+							r.count = 1
+							return r, true
 						case "PATCH":
 							r.name = UpdateProjectOperation
 							r.summary = ""
@@ -657,6 +678,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = DeleteTaskOperation
 									r.summary = ""
 									r.operationID = "deleteTask"
+									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
+									r.args = args
+									r.count = 2
+									return r, true
+								case "GET":
+									r.name = GetTaskOperation
+									r.summary = ""
+									r.operationID = "GetTask"
 									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
 									r.args = args
 									r.count = 2
@@ -809,6 +838,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = DeleteTagOperation
 								r.summary = ""
 								r.operationID = "deleteTag"
+								r.pathPattern = "/tags/{tagID}"
+								r.args = args
+								r.count = 1
+								return r, true
+							case "GET":
+								r.name = GetTagOperation
+								r.summary = ""
+								r.operationID = "getTag"
 								r.pathPattern = "/tags/{tagID}"
 								r.args = args
 								r.count = 1

@@ -76,6 +76,27 @@ func (UnimplementedHandler) DeleteTask(ctx context.Context, params DeleteTaskPar
 	return ht.ErrNotImplemented
 }
 
+// GetProject implements GetProject operation.
+//
+// GET /projects/{projectID}
+func (UnimplementedHandler) GetProject(ctx context.Context, params GetProjectParams) (r *Project, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetTag implements getTag operation.
+//
+// GET /tags/{tagID}
+func (UnimplementedHandler) GetTag(ctx context.Context, params GetTagParams) (r *Tag, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetTask implements GetTask operation.
+//
+// GET /projects/{projectID}/tasks/{taskID}
+func (UnimplementedHandler) GetTask(ctx context.Context, params GetTaskParams) (r *Task, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ListProjects implements listProjects operation.
 //
 // GET /projects
