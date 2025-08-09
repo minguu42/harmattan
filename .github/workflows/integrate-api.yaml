@@ -112,5 +112,5 @@ jobs:
           context: .
           file: ./api/Dockerfile
           provenance: false
-          tags: ${{ github.event.pull_request.head.ref }}
+          tags: ${{ github.event.pull_request.number }}
           target: prod
