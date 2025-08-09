@@ -44,6 +44,18 @@ type Handler interface {
 	//
 	// DELETE /projects/{projectID}/tasks/{taskID}
 	DeleteTask(ctx context.Context, params DeleteTaskParams) error
+	// GetProject implements GetProject operation.
+	//
+	// GET /projects/{projectID}
+	GetProject(ctx context.Context, params GetProjectParams) (*Project, error)
+	// GetTag implements getTag operation.
+	//
+	// GET /tags/{tagID}
+	GetTag(ctx context.Context, params GetTagParams) (*Tag, error)
+	// GetTask implements GetTask operation.
+	//
+	// GET /projects/{projectID}/tasks/{taskID}
+	GetTask(ctx context.Context, params GetTaskParams) (*Task, error)
 	// ListProjects implements listProjects operation.
 	//
 	// GET /projects

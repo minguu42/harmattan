@@ -120,6 +120,18 @@ paths:
   /projects/{projectID}:
     parameters:
       - $ref: "#/components/parameters/projectID"
+    get:
+      tags: [projects]
+      operationId: GetProject
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/project"
+      security:
+        - bearerAuth: []
     patch:
       tags: [projects]
       operationId: updateProject
@@ -201,6 +213,18 @@ paths:
     parameters:
       - $ref: "#/components/parameters/projectID"
       - $ref: "#/components/parameters/taskID"
+    get:
+      tags: [tasks]
+      operationId: GetTask
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/task"
+      security:
+        - bearerAuth: []
     patch:
       tags: [tasks]
       operationId: updateTask
@@ -346,6 +370,18 @@ paths:
   /tags/{tagID}:
     parameters:
       - $ref: "#/components/parameters/tagID"
+    get:
+      tags: [tags]
+      operationId: getTag
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tag"
+      security:
+        - bearerAuth: []
     patch:
       tags: [tags]
       operationId: updateTag

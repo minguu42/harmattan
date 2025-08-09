@@ -108,6 +108,27 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	return &ProjectOutput{Project: p}, nil
 }
 
+type GetProjectInput struct {
+	ID domain.ProjectID
+}
+
+func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*ProjectOutput, error) {
+	user := auth.MustUserFromContext(ctx)
+
+	p, err := uc.DB.GetProjectByID(ctx, in.ID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return nil, apperr.ProjectNotFoundError(err)
+		}
+		return nil, fmt.Errorf("failed to get project: %w", err)
+	}
+	if !user.HasProject(p) {
+		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
+	}
+
+	return &ProjectOutput{Project: p}, nil
+}
+
 type DeleteProjectInput struct {
 	ID domain.ProjectID
 }
