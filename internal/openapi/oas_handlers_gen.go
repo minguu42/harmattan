@@ -25,7 +25,7 @@ func (c *codeRecorder) WriteHeader(status int) {
 
 func recordError(string, error) {}
 
-// handleCheckHealthRequest handles checkHealth operation.
+// handleCheckHealthRequest handles CheckHealth operation.
 //
 // GET /health
 func (s *Server) handleCheckHealthRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func (s *Server) handleCheckHealthRequest(args [0]string, argsEscaped bool, w ht
 			Context:          ctx,
 			OperationName:    CheckHealthOperation,
 			OperationSummary: "",
-			OperationID:      "checkHealth",
+			OperationID:      "CheckHealth",
 			Body:             nil,
 			Params:           middleware.Parameters{},
 			Raw:              r,
@@ -85,7 +85,7 @@ func (s *Server) handleCheckHealthRequest(args [0]string, argsEscaped bool, w ht
 	}
 }
 
-// handleCreateProjectRequest handles createProject operation.
+// handleCreateProjectRequest handles CreateProject operation.
 //
 // POST /projects
 func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -97,7 +97,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: CreateProjectOperation,
-			ID:   "createProject",
+			ID:   "CreateProject",
 		}
 	)
 	{
@@ -166,7 +166,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 			Context:          ctx,
 			OperationName:    CreateProjectOperation,
 			OperationSummary: "",
-			OperationID:      "createProject",
+			OperationID:      "CreateProject",
 			Body:             request,
 			Params:           middleware.Parameters{},
 			Raw:              r,
@@ -208,7 +208,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 	}
 }
 
-// handleCreateStepRequest handles createStep operation.
+// handleCreateStepRequest handles CreateStep operation.
 //
 // POST /tasks/{taskID}/steps
 func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -220,7 +220,7 @@ func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: CreateStepOperation,
-			ID:   "createStep",
+			ID:   "CreateStep",
 		}
 	)
 	{
@@ -299,7 +299,7 @@ func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w htt
 			Context:          ctx,
 			OperationName:    CreateStepOperation,
 			OperationSummary: "",
-			OperationID:      "createStep",
+			OperationID:      "CreateStep",
 			Body:             request,
 			Params: middleware.Parameters{
 				{
@@ -346,7 +346,7 @@ func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w htt
 	}
 }
 
-// handleCreateTagRequest handles createTag operation.
+// handleCreateTagRequest handles CreateTag operation.
 //
 // POST /tags
 func (s *Server) handleCreateTagRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -358,7 +358,7 @@ func (s *Server) handleCreateTagRequest(args [0]string, argsEscaped bool, w http
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: CreateTagOperation,
-			ID:   "createTag",
+			ID:   "CreateTag",
 		}
 	)
 	{
@@ -427,7 +427,7 @@ func (s *Server) handleCreateTagRequest(args [0]string, argsEscaped bool, w http
 			Context:          ctx,
 			OperationName:    CreateTagOperation,
 			OperationSummary: "",
-			OperationID:      "createTag",
+			OperationID:      "CreateTag",
 			Body:             request,
 			Params:           middleware.Parameters{},
 			Raw:              r,
@@ -469,7 +469,7 @@ func (s *Server) handleCreateTagRequest(args [0]string, argsEscaped bool, w http
 	}
 }
 
-// handleCreateTaskRequest handles createTask operation.
+// handleCreateTaskRequest handles CreateTask operation.
 //
 // POST /projects/{projectID}/tasks
 func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -481,7 +481,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: CreateTaskOperation,
-			ID:   "createTask",
+			ID:   "CreateTask",
 		}
 	)
 	{
@@ -560,7 +560,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 			Context:          ctx,
 			OperationName:    CreateTaskOperation,
 			OperationSummary: "",
-			OperationID:      "createTask",
+			OperationID:      "CreateTask",
 			Body:             request,
 			Params: middleware.Parameters{
 				{
@@ -607,7 +607,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 	}
 }
 
-// handleDeleteProjectRequest handles deleteProject operation.
+// handleDeleteProjectRequest handles DeleteProject operation.
 //
 // DELETE /projects/{projectID}
 func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -619,7 +619,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: DeleteProjectOperation,
-			ID:   "deleteProject",
+			ID:   "DeleteProject",
 		}
 	)
 	{
@@ -683,7 +683,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 			Context:          ctx,
 			OperationName:    DeleteProjectOperation,
 			OperationSummary: "",
-			OperationID:      "deleteProject",
+			OperationID:      "DeleteProject",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -730,7 +730,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 	}
 }
 
-// handleDeleteStepRequest handles deleteStep operation.
+// handleDeleteStepRequest handles DeleteStep operation.
 //
 // DELETE /tasks/{taskID}/steps/{stepID}
 func (s *Server) handleDeleteStepRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -742,7 +742,7 @@ func (s *Server) handleDeleteStepRequest(args [2]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: DeleteStepOperation,
-			ID:   "deleteStep",
+			ID:   "DeleteStep",
 		}
 	)
 	{
@@ -806,7 +806,7 @@ func (s *Server) handleDeleteStepRequest(args [2]string, argsEscaped bool, w htt
 			Context:          ctx,
 			OperationName:    DeleteStepOperation,
 			OperationSummary: "",
-			OperationID:      "deleteStep",
+			OperationID:      "DeleteStep",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -857,7 +857,7 @@ func (s *Server) handleDeleteStepRequest(args [2]string, argsEscaped bool, w htt
 	}
 }
 
-// handleDeleteTagRequest handles deleteTag operation.
+// handleDeleteTagRequest handles DeleteTag operation.
 //
 // DELETE /tags/{tagID}
 func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -869,7 +869,7 @@ func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: DeleteTagOperation,
-			ID:   "deleteTag",
+			ID:   "DeleteTag",
 		}
 	)
 	{
@@ -933,7 +933,7 @@ func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http
 			Context:          ctx,
 			OperationName:    DeleteTagOperation,
 			OperationSummary: "",
-			OperationID:      "deleteTag",
+			OperationID:      "DeleteTag",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -980,7 +980,7 @@ func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http
 	}
 }
 
-// handleDeleteTaskRequest handles deleteTask operation.
+// handleDeleteTaskRequest handles DeleteTask operation.
 //
 // DELETE /projects/{projectID}/tasks/{taskID}
 func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -992,7 +992,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: DeleteTaskOperation,
-			ID:   "deleteTask",
+			ID:   "DeleteTask",
 		}
 	)
 	{
@@ -1056,7 +1056,7 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 			Context:          ctx,
 			OperationName:    DeleteTaskOperation,
 			OperationSummary: "",
-			OperationID:      "deleteTask",
+			OperationID:      "DeleteTask",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -1230,7 +1230,7 @@ func (s *Server) handleGetProjectRequest(args [1]string, argsEscaped bool, w htt
 	}
 }
 
-// handleGetTagRequest handles getTag operation.
+// handleGetTagRequest handles GetTag operation.
 //
 // GET /tags/{tagID}
 func (s *Server) handleGetTagRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -1242,7 +1242,7 @@ func (s *Server) handleGetTagRequest(args [1]string, argsEscaped bool, w http.Re
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: GetTagOperation,
-			ID:   "getTag",
+			ID:   "GetTag",
 		}
 	)
 	{
@@ -1306,7 +1306,7 @@ func (s *Server) handleGetTagRequest(args [1]string, argsEscaped bool, w http.Re
 			Context:          ctx,
 			OperationName:    GetTagOperation,
 			OperationSummary: "",
-			OperationID:      "getTag",
+			OperationID:      "GetTag",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -1480,7 +1480,7 @@ func (s *Server) handleGetTaskRequest(args [2]string, argsEscaped bool, w http.R
 	}
 }
 
-// handleListProjectsRequest handles listProjects operation.
+// handleListProjectsRequest handles ListProjects operation.
 //
 // GET /projects
 func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -1492,7 +1492,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: ListProjectsOperation,
-			ID:   "listProjects",
+			ID:   "ListProjects",
 		}
 	)
 	{
@@ -1550,13 +1550,13 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		return
 	}
 
-	var response *Projects
+	var response *ListProjectsOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    ListProjectsOperation,
 			OperationSummary: "",
-			OperationID:      "listProjects",
+			OperationID:      "ListProjects",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -1574,7 +1574,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		type (
 			Request  = struct{}
 			Params   = ListProjectsParams
-			Response = *Projects
+			Response = *ListProjectsOK
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1607,7 +1607,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 	}
 }
 
-// handleListTagsRequest handles listTags operation.
+// handleListTagsRequest handles ListTags operation.
 //
 // GET /tags
 func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -1619,7 +1619,7 @@ func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: ListTagsOperation,
-			ID:   "listTags",
+			ID:   "ListTags",
 		}
 	)
 	{
@@ -1677,13 +1677,13 @@ func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.
 		return
 	}
 
-	var response *Tags
+	var response *ListTagsOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    ListTagsOperation,
 			OperationSummary: "",
-			OperationID:      "listTags",
+			OperationID:      "ListTags",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -1701,7 +1701,7 @@ func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.
 		type (
 			Request  = struct{}
 			Params   = ListTagsParams
-			Response = *Tags
+			Response = *ListTagsOK
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1734,7 +1734,7 @@ func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.
 	}
 }
 
-// handleListTasksRequest handles listTasks operation.
+// handleListTasksRequest handles ListTasks operation.
 //
 // GET /projects/{projectID}/tasks
 func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -1746,7 +1746,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: ListTasksOperation,
-			ID:   "listTasks",
+			ID:   "ListTasks",
 		}
 	)
 	{
@@ -1804,13 +1804,13 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		return
 	}
 
-	var response *Tasks
+	var response *ListTasksOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    ListTasksOperation,
 			OperationSummary: "",
-			OperationID:      "listTasks",
+			OperationID:      "ListTasks",
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
@@ -1832,7 +1832,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		type (
 			Request  = struct{}
 			Params   = ListTasksParams
-			Response = *Tasks
+			Response = *ListTasksOK
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1865,7 +1865,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 	}
 }
 
-// handleSignInRequest handles signIn operation.
+// handleSignInRequest handles SignIn operation.
 //
 // POST /sign-in
 func (s *Server) handleSignInRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -1877,7 +1877,7 @@ func (s *Server) handleSignInRequest(args [0]string, argsEscaped bool, w http.Re
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: SignInOperation,
-			ID:   "signIn",
+			ID:   "SignIn",
 		}
 	)
 	request, close, err := s.decodeSignInRequest(r)
@@ -1902,7 +1902,7 @@ func (s *Server) handleSignInRequest(args [0]string, argsEscaped bool, w http.Re
 			Context:          ctx,
 			OperationName:    SignInOperation,
 			OperationSummary: "",
-			OperationID:      "signIn",
+			OperationID:      "SignIn",
 			Body:             request,
 			Params:           middleware.Parameters{},
 			Raw:              r,
@@ -1944,7 +1944,7 @@ func (s *Server) handleSignInRequest(args [0]string, argsEscaped bool, w http.Re
 	}
 }
 
-// handleSignUpRequest handles signUp operation.
+// handleSignUpRequest handles SignUp operation.
 //
 // POST /sign-up
 func (s *Server) handleSignUpRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -1956,7 +1956,7 @@ func (s *Server) handleSignUpRequest(args [0]string, argsEscaped bool, w http.Re
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: SignUpOperation,
-			ID:   "signUp",
+			ID:   "SignUp",
 		}
 	)
 	request, close, err := s.decodeSignUpRequest(r)
@@ -1981,7 +1981,7 @@ func (s *Server) handleSignUpRequest(args [0]string, argsEscaped bool, w http.Re
 			Context:          ctx,
 			OperationName:    SignUpOperation,
 			OperationSummary: "",
-			OperationID:      "signUp",
+			OperationID:      "SignUp",
 			Body:             request,
 			Params:           middleware.Parameters{},
 			Raw:              r,
@@ -2023,7 +2023,7 @@ func (s *Server) handleSignUpRequest(args [0]string, argsEscaped bool, w http.Re
 	}
 }
 
-// handleUpdateProjectRequest handles updateProject operation.
+// handleUpdateProjectRequest handles UpdateProject operation.
 //
 // PATCH /projects/{projectID}
 func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -2035,7 +2035,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: UpdateProjectOperation,
-			ID:   "updateProject",
+			ID:   "UpdateProject",
 		}
 	)
 	{
@@ -2114,7 +2114,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 			Context:          ctx,
 			OperationName:    UpdateProjectOperation,
 			OperationSummary: "",
-			OperationID:      "updateProject",
+			OperationID:      "UpdateProject",
 			Body:             request,
 			Params: middleware.Parameters{
 				{
@@ -2161,7 +2161,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 	}
 }
 
-// handleUpdateStepRequest handles updateStep operation.
+// handleUpdateStepRequest handles UpdateStep operation.
 //
 // PATCH /tasks/{taskID}/steps/{stepID}
 func (s *Server) handleUpdateStepRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -2173,7 +2173,7 @@ func (s *Server) handleUpdateStepRequest(args [2]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: UpdateStepOperation,
-			ID:   "updateStep",
+			ID:   "UpdateStep",
 		}
 	)
 	{
@@ -2252,7 +2252,7 @@ func (s *Server) handleUpdateStepRequest(args [2]string, argsEscaped bool, w htt
 			Context:          ctx,
 			OperationName:    UpdateStepOperation,
 			OperationSummary: "",
-			OperationID:      "updateStep",
+			OperationID:      "UpdateStep",
 			Body:             request,
 			Params: middleware.Parameters{
 				{
@@ -2303,7 +2303,7 @@ func (s *Server) handleUpdateStepRequest(args [2]string, argsEscaped bool, w htt
 	}
 }
 
-// handleUpdateTagRequest handles updateTag operation.
+// handleUpdateTagRequest handles UpdateTag operation.
 //
 // PATCH /tags/{tagID}
 func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -2315,7 +2315,7 @@ func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: UpdateTagOperation,
-			ID:   "updateTag",
+			ID:   "UpdateTag",
 		}
 	)
 	{
@@ -2394,7 +2394,7 @@ func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http
 			Context:          ctx,
 			OperationName:    UpdateTagOperation,
 			OperationSummary: "",
-			OperationID:      "updateTag",
+			OperationID:      "UpdateTag",
 			Body:             request,
 			Params: middleware.Parameters{
 				{
@@ -2441,7 +2441,7 @@ func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http
 	}
 }
 
-// handleUpdateTaskRequest handles updateTask operation.
+// handleUpdateTaskRequest handles UpdateTask operation.
 //
 // PATCH /projects/{projectID}/tasks/{taskID}
 func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -2453,7 +2453,7 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 		err          error
 		opErrContext = ogenerrors.OperationContext{
 			Name: UpdateTaskOperation,
-			ID:   "updateTask",
+			ID:   "UpdateTask",
 		}
 	)
 	{
@@ -2532,7 +2532,7 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 			Context:          ctx,
 			OperationName:    UpdateTaskOperation,
 			OperationSummary: "",
-			OperationID:      "updateTask",
+			OperationID:      "UpdateTask",
 			Body:             request,
 			Params: middleware.Parameters{
 				{

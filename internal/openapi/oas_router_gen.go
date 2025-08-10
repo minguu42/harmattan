@@ -534,7 +534,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					case "GET":
 						r.name = CheckHealthOperation
 						r.summary = ""
-						r.operationID = "checkHealth"
+						r.operationID = "CheckHealth"
 						r.pathPattern = "/health"
 						r.args = args
 						r.count = 0
@@ -557,7 +557,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					case "GET":
 						r.name = ListProjectsOperation
 						r.summary = ""
-						r.operationID = "listProjects"
+						r.operationID = "ListProjects"
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
@@ -565,7 +565,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					case "POST":
 						r.name = CreateProjectOperation
 						r.summary = ""
-						r.operationID = "createProject"
+						r.operationID = "CreateProject"
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
@@ -597,7 +597,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						case "DELETE":
 							r.name = DeleteProjectOperation
 							r.summary = ""
-							r.operationID = "deleteProject"
+							r.operationID = "DeleteProject"
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
@@ -613,7 +613,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						case "PATCH":
 							r.name = UpdateProjectOperation
 							r.summary = ""
-							r.operationID = "updateProject"
+							r.operationID = "UpdateProject"
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
@@ -636,7 +636,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							case "GET":
 								r.name = ListTasksOperation
 								r.summary = ""
-								r.operationID = "listTasks"
+								r.operationID = "ListTasks"
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
@@ -644,7 +644,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							case "POST":
 								r.name = CreateTaskOperation
 								r.summary = ""
-								r.operationID = "createTask"
+								r.operationID = "CreateTask"
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
@@ -677,7 +677,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								case "DELETE":
 									r.name = DeleteTaskOperation
 									r.summary = ""
-									r.operationID = "deleteTask"
+									r.operationID = "DeleteTask"
 									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
 									r.args = args
 									r.count = 2
@@ -693,7 +693,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								case "PATCH":
 									r.name = UpdateTaskOperation
 									r.summary = ""
-									r.operationID = "updateTask"
+									r.operationID = "UpdateTask"
 									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
 									r.args = args
 									r.count = 2
@@ -735,7 +735,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						case "POST":
 							r.name = SignInOperation
 							r.summary = ""
-							r.operationID = "signIn"
+							r.operationID = "SignIn"
 							r.pathPattern = "/sign-in"
 							r.args = args
 							r.count = 0
@@ -759,7 +759,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						case "POST":
 							r.name = SignUpOperation
 							r.summary = ""
-							r.operationID = "signUp"
+							r.operationID = "SignUp"
 							r.pathPattern = "/sign-up"
 							r.args = args
 							r.count = 0
@@ -796,7 +796,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						case "GET":
 							r.name = ListTagsOperation
 							r.summary = ""
-							r.operationID = "listTags"
+							r.operationID = "ListTags"
 							r.pathPattern = "/tags"
 							r.args = args
 							r.count = 0
@@ -804,7 +804,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						case "POST":
 							r.name = CreateTagOperation
 							r.summary = ""
-							r.operationID = "createTag"
+							r.operationID = "CreateTag"
 							r.pathPattern = "/tags"
 							r.args = args
 							r.count = 0
@@ -837,7 +837,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							case "DELETE":
 								r.name = DeleteTagOperation
 								r.summary = ""
-								r.operationID = "deleteTag"
+								r.operationID = "DeleteTag"
 								r.pathPattern = "/tags/{tagID}"
 								r.args = args
 								r.count = 1
@@ -845,7 +845,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							case "GET":
 								r.name = GetTagOperation
 								r.summary = ""
-								r.operationID = "getTag"
+								r.operationID = "GetTag"
 								r.pathPattern = "/tags/{tagID}"
 								r.args = args
 								r.count = 1
@@ -853,7 +853,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							case "PATCH":
 								r.name = UpdateTagOperation
 								r.summary = ""
-								r.operationID = "updateTag"
+								r.operationID = "UpdateTag"
 								r.pathPattern = "/tags/{tagID}"
 								r.args = args
 								r.count = 1
@@ -899,7 +899,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							case "POST":
 								r.name = CreateStepOperation
 								r.summary = ""
-								r.operationID = "createStep"
+								r.operationID = "CreateStep"
 								r.pathPattern = "/tasks/{taskID}/steps"
 								r.args = args
 								r.count = 1
@@ -932,7 +932,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								case "DELETE":
 									r.name = DeleteStepOperation
 									r.summary = ""
-									r.operationID = "deleteStep"
+									r.operationID = "DeleteStep"
 									r.pathPattern = "/tasks/{taskID}/steps/{stepID}"
 									r.args = args
 									r.count = 2
@@ -940,7 +940,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								case "PATCH":
 									r.name = UpdateStepOperation
 									r.summary = ""
-									r.operationID = "updateStep"
+									r.operationID = "UpdateStep"
 									r.pathPattern = "/tasks/{taskID}/steps/{stepID}"
 									r.args = args
 									r.count = 2

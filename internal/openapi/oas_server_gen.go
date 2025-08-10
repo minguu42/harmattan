@@ -8,39 +8,39 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
-	// CheckHealth implements checkHealth operation.
+	// CheckHealth implements CheckHealth operation.
 	//
 	// GET /health
 	CheckHealth(ctx context.Context) (*CheckHealthOK, error)
-	// CreateProject implements createProject operation.
+	// CreateProject implements CreateProject operation.
 	//
 	// POST /projects
 	CreateProject(ctx context.Context, req *CreateProjectReq) (*Project, error)
-	// CreateStep implements createStep operation.
+	// CreateStep implements CreateStep operation.
 	//
 	// POST /tasks/{taskID}/steps
 	CreateStep(ctx context.Context, req *CreateStepReq, params CreateStepParams) (*Step, error)
-	// CreateTag implements createTag operation.
+	// CreateTag implements CreateTag operation.
 	//
 	// POST /tags
 	CreateTag(ctx context.Context, req *CreateTagReq) (*Tag, error)
-	// CreateTask implements createTask operation.
+	// CreateTask implements CreateTask operation.
 	//
 	// POST /projects/{projectID}/tasks
 	CreateTask(ctx context.Context, req *CreateTaskReq, params CreateTaskParams) (*Task, error)
-	// DeleteProject implements deleteProject operation.
+	// DeleteProject implements DeleteProject operation.
 	//
 	// DELETE /projects/{projectID}
 	DeleteProject(ctx context.Context, params DeleteProjectParams) error
-	// DeleteStep implements deleteStep operation.
+	// DeleteStep implements DeleteStep operation.
 	//
 	// DELETE /tasks/{taskID}/steps/{stepID}
 	DeleteStep(ctx context.Context, params DeleteStepParams) error
-	// DeleteTag implements deleteTag operation.
+	// DeleteTag implements DeleteTag operation.
 	//
 	// DELETE /tags/{tagID}
 	DeleteTag(ctx context.Context, params DeleteTagParams) error
-	// DeleteTask implements deleteTask operation.
+	// DeleteTask implements DeleteTask operation.
 	//
 	// DELETE /projects/{projectID}/tasks/{taskID}
 	DeleteTask(ctx context.Context, params DeleteTaskParams) error
@@ -48,7 +48,7 @@ type Handler interface {
 	//
 	// GET /projects/{projectID}
 	GetProject(ctx context.Context, params GetProjectParams) (*Project, error)
-	// GetTag implements getTag operation.
+	// GetTag implements GetTag operation.
 	//
 	// GET /tags/{tagID}
 	GetTag(ctx context.Context, params GetTagParams) (*Tag, error)
@@ -56,39 +56,39 @@ type Handler interface {
 	//
 	// GET /projects/{projectID}/tasks/{taskID}
 	GetTask(ctx context.Context, params GetTaskParams) (*Task, error)
-	// ListProjects implements listProjects operation.
+	// ListProjects implements ListProjects operation.
 	//
 	// GET /projects
-	ListProjects(ctx context.Context, params ListProjectsParams) (*Projects, error)
-	// ListTags implements listTags operation.
+	ListProjects(ctx context.Context, params ListProjectsParams) (*ListProjectsOK, error)
+	// ListTags implements ListTags operation.
 	//
 	// GET /tags
-	ListTags(ctx context.Context, params ListTagsParams) (*Tags, error)
-	// ListTasks implements listTasks operation.
+	ListTags(ctx context.Context, params ListTagsParams) (*ListTagsOK, error)
+	// ListTasks implements ListTasks operation.
 	//
 	// GET /projects/{projectID}/tasks
-	ListTasks(ctx context.Context, params ListTasksParams) (*Tasks, error)
-	// SignIn implements signIn operation.
+	ListTasks(ctx context.Context, params ListTasksParams) (*ListTasksOK, error)
+	// SignIn implements SignIn operation.
 	//
 	// POST /sign-in
 	SignIn(ctx context.Context, req *SignInReq) (*SignInOK, error)
-	// SignUp implements signUp operation.
+	// SignUp implements SignUp operation.
 	//
 	// POST /sign-up
 	SignUp(ctx context.Context, req *SignUpReq) (*SignUpOK, error)
-	// UpdateProject implements updateProject operation.
+	// UpdateProject implements UpdateProject operation.
 	//
 	// PATCH /projects/{projectID}
 	UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (*Project, error)
-	// UpdateStep implements updateStep operation.
+	// UpdateStep implements UpdateStep operation.
 	//
 	// PATCH /tasks/{taskID}/steps/{stepID}
 	UpdateStep(ctx context.Context, req *UpdateStepReq, params UpdateStepParams) (*Step, error)
-	// UpdateTag implements updateTag operation.
+	// UpdateTag implements UpdateTag operation.
 	//
 	// PATCH /tags/{tagID}
 	UpdateTag(ctx context.Context, req *UpdateTagReq, params UpdateTagParams) (*Tag, error)
-	// UpdateTask implements updateTask operation.
+	// UpdateTask implements UpdateTask operation.
 	//
 	// PATCH /projects/{projectID}/tasks/{taskID}
 	UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (*Task, error)

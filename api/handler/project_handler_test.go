@@ -54,7 +54,7 @@ func TestHandler_ListProjects(t *testing.T) {
 	}))
 
 	t.Run("no limit and offset", func(t *testing.T) {
-		want := &openapi.Projects{
+		want := &openapi.ListProjectsOK{
 			Projects: []openapi.Project{
 				{
 					ID:        "PROJECT-000000000000000001",
@@ -78,7 +78,7 @@ func TestHandler_ListProjects(t *testing.T) {
 			Check().HasStatus(200).HasJSON(want)
 	})
 	t.Run("limit=1&offset=0", func(t *testing.T) {
-		want := &openapi.Projects{
+		want := &openapi.ListProjectsOK{
 			Projects: []openapi.Project{
 				{
 					ID:        "PROJECT-000000000000000001",
@@ -95,7 +95,7 @@ func TestHandler_ListProjects(t *testing.T) {
 			Check().HasStatus(200).HasJSON(want)
 	})
 	t.Run("limit=1&offset=1", func(t *testing.T) {
-		want := &openapi.Projects{
+		want := &openapi.ListProjectsOK{
 			Projects: []openapi.Project{
 				{
 					ID:        "PROJECT-000000000000000002",

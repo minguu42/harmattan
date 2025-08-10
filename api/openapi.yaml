@@ -6,7 +6,7 @@ paths:
   /health:
     get:
       tags: [monitoring]
-      operationId: checkHealth
+      operationId: CheckHealth
       responses:
         200:
           description: OK
@@ -18,10 +18,11 @@ paths:
                   revision:
                     type: string
                 required: [revision]
+      security: [{}]
   /sign-up:
     post:
       tags: [authentication]
-      operationId: signUp
+      operationId: SignUp
       requestBody:
         content:
           application/json:
@@ -47,10 +48,11 @@ paths:
                   id_token:
                     type: string
                 required: [id_token]
+      security: [{}]
   /sign-in:
     post:
       tags: [authentication]
-      operationId: signIn
+      operationId: SignIn
       requestBody:
         content:
           application/json:
@@ -76,10 +78,11 @@ paths:
                   id_token:
                     type: string
                 required: [id_token]
+      security: [{}]
   /projects:
     post:
       tags: [projects]
-      operationId: createProject
+      operationId: CreateProject
       requestBody:
         content:
           application/json:
@@ -100,11 +103,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/project"
-      security:
-        - bearerAuth: []
     get:
       tags: [projects]
-      operationId: listProjects
+      operationId: ListProjects
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
@@ -114,9 +115,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/projects"
-      security:
-        - bearerAuth: []
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/project"
+                  has_next:
+                    type: boolean
+                required: [projects, has_next]
   /projects/{projectID}:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -130,11 +137,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/project"
-      security:
-        - bearerAuth: []
     patch:
       tags: [projects]
-      operationId: updateProject
+      operationId: UpdateProject
       requestBody:
         content:
           application/json:
@@ -156,22 +161,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/project"
-      security:
-        - bearerAuth: []
     delete:
       tags: [projects]
-      operationId: deleteProject
+      operationId: DeleteProject
       responses:
         200:
           description: OK
-      security:
-        - bearerAuth: []
   /projects/{projectID}/tasks:
     parameters:
       - $ref: "#/components/parameters/projectID"
     post:
       tags: [tasks]
-      operationId: createTask
+      operationId: CreateTask
       requestBody:
         content:
           application/json:
@@ -192,11 +193,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/task"
-      security:
-        - bearerAuth: []
     get:
       tags: [tasks]
-      operationId: listTasks
+      operationId: ListTasks
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
@@ -206,9 +205,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/tasks"
-      security:
-        - bearerAuth: []
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/task"
+                  has_next:
+                    type: boolean
+                required: [tasks, has_next]
   /projects/{projectID}/tasks/{taskID}:
     parameters:
       - $ref: "#/components/parameters/projectID"
@@ -223,11 +228,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/task"
-      security:
-        - bearerAuth: []
     patch:
       tags: [tasks]
-      operationId: updateTask
+      operationId: UpdateTask
       requestBody:
         content:
           application/json:
@@ -257,22 +260,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/task"
-      security:
-        - bearerAuth: []
     delete:
       tags: [tasks]
-      operationId: deleteTask
+      operationId: DeleteTask
       responses:
         200:
           description: OK
-      security:
-        - bearerAuth: []
   /tasks/{taskID}/steps:
     parameters:
       - $ref: "#/components/parameters/taskID"
     post:
       tags: [steps]
-      operationId: createStep
+      operationId: CreateStep
       requestBody:
         content:
           application/json:
@@ -290,15 +289,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/step"
-      security:
-        - bearerAuth: []
   /tasks/{taskID}/steps/{stepID}:
     parameters:
       - $ref: "#/components/parameters/taskID"
       - $ref: "#/components/parameters/stepID"
     patch:
       tags: [steps]
-      operationId: updateStep
+      operationId: UpdateStep
       requestBody:
         content:
           application/json:
@@ -319,20 +316,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/step"
-      security:
-        - bearerAuth: []
     delete:
       tags: [steps]
-      operationId: deleteStep
+      operationId: DeleteStep
       responses:
         200:
           description: OK
-      security:
-        - bearerAuth: []
   /tags:
     post:
       tags: [tags]
-      operationId: createTag
+      operationId: CreateTag
       requestBody:
         content:
           application/json:
@@ -350,11 +343,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tag"
-      security:
-        - bearerAuth: []
     get:
       tags: [tags]
-      operationId: listTags
+      operationId: ListTags
       parameters:
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/offset"
@@ -364,15 +355,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/tags"
-      security:
-        - bearerAuth: []
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/tag"
+                  has_next:
+                    type: boolean
+                required: [tags, has_next]
   /tags/{tagID}:
     parameters:
       - $ref: "#/components/parameters/tagID"
     get:
       tags: [tags]
-      operationId: getTag
+      operationId: GetTag
       responses:
         200:
           description: OK
@@ -380,11 +377,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tag"
-      security:
-        - bearerAuth: []
     patch:
       tags: [tags]
-      operationId: updateTag
+      operationId: UpdateTag
       requestBody:
         content:
           application/json:
@@ -401,16 +396,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tag"
-      security:
-        - bearerAuth: []
     delete:
       tags: [tags]
-      operationId: deleteTag
+      operationId: DeleteTag
       responses:
         200:
           description: OK
-      security:
-        - bearerAuth: []
 components:
   schemas:
     project:
@@ -432,16 +423,6 @@ components:
           type: string
           format: date-time
       required: [id, name, color, is_archived, created_at, updated_at]
-    projects:
-      type: object
-      properties:
-        projects:
-          type: array
-          items:
-            $ref: "#/components/schemas/project"
-        has_next:
-          type: boolean
-      required: [projects, has_next]
     task:
       type: object
       properties:
@@ -476,16 +457,6 @@ components:
           items:
             $ref: "#/components/schemas/tag"
       required: [id, project_id, name, content, priority, created_at, updated_at, steps, tags]
-    tasks:
-      type: object
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: "#/components/schemas/task"
-        has_next:
-          type: boolean
-      required: [tasks, has_next]
     step:
       type: object
       properties:
@@ -519,16 +490,6 @@ components:
           type: string
           format: date-time
       required: [id, name, created_at, updated_at]
-    tags:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            $ref: "#/components/schemas/tag"
-        has_next:
-          type: boolean
-      required: [tags, has_next]
   parameters:
     limit:
       name: limit
@@ -581,6 +542,8 @@ components:
     bearerAuth:
       type: http
       scheme: Bearer
+security:
+  - bearerAuth: []
 tags:
   - name: monitoring
   - name: authentication

@@ -13,63 +13,63 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
-// CheckHealth implements checkHealth operation.
+// CheckHealth implements CheckHealth operation.
 //
 // GET /health
 func (UnimplementedHandler) CheckHealth(ctx context.Context) (r *CheckHealthOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// CreateProject implements createProject operation.
+// CreateProject implements CreateProject operation.
 //
 // POST /projects
 func (UnimplementedHandler) CreateProject(ctx context.Context, req *CreateProjectReq) (r *Project, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// CreateStep implements createStep operation.
+// CreateStep implements CreateStep operation.
 //
 // POST /tasks/{taskID}/steps
 func (UnimplementedHandler) CreateStep(ctx context.Context, req *CreateStepReq, params CreateStepParams) (r *Step, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// CreateTag implements createTag operation.
+// CreateTag implements CreateTag operation.
 //
 // POST /tags
 func (UnimplementedHandler) CreateTag(ctx context.Context, req *CreateTagReq) (r *Tag, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// CreateTask implements createTask operation.
+// CreateTask implements CreateTask operation.
 //
 // POST /projects/{projectID}/tasks
 func (UnimplementedHandler) CreateTask(ctx context.Context, req *CreateTaskReq, params CreateTaskParams) (r *Task, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// DeleteProject implements deleteProject operation.
+// DeleteProject implements DeleteProject operation.
 //
 // DELETE /projects/{projectID}
 func (UnimplementedHandler) DeleteProject(ctx context.Context, params DeleteProjectParams) error {
 	return ht.ErrNotImplemented
 }
 
-// DeleteStep implements deleteStep operation.
+// DeleteStep implements DeleteStep operation.
 //
 // DELETE /tasks/{taskID}/steps/{stepID}
 func (UnimplementedHandler) DeleteStep(ctx context.Context, params DeleteStepParams) error {
 	return ht.ErrNotImplemented
 }
 
-// DeleteTag implements deleteTag operation.
+// DeleteTag implements DeleteTag operation.
 //
 // DELETE /tags/{tagID}
 func (UnimplementedHandler) DeleteTag(ctx context.Context, params DeleteTagParams) error {
 	return ht.ErrNotImplemented
 }
 
-// DeleteTask implements deleteTask operation.
+// DeleteTask implements DeleteTask operation.
 //
 // DELETE /projects/{projectID}/tasks/{taskID}
 func (UnimplementedHandler) DeleteTask(ctx context.Context, params DeleteTaskParams) error {
@@ -83,7 +83,7 @@ func (UnimplementedHandler) GetProject(ctx context.Context, params GetProjectPar
 	return r, ht.ErrNotImplemented
 }
 
-// GetTag implements getTag operation.
+// GetTag implements GetTag operation.
 //
 // GET /tags/{tagID}
 func (UnimplementedHandler) GetTag(ctx context.Context, params GetTagParams) (r *Tag, _ error) {
@@ -97,63 +97,63 @@ func (UnimplementedHandler) GetTask(ctx context.Context, params GetTaskParams) (
 	return r, ht.ErrNotImplemented
 }
 
-// ListProjects implements listProjects operation.
+// ListProjects implements ListProjects operation.
 //
 // GET /projects
-func (UnimplementedHandler) ListProjects(ctx context.Context, params ListProjectsParams) (r *Projects, _ error) {
+func (UnimplementedHandler) ListProjects(ctx context.Context, params ListProjectsParams) (r *ListProjectsOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// ListTags implements listTags operation.
+// ListTags implements ListTags operation.
 //
 // GET /tags
-func (UnimplementedHandler) ListTags(ctx context.Context, params ListTagsParams) (r *Tags, _ error) {
+func (UnimplementedHandler) ListTags(ctx context.Context, params ListTagsParams) (r *ListTagsOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// ListTasks implements listTasks operation.
+// ListTasks implements ListTasks operation.
 //
 // GET /projects/{projectID}/tasks
-func (UnimplementedHandler) ListTasks(ctx context.Context, params ListTasksParams) (r *Tasks, _ error) {
+func (UnimplementedHandler) ListTasks(ctx context.Context, params ListTasksParams) (r *ListTasksOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// SignIn implements signIn operation.
+// SignIn implements SignIn operation.
 //
 // POST /sign-in
 func (UnimplementedHandler) SignIn(ctx context.Context, req *SignInReq) (r *SignInOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// SignUp implements signUp operation.
+// SignUp implements SignUp operation.
 //
 // POST /sign-up
 func (UnimplementedHandler) SignUp(ctx context.Context, req *SignUpReq) (r *SignUpOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// UpdateProject implements updateProject operation.
+// UpdateProject implements UpdateProject operation.
 //
 // PATCH /projects/{projectID}
 func (UnimplementedHandler) UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (r *Project, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// UpdateStep implements updateStep operation.
+// UpdateStep implements UpdateStep operation.
 //
 // PATCH /tasks/{taskID}/steps/{stepID}
 func (UnimplementedHandler) UpdateStep(ctx context.Context, req *UpdateStepReq, params UpdateStepParams) (r *Step, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// UpdateTag implements updateTag operation.
+// UpdateTag implements UpdateTag operation.
 //
 // PATCH /tags/{tagID}
 func (UnimplementedHandler) UpdateTag(ctx context.Context, req *UpdateTagReq, params UpdateTagParams) (r *Tag, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// UpdateTask implements updateTask operation.
+// UpdateTask implements UpdateTask operation.
 //
 // PATCH /projects/{projectID}/tasks/{taskID}
 func (UnimplementedHandler) UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (r *Task, _ error) {

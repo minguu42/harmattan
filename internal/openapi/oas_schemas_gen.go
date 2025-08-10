@@ -234,6 +234,81 @@ type DeleteTagOK struct{}
 // DeleteTaskOK is response for DeleteTask operation.
 type DeleteTaskOK struct{}
 
+type ListProjectsOK struct {
+	Projects []Project `json:"projects"`
+	HasNext  bool      `json:"has_next"`
+}
+
+// GetProjects returns the value of Projects.
+func (s *ListProjectsOK) GetProjects() []Project {
+	return s.Projects
+}
+
+// GetHasNext returns the value of HasNext.
+func (s *ListProjectsOK) GetHasNext() bool {
+	return s.HasNext
+}
+
+// SetProjects sets the value of Projects.
+func (s *ListProjectsOK) SetProjects(val []Project) {
+	s.Projects = val
+}
+
+// SetHasNext sets the value of HasNext.
+func (s *ListProjectsOK) SetHasNext(val bool) {
+	s.HasNext = val
+}
+
+type ListTagsOK struct {
+	Tags    []Tag `json:"tags"`
+	HasNext bool  `json:"has_next"`
+}
+
+// GetTags returns the value of Tags.
+func (s *ListTagsOK) GetTags() []Tag {
+	return s.Tags
+}
+
+// GetHasNext returns the value of HasNext.
+func (s *ListTagsOK) GetHasNext() bool {
+	return s.HasNext
+}
+
+// SetTags sets the value of Tags.
+func (s *ListTagsOK) SetTags(val []Tag) {
+	s.Tags = val
+}
+
+// SetHasNext sets the value of HasNext.
+func (s *ListTagsOK) SetHasNext(val bool) {
+	s.HasNext = val
+}
+
+type ListTasksOK struct {
+	Tasks   []Task `json:"tasks"`
+	HasNext bool   `json:"has_next"`
+}
+
+// GetTasks returns the value of Tasks.
+func (s *ListTasksOK) GetTasks() []Task {
+	return s.Tasks
+}
+
+// GetHasNext returns the value of HasNext.
+func (s *ListTasksOK) GetHasNext() bool {
+	return s.HasNext
+}
+
+// SetTasks sets the value of Tasks.
+func (s *ListTasksOK) SetTasks(val []Task) {
+	s.Tasks = val
+}
+
+// SetHasNext sets the value of HasNext.
+func (s *ListTasksOK) SetHasNext(val bool) {
+	s.HasNext = val
+}
+
 // NewOptBool returns new OptBool with value set to v.
 func NewOptBool(v bool) OptBool {
 	return OptBool{
@@ -740,32 +815,6 @@ func (s *ProjectColor) UnmarshalText(data []byte) error {
 	}
 }
 
-// Ref: #/components/schemas/projects
-type Projects struct {
-	Projects []Project `json:"projects"`
-	HasNext  bool      `json:"has_next"`
-}
-
-// GetProjects returns the value of Projects.
-func (s *Projects) GetProjects() []Project {
-	return s.Projects
-}
-
-// GetHasNext returns the value of HasNext.
-func (s *Projects) GetHasNext() bool {
-	return s.HasNext
-}
-
-// SetProjects sets the value of Projects.
-func (s *Projects) SetProjects(val []Project) {
-	s.Projects = val
-}
-
-// SetHasNext sets the value of HasNext.
-func (s *Projects) SetHasNext(val bool) {
-	s.HasNext = val
-}
-
 type SignInOK struct {
 	IDToken string `json:"id_token"`
 }
@@ -962,32 +1011,6 @@ func (s *Tag) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
-// Ref: #/components/schemas/tags
-type Tags struct {
-	Tags    []Tag `json:"tags"`
-	HasNext bool  `json:"has_next"`
-}
-
-// GetTags returns the value of Tags.
-func (s *Tags) GetTags() []Tag {
-	return s.Tags
-}
-
-// GetHasNext returns the value of HasNext.
-func (s *Tags) GetHasNext() bool {
-	return s.HasNext
-}
-
-// SetTags sets the value of Tags.
-func (s *Tags) SetTags(val []Tag) {
-	s.Tags = val
-}
-
-// SetHasNext sets the value of HasNext.
-func (s *Tags) SetHasNext(val bool) {
-	s.HasNext = val
-}
-
 // Ref: #/components/schemas/task
 type Task struct {
 	ID          string      `json:"id"`
@@ -1111,32 +1134,6 @@ func (s *Task) SetSteps(val []Step) {
 // SetTags sets the value of Tags.
 func (s *Task) SetTags(val []Tag) {
 	s.Tags = val
-}
-
-// Ref: #/components/schemas/tasks
-type Tasks struct {
-	Tasks   []Task `json:"tasks"`
-	HasNext bool   `json:"has_next"`
-}
-
-// GetTasks returns the value of Tasks.
-func (s *Tasks) GetTasks() []Task {
-	return s.Tasks
-}
-
-// GetHasNext returns the value of HasNext.
-func (s *Tasks) GetHasNext() bool {
-	return s.HasNext
-}
-
-// SetTasks sets the value of Tasks.
-func (s *Tasks) SetTasks(val []Task) {
-	s.Tasks = val
-}
-
-// SetHasNext sets the value of HasNext.
-func (s *Tasks) SetHasNext(val bool) {
-	s.HasNext = val
 }
 
 type UpdateProjectReq struct {

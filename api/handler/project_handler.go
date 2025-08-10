@@ -28,7 +28,7 @@ func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectR
 	return convertProject(out.Project), nil
 }
 
-func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsParams) (*openapi.Projects, error) {
+func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsParams) (*openapi.ListProjectsOK, error) {
 	out, err := h.project.ListProjects(ctx, &usecase.ListProjectsInput{
 		Limit:  params.Limit.Value,
 		Offset: params.Offset.Value,
@@ -36,7 +36,7 @@ func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsP
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute ListProjects usecase: %w", err)
 	}
-	return &openapi.Projects{
+	return &openapi.ListProjectsOK{
 		Projects: convertProjects(out.Projects),
 		HasNext:  out.HasNext,
 	}, nil

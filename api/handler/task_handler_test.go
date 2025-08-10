@@ -113,7 +113,7 @@ func TestHandler_ListTasks(t *testing.T) {
 	}))
 
 	t.Run("no limit and offset", func(t *testing.T) {
-		want := &openapi.Tasks{
+		want := &openapi.ListTasksOK{
 			Tasks: []openapi.Task{
 				{
 					ID:        "TASK-000000000000000000001",
@@ -141,7 +141,7 @@ func TestHandler_ListTasks(t *testing.T) {
 			Check().HasStatus(200).HasJSON(want)
 	})
 	t.Run("limit=1&offset=0", func(t *testing.T) {
-		want := &openapi.Tasks{
+		want := &openapi.ListTasksOK{
 			Tasks: []openapi.Task{
 				{
 					ID:        "TASK-000000000000000000001",
@@ -160,7 +160,7 @@ func TestHandler_ListTasks(t *testing.T) {
 			Check().HasStatus(200).HasJSON(want)
 	})
 	t.Run("limit=1&offset=1", func(t *testing.T) {
-		want := &openapi.Tasks{
+		want := &openapi.ListTasksOK{
 			Tasks: []openapi.Task{
 				{
 					ID:        "TASK-000000000000000000002",
