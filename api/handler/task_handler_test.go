@@ -315,6 +315,115 @@ func TestHandler_UpdateTask(t *testing.T) {
 	})
 }
 
+func TestHandler_GetTask(t *testing.T) {
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
+	require.NoError(t, tdb.Insert(t.Context(), []any{
+		database.Projects{
+			{
+				ID:        "PROJECT-000000000000000001",
+				UserID:    testUserID,
+				Name:      "テストプロジェクト",
+				Color:     "blue",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+			{
+				ID:        "PROJECT-000000000000000002",
+				UserID:    "USER-000000000000000000002",
+				Name:      "他のユーザーのプロジェクト",
+				Color:     "gray",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+			{
+				ID:        "PROJECT-000000000000000003",
+				UserID:    testUserID,
+				Name:      "テストプロジェクト3",
+				Color:     "gray",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+		},
+		database.Tasks{
+			{
+				ID:        "TASK-000000000000000000001",
+				UserID:    testUserID,
+				ProjectID: "PROJECT-000000000000000001",
+				Name:      "テストタスク",
+				Content:   "テスト内容",
+				Priority:  1,
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+			{
+				ID:        "TASK-000000000000000000002",
+				UserID:    "USER-000000000000000000002",
+				ProjectID: "PROJECT-000000000000000002",
+				Name:      "他のユーザーのタスク",
+				Content:   "他のユーザーの内容",
+				Priority:  2,
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+			{
+				ID:        "TASK-000000000000000000003",
+				UserID:    testUserID,
+				ProjectID: "PROJECT-000000000000000003",
+				Name:      "タスク3",
+				Content:   "内容3",
+				Priority:  1,
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+		},
+	}))
+
+	t.Run("project not found", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
+		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000099/tasks/TASK-000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("user does not own the project", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
+		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000002/tasks/TASK-000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("task not found", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
+		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000099").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("user does not own the task", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
+		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000002").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("task does not belong to the project", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
+		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000003").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("ok", func(t *testing.T) {
+		want := &openapi.Task{
+			ID:        "TASK-000000000000000000001",
+			ProjectID: "PROJECT-000000000000000001",
+			Name:      "テストタスク",
+			Content:   "テスト内容",
+			Priority:  1,
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+		}
+		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(200).HasJSON(want)
+	})
+}
+
 func TestHandler_DeleteTask(t *testing.T) {
 	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
