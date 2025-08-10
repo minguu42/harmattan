@@ -132,6 +132,52 @@ func TestHandler_UpdateTag(t *testing.T) {
 	})
 }
 
+func TestHandler_GetTag(t *testing.T) {
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
+	require.NoError(t, tdb.Insert(t.Context(), []any{
+		database.Tags{
+			{
+				ID:        "TAG-0000000000000000000001",
+				UserID:    testUserID,
+				Name:      "テストタグ",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+			{
+				ID:        "TAG-0000000000000000000002",
+				UserID:    "USER-000000000000000000002",
+				Name:      "他のユーザーのタグ",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+		},
+	}))
+
+	t.Run("ok", func(t *testing.T) {
+		want := &openapi.Tag{
+			ID:        "TAG-0000000000000000000001",
+			Name:      "テストタグ",
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+		}
+		httpcheck.New(th).Test(t, "GET", "/tags/TAG-0000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(200).HasJSON(want)
+	})
+	t.Run("tag not found", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
+		httpcheck.New(th).Test(t, "GET", "/tags/TAG-0000000000000000000099").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("user does not own the tag", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
+		httpcheck.New(th).Test(t, "GET", "/tags/TAG-0000000000000000000002").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(404).HasJSON(want)
+	})
+}
+
 func TestHandler_DeleteTag(t *testing.T) {
 	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{

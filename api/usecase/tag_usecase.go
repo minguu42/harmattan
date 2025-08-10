@@ -98,6 +98,27 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 	return &TagOutput{Tag: t}, nil
 }
 
+type GetTagInput struct {
+	ID domain.TagID
+}
+
+func (uc *Tag) GetTag(ctx context.Context, in *GetTagInput) (*TagOutput, error) {
+	user := auth.MustUserFromContext(ctx)
+
+	t, err := uc.DB.GetTagByID(ctx, in.ID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return nil, apperr.TagNotFoundError(err)
+		}
+		return nil, fmt.Errorf("failed to get tag: %w", err)
+	}
+	if !user.HasTag(t) {
+		return nil, apperr.TagNotFoundError(errors.New("user does not own the tag"))
+	}
+
+	return &TagOutput{Tag: t}, nil
+}
+
 type DeleteTagInput struct {
 	ID domain.TagID
 }

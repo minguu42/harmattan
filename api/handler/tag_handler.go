@@ -58,6 +58,16 @@ func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 	return convertTag(out.Tag), nil
 }
 
+func (h *handler) GetTag(ctx context.Context, params openapi.GetTagParams) (*openapi.Tag, error) {
+	out, err := h.tag.GetTag(ctx, &usecase.GetTagInput{
+		ID: domain.TagID(params.TagID),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute GetTag usecase: %w", err)
+	}
+	return convertTag(out.Tag), nil
+}
+
 func (h *handler) DeleteTag(ctx context.Context, params openapi.DeleteTagParams) error {
 	if err := h.tag.DeleteTag(ctx, &usecase.DeleteTagInput{ID: domain.TagID(params.TagID)}); err != nil {
 		return fmt.Errorf("failed to execute DeleteTag usecase: %w", err)
