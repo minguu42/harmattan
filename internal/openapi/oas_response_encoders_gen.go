@@ -137,7 +137,7 @@ func encodeGetTaskResponse(response *Task, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeListProjectsResponse(response *Projects, w http.ResponseWriter) error {
+func encodeListProjectsResponse(response *ListProjectsOK, w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 
@@ -150,7 +150,7 @@ func encodeListProjectsResponse(response *Projects, w http.ResponseWriter) error
 	return nil
 }
 
-func encodeListTagsResponse(response *Tags, w http.ResponseWriter) error {
+func encodeListTagsResponse(response *ListTagsOK, w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 
@@ -163,7 +163,7 @@ func encodeListTagsResponse(response *Tags, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeListTasksResponse(response *Tasks, w http.ResponseWriter) error {
+func encodeListTasksResponse(response *ListTasksOK, w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 

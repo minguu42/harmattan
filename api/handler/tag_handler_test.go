@@ -49,7 +49,7 @@ func TestHandler_ListTags(t *testing.T) {
 	}))
 
 	t.Run("no limit and offset", func(t *testing.T) {
-		want := &openapi.Tags{
+		want := &openapi.ListTagsOK{
 			Tags: []openapi.Tag{
 				{ID: "TAG-0000000000000000000001", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 				{ID: "TAG-0000000000000000000002", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
@@ -61,7 +61,7 @@ func TestHandler_ListTags(t *testing.T) {
 			Check().HasStatus(200).HasJSON(want)
 	})
 	t.Run("limit=1&offset=0", func(t *testing.T) {
-		want := &openapi.Tags{
+		want := &openapi.ListTagsOK{
 			Tags:    []openapi.Tag{{ID: "TAG-0000000000000000000001", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)}},
 			HasNext: true,
 		}
@@ -70,7 +70,7 @@ func TestHandler_ListTags(t *testing.T) {
 			Check().HasStatus(200).HasJSON(want)
 	})
 	t.Run("limit=1&offset=1", func(t *testing.T) {
-		want := &openapi.Tags{
+		want := &openapi.ListTagsOK{
 			Tags:    []openapi.Tag{{ID: "TAG-0000000000000000000002", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)}},
 			HasNext: false,
 		}

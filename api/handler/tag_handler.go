@@ -25,7 +25,7 @@ func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*op
 	return convertTag(out.Tag), nil
 }
 
-func (h *handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (*openapi.Tags, error) {
+func (h *handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (*openapi.ListTagsOK, error) {
 	out, err := h.tag.ListTags(ctx, &usecase.ListTagsInput{
 		Limit:  params.Limit.Value,
 		Offset: params.Offset.Value,
@@ -33,7 +33,7 @@ func (h *handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute ListTags usecase: %w", err)
 	}
-	return &openapi.Tags{
+	return &openapi.ListTagsOK{
 		Tags:    convertTags(out.Tags),
 		HasNext: out.HasNext,
 	}, nil

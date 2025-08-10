@@ -15,7 +15,7 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-// CreateStepParams is parameters of createStep operation.
+// CreateStepParams is parameters of CreateStep operation.
 type CreateStepParams struct {
 	TaskID string
 }
@@ -96,7 +96,7 @@ func decodeCreateStepParams(args [1]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// CreateTaskParams is parameters of createTask operation.
+// CreateTaskParams is parameters of CreateTask operation.
 type CreateTaskParams struct {
 	ProjectID string
 }
@@ -177,7 +177,7 @@ func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// DeleteProjectParams is parameters of deleteProject operation.
+// DeleteProjectParams is parameters of DeleteProject operation.
 type DeleteProjectParams struct {
 	ProjectID string
 }
@@ -258,7 +258,7 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 	return params, nil
 }
 
-// DeleteStepParams is parameters of deleteStep operation.
+// DeleteStepParams is parameters of DeleteStep operation.
 type DeleteStepParams struct {
 	TaskID string
 	StepID string
@@ -408,7 +408,7 @@ func decodeDeleteStepParams(args [2]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// DeleteTagParams is parameters of deleteTag operation.
+// DeleteTagParams is parameters of DeleteTag operation.
 type DeleteTagParams struct {
 	TagID string
 }
@@ -489,7 +489,7 @@ func decodeDeleteTagParams(args [1]string, argsEscaped bool, r *http.Request) (p
 	return params, nil
 }
 
-// DeleteTaskParams is parameters of deleteTask operation.
+// DeleteTaskParams is parameters of DeleteTask operation.
 type DeleteTaskParams struct {
 	ProjectID string
 	TaskID    string
@@ -720,7 +720,7 @@ func decodeGetProjectParams(args [1]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// GetTagParams is parameters of getTag operation.
+// GetTagParams is parameters of GetTag operation.
 type GetTagParams struct {
 	TagID string
 }
@@ -951,7 +951,7 @@ func decodeGetTaskParams(args [2]string, argsEscaped bool, r *http.Request) (par
 	return params, nil
 }
 
-// ListProjectsParams is parameters of listProjects operation.
+// ListProjectsParams is parameters of ListProjects operation.
 type ListProjectsParams struct {
 	Limit  OptInt
 	Offset OptInt
@@ -1124,7 +1124,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 	return params, nil
 }
 
-// ListTagsParams is parameters of listTags operation.
+// ListTagsParams is parameters of ListTags operation.
 type ListTagsParams struct {
 	Limit  OptInt
 	Offset OptInt
@@ -1297,7 +1297,7 @@ func decodeListTagsParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 	return params, nil
 }
 
-// ListTasksParams is parameters of listTasks operation.
+// ListTasksParams is parameters of ListTasks operation.
 type ListTasksParams struct {
 	Limit     OptInt
 	Offset    OptInt
@@ -1539,7 +1539,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 	return params, nil
 }
 
-// UpdateProjectParams is parameters of updateProject operation.
+// UpdateProjectParams is parameters of UpdateProject operation.
 type UpdateProjectParams struct {
 	ProjectID string
 }
@@ -1620,7 +1620,7 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 	return params, nil
 }
 
-// UpdateStepParams is parameters of updateStep operation.
+// UpdateStepParams is parameters of UpdateStep operation.
 type UpdateStepParams struct {
 	TaskID string
 	StepID string
@@ -1770,7 +1770,7 @@ func decodeUpdateStepParams(args [2]string, argsEscaped bool, r *http.Request) (
 	return params, nil
 }
 
-// UpdateTagParams is parameters of updateTag operation.
+// UpdateTagParams is parameters of UpdateTag operation.
 type UpdateTagParams struct {
 	TagID string
 }
@@ -1851,7 +1851,7 @@ func decodeUpdateTagParams(args [1]string, argsEscaped bool, r *http.Request) (p
 	return params, nil
 }
 
-// UpdateTaskParams is parameters of updateTask operation.
+// UpdateTaskParams is parameters of UpdateTask operation.
 type UpdateTaskParams struct {
 	ProjectID string
 	TaskID    string

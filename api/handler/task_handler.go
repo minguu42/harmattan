@@ -31,7 +31,7 @@ func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 	return convertTask(out.Task), nil
 }
 
-func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams) (*openapi.Tasks, error) {
+func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams) (*openapi.ListTasksOK, error) {
 	out, err := h.task.ListTasks(ctx, &usecase.ListTasksInput{
 		ProjectID: domain.ProjectID(params.ProjectID),
 		Limit:     params.Limit.Value,
@@ -40,7 +40,7 @@ func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute ListTasks usecase: %w", err)
 	}
-	return &openapi.Tasks{
+	return &openapi.ListTasksOK{
 		Tasks:   convertTasks(out.Tasks),
 		HasNext: out.HasNext,
 	}, nil
