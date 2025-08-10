@@ -28,7 +28,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Format code
-        run: go tool goimports -w ./api ./internal ./lib
+        run: go tool goimports -w ./api ./internal
       - name: Check for changes
         run: git diff --exit-code
   check-generated-code:
