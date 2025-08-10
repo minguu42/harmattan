@@ -1,4 +1,4 @@
-package applog
+package logutil_test
 
 import (
 	"bytes"
@@ -6,26 +6,13 @@ import (
 	"log/slog"
 	"testing"
 
+	"github.com/minguu42/harmattan/internal/lib/logutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestReplaceAttr(t *testing.T) {
+func TestMaskAttr(t *testing.T) {
 	t.Parallel()
-	t.Run("replace msg to message", func(t *testing.T) {
-		t.Parallel()
-
-		var buf bytes.Buffer
-		l := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{ReplaceAttr: replaceAttr}))
-		l.Info("foo")
-
-		var m map[string]any
-		require.NoError(t, json.Unmarshal(buf.Bytes(), &m))
-
-		_, ok := m["msg"]
-		assert.False(t, ok)
-		assert.Equal(t, "foo", m["message"])
-	})
 
 	type Foo struct {
 		F1 string `json:"f1"`
@@ -68,7 +55,9 @@ func TestReplaceAttr(t *testing.T) {
 			t.Parallel()
 
 			var buf bytes.Buffer
-			l := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{ReplaceAttr: replaceAttr}))
+			l := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+				return logutil.MaskAttr(a)
+			}}))
 			l.Info("", slog.Any("test", tt.value))
 
 			var m map[string]any

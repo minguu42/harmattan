@@ -8,9 +8,9 @@ import (
 	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/opt"
+	"github.com/minguu42/harmattan/internal/lib/pointers"
 	"github.com/minguu42/harmattan/internal/openapi"
-	"github.com/minguu42/harmattan/lib/opt"
-	"github.com/minguu42/harmattan/lib/pointers"
 )
 
 func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, params openapi.CreateStepParams) (*openapi.Step, error) {

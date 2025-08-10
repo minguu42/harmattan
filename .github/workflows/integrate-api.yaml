@@ -5,7 +5,6 @@ on:
       - .github/workflows/integrate-api.yaml
       - "api/**"
       - "internal/**"
-      - "lib/**"
       - go.mod
       - go.sum
       - .dockerignore
@@ -29,7 +28,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Format code
-        run: go tool goimports -w ./api ./internal ./lib
+        run: go tool goimports -w ./api ./internal
       - name: Check for changes
         run: git diff --exit-code
   check-generated-code:
@@ -45,7 +44,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Generate code
-        run: go generate ./api/... ./internal/... ./lib/...
+        run: go generate ./api/... ./internal/...
       - name: Check for changes
         run: |
           git add -N .
@@ -64,8 +63,8 @@ jobs:
           go-version-file: go.mod
       - name: Run linting
         run: |
-          go vet ./api/... ./internal/... ./lib/...
-          go tool staticcheck ./api/... ./internal/... ./lib/...
+          go vet ./api/... ./internal/...
+          go tool staticcheck ./api/... ./internal/...
   build:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
@@ -94,7 +93,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Run tests
-        run: go test -shuffle=on ./api/... ./internal/... ./lib/...
+        run: go test -shuffle=on ./api/... ./internal/...
   build-container-image:
     needs: [build]
     runs-on: ubuntu-24.04-arm

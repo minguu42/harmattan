@@ -3,7 +3,7 @@ package idgen_test
 import (
 	"testing"
 
-	"github.com/minguu42/harmattan/lib/idgen"
+	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
 func TestULID(t *testing.T) {

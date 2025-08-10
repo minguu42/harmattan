@@ -9,7 +9,7 @@ import (
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/lib/idgen"
+	"github.com/minguu42/harmattan/internal/lib/idgen"
 	"golang.org/x/crypto/bcrypt"
 )
 

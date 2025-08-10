@@ -3,8 +3,8 @@ package opt_test
 import (
 	"testing"
 
-	"github.com/minguu42/harmattan/lib/opt"
-	"github.com/minguu42/harmattan/lib/pointers"
+	"github.com/minguu42/harmattan/internal/lib/opt"
+	"github.com/minguu42/harmattan/internal/lib/pointers"
 	"github.com/stretchr/testify/assert"
 )
 

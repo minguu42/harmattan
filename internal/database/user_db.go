@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/clock"
 	"gorm.io/gorm"
 )
 

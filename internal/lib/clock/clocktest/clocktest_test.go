@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/harmattan/lib/clock"
-	"github.com/minguu42/harmattan/lib/clock/clocktest"
+	"github.com/minguu42/harmattan/internal/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/clock/clocktest"
 	"github.com/stretchr/testify/assert"
 )
 

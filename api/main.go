@@ -11,10 +11,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/minguu42/harmattan/api/applog"
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler"
-	"github.com/minguu42/harmattan/lib/applog"
-	"github.com/minguu42/harmattan/lib/env"
+	"github.com/minguu42/harmattan/internal/lib/env"
 )
 
 //go:generate go tool ogen -clean -config ../.ogen.yaml -package openapi -target ../internal/openapi openapi.yaml

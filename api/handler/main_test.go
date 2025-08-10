@@ -9,14 +9,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/minguu42/harmattan/api/applog"
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
-	"github.com/minguu42/harmattan/lib/applog"
-	"github.com/minguu42/harmattan/lib/clock/clocktest"
-	"github.com/minguu42/harmattan/lib/databasetest"
-	"github.com/minguu42/harmattan/lib/idgen/idgentest"
+	"github.com/minguu42/harmattan/internal/lib/clock/clocktest"
+	"github.com/minguu42/harmattan/internal/lib/databasetest"
+	"github.com/minguu42/harmattan/internal/lib/idgen/idgentest"
 )
 
 const (
