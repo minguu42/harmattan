@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/pointers"
 	"github.com/minguu42/harmattan/internal/openapi"
-	"github.com/minguu42/harmattan/lib/pointers"
 )
 
 func convertProject(project *domain.Project) *openapi.Project {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/minguu42/harmattan/lib/idgen/internal"
+	"github.com/minguu42/harmattan/internal/lib/idgen/internal"
 )
 
 type ulidKey struct{}

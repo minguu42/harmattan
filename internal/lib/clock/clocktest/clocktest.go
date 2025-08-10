@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/harmattan/lib/clock/internal"
+	"github.com/minguu42/harmattan/internal/lib/clock/internal"
 )
 
 type nowKey struct{}

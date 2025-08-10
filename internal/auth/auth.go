@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/clock"
 )
 
 type Config struct {

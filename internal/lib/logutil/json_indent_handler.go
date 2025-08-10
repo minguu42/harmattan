@@ -1,4 +1,4 @@
-package slogdebug
+package logutil
 
 import (
 	"bytes"

@@ -3,8 +3,8 @@ package idgentest_test
 import (
 	"testing"
 
-	"github.com/minguu42/harmattan/lib/idgen"
-	"github.com/minguu42/harmattan/lib/idgen/idgentest"
+	"github.com/minguu42/harmattan/internal/lib/idgen"
+	"github.com/minguu42/harmattan/internal/lib/idgen/idgentest"
 	"github.com/stretchr/testify/assert"
 )
 

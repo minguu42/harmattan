@@ -12,7 +12,7 @@ Harmattan is a Go-based REST API service that provides authentication and projec
 - **Domain Layer**: `internal/domain/` contains core business entities (Project, User)
 - **Database Layer**: `internal/database/` contains database access logic using GORM
 - **Generated Code**: `internal/openapi/` contains auto-generated OpenAPI client/server code
-- **Shared Libraries**: `lib/` contains reusable utilities (logging, clock, ID generation, etc.)
+- **Shared Libraries**: `internal/lib/` contains reusable utilities (clock, ID generation, etc.)
 
 ## Core Commands
 
@@ -40,7 +40,7 @@ go test ./...
 go test -cover ./...
 
 # Run tests for a specific package
-go test ./lib/clock
+go test ./internal/lib/clock
 ```
 
 ### Linting & Code Quality
@@ -62,7 +62,7 @@ The project uses ogen for OpenAPI code generation:
 ## Testing Architecture
 
 - Uses testify for assertions and test utilities
-- Custom test helpers in `lib/` packages (clocktest, databasetest, idgentest)
+- Custom test helpers in `internal/lib/` packages (clocktest, databasetest, idgentest)
 - Database tests use testcontainers for integration testing
 - HTTP tests use ikawaha/httpcheck for API testing
 

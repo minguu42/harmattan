@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/harmattan/lib/pointers"
+	"github.com/minguu42/harmattan/internal/lib/pointers"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/harmattan/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/clock"
 )
 
 func TestNow(t *testing.T) {
