@@ -94,10 +94,10 @@ func errorHandler(l *applog.Logger) func(context.Context, http.ResponseWriter, *
 		}
 
 		appErr := apperr.ToError(err)
-		w.WriteHeader(appErr.StatusCode())
+		w.WriteHeader(appErr.Status())
 		bs, _ := json.Marshal(ErrorResponse{
-			Code:    appErr.StatusCode(),
-			Message: appErr.MessageJapanese(),
+			Code:    appErr.Status(),
+			Message: appErr.Message(),
 		})
 		_, _ = w.Write(bs)
 	}
