@@ -14,96 +14,18 @@ import (
 func TestHandler_CreateStep(t *testing.T) {
 	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
-		database.Project{
-			ID:        "PROJECT-000000000000000001",
-			UserID:    testUserID,
-			Name:      "テストプロジェクト",
-			Color:     "blue",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-		database.Task{
-			ID:        "TASK-000000000000000000001",
-			UserID:    testUserID,
-			ProjectID: "PROJECT-000000000000000001",
-			Name:      "テストタスク",
-			Content:   "テストタスクの内容",
-			Priority:  1,
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-	}))
-
-	want := &openapi.Step{
-		ID:        fixedID,
-		TaskID:    "TASK-000000000000000000001",
-		Name:      "テストステップ",
-		CreatedAt: fixedNow,
-		UpdatedAt: fixedNow,
-	}
-	httpcheck.New(th).Test(t, "POST", "/tasks/TASK-000000000000000000001/steps").
-		WithHeader("Authorization", "Bearer "+token).
-		WithHeader("Content-Type", "application/json").
-		WithBody([]byte(`{"name": "テストステップ"}`)).
-		Check().HasStatus(200).HasJSON(want)
-}
-
-func TestHandler_UpdateStep(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
-		database.Project{
-			ID:        "PROJECT-000000000000000001",
-			UserID:    testUserID,
-			Name:      "テストプロジェクト",
-			Color:     "blue",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-		database.Task{
-			ID:        "TASK-000000000000000000001",
-			UserID:    testUserID,
-			ProjectID: "PROJECT-000000000000000001",
-			Name:      "テストタスク",
-			Content:   "テストタスクの内容",
-			Priority:  1,
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-		database.Step{
-			ID:        "STEP-000000000000000000001",
-			UserID:    testUserID,
-			TaskID:    "TASK-000000000000000000001",
-			Name:      "テストステップ",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-	}))
-
-	want := &openapi.Step{
-		ID:        "STEP-000000000000000000001",
-		TaskID:    "TASK-000000000000000000001",
-		Name:      "更新されたステップ",
-		CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		UpdatedAt: fixedNow,
-	}
-	httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000001").
-		WithHeader("Authorization", "Bearer "+token).
-		WithHeader("Content-Type", "application/json").
-		WithBody([]byte(`{"name": "更新されたステップ"}`)).
-		Check().HasStatus(200).HasJSON(want)
-}
-
-func TestHandler_UpdateStep_Validation(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Projects{
 			{
-				ID:        "PROJECT-000000000000000001",
-				UserID:    testUserID,
-				Name:      "テストプロジェクト",
-				Color:     "blue",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				ID:     "PROJECT-000000000000000001",
+				UserID: testUserID,
+				Name:   "プロジェクト1",
+				Color:  "blue",
+			},
+			{
+				ID:     "PROJECT-000000000000000002",
+				UserID: "USER-000000000000000000002",
+				Name:   "プロジェクト2",
+				Color:  "gray",
 			},
 		},
 		database.Tasks{
@@ -111,11 +33,78 @@ func TestHandler_UpdateStep_Validation(t *testing.T) {
 				ID:        "TASK-000000000000000000001",
 				UserID:    testUserID,
 				ProjectID: "PROJECT-000000000000000001",
-				Name:      "テストタスク",
-				Content:   "テストタスクの内容",
-				Priority:  1,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				Name:      "タスク1",
+			},
+			{
+				ID:        "TASK-000000000000000000002",
+				UserID:    "USER-000000000000000000002",
+				ProjectID: "PROJECT-000000000000000002",
+				Name:      "タスク2",
+			},
+		},
+	}))
+
+	t.Run("task not found", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
+		httpcheck.New(th).Test(t, "POST", "/tasks/TASK-000000000000000000099/steps").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "ステップ"}`)).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("task access denied", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
+		httpcheck.New(th).Test(t, "POST", "/tasks/TASK-000000000000000000002/steps").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "ステップ"}`)).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("ok", func(t *testing.T) {
+		want := &openapi.Step{
+			ID:        fixedID,
+			TaskID:    "TASK-000000000000000000001",
+			Name:      "ステップ",
+			CreatedAt: fixedNow,
+			UpdatedAt: fixedNow,
+		}
+		httpcheck.New(th).Test(t, "POST", "/tasks/TASK-000000000000000000001/steps").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "ステップ"}`)).
+			Check().HasStatus(200).HasJSON(want)
+	})
+}
+
+func TestHandler_UpdateStep(t *testing.T) {
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
+	require.NoError(t, tdb.Insert(t.Context(), []any{
+		database.Projects{
+			{
+				ID:     "PROJECT-000000000000000001",
+				UserID: testUserID,
+				Name:   "プロジェクト1",
+				Color:  "blue",
+			},
+			{
+				ID:     "PROJECT-000000000000000002",
+				UserID: "USER-000000000000000000002",
+				Name:   "プロジェクト2",
+				Color:  "gray",
+			},
+		},
+		database.Tasks{
+			{
+				ID:        "TASK-000000000000000000001",
+				UserID:    testUserID,
+				ProjectID: "PROJECT-000000000000000001",
+				Name:      "タスク1",
+			},
+			{
+				ID:        "TASK-000000000000000000002",
+				UserID:    "USER-000000000000000000002",
+				ProjectID: "PROJECT-000000000000000002",
+				Name:      "タスク2",
 			},
 		},
 		database.Steps{
@@ -123,94 +112,65 @@ func TestHandler_UpdateStep_Validation(t *testing.T) {
 				ID:        "STEP-000000000000000000001",
 				UserID:    testUserID,
 				TaskID:    "TASK-000000000000000000001",
-				Name:      "テストステップ",
+				Name:      "ステップ1",
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},
 			{
-				ID:        "STEP-000000000000000000002",
-				UserID:    "USER-000000000000000000002",
-				TaskID:    "TASK-000000000000000000001",
-				Name:      "他のユーザーのステップ",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				ID:     "STEP-000000000000000000002",
+				UserID: "USER-000000000000000000002",
+				TaskID: "TASK-000000000000000000002",
+				Name:   "ステップ2",
 			},
 		},
 	}))
 
-	t.Run("user does not own the step", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000002").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新されたステップ"}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
 	t.Run("step not found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
 		httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新されたステップ"}`)).
+			WithBody([]byte(`{"name": "更新後ステップ"}`)).
 			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("step access denied", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
+		httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000002").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "更新後ステップ"}`)).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("ok", func(t *testing.T) {
+		want := &openapi.Step{
+			ID:        "STEP-000000000000000000001",
+			TaskID:    "TASK-000000000000000000001",
+			Name:      "更新後ステップ",
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			UpdatedAt: fixedNow,
+		}
+		httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "更新後ステップ"}`)).
+			Check().HasStatus(200).HasJSON(want)
 	})
 }
 
 func TestHandler_DeleteStep(t *testing.T) {
 	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
-		database.Project{
-			ID:        "PROJECT-000000000000000001",
-			UserID:    testUserID,
-			Name:      "テストプロジェクト",
-			Color:     "blue",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-		database.Task{
-			ID:        "TASK-000000000000000000001",
-			UserID:    testUserID,
-			ProjectID: "PROJECT-000000000000000001",
-			Name:      "テストタスク",
-			Content:   "テストタスクの内容",
-			Priority:  1,
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-		database.Step{
-			ID:        "STEP-000000000000000000001",
-			UserID:    testUserID,
-			TaskID:    "TASK-000000000000000000001",
-			Name:      "テストステップ",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-		},
-	}))
-
-	httpcheck.New(th).Test(t, "DELETE", "/steps/STEP-000000000000000000001").
-		WithHeader("Authorization", "Bearer "+token).
-		Check().HasStatus(200)
-}
-
-func TestHandler_DeleteStep_Validation(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Projects{
 			{
-				ID:        "PROJECT-000000000000000001",
-				UserID:    testUserID,
-				Name:      "テストプロジェクト",
-				Color:     "blue",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				ID:     "PROJECT-000000000000000001",
+				UserID: testUserID,
+				Name:   "プロジェクト1",
+				Color:  "blue",
 			},
 			{
-				ID:        "PROJECT-000000000000000002",
-				UserID:    "USER-000000000000000000002",
-				Name:      "テストプロジェクト",
-				Color:     "red",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				ID:     "PROJECT-000000000000000002",
+				UserID: "USER-000000000000000000002",
+				Name:   "プロジェクト2",
+				Color:  "gray",
 			},
 		},
 		database.Tasks{
@@ -218,39 +178,27 @@ func TestHandler_DeleteStep_Validation(t *testing.T) {
 				ID:        "TASK-000000000000000000001",
 				UserID:    testUserID,
 				ProjectID: "PROJECT-000000000000000001",
-				Name:      "テストタスク",
-				Content:   "テストタスクの内容",
-				Priority:  1,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				Name:      "タスク1",
 			},
 			{
 				ID:        "TASK-000000000000000000002",
 				UserID:    "USER-000000000000000000002",
 				ProjectID: "PROJECT-000000000000000002",
-				Name:      "テストタスク",
-				Content:   "テストタスクの内容",
-				Priority:  2,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				Name:      "タスク2",
 			},
 		},
 		database.Steps{
 			{
-				ID:        "STEP-000000000000000000001",
-				UserID:    testUserID,
-				TaskID:    "TASK-000000000000000000001",
-				Name:      "テストステップ",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				ID:     "STEP-000000000000000000001",
+				UserID: testUserID,
+				TaskID: "TASK-000000000000000000001",
+				Name:   "ステップ1",
 			},
 			{
-				ID:        "STEP-000000000000000000002",
-				UserID:    "USER-000000000000000000002",
-				TaskID:    "TASK-000000000000000000002",
-				Name:      "他のユーザーのステップ",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				ID:     "STEP-000000000000000000002",
+				UserID: "USER-000000000000000000002",
+				TaskID: "TASK-000000000000000000002",
+				Name:   "ステップ2",
 			},
 		},
 	}))
@@ -261,10 +209,15 @@ func TestHandler_DeleteStep_Validation(t *testing.T) {
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("user does not own the step", func(t *testing.T) {
+	t.Run("step access denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/steps/STEP-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("ok", func(t *testing.T) {
+		httpcheck.New(th).Test(t, "DELETE", "/steps/STEP-000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(200).HasBody([]byte{})
 	})
 }
