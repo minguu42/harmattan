@@ -260,18 +260,10 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 
 // DeleteStepParams is parameters of DeleteStep operation.
 type DeleteStepParams struct {
-	TaskID string
 	StepID string
 }
 
 func unpackDeleteStepParams(packed middleware.Parameters) (params DeleteStepParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "taskID",
-			In:   "path",
-		}
-		params.TaskID = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "stepID",
@@ -282,73 +274,12 @@ func unpackDeleteStepParams(packed middleware.Parameters) (params DeleteStepPara
 	return params
 }
 
-func decodeDeleteStepParams(args [2]string, argsEscaped bool, r *http.Request) (params DeleteStepParams, _ error) {
-	// Decode path: taskID.
+func decodeDeleteStepParams(args [1]string, argsEscaped bool, r *http.Request) (params DeleteStepParams, _ error) {
+	// Decode path: stepID.
 	if err := func() error {
 		param := args[0]
 		if argsEscaped {
 			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "taskID",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.TaskID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(params.TaskID)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "taskID",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode path: stepID.
-	if err := func() error {
-		param := args[1]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[1])
 			if err != nil {
 				return errors.Wrap(err, "unescape path")
 			}
@@ -491,18 +422,10 @@ func decodeDeleteTagParams(args [1]string, argsEscaped bool, r *http.Request) (p
 
 // DeleteTaskParams is parameters of DeleteTask operation.
 type DeleteTaskParams struct {
-	ProjectID string
-	TaskID    string
+	TaskID string
 }
 
 func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "projectID",
-			In:   "path",
-		}
-		params.ProjectID = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "taskID",
@@ -513,73 +436,12 @@ func unpackDeleteTaskParams(packed middleware.Parameters) (params DeleteTaskPara
 	return params
 }
 
-func decodeDeleteTaskParams(args [2]string, argsEscaped bool, r *http.Request) (params DeleteTaskParams, _ error) {
-	// Decode path: projectID.
+func decodeDeleteTaskParams(args [1]string, argsEscaped bool, r *http.Request) (params DeleteTaskParams, _ error) {
+	// Decode path: taskID.
 	if err := func() error {
 		param := args[0]
 		if argsEscaped {
 			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "projectID",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "projectID",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode path: taskID.
-	if err := func() error {
-		param := args[1]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[1])
 			if err != nil {
 				return errors.Wrap(err, "unescape path")
 			}
@@ -803,18 +665,10 @@ func decodeGetTagParams(args [1]string, argsEscaped bool, r *http.Request) (para
 
 // GetTaskParams is parameters of GetTask operation.
 type GetTaskParams struct {
-	ProjectID string
-	TaskID    string
+	TaskID string
 }
 
 func unpackGetTaskParams(packed middleware.Parameters) (params GetTaskParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "projectID",
-			In:   "path",
-		}
-		params.ProjectID = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "taskID",
@@ -825,73 +679,12 @@ func unpackGetTaskParams(packed middleware.Parameters) (params GetTaskParams) {
 	return params
 }
 
-func decodeGetTaskParams(args [2]string, argsEscaped bool, r *http.Request) (params GetTaskParams, _ error) {
-	// Decode path: projectID.
+func decodeGetTaskParams(args [1]string, argsEscaped bool, r *http.Request) (params GetTaskParams, _ error) {
+	// Decode path: taskID.
 	if err := func() error {
 		param := args[0]
 		if argsEscaped {
 			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "projectID",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "projectID",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode path: taskID.
-	if err := func() error {
-		param := args[1]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[1])
 			if err != nil {
 				return errors.Wrap(err, "unescape path")
 			}
@@ -1622,18 +1415,10 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 
 // UpdateStepParams is parameters of UpdateStep operation.
 type UpdateStepParams struct {
-	TaskID string
 	StepID string
 }
 
 func unpackUpdateStepParams(packed middleware.Parameters) (params UpdateStepParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "taskID",
-			In:   "path",
-		}
-		params.TaskID = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "stepID",
@@ -1644,73 +1429,12 @@ func unpackUpdateStepParams(packed middleware.Parameters) (params UpdateStepPara
 	return params
 }
 
-func decodeUpdateStepParams(args [2]string, argsEscaped bool, r *http.Request) (params UpdateStepParams, _ error) {
-	// Decode path: taskID.
+func decodeUpdateStepParams(args [1]string, argsEscaped bool, r *http.Request) (params UpdateStepParams, _ error) {
+	// Decode path: stepID.
 	if err := func() error {
 		param := args[0]
 		if argsEscaped {
 			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "taskID",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.TaskID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(params.TaskID)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "taskID",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode path: stepID.
-	if err := func() error {
-		param := args[1]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[1])
 			if err != nil {
 				return errors.Wrap(err, "unescape path")
 			}
@@ -1853,18 +1577,10 @@ func decodeUpdateTagParams(args [1]string, argsEscaped bool, r *http.Request) (p
 
 // UpdateTaskParams is parameters of UpdateTask operation.
 type UpdateTaskParams struct {
-	ProjectID string
-	TaskID    string
+	TaskID string
 }
 
 func unpackUpdateTaskParams(packed middleware.Parameters) (params UpdateTaskParams) {
-	{
-		key := middleware.ParameterKey{
-			Name: "projectID",
-			In:   "path",
-		}
-		params.ProjectID = packed[key].(string)
-	}
 	{
 		key := middleware.ParameterKey{
 			Name: "taskID",
@@ -1875,73 +1591,12 @@ func unpackUpdateTaskParams(packed middleware.Parameters) (params UpdateTaskPara
 	return params
 }
 
-func decodeUpdateTaskParams(args [2]string, argsEscaped bool, r *http.Request) (params UpdateTaskParams, _ error) {
-	// Decode path: projectID.
+func decodeUpdateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (params UpdateTaskParams, _ error) {
+	// Decode path: taskID.
 	if err := func() error {
 		param := args[0]
 		if argsEscaped {
 			unescaped, err := url.PathUnescape(args[0])
-			if err != nil {
-				return errors.Wrap(err, "unescape path")
-			}
-			param = unescaped
-		}
-		if len(param) > 0 {
-			d := uri.NewPathDecoder(uri.PathDecoderConfig{
-				Param:   "projectID",
-				Value:   param,
-				Style:   uri.PathStyleSimple,
-				Explode: false,
-			})
-
-			if err := func() error {
-				val, err := d.DecodeValue()
-				if err != nil {
-					return err
-				}
-
-				c, err := conv.ToString(val)
-				if err != nil {
-					return err
-				}
-
-				params.ProjectID = c
-				return nil
-			}(); err != nil {
-				return err
-			}
-			if err := func() error {
-				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
-				}).Validate(string(params.ProjectID)); err != nil {
-					return errors.Wrap(err, "string")
-				}
-				return nil
-			}(); err != nil {
-				return err
-			}
-		} else {
-			return validate.ErrFieldRequired
-		}
-		return nil
-	}(); err != nil {
-		return params, &ogenerrors.DecodeParamError{
-			Name: "projectID",
-			In:   "path",
-			Err:  err,
-		}
-	}
-	// Decode path: taskID.
-	if err := func() error {
-		param := args[1]
-		if argsEscaped {
-			unescaped, err := url.PathUnescape(args[1])
 			if err != nil {
 				return errors.Wrap(err, "unescape path")
 			}

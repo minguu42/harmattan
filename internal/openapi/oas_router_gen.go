@@ -40,7 +40,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.notFound(w, r)
 		return
 	}
-	args := [2]string{}
+	args := [1]string{}
 
 	// Static code generated router with unwrapped path search.
 	switch {
@@ -149,6 +149,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
 							switch r.Method {
 							case "GET":
 								s.handleListTasksRequest([1]string{
@@ -164,58 +165,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 							return
 						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							// Param: "taskID"
-							// Leaf parameter, slashes are prohibited
-							idx := strings.IndexByte(elem, '/')
-							if idx >= 0 {
-								break
-							}
-							args[1] = elem
-							elem = ""
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch r.Method {
-								case "DELETE":
-									s.handleDeleteTaskRequest([2]string{
-										args[0],
-										args[1],
-									}, elemIsEscaped, w, r)
-								case "GET":
-									s.handleGetTaskRequest([2]string{
-										args[0],
-										args[1],
-									}, elemIsEscaped, w, r)
-								case "PATCH":
-									s.handleUpdateTaskRequest([2]string{
-										args[0],
-										args[1],
-									}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "DELETE,GET,PATCH")
-								}
-
-								return
-							}
-
-						}
 
 					}
 
 				}
 
-			case 's': // Prefix: "sign-"
+			case 's': // Prefix: "s"
 
-				if l := len("sign-"); len(elem) >= l && elem[0:l] == "sign-" {
+				if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
 					elem = elem[l:]
 				} else {
 					break
@@ -225,41 +182,90 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 				switch elem[0] {
-				case 'i': // Prefix: "in"
+				case 'i': // Prefix: "ign-"
 
-					if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
+					if l := len("ign-"); len(elem) >= l && elem[0:l] == "ign-" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "POST":
-							s.handleSignInRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "POST")
+						break
+					}
+					switch elem[0] {
+					case 'i': // Prefix: "in"
+
+						if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
+							elem = elem[l:]
+						} else {
+							break
 						}
 
-						return
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleSignInRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "POST")
+							}
+
+							return
+						}
+
+					case 'u': // Prefix: "up"
+
+						if l := len("up"); len(elem) >= l && elem[0:l] == "up" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleSignUpRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "POST")
+							}
+
+							return
+						}
+
 					}
 
-				case 'u': // Prefix: "up"
+				case 't': // Prefix: "teps/"
 
-					if l := len("up"); len(elem) >= l && elem[0:l] == "up" {
+					if l := len("teps/"); len(elem) >= l && elem[0:l] == "teps/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
+					// Param: "stepID"
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
+					args[0] = elem
+					elem = ""
+
 					if len(elem) == 0 {
 						// Leaf node.
 						switch r.Method {
-						case "POST":
-							s.handleSignUpRequest([0]string{}, elemIsEscaped, w, r)
+						case "DELETE":
+							s.handleDeleteStepRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "PATCH":
+							s.handleUpdateStepRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
 						default:
-							s.notAllowed(w, r, "POST")
+							s.notAllowed(w, r, "DELETE,PATCH")
 						}
 
 						return
@@ -359,7 +365,24 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					elem = elem[idx:]
 
 					if len(elem) == 0 {
-						break
+						switch r.Method {
+						case "DELETE":
+							s.handleDeleteTaskRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "GET":
+							s.handleGetTaskRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "PATCH":
+							s.handleUpdateTaskRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "DELETE,GET,PATCH")
+						}
+
+						return
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/steps"
@@ -371,6 +394,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
 							switch r.Method {
 							case "POST":
 								s.handleCreateStepRequest([1]string{
@@ -381,45 +405,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							return
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							// Param: "stepID"
-							// Leaf parameter, slashes are prohibited
-							idx := strings.IndexByte(elem, '/')
-							if idx >= 0 {
-								break
-							}
-							args[1] = elem
-							elem = ""
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch r.Method {
-								case "DELETE":
-									s.handleDeleteStepRequest([2]string{
-										args[0],
-										args[1],
-									}, elemIsEscaped, w, r)
-								case "PATCH":
-									s.handleUpdateStepRequest([2]string{
-										args[0],
-										args[1],
-									}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "DELETE,PATCH")
-								}
-
-								return
-							}
-
 						}
 
 					}
@@ -440,7 +425,7 @@ type Route struct {
 	operationID string
 	pathPattern string
 	count       int
-	args        [2]string
+	args        [1]string
 }
 
 // Name returns ogen operation name.
@@ -632,6 +617,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
 							switch method {
 							case "GET":
 								r.name = ListTasksOperation
@@ -653,65 +639,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								return
 							}
 						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							// Param: "taskID"
-							// Leaf parameter, slashes are prohibited
-							idx := strings.IndexByte(elem, '/')
-							if idx >= 0 {
-								break
-							}
-							args[1] = elem
-							elem = ""
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch method {
-								case "DELETE":
-									r.name = DeleteTaskOperation
-									r.summary = ""
-									r.operationID = "DeleteTask"
-									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
-									r.args = args
-									r.count = 2
-									return r, true
-								case "GET":
-									r.name = GetTaskOperation
-									r.summary = ""
-									r.operationID = "GetTask"
-									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
-									r.args = args
-									r.count = 2
-									return r, true
-								case "PATCH":
-									r.name = UpdateTaskOperation
-									r.summary = ""
-									r.operationID = "UpdateTask"
-									r.pathPattern = "/projects/{projectID}/tasks/{taskID}"
-									r.args = args
-									r.count = 2
-									return r, true
-								default:
-									return
-								}
-							}
-
-						}
 
 					}
 
 				}
 
-			case 's': // Prefix: "sign-"
+			case 's': // Prefix: "s"
 
-				if l := len("sign-"); len(elem) >= l && elem[0:l] == "sign-" {
+				if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
 					elem = elem[l:]
 				} else {
 					break
@@ -721,48 +656,103 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					break
 				}
 				switch elem[0] {
-				case 'i': // Prefix: "in"
+				case 'i': // Prefix: "ign-"
 
-					if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
+					if l := len("ign-"); len(elem) >= l && elem[0:l] == "ign-" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
-						// Leaf node.
-						switch method {
-						case "POST":
-							r.name = SignInOperation
-							r.summary = ""
-							r.operationID = "SignIn"
-							r.pathPattern = "/sign-in"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
+						break
+					}
+					switch elem[0] {
+					case 'i': // Prefix: "in"
+
+						if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
+							elem = elem[l:]
+						} else {
+							break
 						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "POST":
+								r.name = SignInOperation
+								r.summary = ""
+								r.operationID = "SignIn"
+								r.pathPattern = "/sign-in"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+					case 'u': // Prefix: "up"
+
+						if l := len("up"); len(elem) >= l && elem[0:l] == "up" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "POST":
+								r.name = SignUpOperation
+								r.summary = ""
+								r.operationID = "SignUp"
+								r.pathPattern = "/sign-up"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
 					}
 
-				case 'u': // Prefix: "up"
+				case 't': // Prefix: "teps/"
 
-					if l := len("up"); len(elem) >= l && elem[0:l] == "up" {
+					if l := len("teps/"); len(elem) >= l && elem[0:l] == "teps/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
+					// Param: "stepID"
+					// Leaf parameter, slashes are prohibited
+					idx := strings.IndexByte(elem, '/')
+					if idx >= 0 {
+						break
+					}
+					args[0] = elem
+					elem = ""
+
 					if len(elem) == 0 {
 						// Leaf node.
 						switch method {
-						case "POST":
-							r.name = SignUpOperation
+						case "DELETE":
+							r.name = DeleteStepOperation
 							r.summary = ""
-							r.operationID = "SignUp"
-							r.pathPattern = "/sign-up"
+							r.operationID = "DeleteStep"
+							r.pathPattern = "/steps/{stepID}"
 							r.args = args
-							r.count = 0
+							r.count = 1
+							return r, true
+						case "PATCH":
+							r.name = UpdateStepOperation
+							r.summary = ""
+							r.operationID = "UpdateStep"
+							r.pathPattern = "/steps/{stepID}"
+							r.args = args
+							r.count = 1
 							return r, true
 						default:
 							return
@@ -883,7 +873,34 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					elem = elem[idx:]
 
 					if len(elem) == 0 {
-						break
+						switch method {
+						case "DELETE":
+							r.name = DeleteTaskOperation
+							r.summary = ""
+							r.operationID = "DeleteTask"
+							r.pathPattern = "/tasks/{taskID}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "GET":
+							r.name = GetTaskOperation
+							r.summary = ""
+							r.operationID = "GetTask"
+							r.pathPattern = "/tasks/{taskID}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "PATCH":
+							r.name = UpdateTaskOperation
+							r.summary = ""
+							r.operationID = "UpdateTask"
+							r.pathPattern = "/tasks/{taskID}"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/steps"
@@ -895,6 +912,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						if len(elem) == 0 {
+							// Leaf node.
 							switch method {
 							case "POST":
 								r.name = CreateStepOperation
@@ -907,49 +925,6 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							default:
 								return
 							}
-						}
-						switch elem[0] {
-						case '/': // Prefix: "/"
-
-							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							// Param: "stepID"
-							// Leaf parameter, slashes are prohibited
-							idx := strings.IndexByte(elem, '/')
-							if idx >= 0 {
-								break
-							}
-							args[1] = elem
-							elem = ""
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch method {
-								case "DELETE":
-									r.name = DeleteStepOperation
-									r.summary = ""
-									r.operationID = "DeleteStep"
-									r.pathPattern = "/tasks/{taskID}/steps/{stepID}"
-									r.args = args
-									r.count = 2
-									return r, true
-								case "PATCH":
-									r.name = UpdateStepOperation
-									r.summary = ""
-									r.operationID = "UpdateStep"
-									r.pathPattern = "/tasks/{taskID}/steps/{stepID}"
-									r.args = args
-									r.count = 2
-									return r, true
-								default:
-									return
-								}
-							}
-
 						}
 
 					}

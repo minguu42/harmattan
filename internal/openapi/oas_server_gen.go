@@ -34,7 +34,7 @@ type Handler interface {
 	DeleteProject(ctx context.Context, params DeleteProjectParams) error
 	// DeleteStep implements DeleteStep operation.
 	//
-	// DELETE /tasks/{taskID}/steps/{stepID}
+	// DELETE /steps/{stepID}
 	DeleteStep(ctx context.Context, params DeleteStepParams) error
 	// DeleteTag implements DeleteTag operation.
 	//
@@ -42,7 +42,7 @@ type Handler interface {
 	DeleteTag(ctx context.Context, params DeleteTagParams) error
 	// DeleteTask implements DeleteTask operation.
 	//
-	// DELETE /projects/{projectID}/tasks/{taskID}
+	// DELETE /tasks/{taskID}
 	DeleteTask(ctx context.Context, params DeleteTaskParams) error
 	// GetProject implements GetProject operation.
 	//
@@ -54,7 +54,7 @@ type Handler interface {
 	GetTag(ctx context.Context, params GetTagParams) (*Tag, error)
 	// GetTask implements GetTask operation.
 	//
-	// GET /projects/{projectID}/tasks/{taskID}
+	// GET /tasks/{taskID}
 	GetTask(ctx context.Context, params GetTaskParams) (*Task, error)
 	// ListProjects implements ListProjects operation.
 	//
@@ -82,7 +82,7 @@ type Handler interface {
 	UpdateProject(ctx context.Context, req *UpdateProjectReq, params UpdateProjectParams) (*Project, error)
 	// UpdateStep implements UpdateStep operation.
 	//
-	// PATCH /tasks/{taskID}/steps/{stepID}
+	// PATCH /steps/{stepID}
 	UpdateStep(ctx context.Context, req *UpdateStepReq, params UpdateStepParams) (*Step, error)
 	// UpdateTag implements UpdateTag operation.
 	//
@@ -90,7 +90,7 @@ type Handler interface {
 	UpdateTag(ctx context.Context, req *UpdateTagReq, params UpdateTagParams) (*Tag, error)
 	// UpdateTask implements UpdateTask operation.
 	//
-	// PATCH /projects/{projectID}/tasks/{taskID}
+	// PATCH /tasks/{taskID}
 	UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (*Task, error)
 }
 

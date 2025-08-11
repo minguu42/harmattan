@@ -255,25 +255,9 @@ func TestHandler_UpdateTask(t *testing.T) {
 		},
 	}))
 
-	t.Run("project not found", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000099/tasks/TASK-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("user does not own the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000002/tasks/TASK-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("task not found", func(t *testing.T) {
+	t.Run("task not found (non-existent task)", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000099").
+		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
 			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3}`)).
@@ -281,15 +265,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 	})
 	t.Run("user does not own the task", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000002").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("task does not belong to the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000003").
+		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
 			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3}`)).
@@ -307,7 +283,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 			CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			UpdatedAt:   fixedNow,
 		}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001").
+		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
 			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3, "due_on": "2025-01-02T00:00:00+09:00", "completed_at": "2025-01-01T12:00:00+09:00"}`)).
@@ -378,33 +354,15 @@ func TestHandler_GetTask(t *testing.T) {
 		},
 	}))
 
-	t.Run("project not found", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000099/tasks/TASK-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("user does not own the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000002/tasks/TASK-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("task not found", func(t *testing.T) {
+	t.Run("task not found (non-existent task)", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000099").
+		httpcheck.New(th).Test(t, "GET", "/tasks/TASK-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
 	t.Run("user does not own the task", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000002").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("task does not belong to the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000003").
+		httpcheck.New(th).Test(t, "GET", "/tasks/TASK-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
@@ -418,7 +376,7 @@ func TestHandler_GetTask(t *testing.T) {
 			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 		}
-		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001").
+		httpcheck.New(th).Test(t, "GET", "/tasks/TASK-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(200).HasJSON(want)
 	})
@@ -488,38 +446,20 @@ func TestHandler_DeleteTask(t *testing.T) {
 		},
 	}))
 
-	t.Run("project not found", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000099/tasks/TASK-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("user does not own the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000002/tasks/TASK-000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("task not found", func(t *testing.T) {
+	t.Run("task not found (non-existent task)", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000099").
+		httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
 	t.Run("user does not own the task", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000002").
-			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("task does not belong to the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000003").
+		httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
 	t.Run("ok", func(t *testing.T) {
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001/tasks/TASK-000000000000000000001").
+		httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(200)
 	})
