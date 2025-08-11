@@ -42,6 +42,16 @@ func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsP
 	}, nil
 }
 
+func (h *handler) GetProject(ctx context.Context, params openapi.GetProjectParams) (*openapi.Project, error) {
+	out, err := h.project.GetProject(ctx, &usecase.GetProjectInput{
+		ID: domain.ProjectID(params.ProjectID),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute GetProject usecase: %w", err)
+	}
+	return convertProject(out.Project), nil
+}
+
 func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectReq, params openapi.UpdateProjectParams) (*openapi.Project, error) {
 	var errs []error
 	if name, ok := req.Name.Get(); ok {
@@ -59,16 +69,6 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateProject usecase: %w", err)
-	}
-	return convertProject(out.Project), nil
-}
-
-func (h *handler) GetProject(ctx context.Context, params openapi.GetProjectParams) (*openapi.Project, error) {
-	out, err := h.project.GetProject(ctx, &usecase.GetProjectInput{
-		ID: domain.ProjectID(params.ProjectID),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute GetProject usecase: %w", err)
 	}
 	return convertProject(out.Project), nil
 }

@@ -22,11 +22,6 @@ type TagOutput struct {
 	Tag *domain.Tag
 }
 
-type TagsOutput struct {
-	Tags    domain.Tags
-	HasNext bool
-}
-
 type CreateTagInput struct {
 	Name string
 }
@@ -53,7 +48,12 @@ type ListTagsInput struct {
 	Offset int
 }
 
-func (uc *Tag) ListTags(ctx context.Context, in *ListTagsInput) (*TagsOutput, error) {
+type ListTagsOutput struct {
+	Tags    domain.Tags
+	HasNext bool
+}
+
+func (uc *Tag) ListTags(ctx context.Context, in *ListTagsInput) (*ListTagsOutput, error) {
 	user := auth.MustUserFromContext(ctx)
 
 	ts, err := uc.DB.ListTags(ctx, user.ID, in.Limit+1, in.Offset)
@@ -66,7 +66,7 @@ func (uc *Tag) ListTags(ctx context.Context, in *ListTagsInput) (*TagsOutput, er
 		ts = ts[:in.Limit]
 		hasNext = true
 	}
-	return &TagsOutput{Tags: ts, HasNext: hasNext}, nil
+	return &ListTagsOutput{Tags: ts, HasNext: hasNext}, nil
 }
 
 type UpdateTagInput struct {

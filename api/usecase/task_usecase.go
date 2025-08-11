@@ -23,11 +23,6 @@ type TaskOutput struct {
 	Task *domain.Task
 }
 
-type TasksOutput struct {
-	Tasks   domain.Tasks
-	HasNext bool
-}
-
 type CreateTaskInput struct {
 	ProjectID domain.ProjectID
 	Name      string
@@ -70,7 +65,12 @@ type ListTasksInput struct {
 	Offset    int
 }
 
-func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*TasksOutput, error) {
+type ListTasksOutput struct {
+	Tasks   domain.Tasks
+	HasNext bool
+}
+
+func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOutput, error) {
 	user := auth.MustUserFromContext(ctx)
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
@@ -94,7 +94,7 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*TasksOutput
 		ts = ts[:in.Limit]
 		hasNext = true
 	}
-	return &TasksOutput{Tasks: ts, HasNext: hasNext}, nil
+	return &ListTasksOutput{Tasks: ts, HasNext: hasNext}, nil
 }
 
 type GetTaskInput struct {

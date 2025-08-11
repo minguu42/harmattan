@@ -16,14 +16,14 @@ func TestHandler_CreateTag(t *testing.T) {
 
 	want := &openapi.Tag{
 		ID:        fixedID,
-		Name:      "テストタグ",
+		Name:      "タグ",
 		CreatedAt: fixedNow,
 		UpdatedAt: fixedNow,
 	}
 	httpcheck.New(th).Test(t, "POST", "/tags").
 		WithHeader("Authorization", "Bearer "+token).
 		WithHeader("Content-Type", "application/json").
-		WithBody([]byte(`{"name": "テストタグ"}`)).
+		WithBody([]byte(`{"name": "タグ"}`)).
 		Check().HasStatus(200).HasJSON(want)
 }
 
@@ -80,7 +80,7 @@ func TestHandler_ListTags(t *testing.T) {
 	})
 }
 
-func TestHandler_UpdateTag(t *testing.T) {
+func TestHandler_GetTag(t *testing.T) {
 	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Tags{
@@ -104,59 +104,7 @@ func TestHandler_UpdateTag(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		want := &openapi.Tag{
 			ID:        "TAG-0000000000000000000001",
-			Name:      "更新後タグ",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: fixedNow,
-		}
-		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タグ"}`)).
-			Check().HasStatus(200).HasJSON(want)
-	})
-	t.Run("tag not found", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000099").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タグ"}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("user does not own the tag", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000002").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タグ"}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-}
-
-func TestHandler_GetTag(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
-		database.Tags{
-			{
-				ID:        "TAG-0000000000000000000001",
-				UserID:    testUserID,
-				Name:      "テストタグ",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
-			{
-				ID:        "TAG-0000000000000000000002",
-				UserID:    "USER-000000000000000000002",
-				Name:      "他のユーザーのタグ",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			},
-		},
-	}))
-
-	t.Run("ok", func(t *testing.T) {
-		want := &openapi.Tag{
-			ID:        "TAG-0000000000000000000001",
-			Name:      "テストタグ",
+			Name:      "タグ1",
 			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 		}
@@ -170,11 +118,63 @@ func TestHandler_GetTag(t *testing.T) {
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("user does not own the tag", func(t *testing.T) {
+	t.Run("tag access denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/tags/TAG-0000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
+	})
+}
+
+func TestHandler_UpdateTag(t *testing.T) {
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
+	require.NoError(t, tdb.Insert(t.Context(), []any{
+		database.Tags{
+			{
+				ID:        "TAG-0000000000000000000001",
+				UserID:    testUserID,
+				Name:      "タグ1",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+			{
+				ID:        "TAG-0000000000000000000002",
+				UserID:    "USER-000000000000000000002",
+				Name:      "タグ2",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+		},
+	}))
+
+	t.Run("tag not found", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
+		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000099").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "更新後タグ"}`)).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("tag access denied", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
+		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000002").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "更新後タグ"}`)).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("ok", func(t *testing.T) {
+		want := &openapi.Tag{
+			ID:        "TAG-0000000000000000000001",
+			Name:      "更新後タグ",
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			UpdatedAt: fixedNow,
+		}
+		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "更新後タグ"}`)).
+			Check().HasStatus(200).HasJSON(want)
 	})
 }
 
@@ -199,24 +199,21 @@ func TestHandler_DeleteTag(t *testing.T) {
 		},
 	}))
 
-	t.Run("ok", func(t *testing.T) {
-		httpcheck.New(th).Test(t, "DELETE", "/tags/TAG-0000000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			Check().HasStatus(200)
-	})
 	t.Run("tag not found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/tags/TAG-0000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("user does not own the tag", func(t *testing.T) {
+	t.Run("tag access denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/tags/TAG-0000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
 			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("ok", func(t *testing.T) {
+		httpcheck.New(th).Test(t, "DELETE", "/tags/TAG-0000000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(200).HasBody([]byte{})
 	})
 }

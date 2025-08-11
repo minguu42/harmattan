@@ -16,7 +16,7 @@ func TestHandler_CreateProject(t *testing.T) {
 
 	want := &openapi.Project{
 		ID:        fixedID,
-		Name:      "テストプロジェクト",
+		Name:      "プロジェクト",
 		Color:     "blue",
 		CreatedAt: fixedNow,
 		UpdatedAt: fixedNow,
@@ -24,10 +24,8 @@ func TestHandler_CreateProject(t *testing.T) {
 	httpcheck.New(th).Test(t, "POST", "/projects").
 		WithHeader("Authorization", "Bearer "+token).
 		WithHeader("Content-Type", "application/json").
-		WithBody([]byte(`{"name": "テストプロジェクト", "color": "blue"}`)).
-		Check().
-		HasStatus(200).
-		HasJSON(want)
+		WithBody([]byte(`{"name": "プロジェクト", "color": "blue"}`)).
+		Check().HasStatus(200).HasJSON(want)
 }
 
 func TestHandler_ListProjects(t *testing.T) {
@@ -154,7 +152,7 @@ func TestHandler_GetProject(t *testing.T) {
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("user does not own the project", func(t *testing.T) {
+	t.Run("project access denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
@@ -185,6 +183,22 @@ func TestHandler_UpdateProject(t *testing.T) {
 		},
 	}))
 
+	t.Run("project not found", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
+		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000099").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
+			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("project access denied", func(t *testing.T) {
+		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
+		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000002").
+			WithHeader("Authorization", "Bearer "+token).
+			WithHeader("Content-Type", "application/json").
+			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
+			Check().HasStatus(404).HasJSON(want)
+	})
 	t.Run("ok", func(t *testing.T) {
 		want := &openapi.Project{
 			ID:         "PROJECT-000000000000000001",
@@ -199,22 +213,6 @@ func TestHandler_UpdateProject(t *testing.T) {
 			WithHeader("Content-Type", "application/json").
 			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
 			Check().HasStatus(200).HasJSON(want)
-	})
-	t.Run("project not found", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000099").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
-			Check().HasStatus(404).HasJSON(want)
-	})
-	t.Run("user does not own the project", func(t *testing.T) {
-		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
-		httpcheck.New(th).Test(t, "PATCH", "/projects/PROJECT-000000000000000002").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}`)).
-			Check().HasStatus(404).HasJSON(want)
 	})
 }
 
@@ -241,24 +239,21 @@ func TestHandler_DeleteProject(t *testing.T) {
 		},
 	}))
 
-	t.Run("ok", func(t *testing.T) {
-		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001").
-			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
-			Check().HasStatus(200)
-	})
 	t.Run("project not found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("user does not own the project", func(t *testing.T) {
+	t.Run("project access denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
-			WithHeader("Content-Type", "application/json").
 			Check().HasStatus(404).HasJSON(want)
+	})
+	t.Run("ok", func(t *testing.T) {
+		httpcheck.New(th).Test(t, "DELETE", "/projects/PROJECT-000000000000000001").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(200).HasBody([]byte{})
 	})
 }

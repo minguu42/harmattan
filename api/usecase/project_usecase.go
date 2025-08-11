@@ -22,11 +22,6 @@ type ProjectOutput struct {
 	Project *domain.Project
 }
 
-type ProjectsOutput struct {
-	Projects domain.Projects
-	HasNext  bool
-}
-
 type CreateProjectInput struct {
 	Name  string
 	Color domain.ProjectColor
@@ -55,7 +50,12 @@ type ListProjectsInput struct {
 	Offset int
 }
 
-func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*ProjectsOutput, error) {
+type ListProjectsOutput struct {
+	Projects domain.Projects
+	HasNext  bool
+}
+
+func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*ListProjectsOutput, error) {
 	user := auth.MustUserFromContext(ctx)
 
 	ps, err := uc.DB.ListProjects(ctx, user.ID, in.Limit+1, in.Offset)
@@ -68,7 +68,28 @@ func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*Pr
 		ps = ps[:in.Limit]
 		hasNext = true
 	}
-	return &ProjectsOutput{Projects: ps, HasNext: hasNext}, nil
+	return &ListProjectsOutput{Projects: ps, HasNext: hasNext}, nil
+}
+
+type GetProjectInput struct {
+	ID domain.ProjectID
+}
+
+func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*ProjectOutput, error) {
+	user := auth.MustUserFromContext(ctx)
+
+	p, err := uc.DB.GetProjectByID(ctx, in.ID)
+	if err != nil {
+		if errors.Is(err, database.ErrModelNotFound) {
+			return nil, apperr.ProjectNotFoundError(err)
+		}
+		return nil, fmt.Errorf("failed to get project: %w", err)
+	}
+	if !user.HasProject(p) {
+		return nil, apperr.ProjectAccessDeniedError()
+	}
+
+	return &ProjectOutput{Project: p}, nil
 }
 
 type UpdateProjectInput struct {
@@ -89,7 +110,7 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
+		return nil, apperr.ProjectAccessDeniedError()
 	}
 
 	if in.Name.Valid {
@@ -108,27 +129,6 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	return &ProjectOutput{Project: p}, nil
 }
 
-type GetProjectInput struct {
-	ID domain.ProjectID
-}
-
-func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*ProjectOutput, error) {
-	user := auth.MustUserFromContext(ctx)
-
-	p, err := uc.DB.GetProjectByID(ctx, in.ID)
-	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ProjectNotFoundError(err)
-		}
-		return nil, fmt.Errorf("failed to get project: %w", err)
-	}
-	if !user.HasProject(p) {
-		return nil, apperr.ProjectNotFoundError(errors.New("user does not own the project"))
-	}
-
-	return &ProjectOutput{Project: p}, nil
-}
-
 type DeleteProjectInput struct {
 	ID domain.ProjectID
 }
@@ -144,7 +144,7 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return apperr.ProjectNotFoundError(errors.New("user does not own the project"))
+		return apperr.ProjectAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {
