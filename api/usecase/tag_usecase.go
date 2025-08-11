@@ -85,7 +85,7 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return nil, apperr.TagNotFoundError(errors.New("user does not own the tag"))
+		return nil, apperr.TagAccessDeniedError()
 	}
 
 	if in.Name.Valid {
@@ -113,7 +113,7 @@ func (uc *Tag) GetTag(ctx context.Context, in *GetTagInput) (*TagOutput, error) 
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return nil, apperr.TagNotFoundError(errors.New("user does not own the tag"))
+		return nil, apperr.TagAccessDeniedError()
 	}
 
 	return &TagOutput{Tag: t}, nil
@@ -134,7 +134,7 @@ func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
 		return fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return apperr.TagNotFoundError(errors.New("user does not own the tag"))
+		return apperr.TagAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteTagByID(ctx, t.ID); err != nil {

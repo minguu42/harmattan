@@ -39,7 +39,7 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, apperr.TaskNotFoundError(errors.New("user does not own the task"))
+		return nil, apperr.TaskAccessDeniedError()
 	}
 
 	now := clock.Now(ctx)
@@ -75,7 +75,7 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return nil, apperr.StepNotFoundError(errors.New("user does not own the step"))
+		return nil, apperr.StepAccessDeniedError()
 	}
 
 	if in.Name.Valid {
@@ -107,7 +107,7 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 		return fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return apperr.StepNotFoundError(errors.New("user does not own the step"))
+		return apperr.StepAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {

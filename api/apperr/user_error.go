@@ -40,6 +40,22 @@ func TaskNotFoundError(err error) Error {
 	return Error{err: err, status: 404, message: "指定したタスクは見つかりません"}
 }
 
+func ProjectAccessDeniedError() Error {
+	return Error{status: 404, message: "指定したプロジェクトは見つかりません"}
+}
+
+func TaskAccessDeniedError() Error {
+	return Error{status: 404, message: "指定したタスクは見つかりません"}
+}
+
+func StepAccessDeniedError() Error {
+	return Error{status: 404, message: "指定したステップは見つかりません"}
+}
+
+func TagAccessDeniedError() Error {
+	return Error{status: 404, message: "指定したタグは見つかりません"}
+}
+
 func StepNotFoundError(err error) Error {
 	return Error{err: err, status: 404, message: "指定したステップは見つかりません"}
 }
