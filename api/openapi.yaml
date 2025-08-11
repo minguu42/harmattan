@@ -214,9 +214,8 @@ paths:
                   has_next:
                     type: boolean
                 required: [tasks, has_next]
-  /projects/{projectID}/tasks/{taskID}:
+  /tasks/{taskID}:
     parameters:
-      - $ref: "#/components/parameters/projectID"
       - $ref: "#/components/parameters/taskID"
     get:
       tags: [tasks]
@@ -289,9 +288,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/step"
-  /tasks/{taskID}/steps/{stepID}:
+  /steps/{stepID}:
     parameters:
-      - $ref: "#/components/parameters/taskID"
       - $ref: "#/components/parameters/stepID"
     patch:
       tags: [steps]

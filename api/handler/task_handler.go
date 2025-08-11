@@ -46,6 +46,14 @@ func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams)
 	}, nil
 }
 
+func (h *handler) GetTask(ctx context.Context, params openapi.GetTaskParams) (*openapi.Task, error) {
+	out, err := h.task.GetTask(ctx, &usecase.GetTaskInput{ID: domain.TaskID(params.TaskID)})
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute GetTask usecase: %w", err)
+	}
+	return convertTask(out.Task), nil
+}
+
 func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, params openapi.UpdateTaskParams) (*openapi.Task, error) {
 	var errs []error
 	if name, ok := req.Name.Get(); ok {
@@ -57,7 +65,6 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 
 	out, err := h.task.UpdateTask(ctx, &usecase.UpdateTaskInput{
 		ID:          domain.TaskID(params.TaskID),
-		ProjectID:   domain.ProjectID(params.ProjectID),
 		Name:        opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
 		Content:     opt.Option[string]{V: req.Content.Value, Valid: req.Content.Set},
 		Priority:    opt.Option[int]{V: req.Priority.Value, Valid: req.Priority.Set},
@@ -70,22 +77,8 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 	return convertTask(out.Task), nil
 }
 
-func (h *handler) GetTask(ctx context.Context, params openapi.GetTaskParams) (*openapi.Task, error) {
-	out, err := h.task.GetTask(ctx, &usecase.GetTaskInput{
-		ProjectID: domain.ProjectID(params.ProjectID),
-		ID:        domain.TaskID(params.TaskID),
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute GetTask usecase: %w", err)
-	}
-	return convertTask(out.Task), nil
-}
-
 func (h *handler) DeleteTask(ctx context.Context, params openapi.DeleteTaskParams) error {
-	if err := h.task.DeleteTask(ctx, &usecase.DeleteTaskInput{
-		ProjectID: domain.ProjectID(params.ProjectID),
-		ID:        domain.TaskID(params.TaskID),
-	}); err != nil {
+	if err := h.task.DeleteTask(ctx, &usecase.DeleteTaskInput{ID: domain.TaskID(params.TaskID)}); err != nil {
 		return fmt.Errorf("failed to execute DeleteTask usecase: %w", err)
 	}
 	return nil

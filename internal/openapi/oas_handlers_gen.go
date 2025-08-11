@@ -732,8 +732,8 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 
 // handleDeleteStepRequest handles DeleteStep operation.
 //
-// DELETE /tasks/{taskID}/steps/{stepID}
-func (s *Server) handleDeleteStepRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// DELETE /steps/{stepID}
+func (s *Server) handleDeleteStepRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -809,10 +809,6 @@ func (s *Server) handleDeleteStepRequest(args [2]string, argsEscaped bool, w htt
 			OperationID:      "DeleteStep",
 			Body:             nil,
 			Params: middleware.Parameters{
-				{
-					Name: "taskID",
-					In:   "path",
-				}: params.TaskID,
 				{
 					Name: "stepID",
 					In:   "path",
@@ -982,8 +978,8 @@ func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http
 
 // handleDeleteTaskRequest handles DeleteTask operation.
 //
-// DELETE /projects/{projectID}/tasks/{taskID}
-func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// DELETE /tasks/{taskID}
+func (s *Server) handleDeleteTaskRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -1059,10 +1055,6 @@ func (s *Server) handleDeleteTaskRequest(args [2]string, argsEscaped bool, w htt
 			OperationID:      "DeleteTask",
 			Body:             nil,
 			Params: middleware.Parameters{
-				{
-					Name: "projectID",
-					In:   "path",
-				}: params.ProjectID,
 				{
 					Name: "taskID",
 					In:   "path",
@@ -1355,8 +1347,8 @@ func (s *Server) handleGetTagRequest(args [1]string, argsEscaped bool, w http.Re
 
 // handleGetTaskRequest handles GetTask operation.
 //
-// GET /projects/{projectID}/tasks/{taskID}
-func (s *Server) handleGetTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// GET /tasks/{taskID}
+func (s *Server) handleGetTaskRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -1432,10 +1424,6 @@ func (s *Server) handleGetTaskRequest(args [2]string, argsEscaped bool, w http.R
 			OperationID:      "GetTask",
 			Body:             nil,
 			Params: middleware.Parameters{
-				{
-					Name: "projectID",
-					In:   "path",
-				}: params.ProjectID,
 				{
 					Name: "taskID",
 					In:   "path",
@@ -2163,8 +2151,8 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 
 // handleUpdateStepRequest handles UpdateStep operation.
 //
-// PATCH /tasks/{taskID}/steps/{stepID}
-func (s *Server) handleUpdateStepRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// PATCH /steps/{stepID}
+func (s *Server) handleUpdateStepRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -2255,10 +2243,6 @@ func (s *Server) handleUpdateStepRequest(args [2]string, argsEscaped bool, w htt
 			OperationID:      "UpdateStep",
 			Body:             request,
 			Params: middleware.Parameters{
-				{
-					Name: "taskID",
-					In:   "path",
-				}: params.TaskID,
 				{
 					Name: "stepID",
 					In:   "path",
@@ -2443,8 +2427,8 @@ func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http
 
 // handleUpdateTaskRequest handles UpdateTask operation.
 //
-// PATCH /projects/{projectID}/tasks/{taskID}
-func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// PATCH /tasks/{taskID}
+func (s *Server) handleUpdateTaskRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	ctx := r.Context()
@@ -2535,10 +2519,6 @@ func (s *Server) handleUpdateTaskRequest(args [2]string, argsEscaped bool, w htt
 			OperationID:      "UpdateTask",
 			Body:             request,
 			Params: middleware.Parameters{
-				{
-					Name: "projectID",
-					In:   "path",
-				}: params.ProjectID,
 				{
 					Name: "taskID",
 					In:   "path",

@@ -59,7 +59,6 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 }
 
 type UpdateStepInput struct {
-	TaskID      domain.TaskID
 	ID          domain.StepID
 	Name        opt.Option[string]
 	CompletedAt opt.Option[*time.Time]
@@ -67,17 +66,6 @@ type UpdateStepInput struct {
 
 func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {
 	user := auth.MustUserFromContext(ctx)
-
-	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
-	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.TaskNotFoundError(err)
-		}
-		return nil, fmt.Errorf("failed to get task: %w", err)
-	}
-	if !user.HasTask(t) {
-		return nil, apperr.TaskNotFoundError(errors.New("user does not own the task"))
-	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
@@ -88,9 +76,6 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	}
 	if !user.HasStep(s) {
 		return nil, apperr.StepNotFoundError(errors.New("user does not own the step"))
-	}
-	if t.ID != s.TaskID {
-		return nil, apperr.StepNotFoundError(errors.New("step does not belong to the task"))
 	}
 
 	if in.Name.Valid {
@@ -108,23 +93,11 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 }
 
 type DeleteStepInput struct {
-	TaskID domain.TaskID
-	ID     domain.StepID
+	ID domain.StepID
 }
 
 func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	user := auth.MustUserFromContext(ctx)
-
-	t, err := uc.DB.GetTaskByID(ctx, in.TaskID)
-	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.TaskNotFoundError(err)
-		}
-		return fmt.Errorf("failed to get task: %w", err)
-	}
-	if !user.HasTask(t) {
-		return apperr.TaskNotFoundError(errors.New("user does not own the task"))
-	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
@@ -135,9 +108,6 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	}
 	if !user.HasStep(s) {
 		return apperr.StepNotFoundError(errors.New("user does not own the step"))
-	}
-	if t.ID != s.TaskID {
-		return apperr.StepNotFoundError(errors.New("step does not belong to the task"))
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {

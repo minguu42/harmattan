@@ -57,7 +57,7 @@ func (UnimplementedHandler) DeleteProject(ctx context.Context, params DeleteProj
 
 // DeleteStep implements DeleteStep operation.
 //
-// DELETE /tasks/{taskID}/steps/{stepID}
+// DELETE /steps/{stepID}
 func (UnimplementedHandler) DeleteStep(ctx context.Context, params DeleteStepParams) error {
 	return ht.ErrNotImplemented
 }
@@ -71,7 +71,7 @@ func (UnimplementedHandler) DeleteTag(ctx context.Context, params DeleteTagParam
 
 // DeleteTask implements DeleteTask operation.
 //
-// DELETE /projects/{projectID}/tasks/{taskID}
+// DELETE /tasks/{taskID}
 func (UnimplementedHandler) DeleteTask(ctx context.Context, params DeleteTaskParams) error {
 	return ht.ErrNotImplemented
 }
@@ -92,7 +92,7 @@ func (UnimplementedHandler) GetTag(ctx context.Context, params GetTagParams) (r 
 
 // GetTask implements GetTask operation.
 //
-// GET /projects/{projectID}/tasks/{taskID}
+// GET /tasks/{taskID}
 func (UnimplementedHandler) GetTask(ctx context.Context, params GetTaskParams) (r *Task, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -141,7 +141,7 @@ func (UnimplementedHandler) UpdateProject(ctx context.Context, req *UpdateProjec
 
 // UpdateStep implements UpdateStep operation.
 //
-// PATCH /tasks/{taskID}/steps/{stepID}
+// PATCH /steps/{stepID}
 func (UnimplementedHandler) UpdateStep(ctx context.Context, req *UpdateStepReq, params UpdateStepParams) (r *Step, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -155,7 +155,7 @@ func (UnimplementedHandler) UpdateTag(ctx context.Context, req *UpdateTagReq, pa
 
 // UpdateTask implements UpdateTask operation.
 //
-// PATCH /projects/{projectID}/tasks/{taskID}
+// PATCH /tasks/{taskID}
 func (UnimplementedHandler) UpdateTask(ctx context.Context, req *UpdateTaskReq, params UpdateTaskParams) (r *Task, _ error) {
 	return r, ht.ErrNotImplemented
 }
