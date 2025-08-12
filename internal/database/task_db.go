@@ -20,8 +20,9 @@ type Task struct {
 	CompletedAt *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	Steps       Steps `gorm:"foreignKey:TaskID"`
-	Tags        Tags  `gorm:"many2many:tasks_tags;"`
+
+	Steps Steps
+	Tags  Tags `gorm:"many2many:tasks_tags;"`
 }
 
 func (t *Task) ToDomain() *domain.Task {
