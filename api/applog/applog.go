@@ -11,21 +11,45 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/logutil"
 )
 
-type Logger struct {
-	base *slog.Logger
+type Level string
+
+const (
+	LevelDebug  = "debug"
+	LevelInfo   = "info"
+	LevelSilent = "silent"
+)
+
+func (l Level) Level() slog.Level {
+	switch l {
+	case LevelDebug:
+		return slog.LevelDebug
+	case LevelInfo:
+		return slog.LevelInfo
+	case LevelSilent:
+		return 12
+	default:
+		return slog.LevelInfo
+	}
 }
 
-func New(indented bool) *Logger {
-	opts := &slog.HandlerOptions{ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-		if a.Key == slog.MessageKey {
-			a.Key = "message"
-		}
-		return logutil.MaskAttr(a)
-	}}
+type Logger struct {
+	base  *slog.Logger
+	Level Level
+}
+
+func New(level Level, indented bool) *Logger {
+	opts := &slog.HandlerOptions{
+		Level: level,
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.MessageKey {
+				a.Key = "message"
+			}
+			return logutil.MaskAttr(a)
+		}}
 	if indented {
-		return &Logger{base: slog.New(logutil.NewJSONIndentHandler(os.Stdout, opts))}
+		return &Logger{base: slog.New(logutil.NewJSONIndentHandler(os.Stdout, opts)), Level: level}
 	}
-	return &Logger{base: slog.New(slog.NewJSONHandler(os.Stdout, opts))}
+	return &Logger{base: slog.New(slog.NewJSONHandler(os.Stdout, opts)), Level: level}
 }
 
 type loggerKey struct{}
