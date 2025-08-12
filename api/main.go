@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"net"
@@ -26,7 +27,9 @@ func init() {
 func main() {
 	ctx := context.Background()
 
-	l := applog.New(os.Getenv("LOG_INDENT") == "true")
+	level := applog.Level(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
+	indent := os.Getenv("LOG_INDENT") == "true"
+	l := applog.New(level, indent)
 	if err := mainRun(ctx, l); err != nil {
 		l.Error(ctx, err.Error())
 		os.Exit(1)
@@ -39,7 +42,7 @@ func mainRun(ctx context.Context, logger *applog.Logger) error {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
 
-	f, err := factory.New(ctx, conf)
+	f, err := factory.New(ctx, conf, logger)
 	if err != nil {
 		return fmt.Errorf("failed to create factory: %w", err)
 	}

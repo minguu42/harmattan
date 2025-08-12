@@ -86,6 +86,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to create authenticator: %s", err)
 	}
 
+	l := applog.New(applog.LevelSilent, false)
 	db, err := database.NewClient(ctx, database.Config{
 		Host:            tdb.Host,
 		Port:            tdb.Port,
@@ -95,7 +96,7 @@ func TestMain(m *testing.M) {
 		MaxOpenConns:    25,
 		MaxIdleConns:    25,
 		ConnMaxLifetime: 5 * time.Minute,
-	})
+	}, l)
 	if err != nil {
 		log.Fatalf("failed to create database client: %s", err)
 	}
@@ -108,7 +109,7 @@ func TestMain(m *testing.M) {
 	h, err := handler.New(&factory.Factory{
 		Auth: authn,
 		DB:   db,
-	}, applog.New(true))
+	}, l)
 	if err != nil {
 		log.Fatalf("failed to create handler: %s", err)
 	}

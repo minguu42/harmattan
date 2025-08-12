@@ -10,7 +10,7 @@ import (
 
 func AccessLog(l *applog.Logger) middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
-		if req.OperationID == "checkHealth" {
+		if req.OperationID == "CheckHealth" {
 			return next(req)
 		}
 
