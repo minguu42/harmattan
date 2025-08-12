@@ -214,6 +214,6 @@ func TestHandler_DeleteTag(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		httpcheck.New(th).Test(t, "DELETE", "/tags/TAG-0000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
-			Check().HasStatus(200).HasBody([]byte{})
+			Check().HasStatus(200).HasString("")
 	})
 }
