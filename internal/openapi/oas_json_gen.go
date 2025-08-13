@@ -1092,6 +1092,57 @@ func (s *OptInt) UnmarshalJSON(data []byte) error {
 }
 
 // Encode encodes time.Time as json.
+func (o OptNilDate) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
+	if !o.Set {
+		return
+	}
+	if o.Null {
+		e.Null()
+		return
+	}
+	format(e, o.Value)
+}
+
+// Decode decodes time.Time from json.
+func (o *OptNilDate) Decode(d *jx.Decoder, format func(*jx.Decoder) (time.Time, error)) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptNilDate to nil")
+	}
+	if d.Next() == jx.Null {
+		if err := d.Null(); err != nil {
+			return err
+		}
+
+		var v time.Time
+		o.Value = v
+		o.Set = true
+		o.Null = true
+		return nil
+	}
+	o.Set = true
+	o.Null = false
+	v, err := format(d)
+	if err != nil {
+		return err
+	}
+	o.Value = v
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptNilDate) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e, json.EncodeDate)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptNilDate) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d, json.DecodeDate)
+}
+
+// Encode encodes time.Time as json.
 func (o OptNilDateTime) Encode(e *jx.Encoder, format func(*jx.Encoder, time.Time)) {
 	if !o.Set {
 		return
@@ -2804,7 +2855,7 @@ func (s *UpdateTaskReq) encodeFields(e *jx.Encoder) {
 	{
 		if s.DueOn.Set {
 			e.FieldStart("due_on")
-			s.DueOn.Encode(e, json.EncodeDateTime)
+			s.DueOn.Encode(e, json.EncodeDate)
 		}
 	}
 	{
@@ -2864,7 +2915,7 @@ func (s *UpdateTaskReq) Decode(d *jx.Decoder) error {
 		case "due_on":
 			if err := func() error {
 				s.DueOn.Reset()
-				if err := s.DueOn.Decode(d, json.DecodeDateTime); err != nil {
+				if err := s.DueOn.Decode(d, json.DecodeDate); err != nil {
 					return err
 				}
 				return nil
