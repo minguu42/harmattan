@@ -493,6 +493,69 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
+// NewOptNilDate returns new OptNilDate with value set to v.
+func NewOptNilDate(v time.Time) OptNilDate {
+	return OptNilDate{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptNilDate is optional nullable time.Time.
+type OptNilDate struct {
+	Value time.Time
+	Set   bool
+	Null  bool
+}
+
+// IsSet returns true if OptNilDate was set.
+func (o OptNilDate) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptNilDate) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+	o.Null = false
+}
+
+// SetTo sets value to v.
+func (o *OptNilDate) SetTo(v time.Time) {
+	o.Set = true
+	o.Null = false
+	o.Value = v
+}
+
+// IsNull returns true if value is Null.
+func (o OptNilDate) IsNull() bool { return o.Null }
+
+// SetToNull sets value to null.
+func (o *OptNilDate) SetToNull() {
+	o.Set = true
+	o.Null = true
+	var v time.Time
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptNilDate) Get() (v time.Time, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptNilDate) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptNilDateTime returns new OptNilDateTime with value set to v.
 func NewOptNilDateTime(v time.Time) OptNilDateTime {
 	return OptNilDateTime{
@@ -1312,7 +1375,7 @@ type UpdateTaskReq struct {
 	Name        OptString      `json:"name"`
 	Content     OptString      `json:"content"`
 	Priority    OptInt         `json:"priority"`
-	DueOn       OptNilDateTime `json:"due_on"`
+	DueOn       OptNilDate     `json:"due_on"`
 	CompletedAt OptNilDateTime `json:"completed_at"`
 }
 
@@ -1332,7 +1395,7 @@ func (s *UpdateTaskReq) GetPriority() OptInt {
 }
 
 // GetDueOn returns the value of DueOn.
-func (s *UpdateTaskReq) GetDueOn() OptNilDateTime {
+func (s *UpdateTaskReq) GetDueOn() OptNilDate {
 	return s.DueOn
 }
 
@@ -1357,7 +1420,7 @@ func (s *UpdateTaskReq) SetPriority(val OptInt) {
 }
 
 // SetDueOn sets the value of DueOn.
-func (s *UpdateTaskReq) SetDueOn(val OptNilDateTime) {
+func (s *UpdateTaskReq) SetDueOn(val OptNilDate) {
 	s.DueOn = val
 }
 

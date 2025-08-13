@@ -327,7 +327,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3, "due_on": "2025-01-02T00:00:00+09:00", "completed_at": "2025-01-01T12:00:00+09:00"}`)).
+			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3, "due_on": "2025-01-02", "completed_at": "2025-01-01T12:00:00+09:00"}`)).
 			Check().HasStatus(200).HasJSON(want)
 	})
 }
