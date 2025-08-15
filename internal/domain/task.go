@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"slices"
+	"time"
+)
 
 type TaskID string
 
@@ -9,6 +12,7 @@ type Task struct {
 	UserID      UserID
 	ProjectID   ProjectID
 	Name        string
+	TagIDs      []TagID
 	Content     string
 	Priority    int
 	DueOn       *time.Time
@@ -16,7 +20,15 @@ type Task struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	Steps       Steps
-	Tags        Tags
 }
 
 type Tasks []Task
+
+func (ts Tasks) TagIDs() []TagID {
+	var tagIDs []TagID
+	for _, t := range ts {
+		tagIDs = append(tagIDs, t.TagIDs...)
+	}
+	slices.Sort(tagIDs)
+	return slices.Compact(tagIDs)
+}

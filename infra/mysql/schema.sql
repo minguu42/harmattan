@@ -57,7 +57,7 @@ create table tags (
     foreign key (user_id) references users (id) on delete cascade
 );
 
-create table tasks_tags (
+create table task_tags (
     task_id    char(26) not null references tasks (id) on delete cascade,
     tag_id     char(26) not null references tags (id) on delete cascade,
     created_at datetime not null default current_timestamp,

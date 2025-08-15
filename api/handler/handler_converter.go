@@ -61,7 +61,7 @@ func convertTags(tags domain.Tags) []openapi.Tag {
 	return ts
 }
 
-func convertTask(task *domain.Task) *openapi.Task {
+func convertTask(task *domain.Task, tags domain.Tags) *openapi.Task {
 	return &openapi.Task{
 		ID:          string(task.ID),
 		ProjectID:   string(task.ProjectID),
@@ -73,14 +73,20 @@ func convertTask(task *domain.Task) *openapi.Task {
 		CreatedAt:   task.CreatedAt,
 		UpdatedAt:   task.UpdatedAt,
 		Steps:       convertSteps(task.Steps),
-		Tags:        convertTags(task.Tags),
+		Tags:        convertTags(tags),
 	}
 }
 
-func convertTasks(tasks domain.Tasks) []openapi.Task {
+func convertTasks(tasks domain.Tasks, tags domain.Tags) []openapi.Task {
+	tagByID := tags.TagByID()
+
 	ts := make([]openapi.Task, 0, len(tasks))
 	for _, t := range tasks {
-		ts = append(ts, *convertTask(&t))
+		taskTags := make(domain.Tags, 0, len(t.TagIDs))
+		for _, id := range t.TagIDs {
+			taskTags = append(taskTags, tagByID[id])
+		}
+		ts = append(ts, *convertTask(&t, taskTags))
 	}
 	return ts
 }

@@ -21,6 +21,7 @@ type Task struct {
 
 type TaskOutput struct {
 	Task *domain.Task
+	Tags domain.Tags
 }
 
 type CreateTaskInput struct {
@@ -67,6 +68,7 @@ type ListTasksInput struct {
 
 type ListTasksOutput struct {
 	Tasks   domain.Tasks
+	Tags    domain.Tags
 	HasNext bool
 }
 
@@ -89,12 +91,17 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 		return nil, fmt.Errorf("failed to list tasks: %w", err)
 	}
 
+	tags, err := uc.DB.GetTagsByIDs(ctx, ts.TagIDs())
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tags: %w", err)
+	}
+
 	hasNext := false
 	if len(ts) == in.Limit+1 {
 		ts = ts[:in.Limit]
 		hasNext = true
 	}
-	return &ListTasksOutput{Tasks: ts, HasNext: hasNext}, nil
+	return &ListTasksOutput{Tasks: ts, Tags: tags, HasNext: hasNext}, nil
 }
 
 type GetTaskInput struct {
@@ -104,18 +111,22 @@ type GetTaskInput struct {
 func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, error) {
 	user := auth.MustUserFromContext(ctx)
 
-	t, err := uc.DB.GetTaskByID(ctx, in.ID)
+	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, apperr.TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
-	if !user.HasTask(t) {
+	if !user.HasTask(task) {
 		return nil, apperr.TaskAccessDeniedError()
 	}
 
-	return &TaskOutput{Task: t}, nil
+	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tags: %w", err)
+	}
+	return &TaskOutput{Task: task, Tags: tags}, nil
 }
 
 type UpdateTaskInput struct {
@@ -130,37 +141,41 @@ type UpdateTaskInput struct {
 func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutput, error) {
 	user := auth.MustUserFromContext(ctx)
 
-	t, err := uc.DB.GetTaskByID(ctx, in.ID)
+	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, apperr.TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
-	if !user.HasTask(t) {
+	if !user.HasTask(task) {
 		return nil, apperr.TaskAccessDeniedError()
+	}
+	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tags: %w", err)
 	}
 
 	if in.Name.Valid {
-		t.Name = in.Name.V
+		task.Name = in.Name.V
 	}
 	if in.Content.Valid {
-		t.Content = in.Content.V
+		task.Content = in.Content.V
 	}
 	if in.Priority.Valid {
-		t.Priority = in.Priority.V
+		task.Priority = in.Priority.V
 	}
 	if in.DueOn.Valid {
-		t.DueOn = in.DueOn.V
+		task.DueOn = in.DueOn.V
 	}
 	if in.CompletedAt.Valid {
-		t.CompletedAt = in.CompletedAt.V
+		task.CompletedAt = in.CompletedAt.V
 	}
-	t.UpdatedAt = clock.Now(ctx)
-	if err := uc.DB.UpdateTask(ctx, t); err != nil {
+	task.UpdatedAt = clock.Now(ctx)
+	if err := uc.DB.UpdateTask(ctx, task); err != nil {
 		return nil, fmt.Errorf("failed to update task: %w", err)
 	}
-	return &TaskOutput{Task: t}, nil
+	return &TaskOutput{Task: task, Tags: tags}, nil
 }
 
 type DeleteTaskInput struct {
@@ -170,18 +185,18 @@ type DeleteTaskInput struct {
 func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 	user := auth.MustUserFromContext(ctx)
 
-	t, err := uc.DB.GetTaskByID(ctx, in.ID)
+	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
 			return apperr.TaskNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get task: %w", err)
 	}
-	if !user.HasTask(t) {
+	if !user.HasTask(task) {
 		return apperr.TaskAccessDeniedError()
 	}
 
-	if err := uc.DB.DeleteTaskByID(ctx, t.ID); err != nil {
+	if err := uc.DB.DeleteTaskByID(ctx, task.ID); err != nil {
 		return fmt.Errorf("failed to delete task: %w", err)
 	}
 	return nil
