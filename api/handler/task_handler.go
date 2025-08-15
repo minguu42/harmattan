@@ -28,7 +28,7 @@ func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute CreateTask usecase: %w", err)
 	}
-	return convertTask(out.Task), nil
+	return convertTask(out.Task, out.Tags), nil
 }
 
 func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams) (*openapi.ListTasksOK, error) {
@@ -41,7 +41,7 @@ func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams)
 		return nil, fmt.Errorf("failed to execute ListTasks usecase: %w", err)
 	}
 	return &openapi.ListTasksOK{
-		Tasks:   convertTasks(out.Tasks),
+		Tasks:   convertTasks(out.Tasks, out.Tags),
 		HasNext: out.HasNext,
 	}, nil
 }
@@ -51,7 +51,7 @@ func (h *handler) GetTask(ctx context.Context, params openapi.GetTaskParams) (*o
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute GetTask usecase: %w", err)
 	}
-	return convertTask(out.Task), nil
+	return convertTask(out.Task, out.Tags), nil
 }
 
 func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, params openapi.UpdateTaskParams) (*openapi.Task, error) {
@@ -74,7 +74,7 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateTask usecase: %w", err)
 	}
-	return convertTask(out.Task), nil
+	return convertTask(out.Task, out.Tags), nil
 }
 
 func (h *handler) DeleteTask(ctx context.Context, params openapi.DeleteTaskParams) error {

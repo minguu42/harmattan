@@ -13,3 +13,11 @@ type Tag struct {
 }
 
 type Tags []Tag
+
+func (ts Tags) TagByID() map[TagID]Tag {
+	m := make(map[TagID]Tag, len(ts))
+	for _, t := range ts {
+		m[t.ID] = t
+	}
+	return m
+}

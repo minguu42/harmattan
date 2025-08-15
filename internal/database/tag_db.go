@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
@@ -65,6 +66,18 @@ func (c *Client) GetTagByID(ctx context.Context, id domain.TagID) (*domain.Tag, 
 		return nil, err
 	}
 	return t.ToDomain(), nil
+}
+
+func (c *Client) GetTagsByIDs(ctx context.Context, ids []domain.TagID) (domain.Tags, error) {
+	if len(ids) == 0 {
+		return domain.Tags{}, nil
+	}
+
+	var ts Tags
+	if err := c.db(ctx).Where("id in ?", ids).Find(&ts).Error; err != nil {
+		return nil, fmt.Errorf("failed to query tags: %w", err)
+	}
+	return ts.ToDomain(), nil
 }
 
 func (c *Client) UpdateTag(ctx context.Context, t *domain.Tag) error {
