@@ -3,7 +3,7 @@ package middleware
 import (
 	"time"
 
-	"github.com/minguu42/harmattan/api/applog"
+	"github.com/minguu42/harmattan/internal/applog"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/ogen-go/ogen/middleware"
 )

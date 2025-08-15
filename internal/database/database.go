@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/avast/retry-go/v4"
-	"github.com/minguu42/harmattan/api/applog"
+	"github.com/minguu42/harmattan/internal/applog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

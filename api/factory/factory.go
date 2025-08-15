@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/applog"
+	"github.com/minguu42/harmattan/internal/applog"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 )
