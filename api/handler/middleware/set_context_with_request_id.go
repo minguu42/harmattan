@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/minguu42/harmattan/api/applog"
+	"github.com/minguu42/harmattan/internal/applog"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 	"github.com/ogen-go/ogen/middleware"
 )

@@ -12,9 +12,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minguu42/harmattan/api/applog"
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler"
+	"github.com/minguu42/harmattan/internal/applog"
 	"github.com/minguu42/harmattan/internal/lib/env"
 )
 
