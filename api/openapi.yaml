@@ -238,6 +238,10 @@ paths:
               properties:
                 name:
                   type: string
+                tag_ids:
+                  type: array
+                  items:
+                    type: string
                 content:
                   type: string
                 priority:

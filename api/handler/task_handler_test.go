@@ -262,7 +262,7 @@ func TestHandler_GetTask(t *testing.T) {
 }
 
 func TestHandler_UpdateTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
+	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}, database.TaskTag{}}))
 	require.NoError(t, tdb.Insert(t.Context(), []any{
 		database.Projects{
 			{
@@ -294,6 +294,20 @@ func TestHandler_UpdateTask(t *testing.T) {
 				Name:      "タスク2",
 			},
 		},
+		database.Tags{
+			{
+				ID:        "TAG-0000000000000000000001",
+				UserID:    testUserID,
+				Name:      "タグ1",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			},
+			{
+				ID:     "TAG-0000000000000000000002",
+				UserID: "USER-000000000000000000002",
+				Name:   "タグ2",
+			},
+		},
 	}))
 
 	t.Run("task not found", func(t *testing.T) {
@@ -323,11 +337,19 @@ func TestHandler_UpdateTask(t *testing.T) {
 			CompletedAt: openapi.OptDateTime{Value: time.Date(2025, 1, 1, 12, 0, 0, 0, jst), Set: true},
 			CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			UpdatedAt:   fixedNow,
+			Tags: []openapi.Tag{
+				{
+					ID:        "TAG-0000000000000000000001",
+					Name:      "タグ1",
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				},
+			},
 		}
 		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			WithHeader("Content-Type", "application/json").
-			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3, "due_on": "2025-01-02", "completed_at": "2025-01-01T12:00:00+09:00"}`)).
+			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3, "due_on": "2025-01-02", "completed_at": "2025-01-01T12:00:00+09:00", "tag_ids": ["TAG-0000000000000000000001", "TAG-0000000000000000000002", "TAG-0000000000000000000099"]}`)).
 			Check().HasStatus(200).HasJSON(want)
 	})
 }

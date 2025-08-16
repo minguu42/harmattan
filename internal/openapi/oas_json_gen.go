@@ -2841,6 +2841,16 @@ func (s *UpdateTaskReq) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.TagIds != nil {
+			e.FieldStart("tag_ids")
+			e.ArrStart()
+			for _, elem := range s.TagIds {
+				e.Str(elem)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
 		if s.Content.Set {
 			e.FieldStart("content")
 			s.Content.Encode(e)
@@ -2866,12 +2876,13 @@ func (s *UpdateTaskReq) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfUpdateTaskReq = [5]string{
+var jsonFieldsNameOfUpdateTaskReq = [6]string{
 	0: "name",
-	1: "content",
-	2: "priority",
-	3: "due_on",
-	4: "completed_at",
+	1: "tag_ids",
+	2: "content",
+	3: "priority",
+	4: "due_on",
+	5: "completed_at",
 }
 
 // Decode decodes UpdateTaskReq from json.
@@ -2891,6 +2902,25 @@ func (s *UpdateTaskReq) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "tag_ids":
+			if err := func() error {
+				s.TagIds = make([]string, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
+						return err
+					}
+					s.TagIds = append(s.TagIds, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tag_ids\"")
 			}
 		case "content":
 			if err := func() error {

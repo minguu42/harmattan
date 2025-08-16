@@ -1373,6 +1373,7 @@ func (s *UpdateTagReq) SetName(val OptString) {
 
 type UpdateTaskReq struct {
 	Name        OptString      `json:"name"`
+	TagIds      []string       `json:"tag_ids"`
 	Content     OptString      `json:"content"`
 	Priority    OptInt         `json:"priority"`
 	DueOn       OptNilDate     `json:"due_on"`
@@ -1382,6 +1383,11 @@ type UpdateTaskReq struct {
 // GetName returns the value of Name.
 func (s *UpdateTaskReq) GetName() OptString {
 	return s.Name
+}
+
+// GetTagIds returns the value of TagIds.
+func (s *UpdateTaskReq) GetTagIds() []string {
+	return s.TagIds
 }
 
 // GetContent returns the value of Content.
@@ -1407,6 +1413,11 @@ func (s *UpdateTaskReq) GetCompletedAt() OptNilDateTime {
 // SetName sets the value of Name.
 func (s *UpdateTaskReq) SetName(val OptString) {
 	s.Name = val
+}
+
+// SetTagIds sets the value of TagIds.
+func (s *UpdateTaskReq) SetTagIds(val []string) {
+	s.TagIds = val
 }
 
 // SetContent sets the value of Content.
