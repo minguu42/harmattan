@@ -132,6 +132,7 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 type UpdateTaskInput struct {
 	ID          domain.TaskID
 	Name        opt.Option[string]
+	TagIDs      opt.Option[[]domain.TagID]
 	Content     opt.Option[string]
 	Priority    opt.Option[int]
 	DueOn       opt.Option[*time.Time]
@@ -151,13 +152,29 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	if !user.HasTask(task) {
 		return nil, apperr.TaskAccessDeniedError()
 	}
-	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get tags: %w", err)
-	}
 
 	if in.Name.Valid {
 		task.Name = in.Name.V
+	}
+	var tags domain.Tags
+	if in.TagIDs.Valid {
+		tags, err = uc.DB.GetTagsByIDs(ctx, in.TagIDs.V)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get tags: %w", err)
+		}
+		validTags := make(domain.Tags, 0, len(tags))
+		for _, t := range tags {
+			if user.HasTag(&t) {
+				validTags = append(validTags, t)
+			}
+		}
+		tags = validTags
+		task.TagIDs = validTags.IDs()
+	} else {
+		tags, err = uc.DB.GetTagsByIDs(ctx, task.TagIDs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get tags: %w", err)
+		}
 	}
 	if in.Content.Valid {
 		task.Content = in.Content.V

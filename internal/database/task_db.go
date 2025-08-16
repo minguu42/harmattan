@@ -107,7 +107,7 @@ func (c *Client) GetTaskByID(ctx context.Context, id domain.TaskID) (*domain.Tas
 }
 
 func (c *Client) UpdateTask(ctx context.Context, t *domain.Task) error {
-	return c.db(ctx).Model(Task{}).Where("id = ?", t.ID).Updates(map[string]any{
+	err := c.db(ctx).Model(Task{}).Where("id = ?", t.ID).Updates(map[string]any{
 		"name":         t.Name,
 		"content":      t.Content,
 		"priority":     t.Priority,
@@ -115,6 +115,24 @@ func (c *Client) UpdateTask(ctx context.Context, t *domain.Task) error {
 		"completed_at": t.CompletedAt,
 		"updated_at":   t.UpdatedAt,
 	}).Error
+	if err != nil {
+		return fmt.Errorf("failed to update task: %w", err)
+	}
+
+	if err := c.db(ctx).Where("task_id = ?", t.ID).Delete(TaskTag{}).Error; err != nil {
+		return fmt.Errorf("failed to delete task tag: %w", err)
+	}
+	if len(t.TagIDs) == 0 {
+		return nil
+	}
+	taskTags := make(TaskTags, 0, len(t.TagIDs))
+	for _, tagID := range t.TagIDs {
+		taskTags = append(taskTags, TaskTag{TaskID: t.ID, TagID: tagID, CreatedAt: t.UpdatedAt})
+	}
+	if err := c.db(ctx).Create(&taskTags).Error; err != nil {
+		return fmt.Errorf("failed to create task tags: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) DeleteTaskByID(ctx context.Context, id domain.TaskID) error {

@@ -14,6 +14,14 @@ type Tag struct {
 
 type Tags []Tag
 
+func (ts Tags) IDs() []TagID {
+	ids := make([]TagID, 0, len(ts))
+	for _, t := range ts {
+		ids = append(ids, t.ID)
+	}
+	return ids
+}
+
 func (ts Tags) TagByID() map[TagID]Tag {
 	m := make(map[TagID]Tag, len(ts))
 	for _, t := range ts {

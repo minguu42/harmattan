@@ -6,6 +6,14 @@ import (
 	"github.com/minguu42/harmattan/internal/openapi"
 )
 
+func convertSlice[T ~string](s []string) []T {
+	r := make([]T, 0, len(s))
+	for _, e := range s {
+		r = append(r, T(e))
+	}
+	return r
+}
+
 func convertProject(project *domain.Project) *openapi.Project {
 	return &openapi.Project{
 		ID:         string(project.ID),

@@ -66,6 +66,7 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 	out, err := h.task.UpdateTask(ctx, &usecase.UpdateTaskInput{
 		ID:          domain.TaskID(params.TaskID),
 		Name:        opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
+		TagIDs:      opt.Option[[]domain.TagID]{V: convertSlice[domain.TagID](req.TagIds), Valid: req.TagIds != nil},
 		Content:     opt.Option[string]{V: req.Content.Value, Valid: req.Content.Set},
 		Priority:    opt.Option[int]{V: req.Priority.Value, Valid: req.Priority.Set},
 		DueOn:       opt.Option[*time.Time]{V: pointers.RefOrNil(req.DueOn.Null, req.DueOn.Value), Valid: req.DueOn.Set},
