@@ -89,57 +89,42 @@ type AccessFields struct {
 }
 
 func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
-	message := "Request accepted"
-	executionTime := slog.Int64("execution_time", fields.ExecutionTime.Milliseconds())
-	var request slog.Attr
-	if user, ok := auth.UserFromContext(ctx); ok {
-		request = slog.Group("request",
-			slog.String("user_id", string(user.ID)),
-			slog.String("operation_id", fields.OperationID),
-			slog.String("method", fields.Method),
-			slog.String("url", fields.URL),
-			slog.Any("body", fields.Body),
-			slog.String("ip_address", fields.IPAddress),
+	level := slog.LevelInfo
+	attrs := make([]slog.Attr, 0, 5)
+	if fields.Err != nil {
+		err := apperr.ToError(fields.Err)
+		if 400 <= err.Status() && err.Status() < 500 {
+			level = slog.LevelWarn
+		} else {
+			level = slog.LevelError
+		}
+
+		attrs = append(attrs,
+			slog.Int("status_code", err.Status()),
+			slog.String("error_message", err.Error()),
 		)
+		if stacktrace := err.Stacktrace(); len(stacktrace) > 0 {
+			slog.Any("stacktrace", stacktrace)
+		}
 	} else {
-		request = slog.Group("request",
-			slog.String("operation_id", fields.OperationID),
-			slog.String("method", fields.Method),
-			slog.String("url", fields.URL),
-			slog.Any("body", fields.Body),
-			slog.String("ip_address", fields.IPAddress),
-		)
+		attrs = append(attrs, slog.Int("status_code", 200))
 	}
+	attrs = append(attrs, slog.Int64("execution_time", fields.ExecutionTime.Milliseconds()))
 
-	if fields.Err == nil {
-		l.logger(ctx).LogAttrs(ctx, slog.LevelInfo, message,
-			slog.Int("status_code", 200),
-			executionTime,
-			request,
-		)
-		return
+	requestAttrs := make([]slog.Attr, 0, 6)
+	if user, ok := auth.UserFromContext(ctx); ok {
+		requestAttrs = append(requestAttrs, slog.String("user_id", string(user.ID)))
 	}
-
-	appErr := apperr.ToError(fields.Err)
-	status := appErr.Status()
-	level := slog.LevelWarn
-	if status >= 500 {
-		level = slog.LevelError
-	}
-	if stacktrace := appErr.Stacktrace(); len(stacktrace) > 0 {
-		l.logger(ctx).LogAttrs(ctx, level, message,
-			slog.Int("status_code", status),
-			slog.String("error_message", appErr.Error()),
-			slog.Any("stacktrace", stacktrace),
-			executionTime,
-			request,
-		)
-		return
-	}
-	l.logger(ctx).LogAttrs(ctx, level, message,
-		slog.Int("status_code", status),
-		slog.String("error_message", appErr.Error()),
-		executionTime,
-		request,
+	requestAttrs = append(requestAttrs,
+		slog.String("operation_id", fields.OperationID),
+		slog.String("method", fields.Method),
+		slog.String("url", fields.URL),
 	)
+	if fields.Body != nil {
+		requestAttrs = append(requestAttrs, slog.Any("body", fields.Body))
+	}
+	requestAttrs = append(requestAttrs, slog.String("ip_address", fields.IPAddress))
+	attrs = append(attrs, slog.GroupAttrs("request", requestAttrs...))
+
+	l.logger(ctx).LogAttrs(ctx, level, "Request accepted", attrs...)
 }
