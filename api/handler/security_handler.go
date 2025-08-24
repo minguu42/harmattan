@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/minguu42/harmattan/api/apperr"
+	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
-	"github.com/minguu42/harmattan/internal/openapi"
 )
 
 type securityHandler struct {

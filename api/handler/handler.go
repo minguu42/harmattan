@@ -9,9 +9,9 @@ import (
 	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler/middleware"
+	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/applog"
-	"github.com/minguu42/harmattan/internal/openapi"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
