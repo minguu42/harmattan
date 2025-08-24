@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/minguu42/harmattan/api/apperr"
+	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
-	"github.com/minguu42/harmattan/internal/openapi"
 )
 
 func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.SignUpOK, error) {

@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/pointers"
-	"github.com/minguu42/harmattan/internal/openapi"
 )
 
 func convertSlice[T ~string](s []string) []T {

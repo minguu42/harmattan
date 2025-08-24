@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/minguu42/harmattan/api/apperr"
+	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/opt"
-	"github.com/minguu42/harmattan/internal/openapi"
 )
 
 func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*openapi.Tag, error) {

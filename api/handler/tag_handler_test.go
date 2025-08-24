@@ -6,8 +6,8 @@ import (
 
 	"github.com/ikawaha/httpcheck"
 	"github.com/minguu42/harmattan/api/handler"
+	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/internal/database"
-	"github.com/minguu42/harmattan/internal/openapi"
 	"github.com/stretchr/testify/require"
 )
 
