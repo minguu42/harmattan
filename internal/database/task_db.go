@@ -2,11 +2,13 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/pointers"
 	"gorm.io/gorm"
 )
 
@@ -17,8 +19,8 @@ type Task struct {
 	Name        string
 	Content     string
 	Priority    int
-	DueOn       *time.Time
-	CompletedAt *time.Time
+	DueOn       sql.Null[time.Time]
+	CompletedAt sql.Null[time.Time]
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 
@@ -34,8 +36,8 @@ func (t *Task) ToDomain(taskTags TaskTags) *domain.Task {
 		TagIDs:      taskTags.TagIDs(),
 		Content:     t.Content,
 		Priority:    t.Priority,
-		DueOn:       t.DueOn,
-		CompletedAt: t.CompletedAt,
+		DueOn:       pointers.RefOrNil(!t.DueOn.Valid, t.DueOn.V),
+		CompletedAt: pointers.RefOrNil(!t.CompletedAt.Valid, t.CompletedAt.V),
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
 		Steps:       t.Steps.ToDomain(),
@@ -69,8 +71,8 @@ func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
 		Name:        t.Name,
 		Content:     t.Content,
 		Priority:    t.Priority,
-		DueOn:       t.DueOn,
-		CompletedAt: t.CompletedAt,
+		DueOn:       sql.Null[time.Time]{V: pointers.OrZero(t.DueOn), Valid: t.DueOn != nil},
+		CompletedAt: sql.Null[time.Time]{V: pointers.OrZero(t.CompletedAt), Valid: t.CompletedAt != nil},
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
 	}
