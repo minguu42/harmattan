@@ -11,7 +11,6 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
-	"github.com/minguu42/harmattan/internal/lib/opt"
 )
 
 type Project struct {
@@ -94,9 +93,9 @@ func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*Projec
 
 type UpdateProjectInput struct {
 	ID         domain.ProjectID
-	Name       opt.Option[string]
-	Color      opt.Option[domain.ProjectColor]
-	IsArchived opt.Option[bool]
+	Name       Option[string]
+	Color      Option[domain.ProjectColor]
+	IsArchived Option[bool]
 }
 
 func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*ProjectOutput, error) {

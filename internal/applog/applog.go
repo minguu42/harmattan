@@ -8,7 +8,6 @@ import (
 
 	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
-	"github.com/minguu42/harmattan/internal/lib/logutil"
 )
 
 type Level string
@@ -44,10 +43,10 @@ func New(level Level, indented bool) *Logger {
 			if a.Key == slog.MessageKey {
 				a.Key = "message"
 			}
-			return logutil.MaskAttr(a)
+			return MaskAttr(a)
 		}}
 	if indented {
-		return &Logger{base: slog.New(logutil.NewJSONIndentHandler(os.Stdout, opts)), Level: level}
+		return &Logger{base: slog.New(NewJSONIndentHandler(os.Stdout, opts)), Level: level}
 	}
 	return &Logger{base: slog.New(slog.NewJSONHandler(os.Stdout, opts)), Level: level}
 }

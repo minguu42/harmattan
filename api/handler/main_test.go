@@ -14,8 +14,8 @@ import (
 	"github.com/minguu42/harmattan/internal/applog"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/database/databasetest"
 	"github.com/minguu42/harmattan/internal/lib/clock/clocktest"
-	"github.com/minguu42/harmattan/internal/lib/databasetest"
 	"github.com/minguu42/harmattan/internal/lib/idgen/idgentest"
 )
 

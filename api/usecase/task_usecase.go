@@ -12,7 +12,6 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
-	"github.com/minguu42/harmattan/internal/lib/opt"
 )
 
 type Task struct {
@@ -131,12 +130,12 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 
 type UpdateTaskInput struct {
 	ID          domain.TaskID
-	Name        opt.Option[string]
-	TagIDs      opt.Option[[]domain.TagID]
-	Content     opt.Option[string]
-	Priority    opt.Option[int]
-	DueOn       opt.Option[*time.Time]
-	CompletedAt opt.Option[*time.Time]
+	Name        Option[string]
+	TagIDs      Option[[]domain.TagID]
+	Content     Option[string]
+	Priority    Option[int]
+	DueOn       Option[*time.Time]
+	CompletedAt Option[*time.Time]
 }
 
 func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutput, error) {

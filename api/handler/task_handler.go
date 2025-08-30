@@ -9,7 +9,6 @@ import (
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/opt"
 	"github.com/minguu42/harmattan/internal/lib/pointers"
 )
 
@@ -65,12 +64,12 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 
 	out, err := h.task.UpdateTask(ctx, &usecase.UpdateTaskInput{
 		ID:          domain.TaskID(params.TaskID),
-		Name:        opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
-		TagIDs:      opt.Option[[]domain.TagID]{V: convertSlice[domain.TagID](req.TagIds), Valid: req.TagIds != nil},
-		Content:     opt.Option[string]{V: req.Content.Value, Valid: req.Content.Set},
-		Priority:    opt.Option[int]{V: req.Priority.Value, Valid: req.Priority.Set},
-		DueOn:       opt.Option[*time.Time]{V: pointers.RefOrNil(req.DueOn.Null, req.DueOn.Value), Valid: req.DueOn.Set},
-		CompletedAt: opt.Option[*time.Time]{V: pointers.RefOrNil(req.CompletedAt.Null, req.CompletedAt.Value), Valid: req.CompletedAt.Set},
+		Name:        usecase.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
+		TagIDs:      usecase.Option[[]domain.TagID]{V: convertSlice[domain.TagID](req.TagIds), Valid: req.TagIds != nil},
+		Content:     usecase.Option[string]{V: req.Content.Value, Valid: req.Content.Set},
+		Priority:    usecase.Option[int]{V: req.Priority.Value, Valid: req.Priority.Set},
+		DueOn:       usecase.Option[*time.Time]{V: pointers.RefOrNil(req.DueOn.Null, req.DueOn.Value), Valid: req.DueOn.Set},
+		CompletedAt: usecase.Option[*time.Time]{V: pointers.RefOrNil(req.CompletedAt.Null, req.CompletedAt.Value), Valid: req.CompletedAt.Set},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateTask usecase: %w", err)
