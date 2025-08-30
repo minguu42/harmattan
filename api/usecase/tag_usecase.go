@@ -11,7 +11,6 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
-	"github.com/minguu42/harmattan/internal/lib/opt"
 )
 
 type Tag struct {
@@ -71,7 +70,7 @@ func (uc *Tag) ListTags(ctx context.Context, in *ListTagsInput) (*ListTagsOutput
 
 type UpdateTagInput struct {
 	ID   domain.TagID
-	Name opt.Option[string]
+	Name Option[string]
 }
 
 func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, error) {

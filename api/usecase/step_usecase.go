@@ -12,7 +12,6 @@ import (
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
-	"github.com/minguu42/harmattan/internal/lib/opt"
 )
 
 type Step struct {
@@ -60,8 +59,8 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 
 type UpdateStepInput struct {
 	ID          domain.StepID
-	Name        opt.Option[string]
-	CompletedAt opt.Option[*time.Time]
+	Name        Option[string]
+	CompletedAt Option[*time.Time]
 }
 
 func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {

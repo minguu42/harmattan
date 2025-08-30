@@ -1,10 +1,11 @@
-package logutil
+package applog
 
 import (
 	"log/slog"
 	"reflect"
 )
 
+// MaskAttr masks sensitive fields in log attributes
 func MaskAttr(a slog.Attr) slog.Attr {
 	if a.Value.Kind() != slog.KindAny {
 		return a

@@ -9,7 +9,6 @@ import (
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/opt"
 	"github.com/minguu42/harmattan/internal/lib/pointers"
 )
 
@@ -41,8 +40,8 @@ func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, pa
 
 	out, err := h.step.UpdateStep(ctx, &usecase.UpdateStepInput{
 		ID:          domain.StepID(params.StepID),
-		Name:        opt.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
-		CompletedAt: opt.Option[*time.Time]{V: pointers.RefOrNil(req.CompletedAt.Null, req.CompletedAt.Value), Valid: req.CompletedAt.Set},
+		Name:        usecase.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
+		CompletedAt: usecase.Option[*time.Time]{V: pointers.RefOrNil(req.CompletedAt.Null, req.CompletedAt.Value), Valid: req.CompletedAt.Set},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateStep usecase: %w", err)
