@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
@@ -53,7 +54,10 @@ func (c *Client) CreateStep(ctx context.Context, s *domain.Step) error {
 		CreatedAt:   s.CreatedAt,
 		UpdatedAt:   s.UpdatedAt,
 	}
-	return c.db(ctx).Create(&step).Error
+	if err := c.db(ctx).Create(&step).Error; err != nil {
+		return fmt.Errorf("failed to create step: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) GetStepByID(ctx context.Context, id domain.StepID) (*domain.Step, error) {
@@ -62,19 +66,26 @@ func (c *Client) GetStepByID(ctx context.Context, id domain.StepID) (*domain.Ste
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}
-		return nil, err
+		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
 	return s.ToDomain(), nil
 }
 
 func (c *Client) UpdateStep(ctx context.Context, s *domain.Step) error {
-	return c.db(ctx).Model(Step{}).Where("id = ?", s.ID).Updates(map[string]any{
+	err := c.db(ctx).Model(Step{}).Where("id = ?", s.ID).Updates(map[string]any{
 		"name":         s.Name,
 		"completed_at": s.CompletedAt,
 		"updated_at":   s.UpdatedAt,
 	}).Error
+	if err != nil {
+		return fmt.Errorf("failed to update step: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) DeleteStepByID(ctx context.Context, id domain.StepID) error {
-	return c.db(ctx).Where("id = ?", id).Delete(Step{}).Error
+	if err := c.db(ctx).Where("id = ?", id).Delete(Step{}).Error; err != nil {
+		return fmt.Errorf("failed to delete step: %w", err)
+	}
+	return nil
 }

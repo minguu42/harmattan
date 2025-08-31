@@ -46,13 +46,16 @@ func (c *Client) CreateTag(ctx context.Context, t *domain.Tag) error {
 		CreatedAt: t.CreatedAt,
 		UpdatedAt: t.UpdatedAt,
 	}
-	return c.db(ctx).Create(&tag).Error
+	if err := c.db(ctx).Create(&tag).Error; err != nil {
+		return fmt.Errorf("failed to create tag: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) ListTags(ctx context.Context, id domain.UserID, limit, offset int) (domain.Tags, error) {
 	var ts Tags
 	if err := c.db(ctx).Where("user_id = ?", id).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get tags: %w", err)
 	}
 	return ts.ToDomain(), nil
 }
@@ -63,7 +66,7 @@ func (c *Client) GetTagByID(ctx context.Context, id domain.TagID) (*domain.Tag, 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}
-		return nil, err
+		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	return t.ToDomain(), nil
 }
@@ -81,12 +84,19 @@ func (c *Client) GetTagsByIDs(ctx context.Context, ids []domain.TagID) (domain.T
 }
 
 func (c *Client) UpdateTag(ctx context.Context, t *domain.Tag) error {
-	return c.db(ctx).Model(Tag{}).Where("id = ?", t.ID).Updates(map[string]any{
+	err := c.db(ctx).Model(Tag{}).Where("id = ?", t.ID).Updates(map[string]any{
 		"name":       t.Name,
 		"updated_at": t.UpdatedAt,
 	}).Error
+	if err != nil {
+		return fmt.Errorf("failed to update tag: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) DeleteTagByID(ctx context.Context, id domain.TagID) error {
-	return c.db(ctx).Where("id = ?", id).Delete(Tag{}).Error
+	if err := c.db(ctx).Where("id = ?", id).Delete(Tag{}).Error; err != nil {
+		return fmt.Errorf("failed to delete tag: %w", err)
+	}
+	return nil
 }
