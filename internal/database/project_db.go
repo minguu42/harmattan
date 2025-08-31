@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
@@ -51,13 +52,16 @@ func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
 		CreatedAt:  p.CreatedAt,
 		UpdatedAt:  p.UpdatedAt,
 	}
-	return c.db(ctx).Create(&project).Error
+	if err := c.db(ctx).Create(&project).Error; err != nil {
+		return fmt.Errorf("failed to create project: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) ListProjects(ctx context.Context, id domain.UserID, limit, offset int) (domain.Projects, error) {
 	var ps Projects
 	if err := c.db(ctx).Where("user_id = ?", id).Limit(limit).Offset(offset).Find(&ps).Error; err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get projects: %w", err)
 	}
 	return ps.ToDomain(), nil
 }
@@ -68,20 +72,27 @@ func (c *Client) GetProjectByID(ctx context.Context, id domain.ProjectID) (*doma
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}
-		return nil, err
+		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	return p.ToDomain(), nil
 }
 
 func (c *Client) UpdateProject(ctx context.Context, p *domain.Project) error {
-	return c.db(ctx).Model(Project{}).Where("id = ?", p.ID).Updates(map[string]any{
+	err := c.db(ctx).Model(Project{}).Where("id = ?", p.ID).Updates(map[string]any{
 		"name":        p.Name,
 		"color":       p.Color,
 		"is_archived": p.IsArchived,
 		"updated_at":  p.UpdatedAt,
 	}).Error
+	if err != nil {
+		return fmt.Errorf("failed to update project: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) DeleteProjectByID(ctx context.Context, id domain.ProjectID) error {
-	return c.db(ctx).Where("id = ?", id).Delete(Project{}).Error
+	if err := c.db(ctx).Where("id = ?", id).Delete(Project{}).Error; err != nil {
+		return fmt.Errorf("failed to delete project: %w", err)
+	}
+	return nil
 }
