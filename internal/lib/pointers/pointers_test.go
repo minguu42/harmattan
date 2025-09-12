@@ -10,20 +10,44 @@ import (
 )
 
 func TestRef(t *testing.T) {
+	values := []any{
+		"Hello, World!",
+		1,
+		time.Date(2024, 2, 29, 12, 34, 56, 0, time.UTC),
+	}
+	for _, v := range values {
+		p := pointers.Ref(v)
+		require.NotNil(t, p)
+		assert.Equal(t, v, *p)
+	}
+}
+
+func TestTernary(t *testing.T) {
 	tests := []struct {
-		name string
-		v    any
+		condition bool
+		trueVal   any
+		falseVal  any
+		want      any
 	}{
-		{name: "string", v: "Hello, World!"},
-		{name: "int", v: 42},
-		{name: "time.Time", v: time.Date(2024, 2, 29, 12, 34, 56, 0, time.UTC)},
+		{condition: true, trueVal: 1, falseVal: -1, want: 1},
+		{condition: false, trueVal: 1, falseVal: -1, want: -1},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := pointers.Ref(tt.v)
-			require.NotNil(t, p)
+		got := pointers.Ternary(tt.condition, tt.trueVal, tt.falseVal)
+		assert.Equal(t, tt.want, got)
+	}
+}
 
-			assert.Equal(t, tt.v, *p)
-		})
+func TestOrZero(t *testing.T) {
+	tests := []struct {
+		v    *int
+		want int
+	}{
+		{v: pointers.Ref(1), want: 1},
+		{v: nil, want: 0},
+	}
+	for _, tt := range tests {
+		got := pointers.OrZero(tt.v)
+		assert.Equal(t, tt.want, got)
 	}
 }
