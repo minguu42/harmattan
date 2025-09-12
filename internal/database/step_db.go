@@ -2,13 +2,11 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/pointers"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +15,7 @@ type Step struct {
 	UserID      domain.UserID
 	TaskID      domain.TaskID
 	Name        string
-	CompletedAt sql.Null[time.Time]
+	CompletedAt *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -28,7 +26,7 @@ func (s *Step) ToDomain() *domain.Step {
 		UserID:      s.UserID,
 		TaskID:      s.TaskID,
 		Name:        s.Name,
-		CompletedAt: pointers.RefOrNil(!s.CompletedAt.Valid, s.CompletedAt.V),
+		CompletedAt: s.CompletedAt,
 		CreatedAt:   s.CreatedAt,
 		UpdatedAt:   s.UpdatedAt,
 	}
@@ -50,7 +48,7 @@ func (c *Client) CreateStep(ctx context.Context, s *domain.Step) error {
 		UserID:      s.UserID,
 		TaskID:      s.TaskID,
 		Name:        s.Name,
-		CompletedAt: sql.Null[time.Time]{V: pointers.OrZero(s.CompletedAt), Valid: s.CompletedAt != nil},
+		CompletedAt: s.CompletedAt,
 		CreatedAt:   s.CreatedAt,
 		UpdatedAt:   s.UpdatedAt,
 	}

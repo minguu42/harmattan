@@ -15,8 +15,8 @@ import (
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
-	"github.com/minguu42/harmattan/internal/lib/clock/clocktest"
-	"github.com/minguu42/harmattan/internal/lib/idgen/idgentest"
+	"github.com/minguu42/harmattan/internal/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
 const (
@@ -120,12 +120,12 @@ func TestMain(m *testing.M) {
 
 func fixID(next http.Handler, id string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(w, r.WithContext(idgentest.WithFixedULID(r.Context(), id)))
+		next.ServeHTTP(w, r.WithContext(idgen.WithFixedULID(r.Context(), id)))
 	})
 }
 
 func fixNow(next http.Handler, tm time.Time) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(w, r.WithContext(clocktest.WithFixedNow(r.Context(), tm)))
+		next.ServeHTTP(w, r.WithContext(clock.WithFixedNow(r.Context(), tm)))
 	})
 }

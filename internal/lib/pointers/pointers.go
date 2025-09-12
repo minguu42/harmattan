@@ -4,11 +4,11 @@ func Ref[T any](v T) *T {
 	return &v
 }
 
-func RefOrNil[T any](isNil bool, v T) *T {
-	if isNil {
-		return nil
+func Ternary[T any](condition bool, trueVal, falseVal T) T {
+	if condition {
+		return trueVal
 	}
-	return &v
+	return falseVal
 }
 
 func OrZero[T any](v *T) T {
