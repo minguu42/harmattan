@@ -73,13 +73,13 @@ func mainRun(ctx context.Context, logger *applog.Logger) error {
 	case <-sigterm:
 	}
 
-	ctxWithTimeout, cancel := context.WithTimeout(ctx, conf.API.StopTimeout)
+	ctx, cancel := context.WithTimeout(ctx, conf.API.StopTimeout)
 	defer cancel()
 
-	logger.Event(ctx, "Begin graceful shutdown")
-	if err := s.Shutdown(ctxWithTimeout); err != nil {
+	logger.Event(ctx, "Stop accepting requests")
+	if err := s.Shutdown(ctx); err != nil {
 		return fmt.Errorf("failed to shutdown server: %w", err)
 	}
-	logger.Event(ctx, "Stop accepting requests")
+	logger.Event(ctx, "Server shutdown completed")
 	return nil
 }
