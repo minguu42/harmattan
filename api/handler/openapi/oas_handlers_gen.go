@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/go-faster/errors"
-
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/ogen-go/ogen/ogenerrors"
@@ -37,6 +36,8 @@ func (s *Server) handleCheckHealthRequest(args [0]string, argsEscaped bool, w ht
 		err error
 	)
 
+	var rawBody []byte
+
 	var response *CheckHealthOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -45,6 +46,7 @@ func (s *Server) handleCheckHealthRequest(args [0]string, argsEscaped bool, w ht
 			OperationSummary: "",
 			OperationID:      "CheckHealth",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -144,7 +146,9 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 			return
 		}
 	}
-	request, close, err := s.decodeCreateProjectRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeCreateProjectRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -168,6 +172,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 			OperationSummary: "",
 			OperationID:      "CreateProject",
 			Body:             request,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -277,7 +282,9 @@ func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w htt
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeCreateStepRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeCreateStepRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -301,6 +308,7 @@ func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "CreateStep",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "taskID",
@@ -405,7 +413,9 @@ func (s *Server) handleCreateTagRequest(args [0]string, argsEscaped bool, w http
 			return
 		}
 	}
-	request, close, err := s.decodeCreateTagRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeCreateTagRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -429,6 +439,7 @@ func (s *Server) handleCreateTagRequest(args [0]string, argsEscaped bool, w http
 			OperationSummary: "",
 			OperationID:      "CreateTag",
 			Body:             request,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -538,7 +549,9 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeCreateTaskRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeCreateTaskRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -562,6 +575,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "CreateTask",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "projectID",
@@ -677,6 +691,8 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		return
 	}
 
+	var rawBody []byte
+
 	var response *DeleteProjectOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -685,6 +701,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 			OperationSummary: "",
 			OperationID:      "DeleteProject",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "projectID",
@@ -800,6 +817,8 @@ func (s *Server) handleDeleteStepRequest(args [1]string, argsEscaped bool, w htt
 		return
 	}
 
+	var rawBody []byte
+
 	var response *DeleteStepOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -808,6 +827,7 @@ func (s *Server) handleDeleteStepRequest(args [1]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "DeleteStep",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "stepID",
@@ -923,6 +943,8 @@ func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http
 		return
 	}
 
+	var rawBody []byte
+
 	var response *DeleteTagOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -931,6 +953,7 @@ func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http
 			OperationSummary: "",
 			OperationID:      "DeleteTag",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "tagID",
@@ -1046,6 +1069,8 @@ func (s *Server) handleDeleteTaskRequest(args [1]string, argsEscaped bool, w htt
 		return
 	}
 
+	var rawBody []byte
+
 	var response *DeleteTaskOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1054,6 +1079,7 @@ func (s *Server) handleDeleteTaskRequest(args [1]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "DeleteTask",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "taskID",
@@ -1169,6 +1195,8 @@ func (s *Server) handleGetProjectRequest(args [1]string, argsEscaped bool, w htt
 		return
 	}
 
+	var rawBody []byte
+
 	var response *Project
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1177,6 +1205,7 @@ func (s *Server) handleGetProjectRequest(args [1]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "GetProject",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "projectID",
@@ -1292,6 +1321,8 @@ func (s *Server) handleGetTagRequest(args [1]string, argsEscaped bool, w http.Re
 		return
 	}
 
+	var rawBody []byte
+
 	var response *Tag
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1300,6 +1331,7 @@ func (s *Server) handleGetTagRequest(args [1]string, argsEscaped bool, w http.Re
 			OperationSummary: "",
 			OperationID:      "GetTag",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "tagID",
@@ -1415,6 +1447,8 @@ func (s *Server) handleGetTaskRequest(args [1]string, argsEscaped bool, w http.R
 		return
 	}
 
+	var rawBody []byte
+
 	var response *Task
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1423,6 +1457,7 @@ func (s *Server) handleGetTaskRequest(args [1]string, argsEscaped bool, w http.R
 			OperationSummary: "",
 			OperationID:      "GetTask",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "taskID",
@@ -1538,6 +1573,8 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		return
 	}
 
+	var rawBody []byte
+
 	var response *ListProjectsOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1546,6 +1583,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 			OperationSummary: "",
 			OperationID:      "ListProjects",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "limit",
@@ -1665,6 +1703,8 @@ func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.
 		return
 	}
 
+	var rawBody []byte
+
 	var response *ListTagsOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1673,6 +1713,7 @@ func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.
 			OperationSummary: "",
 			OperationID:      "ListTags",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "limit",
@@ -1792,6 +1833,8 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		return
 	}
 
+	var rawBody []byte
+
 	var response *ListTasksOK
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1800,6 +1843,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 			OperationSummary: "",
 			OperationID:      "ListTasks",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "limit",
@@ -1868,7 +1912,9 @@ func (s *Server) handleSignInRequest(args [0]string, argsEscaped bool, w http.Re
 			ID:   "SignIn",
 		}
 	)
-	request, close, err := s.decodeSignInRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeSignInRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -1892,6 +1938,7 @@ func (s *Server) handleSignInRequest(args [0]string, argsEscaped bool, w http.Re
 			OperationSummary: "",
 			OperationID:      "SignIn",
 			Body:             request,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -1947,7 +1994,9 @@ func (s *Server) handleSignUpRequest(args [0]string, argsEscaped bool, w http.Re
 			ID:   "SignUp",
 		}
 	)
-	request, close, err := s.decodeSignUpRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeSignUpRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -1971,6 +2020,7 @@ func (s *Server) handleSignUpRequest(args [0]string, argsEscaped bool, w http.Re
 			OperationSummary: "",
 			OperationID:      "SignUp",
 			Body:             request,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -2080,7 +2130,9 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateProjectRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUpdateProjectRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -2104,6 +2156,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 			OperationSummary: "",
 			OperationID:      "UpdateProject",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "projectID",
@@ -2218,7 +2271,9 @@ func (s *Server) handleUpdateStepRequest(args [1]string, argsEscaped bool, w htt
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateStepRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUpdateStepRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -2242,6 +2297,7 @@ func (s *Server) handleUpdateStepRequest(args [1]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "UpdateStep",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "stepID",
@@ -2356,7 +2412,9 @@ func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateTagRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUpdateTagRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -2380,6 +2438,7 @@ func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http
 			OperationSummary: "",
 			OperationID:      "UpdateTag",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "tagID",
@@ -2494,7 +2553,9 @@ func (s *Server) handleUpdateTaskRequest(args [1]string, argsEscaped bool, w htt
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateTaskRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUpdateTaskRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -2518,6 +2579,7 @@ func (s *Server) handleUpdateTaskRequest(args [1]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "UpdateTask",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "taskID",
