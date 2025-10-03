@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/minguu42/harmattan/internal/applog"
+	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 )
@@ -14,7 +14,7 @@ type Factory struct {
 	DB   *database.Client
 }
 
-func New(ctx context.Context, conf Config, logger *applog.Logger) (*Factory, error) {
+func New(ctx context.Context, conf Config, logger *alog.Logger) (*Factory, error) {
 	authn, err := auth.NewAuthenticator(conf.Auth)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create authenticator: %w", err)

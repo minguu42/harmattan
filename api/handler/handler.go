@@ -11,7 +11,7 @@ import (
 	"github.com/minguu42/harmattan/api/handler/middleware"
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
-	"github.com/minguu42/harmattan/internal/applog"
+	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
@@ -25,7 +25,7 @@ type handler struct {
 	task           usecase.Task
 }
 
-func New(f *factory.Factory, l *applog.Logger) (http.Handler, error) {
+func New(f *factory.Factory, l *alog.Logger) (http.Handler, error) {
 	h := handler{
 		UnimplementedHandler: openapi.UnimplementedHandler{},
 		authentication:       usecase.Authentication{Auth: f.Auth, DB: f.DB},
@@ -72,7 +72,7 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-func errorHandler(l *applog.Logger) func(context.Context, http.ResponseWriter, *http.Request, error) {
+func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *http.Request, error) {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
 		// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、ここでアクセスログを出力する
 		requestErr, paramsErr := new(ogenerrors.DecodeRequestError), new(ogenerrors.DecodeParamsError)
@@ -84,7 +84,7 @@ func errorHandler(l *applog.Logger) func(context.Context, http.ResponseWriter, *
 			if paramsErr != nil {
 				operationID = paramsErr.OperationID()
 			}
-			l.Access(ctx, &applog.AccessFields{
+			l.Access(ctx, &alog.AccessFields{
 				Err:         err,
 				OperationID: operationID,
 				Method:      r.Method,

@@ -11,7 +11,7 @@ import (
 
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler"
-	"github.com/minguu42/harmattan/internal/applog"
+	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
@@ -86,7 +86,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to create authenticator: %s", err)
 	}
 
-	l := applog.New(applog.LevelSilent, false)
+	l := alog.New(alog.LevelSilent, false)
 	db, err := database.NewClient(ctx, database.Config{
 		Host:            tdb.Host,
 		Port:            tdb.Port,

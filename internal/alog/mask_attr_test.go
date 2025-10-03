@@ -1,4 +1,4 @@
-package applog_test
+package alog_test
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/minguu42/harmattan/internal/applog"
+	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -56,7 +56,7 @@ func TestMaskAttr(t *testing.T) {
 
 			var buf bytes.Buffer
 			l := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-				return applog.MaskAttr(a)
+				return alog.MaskAttr(a)
 			}}))
 			l.Info("", slog.Any("test", tt.value))
 

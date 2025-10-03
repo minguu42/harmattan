@@ -14,7 +14,7 @@ import (
 
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler"
-	"github.com/minguu42/harmattan/internal/applog"
+	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/lib/env"
 )
 
@@ -27,16 +27,16 @@ func init() {
 func main() {
 	ctx := context.Background()
 
-	level := applog.Level(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
+	level := alog.Level(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
 	indent := os.Getenv("LOG_INDENT") == "true"
-	l := applog.New(level, indent)
+	l := alog.New(level, indent)
 	if err := mainRun(ctx, l); err != nil {
 		l.Error(ctx, err.Error())
 		os.Exit(1)
 	}
 }
 
-func mainRun(ctx context.Context, logger *applog.Logger) error {
+func mainRun(ctx context.Context, logger *alog.Logger) error {
 	var conf factory.Config
 	if err := env.Load(&conf); err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
