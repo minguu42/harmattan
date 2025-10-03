@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/avast/retry-go/v4"
-	"github.com/minguu42/harmattan/internal/applog"
+	"github.com/minguu42/harmattan/internal/alog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -33,7 +33,7 @@ type Config struct {
 	ConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME" default:"5m"`
 }
 
-func NewClient(ctx context.Context, conf Config, l *applog.Logger) (*Client, error) {
+func NewClient(ctx context.Context, conf Config, l *alog.Logger) (*Client, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&loc=Local&parseTime=True",
 		conf.User,
 		conf.Password,
@@ -54,7 +54,7 @@ func NewClient(ctx context.Context, conf Config, l *applog.Logger) (*Client, err
 	}
 
 	level := logger.Silent
-	if l.Level == applog.LevelDebug {
+	if l.Level == alog.LevelDebug {
 		level = logger.Info
 	}
 	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{
