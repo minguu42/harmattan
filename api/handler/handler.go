@@ -75,28 +75,29 @@ type ErrorResponse struct {
 func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *http.Request, error) {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
 		// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、ここでアクセスログを出力する
-		requestErr, paramsErr := new(ogenerrors.DecodeRequestError), new(ogenerrors.DecodeParamsError)
-		if errors.As(err, &requestErr) || errors.As(err, &paramsErr) {
-			var operationID string
-			if requestErr != nil {
-				operationID = requestErr.OperationID()
-			}
-			if paramsErr != nil {
-				operationID = paramsErr.OperationID()
-			}
-			l.Access(ctx, &alog.AccessFields{
-				Err:         err,
-				OperationID: operationID,
-				Method:      r.Method,
-				URL:         r.URL.String(),
-				IPAddress:   r.RemoteAddr,
-			})
+		var operationID string
+		if requestErr := new(ogenerrors.DecodeRequestError); errors.As(err, &requestErr) {
+			operationID = requestErr.OperationID()
+		} else if paramsErr := new(ogenerrors.DecodeParamsError); errors.As(err, &paramsErr) {
+			operationID = paramsErr.OperationID()
 		}
 
 		appErr := apperr.ToError(err)
-		w.WriteHeader(appErr.Status())
+		l.Access(ctx, &alog.AccessFields{
+			StatusCode: appErr.StatusCode(),
+			ErrorInfo: &alog.ErrorInfo{
+				ErrorMessage: appErr.Error(),
+				StackTrace:   appErr.Stacktrace(),
+			},
+			OperationID: operationID,
+			Method:      r.Method,
+			URL:         r.URL.String(),
+			IPAddress:   r.RemoteAddr,
+		})
+
+		w.WriteHeader(appErr.StatusCode())
 		bs, _ := json.Marshal(ErrorResponse{
-			Code:    appErr.Status(),
+			Code:    appErr.StatusCode(),
 			Message: appErr.Message(),
 		})
 		_, _ = w.Write(bs)

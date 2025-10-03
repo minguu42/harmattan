@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 )
 
@@ -77,8 +76,9 @@ func (l *Logger) Error(ctx context.Context, msg string) {
 }
 
 type AccessFields struct {
+	StatusCode    int
+	ErrorInfo     *ErrorInfo
 	ExecutionTime time.Duration
-	Err           error
 
 	OperationID string
 	Method      string
@@ -87,26 +87,27 @@ type AccessFields struct {
 	IPAddress   string
 }
 
+type ErrorInfo struct {
+	ErrorMessage string
+	StackTrace   []string
+}
+
 func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
 	level := slog.LevelInfo
-	attrs := make([]slog.Attr, 0, 5)
-	if fields.Err != nil {
-		err := apperr.ToError(fields.Err)
-		if 400 <= err.Status() && err.Status() < 500 {
-			level = slog.LevelWarn
-		} else {
-			level = slog.LevelError
-		}
+	switch {
+	case 400 <= fields.StatusCode && fields.StatusCode < 500:
+		level = slog.LevelWarn
+	case 500 <= fields.StatusCode && fields.StatusCode < 600:
+		level = slog.LevelError
+	}
 
-		attrs = append(attrs,
-			slog.Int("status_code", err.Status()),
-			slog.String("error_message", err.Error()),
-		)
-		if stacktrace := err.Stacktrace(); len(stacktrace) > 0 {
-			slog.Any("stacktrace", stacktrace)
+	attrs := make([]slog.Attr, 0, 5)
+	attrs = append(attrs, slog.Int("status_code", fields.StatusCode))
+	if fields.ErrorInfo != nil {
+		attrs = append(attrs, slog.String("error_message", fields.ErrorInfo.ErrorMessage))
+		if len(fields.ErrorInfo.StackTrace) != 0 {
+			attrs = append(attrs, slog.Any("stacktrace", fields.ErrorInfo.StackTrace))
 		}
-	} else {
-		attrs = append(attrs, slog.Int("status_code", 200))
 	}
 	attrs = append(attrs, slog.Int64("execution_time", fields.ExecutionTime.Milliseconds()))
 
