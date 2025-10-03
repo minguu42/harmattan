@@ -27,7 +27,7 @@ func (e Error) Stacktrace() []string {
 	return e.stacktrace
 }
 
-func (e Error) Status() int {
+func (e Error) StatusCode() int {
 	return e.status
 }
 
