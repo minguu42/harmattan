@@ -8,7 +8,6 @@ import (
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/pointers"
 )
 
 func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
@@ -67,8 +66,8 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 		TagIDs:      usecase.Option[[]domain.TagID]{V: convertSlice[domain.TagID](req.TagIds), Valid: req.TagIds != nil},
 		Content:     usecase.Option[string]{V: req.Content.Value, Valid: req.Content.Set},
 		Priority:    usecase.Option[int]{V: req.Priority.Value, Valid: req.Priority.Set},
-		DueOn:       usecase.Option[*time.Time]{V: pointers.Ternary(req.DueOn.Null, nil, &req.DueOn.Value), Valid: req.DueOn.Set},
-		CompletedAt: usecase.Option[*time.Time]{V: pointers.Ternary(req.CompletedAt.Null, nil, &req.CompletedAt.Value), Valid: req.CompletedAt.Set},
+		DueOn:       usecase.Option[*time.Time]{V: ternary(req.DueOn.Null, nil, &req.DueOn.Value), Valid: req.DueOn.Set},
+		CompletedAt: usecase.Option[*time.Time]{V: ternary(req.CompletedAt.Null, nil, &req.CompletedAt.Value), Valid: req.CompletedAt.Set},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateTask usecase: %w", err)

@@ -6,6 +6,13 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/pointers"
 )
 
+func ternary[T any](condition bool, trueVal, falseVal T) T {
+	if condition {
+		return trueVal
+	}
+	return falseVal
+}
+
 func convertSlice[T ~string](s []string) []T {
 	r := make([]T, 0, len(s))
 	for _, e := range s {
