@@ -7,12 +7,14 @@ import (
 	"net/http"
 
 	"github.com/minguu42/harmattan/internal/alog"
-	"github.com/minguu42/harmattan/internal/api/handler/middleware"
-	"github.com/minguu42/harmattan/internal/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/middleware"
+	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
+
+//go:generate go tool ogen -clean -config ../../../.ogen.yaml -package openapi -target ../openapi ../../../doc/openapi.yaml
 
 type handler struct {
 	openapi.UnimplementedHandler
