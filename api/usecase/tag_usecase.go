@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -79,12 +78,12 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.TagNotFoundError(err)
+			return nil, TagNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return nil, apperr.TagAccessDeniedError()
+		return nil, TagAccessDeniedError()
 	}
 
 	if in.Name.Valid {
@@ -107,12 +106,12 @@ func (uc *Tag) GetTag(ctx context.Context, in *GetTagInput) (*TagOutput, error) 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.TagNotFoundError(err)
+			return nil, TagNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return nil, apperr.TagAccessDeniedError()
+		return nil, TagAccessDeniedError()
 	}
 
 	return &TagOutput{Tag: t}, nil
@@ -128,12 +127,12 @@ func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.TagNotFoundError(err)
+			return TagNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return apperr.TagAccessDeniedError()
+		return TagAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteTagByID(ctx, t.ID); err != nil {

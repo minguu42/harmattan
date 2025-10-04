@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -41,7 +40,7 @@ type SignUpOutput struct {
 
 func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpOutput, error) {
 	if _, err := uc.DB.GetUserByEmail(ctx, in.Email); !errors.Is(err, database.ErrModelNotFound) {
-		return nil, apperr.DuplicateUserEmailError(err)
+		return nil, DuplicateUserEmailError(err)
 	}
 
 	user, err := in.User(ctx)
@@ -73,13 +72,13 @@ func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInO
 	user, err := uc.DB.GetUserByEmail(ctx, in.Email)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.InvalidEmailOrPasswordError(err)
+			return nil, InvalidEmailOrPasswordError(err)
 		}
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(in.Password)); err != nil {
-		return nil, apperr.InvalidEmailOrPasswordError(err)
+		return nil, InvalidEmailOrPasswordError(err)
 	}
 
 	token, err := uc.Auth.CreateIDToken(ctx, user.ID)

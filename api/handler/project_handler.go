@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -14,7 +13,7 @@ func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectR
 	var errs []error
 	errs = append(errs, validateProjectName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.project.CreateProject(ctx, &usecase.CreateProjectInput{
@@ -57,7 +56,7 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 		errs = append(errs, validateProjectName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.project.UpdateProject(ctx, &usecase.UpdateProjectInput{

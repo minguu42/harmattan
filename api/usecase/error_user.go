@@ -1,4 +1,4 @@
-package apperr
+package usecase
 
 import (
 	"errors"

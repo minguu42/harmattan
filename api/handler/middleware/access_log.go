@@ -3,7 +3,7 @@ package middleware
 import (
 	"time"
 
-	"github.com/minguu42/harmattan/api/apperr"
+	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/ogen-go/ogen/middleware"
@@ -21,8 +21,8 @@ func AccessLog(l *alog.Logger) middleware.Middleware {
 
 		resp, err := next(req)
 		if err != nil {
-			appErr := apperr.ToError(err)
-			status = appErr.StatusCode()
+			appErr := usecase.ToError(err)
+			status = appErr.Status()
 			errorInfo = &alog.ErrorInfo{
 				ErrorMessage: appErr.Error(),
 				StackTrace:   appErr.Stacktrace(),
@@ -30,7 +30,7 @@ func AccessLog(l *alog.Logger) middleware.Middleware {
 		}
 
 		l.Access(req.Context, &alog.AccessFields{
-			StatusCode:    status,
+			Status:        status,
 			ErrorInfo:     errorInfo,
 			ExecutionTime: time.Since(start),
 			OperationID:   req.OperationID,

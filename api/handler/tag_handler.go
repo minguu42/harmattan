@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -14,7 +13,7 @@ func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*op
 	var errs []error
 	errs = append(errs, validateTagName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.tag.CreateTag(ctx, &usecase.CreateTagInput{Name: req.Name})
@@ -44,7 +43,7 @@ func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 		errs = validateTagName(name)
 	}
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.tag.UpdateTag(ctx, &usecase.UpdateTagInput{

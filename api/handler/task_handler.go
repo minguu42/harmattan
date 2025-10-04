@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -16,7 +15,7 @@ func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 	var errs []error
 	errs = append(errs, validateTaskName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.task.CreateTask(ctx, &usecase.CreateTaskInput{
@@ -59,7 +58,7 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 		errs = append(errs, validateTaskName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.task.UpdateTask(ctx, &usecase.UpdateTaskInput{

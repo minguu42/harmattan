@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -80,12 +79,12 @@ func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*Projec
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ProjectAccessDeniedError()
+		return nil, ProjectAccessDeniedError()
 	}
 
 	return &ProjectOutput{Project: p}, nil
@@ -104,12 +103,12 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ProjectAccessDeniedError()
+		return nil, ProjectAccessDeniedError()
 	}
 
 	if in.Name.Valid {
@@ -138,12 +137,12 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.ProjectNotFoundError(err)
+			return ProjectNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return apperr.ProjectAccessDeniedError()
+		return ProjectAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {

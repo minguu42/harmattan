@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -33,12 +32,12 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.TaskNotFoundError(err)
+			return nil, TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, apperr.TaskAccessDeniedError()
+		return nil, TaskAccessDeniedError()
 	}
 
 	now := clock.Now(ctx)
@@ -69,12 +68,12 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.StepNotFoundError(err)
+			return nil, StepNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return nil, apperr.StepAccessDeniedError()
+		return nil, StepAccessDeniedError()
 	}
 
 	if in.Name.Valid {
@@ -101,12 +100,12 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.StepNotFoundError(err)
+			return StepNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return apperr.StepAccessDeniedError()
+		return StepAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/factory"
 	"github.com/minguu42/harmattan/api/handler/middleware"
 	"github.com/minguu42/harmattan/api/handler/openapi"
@@ -82,9 +81,9 @@ func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *ht
 			operationID = paramsErr.OperationID()
 		}
 
-		appErr := apperr.ToError(err)
+		appErr := usecase.ToError(err)
 		l.Access(ctx, &alog.AccessFields{
-			StatusCode: appErr.StatusCode(),
+			Status: appErr.Status(),
 			ErrorInfo: &alog.ErrorInfo{
 				ErrorMessage: appErr.Error(),
 				StackTrace:   appErr.Stacktrace(),
@@ -95,9 +94,9 @@ func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *ht
 			IPAddress:   r.RemoteAddr,
 		})
 
-		w.WriteHeader(appErr.StatusCode())
+		w.WriteHeader(appErr.Status())
 		bs, _ := json.Marshal(ErrorResponse{
-			Code:    appErr.StatusCode(),
+			Code:    appErr.Status(),
 			Message: appErr.Message(),
 		})
 		_, _ = w.Write(bs)

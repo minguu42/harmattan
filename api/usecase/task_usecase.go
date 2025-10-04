@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -35,12 +34,12 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ProjectAccessDeniedError()
+		return nil, ProjectAccessDeniedError()
 	}
 
 	now := clock.Now(ctx)
@@ -77,12 +76,12 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, apperr.ProjectAccessDeniedError()
+		return nil, ProjectAccessDeniedError()
 	}
 
 	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset)
@@ -113,12 +112,12 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.TaskNotFoundError(err)
+			return nil, TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, apperr.TaskAccessDeniedError()
+		return nil, TaskAccessDeniedError()
 	}
 
 	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
@@ -144,12 +143,12 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, apperr.TaskNotFoundError(err)
+			return nil, TaskNotFoundError(err)
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, apperr.TaskAccessDeniedError()
+		return nil, TaskAccessDeniedError()
 	}
 
 	if in.Name.Valid {
@@ -204,12 +203,12 @@ func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return apperr.TaskNotFoundError(err)
+			return TaskNotFoundError(err)
 		}
 		return fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return apperr.TaskAccessDeniedError()
+		return TaskAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteTaskByID(ctx, task.ID); err != nil {
