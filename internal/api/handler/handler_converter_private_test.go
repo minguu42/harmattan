@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/api/openapi"
-	"github.com/minguu42/harmattan/internal/lib/pointers"
+	"github.com/minguu42/harmattan/internal/lib/ptr"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +32,7 @@ func TestConvertOptDateTime(t *testing.T) {
 	}{
 		{t: nil, want: openapi.OptDateTime{}},
 		{
-			t: pointers.Ref(time.Date(2025, 1, 2, 15, 4, 5, 0, time.Local)),
+			t: ptr.Ref(time.Date(2025, 1, 2, 15, 4, 5, 0, time.Local)),
 			want: openapi.OptDateTime{
 				Value: time.Date(2025, 1, 2, 15, 4, 5, 0, time.Local),
 				Set:   true,
@@ -52,7 +52,7 @@ func TestConvertOptDate(t *testing.T) {
 	}{
 		{t: nil, want: openapi.OptDate{}},
 		{
-			t: pointers.Ref(time.Date(2025, 1, 2, 0, 0, 0, 0, time.Local)),
+			t: ptr.Ref(time.Date(2025, 1, 2, 0, 0, 0, 0, time.Local)),
 			want: openapi.OptDate{
 				Value: time.Date(2025, 1, 2, 0, 0, 0, 0, time.Local),
 				Set:   true,
