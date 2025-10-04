@@ -3,10 +3,10 @@ services:
     image: harmattan-api-dev
     build:
       context: .
-      dockerfile: ./api/Dockerfile
+      dockerfile: cmd/api/Dockerfile
       target: local
     container_name: harmattan-api
-    env_file: ./api/.env
+    env_file: cmd/api/.env
     ports:
       - "127.0.0.1:8080:8080"
     volumes:

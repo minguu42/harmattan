@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
       -ldflags "-s -w" \
       -trimpath \
       -o /go/bin/myapp \
-      ./api
+      ./cmd/api
 
 FROM gcr.io/distroless/static-debian12:nonroot AS prod
 COPY --chown=nonroot:nonroot --from=build /go/bin/myapp /

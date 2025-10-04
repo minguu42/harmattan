@@ -27,7 +27,7 @@ test: ## テストを実行する
 
 .PHONY: build
 build: ## 本番環境向けのコンテナイメージをビルドする
-	@docker image build --file=./api/Dockerfile --tag=harmattan-api:latest --target=prod .
+	@docker image build --file=./cmd/api/Dockerfile --tag=harmattan-api:$$(git rev-parse main) --target=prod .
 
 .PHONY: help
 help: ## ヘルプを表示する

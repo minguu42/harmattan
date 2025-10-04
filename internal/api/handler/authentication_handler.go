@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/handler/openapi"
-	"github.com/minguu42/harmattan/api/usecase"
+	"github.com/minguu42/harmattan/internal/api/handler/openapi"
+	usecase2 "github.com/minguu42/harmattan/internal/api/usecase"
 )
 
 func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.SignUpOK, error) {
@@ -13,10 +13,10 @@ func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, usecase2.DomainValidationError(errs)
 	}
 
-	out, err := h.authentication.SignUp(ctx, &usecase.SignUpInput{
+	out, err := h.authentication.SignUp(ctx, &usecase2.SignUpInput{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -31,10 +31,10 @@ func (h *handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, usecase2.DomainValidationError(errs)
 	}
 
-	out, err := h.authentication.SignIn(ctx, &usecase.SignInInput{
+	out, err := h.authentication.SignIn(ctx, &usecase2.SignInInput{
 		Email:    req.Email,
 		Password: req.Password,
 	})

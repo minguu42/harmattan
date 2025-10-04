@@ -6,45 +6,45 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/minguu42/harmattan/api/factory"
-	"github.com/minguu42/harmattan/api/handler/middleware"
-	"github.com/minguu42/harmattan/api/handler/openapi"
-	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/alog"
+	middleware2 "github.com/minguu42/harmattan/internal/api/handler/middleware"
+	openapi2 "github.com/minguu42/harmattan/internal/api/handler/openapi"
+	usecase2 "github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 
 type handler struct {
-	openapi.UnimplementedHandler
-	authentication usecase.Authentication
-	monitoring     usecase.Monitoring
-	project        usecase.Project
-	step           usecase.Step
-	tag            usecase.Tag
-	task           usecase.Task
+	openapi2.UnimplementedHandler
+	authentication usecase2.Authentication
+	monitoring     usecase2.Monitoring
+	project        usecase2.Project
+	step           usecase2.Step
+	tag            usecase2.Tag
+	task           usecase2.Task
 }
 
 func New(f *factory.Factory, l *alog.Logger) (http.Handler, error) {
 	h := handler{
-		UnimplementedHandler: openapi.UnimplementedHandler{},
-		authentication:       usecase.Authentication{Auth: f.Auth, DB: f.DB},
-		monitoring:           usecase.Monitoring{},
-		project:              usecase.Project{DB: f.DB},
-		step:                 usecase.Step{DB: f.DB},
-		tag:                  usecase.Tag{DB: f.DB},
-		task:                 usecase.Task{DB: f.DB},
+		UnimplementedHandler: openapi2.UnimplementedHandler{},
+		authentication:       usecase2.Authentication{Auth: f.Auth, DB: f.DB},
+		monitoring:           usecase2.Monitoring{},
+		project:              usecase2.Project{DB: f.DB},
+		step:                 usecase2.Step{DB: f.DB},
+		tag:                  usecase2.Tag{DB: f.DB},
+		task:                 usecase2.Task{DB: f.DB},
 	}
 	sh := securityHandler{auth: f.Auth, db: f.DB}
-	middlewares := []openapi.Middleware{
-		middleware.AttachRequestIDToLogger(l),
-		middleware.AccessLog(l),
-		middleware.Recover(),
+	middlewares := []openapi2.Middleware{
+		middleware2.AttachRequestIDToLogger(l),
+		middleware2.AccessLog(l),
+		middleware2.Recover(),
 	}
-	return openapi.NewServer(&h, &sh,
-		openapi.WithNotFound(notFound),
-		openapi.WithMethodNotAllowed(methodNotAllowed),
-		openapi.WithErrorHandler(errorHandler(l)),
-		openapi.WithMiddleware(middlewares...),
+	return openapi2.NewServer(&h, &sh,
+		openapi2.WithNotFound(notFound),
+		openapi2.WithMethodNotAllowed(methodNotAllowed),
+		openapi2.WithErrorHandler(errorHandler(l)),
+		openapi2.WithMiddleware(middlewares...),
 	)
 }
 
@@ -81,7 +81,7 @@ func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *ht
 			operationID = paramsErr.OperationID()
 		}
 
-		appErr := usecase.ToError(err)
+		appErr := usecase2.ToError(err)
 		l.Access(ctx, &alog.AccessFields{
 			Status: appErr.Status(),
 			ErrorInfo: &alog.ErrorInfo{

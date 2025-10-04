@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/integrate-api.yaml
-      - "api/**"
+      - "cmd/api/**"
       - "internal/**"
       - go.mod
       - go.sum
@@ -28,7 +28,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Format code
-        run: go tool goimports -w ./api ./internal
+        run: go tool goimports -w ./cmd/api ./internal
       - name: Check for changes
         run: git diff --exit-code
   check-generated-code:
@@ -44,7 +44,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Generate code
-        run: go generate ./api/... ./internal/...
+        run: go generate ./cmd/api/... ./internal/...
       - name: Check for changes
         run: |
           git add -N .
@@ -63,8 +63,8 @@ jobs:
           go-version-file: go.mod
       - name: Run linting
         run: |
-          go vet ./api/... ./internal/...
-          go tool staticcheck ./api/... ./internal/...
+          go vet ./cmd/api/... ./internal/...
+          go tool staticcheck ./cmd/api/... ./internal/...
   build:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
@@ -78,7 +78,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Build
-        run: go build -o ./bin/api ./api
+        run: go build -o ./bin/api ./cmd/api
   test:
     needs: [build]
     runs-on: ubuntu-24.04-arm
@@ -93,7 +93,7 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Run tests
-        run: go test -shuffle=on ./api/... ./internal/...
+        run: go test -shuffle=on ./cmd/api/... ./internal/...
   build-container-image:
     needs: [build]
     runs-on: ubuntu-24.04-arm
@@ -109,7 +109,7 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
-          file: ./api/Dockerfile
+          file: ./cmd/api/Dockerfile
           provenance: false
           tags: ${{ github.event.pull_request.number }}
           target: prod

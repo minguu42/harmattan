@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/harmattan/api/factory"
-	"github.com/minguu42/harmattan/api/handler"
 	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
+	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
