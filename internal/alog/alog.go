@@ -76,7 +76,7 @@ func (l *Logger) Error(ctx context.Context, msg string) {
 }
 
 type AccessFields struct {
-	StatusCode    int
+	Status        int
 	ErrorInfo     *ErrorInfo
 	ExecutionTime time.Duration
 
@@ -95,14 +95,14 @@ type ErrorInfo struct {
 func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
 	level := slog.LevelInfo
 	switch {
-	case 400 <= fields.StatusCode && fields.StatusCode < 500:
+	case 400 <= fields.Status && fields.Status < 500:
 		level = slog.LevelWarn
-	case 500 <= fields.StatusCode && fields.StatusCode < 600:
+	case 500 <= fields.Status && fields.Status < 600:
 		level = slog.LevelError
 	}
 
 	attrs := make([]slog.Attr, 0, 5)
-	attrs = append(attrs, slog.Int("status_code", fields.StatusCode))
+	attrs = append(attrs, slog.Int("status_code", fields.Status))
 	if fields.ErrorInfo != nil {
 		attrs = append(attrs, slog.String("error_message", fields.ErrorInfo.ErrorMessage))
 		if len(fields.ErrorInfo.StackTrace) != 0 {

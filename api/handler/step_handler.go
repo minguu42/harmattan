@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -16,7 +15,7 @@ func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, pa
 	var errs []error
 	errs = append(errs, validateStepName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.step.CreateStep(ctx, &usecase.CreateStepInput{
@@ -35,7 +34,7 @@ func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, pa
 		errs = append(errs, validateStepName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.step.UpdateStep(ctx, &usecase.UpdateStepInput{

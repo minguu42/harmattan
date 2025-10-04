@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/apperr"
 	"github.com/minguu42/harmattan/api/handler/openapi"
 	"github.com/minguu42/harmattan/api/usecase"
 )
@@ -14,7 +13,7 @@ func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.authentication.SignUp(ctx, &usecase.SignUpInput{
@@ -32,7 +31,7 @@ func (h *handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, apperr.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
 	out, err := h.authentication.SignIn(ctx, &usecase.SignInInput{

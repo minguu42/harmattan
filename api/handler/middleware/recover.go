@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/minguu42/harmattan/api/apperr"
+	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/ogen-go/ogen/middleware"
 )
 
@@ -39,7 +39,7 @@ func Recover() middleware.Middleware {
 					funcName := fullFuncName[strings.LastIndex(fullFuncName, "/")+1:]
 					stacktrace = append(stacktrace, fmt.Sprintf("%s:%d %s", file, line, funcName))
 				}
-				err = apperr.PanicError(errors.New(message), stacktrace)
+				err = usecase.PanicError(errors.New(message), stacktrace)
 			}
 		}()
 
