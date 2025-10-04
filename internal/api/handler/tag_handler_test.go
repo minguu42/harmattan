@@ -6,7 +6,7 @@ import (
 
 	"github.com/ikawaha/httpcheck"
 	"github.com/minguu42/harmattan/internal/api/handler"
-	"github.com/minguu42/harmattan/internal/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/stretchr/testify/require"
 )

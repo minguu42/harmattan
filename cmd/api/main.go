@@ -18,8 +18,6 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/env"
 )
 
-//go:generate go tool ogen -clean -config ../../.ogen.yaml -package openapi -target ../../internal/api/handler/openapi ../../doc/openapi.yaml
-
 func init() {
 	time.Local = time.FixedZone("JST", 9*60*60)
 }
