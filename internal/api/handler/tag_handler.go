@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/minguu42/harmattan/api/handler/openapi"
-	"github.com/minguu42/harmattan/api/usecase"
+	"github.com/minguu42/harmattan/internal/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 )
 

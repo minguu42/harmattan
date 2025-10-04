@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/ikawaha/httpcheck"
-	"github.com/minguu42/harmattan/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/handler/openapi"
 )
 
 func TestHandler_CheckHealth(t *testing.T) {

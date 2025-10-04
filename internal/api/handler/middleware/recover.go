@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/minguu42/harmattan/api/usecase"
+	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/ogen-go/ogen/middleware"
 )
 

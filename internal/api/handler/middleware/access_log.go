@@ -3,8 +3,8 @@ package middleware
 import (
 	"time"
 
-	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/ogen-go/ogen/middleware"
 )

@@ -4,8 +4,9 @@
 .ogen.yaml
 .private/
 .vscode/
-api/Dockerfile
+Dockerfile
 compose.yaml
+doc/
 infra/
 staticcheck.conf
 

@@ -6,11 +6,11 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/minguu42/harmattan/api/factory"
-	"github.com/minguu42/harmattan/api/handler/middleware"
-	"github.com/minguu42/harmattan/api/handler/openapi"
-	"github.com/minguu42/harmattan/api/usecase"
 	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/api/handler/middleware"
+	"github.com/minguu42/harmattan/internal/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/minguu42/harmattan/api/handler/openapi"
-	"github.com/minguu42/harmattan/api/usecase"
+	"github.com/minguu42/harmattan/internal/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/pointers"
 )

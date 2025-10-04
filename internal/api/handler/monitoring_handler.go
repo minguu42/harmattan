@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/minguu42/harmattan/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/handler/openapi"
 )
 
 func (h *handler) CheckHealth(_ context.Context) (*openapi.CheckHealthOK, error) {

@@ -12,13 +12,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minguu42/harmattan/api/factory"
-	"github.com/minguu42/harmattan/api/handler"
 	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/api/handler"
+	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/env"
 )
 
-//go:generate go tool ogen -clean -config ../.ogen.yaml -package openapi -target ./handler/openapi openapi.yaml
+//go:generate go tool ogen -clean -config ../../.ogen.yaml -package openapi -target ../../internal/api/handler/openapi ../../doc/openapi.yaml
 
 func init() {
 	time.Local = time.FixedZone("JST", 9*60*60)

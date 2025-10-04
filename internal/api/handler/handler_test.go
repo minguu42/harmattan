@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/ikawaha/httpcheck"
-	"github.com/minguu42/harmattan/api/handler"
+	"github.com/minguu42/harmattan/internal/api/handler"
 )
 
 func TestHandler_NotFound(t *testing.T) {
