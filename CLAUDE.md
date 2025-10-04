@@ -8,76 +8,97 @@ Harmattan is a Go-based REST API service that provides authentication and projec
 
 ## Key Architecture
 
-- **API Layer**: `api/` contains the main application entry point, handlers, and usecases
-- **Domain Layer**: `internal/domain/` contains core business entities (Project, User)
-- **Database Layer**: `internal/database/` contains database access logic using GORM
-- **Generated Code**: `internal/openapi/` contains auto-generated OpenAPI client/server code
-- **Shared Libraries**: `internal/lib/` contains reusable utilities (clock, ID generation, etc.)
+- **cmd/api/**: Main application entry point
+- **doc/**: API documentation including OpenAPI specification
+- **infra/**: Infrastructure configuration (MySQL, etc.)
+- **internal/**: Private application and library code
+  - **api/**: API layer components
+    - **handler/**: HTTP request handlers
+    - **middleware/**: HTTP middleware
+    - **openapi/**: Auto-generated OpenAPI client/server code
+    - **usecase/**: Business logic layer
+  - **auth/**: Authentication logic
+  - **database/**: Database access layer using GORM
+    - **databasetest/**: Test utilities for database testing
+  - **domain/**: Core business entities (Project, Task, Step, Tag, User)
+  - **factory/**: Dependency injection and initialization
+  - **lib/**: Shared utility libraries
+    - **alog/**: Application logging (slog wrapper)
+    - **clock/**: Time utilities with testable interface
+    - **env/**: Environment variable loading
+    - **idgen/**: ID generation (ULID-based)
+    - **ptr/**: Pointer utilities
 
 ## Core Commands
 
-### Code Generation
 ```bash
-# Generate OpenAPI code from spec (run from api/ directory)
+# Generate OpenAPI code
 go generate ./...
-```
 
-### Build & Run
-```bash
 # Build the API server
-go build -o bin/api ./api
+go build -o /dev/null ./cmd/api
 
-# Run the API server
-go run ./api/main.go
-```
-
-### Testing
-```bash
-# Run all tests
-go test ./...
+# Run all tests with shuffling
+go test -shuffle=on ./...
 
 # Run tests with coverage
 go test -cover ./...
 
-# Run tests for a specific package
-go test ./internal/lib/clock
-```
-
-### Linting & Code Quality
-```bash
-# Run staticcheck (configured in staticcheck.conf)
-go tool staticcheck ./...
-
 # Format code
 go tool goimports -w .
+
+# Run linters
+go vet ./...
+go tool staticcheck ./...
 ```
 
 ## OpenAPI Integration
 
 The project uses ogen for OpenAPI code generation:
-- API specification: `api/openapi.yaml`
-- Generated code: `internal/openapi/`
-- Code generation command is in `api/main.go` via `//go:generate`
+- **API specification**: `doc/openapi.yaml`
+- **Generated code**: `internal/api/openapi/`
+- **Code generation directive**: In `internal/api/handler/handler.go`
+- **Configuration**: `.ogen.yaml` specifies generator options
+- Generate with: `go generate ./...`
 
 ## Testing Architecture
 
-- Uses testify for assertions and test utilities
-- Custom test helpers in `internal/lib/` packages (clocktest, databasetest, idgentest)
-- Database tests use testcontainers for integration testing
-- HTTP tests use ikawaha/httpcheck for API testing
+- **Testing framework**: testify for assertions and test utilities
+- **Integration testing**: testcontainers for MySQL integration tests
+- **HTTP testing**: ikawaha/httpcheck for API endpoint testing
+- **Test utilities**:
+  - `internal/lib/clock`: Testable time interface
+  - `internal/lib/idgen`: Testable ID generation
+  - `internal/database/databasetest`: Database test helpers
+- Run tests with: `go test -shuffle=on ./...`
 
 ## Key Dependencies
 
-- **Web Framework**: Uses generated ogen server code
-- **Database**: GORM with MySQL driver
-- **Authentication**: JWT via golang-jwt/jwt
+- **Go version**: 1.25.0
+- **Web framework**: ogen-generated server code
+- **Database**: GORM v1.31+ with MySQL driver
+- **Authentication**: JWT via golang-jwt/jwt v5
+- **Logging**: slog (standard library) with custom wrapper (alog)
 - **Testing**: testify, testcontainers, httpcheck
-- **Logging**: Custom applog wrapper
+- **ID generation**: ULID via oklog/ulid with custom wrapper (idgen)
 
 ## Development Notes
 
-- Timezone is set to JST (Japan Standard Time) in main.go
-- Uses ULID for ID generation
-- Custom middleware for access logging, recovery, and request ID context
-- Database models use GORM conventions
-- Authentication uses JWT with custom security handler
+- **Timezone**: Set to JST (Japan Standard Time) in `cmd/api/main.go`
+- **ID generation**: Uses ULID for all entity IDs
+- **Logging**: Structured JSON logging via `alog` package (slog wrapper)
+  - Configurable via `LOG_LEVEL` (debug/info/silent) and `LOG_INDENT` env vars
+- **Middleware**: Custom middleware for access logging, recovery, and request ID context
+- **Database**: GORM conventions with MySQL
+- **Authentication**: JWT-based with custom security handler
+- **Error handling**: Centralized error types in `internal/api/usecase/error*.go`
+  - System errors: ValidationError, AuthorizationError, etc.
+  - User-facing errors: DomainValidationError, ProjectNotFoundError, etc.
+
+## Code Style
+
+- No unnecessary code comments (self-documenting code preferred)
+- Use generics where appropriate (e.g., `ptr.Ref[T]`, `ternary[T]`)
+- Private helper functions for type conversions
+- Consistent naming: `convert*` for type conversions, `validate*` for validation
+- Domain-specific utilities over generic ones
