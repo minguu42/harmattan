@@ -7,7 +7,7 @@ RUN --mount=type=bind,source=go.mod,target=go.mod \
     --mount=type=bind,source=go.sum,target=go.sum \
     go mod download
 
-CMD ["air", "-c", "./api/.air.toml"]
+CMD ["air", "-c", "./cmd/api/.air.toml"]
 
 FROM golang:1.25.0 AS build
 WORKDIR /go/src/myapp
