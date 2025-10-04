@@ -14,7 +14,7 @@ require (
 	github.com/go-faster/jx v1.1.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/ikawaha/httpcheck v1.12.5
-	github.com/ogen-go/ogen v1.15.1
+	github.com/ogen-go/ogen v1.15.2
 	github.com/oklog/ulid/v2 v2.1.1
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.39.0
