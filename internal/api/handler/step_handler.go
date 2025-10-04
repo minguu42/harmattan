@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"time"
 
-	openapi2 "github.com/minguu42/harmattan/internal/api/handler/openapi"
-	usecase2 "github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/api/handler/openapi"
+	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/pointers"
 )
 
-func (h *handler) CreateStep(ctx context.Context, req *openapi2.CreateStepReq, params openapi2.CreateStepParams) (*openapi2.Step, error) {
+func (h *handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, params openapi.CreateStepParams) (*openapi.Step, error) {
 	var errs []error
 	errs = append(errs, validateStepName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, usecase2.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.step.CreateStep(ctx, &usecase2.CreateStepInput{
+	out, err := h.step.CreateStep(ctx, &usecase.CreateStepInput{
 		TaskID: domain.TaskID(params.TaskID),
 		Name:   req.Name,
 	})
@@ -28,19 +28,19 @@ func (h *handler) CreateStep(ctx context.Context, req *openapi2.CreateStepReq, p
 	return convertStep(out.Step), nil
 }
 
-func (h *handler) UpdateStep(ctx context.Context, req *openapi2.UpdateStepReq, params openapi2.UpdateStepParams) (*openapi2.Step, error) {
+func (h *handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, params openapi.UpdateStepParams) (*openapi.Step, error) {
 	var errs []error
 	if name, ok := req.Name.Get(); ok {
 		errs = append(errs, validateStepName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, usecase2.DomainValidationError(errs)
+		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.step.UpdateStep(ctx, &usecase2.UpdateStepInput{
+	out, err := h.step.UpdateStep(ctx, &usecase.UpdateStepInput{
 		ID:          domain.StepID(params.StepID),
-		Name:        usecase2.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
-		CompletedAt: usecase2.Option[*time.Time]{V: pointers.Ternary(req.CompletedAt.Null, nil, &req.CompletedAt.Value), Valid: req.CompletedAt.Set},
+		Name:        usecase.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
+		CompletedAt: usecase.Option[*time.Time]{V: pointers.Ternary(req.CompletedAt.Null, nil, &req.CompletedAt.Value), Valid: req.CompletedAt.Set},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute UpdateStep usecase: %w", err)
@@ -48,8 +48,8 @@ func (h *handler) UpdateStep(ctx context.Context, req *openapi2.UpdateStepReq, p
 	return convertStep(out.Step), nil
 }
 
-func (h *handler) DeleteStep(ctx context.Context, params openapi2.DeleteStepParams) error {
-	if err := h.step.DeleteStep(ctx, &usecase2.DeleteStepInput{ID: domain.StepID(params.StepID)}); err != nil {
+func (h *handler) DeleteStep(ctx context.Context, params openapi.DeleteStepParams) error {
+	if err := h.step.DeleteStep(ctx, &usecase.DeleteStepInput{ID: domain.StepID(params.StepID)}); err != nil {
 		return fmt.Errorf("failed to execute DeleteStep usecase: %w", err)
 	}
 	return nil
