@@ -54,7 +54,7 @@ func TestMain(m *testing.M) {
 	}()
 
 	_, f, _, _ := runtime.Caller(0)
-	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "infra", "mysql", "schema.sql")); err != nil {
+	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql")); err != nil {
 		log.Fatalf("failed to migrate test db: %s", err)
 	}
 
