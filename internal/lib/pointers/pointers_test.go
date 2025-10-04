@@ -21,17 +21,3 @@ func TestRef(t *testing.T) {
 		assert.Equal(t, v, *p)
 	}
 }
-
-func TestOrZero(t *testing.T) {
-	tests := []struct {
-		v    *int
-		want int
-	}{
-		{v: pointers.Ref(1), want: 1},
-		{v: nil, want: 0},
-	}
-	for _, tt := range tests {
-		got := pointers.OrZero(tt.v)
-		assert.Equal(t, tt.want, got)
-	}
-}

@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/pointers"
 )
 
 func ternary[T any](condition bool, trueVal, falseVal T) T {
@@ -11,6 +12,20 @@ func ternary[T any](condition bool, trueVal, falseVal T) T {
 		return trueVal
 	}
 	return falseVal
+}
+
+func convertOptDate(t *time.Time) openapi.OptDate {
+	if t != nil {
+		return openapi.OptDate{Value: *t, Set: true}
+	}
+	return openapi.OptDate{}
+}
+
+func convertOptDateTime(t *time.Time) openapi.OptDateTime {
+	if t != nil {
+		return openapi.OptDateTime{Value: *t, Set: true}
+	}
+	return openapi.OptDateTime{}
 }
 
 func convertSlice[T ~string](s []string) []T {
@@ -45,7 +60,7 @@ func convertStep(s *domain.Step) *openapi.Step {
 		ID:          string(s.ID),
 		TaskID:      string(s.TaskID),
 		Name:        s.Name,
-		CompletedAt: openapi.OptDateTime{Value: pointers.OrZero(s.CompletedAt), Set: s.CompletedAt != nil},
+		CompletedAt: convertOptDateTime(s.CompletedAt),
 		CreatedAt:   s.CreatedAt,
 		UpdatedAt:   s.UpdatedAt,
 	}
@@ -83,8 +98,8 @@ func convertTask(task *domain.Task, tags domain.Tags) *openapi.Task {
 		Name:        task.Name,
 		Content:     task.Content,
 		Priority:    task.Priority,
-		DueOn:       openapi.OptDate{Value: pointers.OrZero(task.DueOn), Set: task.DueOn != nil},
-		CompletedAt: openapi.OptDateTime{Value: pointers.OrZero(task.CompletedAt), Set: task.CompletedAt != nil},
+		DueOn:       convertOptDate(task.DueOn),
+		CompletedAt: convertOptDateTime(task.CompletedAt),
 		CreatedAt:   task.CreatedAt,
 		UpdatedAt:   task.UpdatedAt,
 		Steps:       convertSteps(task.Steps),
