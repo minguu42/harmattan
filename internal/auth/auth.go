@@ -75,5 +75,8 @@ func UserFromContext(ctx context.Context) (*domain.User, bool) {
 }
 
 func MustUserFromContext(ctx context.Context) *domain.User {
-	return ctx.Value(userKey{}).(*domain.User)
+	if u, ok := ctx.Value(userKey{}).(*domain.User); ok {
+		return u
+	}
+	panic("user not found in context")
 }
