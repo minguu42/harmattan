@@ -745,8 +745,8 @@ func decodeGetTaskParams(args [1]string, argsEscaped bool, r *http.Request) (par
 
 // ListProjectsParams is parameters of ListProjects operation.
 type ListProjectsParams struct {
-	Limit  OptInt
-	Offset OptInt
+	Limit  OptInt `json:",omitempty,omitzero"`
+	Offset OptInt `json:",omitempty,omitzero"`
 }
 
 func unpackListProjectsParams(packed middleware.Parameters) (params ListProjectsParams) {
@@ -918,8 +918,8 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 
 // ListTagsParams is parameters of ListTags operation.
 type ListTagsParams struct {
-	Limit  OptInt
-	Offset OptInt
+	Limit  OptInt `json:",omitempty,omitzero"`
+	Offset OptInt `json:",omitempty,omitzero"`
 }
 
 func unpackListTagsParams(packed middleware.Parameters) (params ListTagsParams) {
@@ -1091,8 +1091,8 @@ func decodeListTagsParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 
 // ListTasksParams is parameters of ListTasks operation.
 type ListTasksParams struct {
-	Limit     OptInt
-	Offset    OptInt
+	Limit     OptInt `json:",omitempty,omitzero"`
+	Offset    OptInt `json:",omitempty,omitzero"`
 	ProjectID string
 }
 
