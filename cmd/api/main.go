@@ -16,6 +16,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/env"
+	"github.com/minguu42/harmattan/internal/lib/errorsx"
 )
 
 func init() {
@@ -34,7 +35,7 @@ func main() {
 	}
 }
 
-func mainRun(ctx context.Context, logger *alog.Logger) error {
+func mainRun(ctx context.Context, logger *alog.Logger) (err error) {
 	var conf factory.Config
 	if err := env.Load(&conf); err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
@@ -44,7 +45,7 @@ func mainRun(ctx context.Context, logger *alog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("failed to create factory: %w", err)
 	}
-	defer f.Close()
+	defer errorsx.Capture(&err, f.Close)
 
 	h, err := handler.New(f, logger)
 	if err != nil {
