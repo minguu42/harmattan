@@ -31,6 +31,9 @@ func New(ctx context.Context, conf Config, logger *alog.Logger) (*Factory, error
 	}, nil
 }
 
-func (f *Factory) Close() {
-	_ = f.DB.Close()
+func (f *Factory) Close() error {
+	if err := f.DB.Close(); err != nil {
+		return fmt.Errorf("failed to close database: %w", err)
+	}
+	return nil
 }
