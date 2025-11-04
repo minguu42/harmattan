@@ -16,6 +16,7 @@ import (
 	"github.com/minguu42/harmattan/internal/database/databasetest"
 	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/errcapture"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
@@ -47,11 +48,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("failed to create mysql client: %s", err)
 	}
-	defer func() {
-		if err := tdb.Close(ctx); err != nil {
-			log.Fatalf("failed to close database test client: %s", err)
-		}
-	}()
+	defer errcapture.Fatal(func() error { return tdb.Close(ctx) })
 
 	_, f, _, _ := runtime.Caller(0)
 	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql")); err != nil {
@@ -100,11 +97,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("failed to create database client: %s", err)
 	}
-	defer func() {
-		if err := db.Close(); err != nil {
-			log.Fatalf("failed to close database client: %s", err)
-		}
-	}()
+	defer errcapture.Fatal(func() error { return tdb.Close(ctx) })
 
 	h, err := handler.New(&factory.Factory{
 		Auth: authn,

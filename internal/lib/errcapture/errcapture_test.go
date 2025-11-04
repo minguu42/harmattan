@@ -1,16 +1,16 @@
-package errorsx_test
+package errcapture_test
 
 import (
 	"errors"
 	"os"
 	"testing"
 
-	"github.com/minguu42/harmattan/internal/lib/errorsx"
+	"github.com/minguu42/harmattan/internal/lib/errcapture"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestCapture(t *testing.T) {
+func TestDo(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -24,8 +24,8 @@ func TestCapture(t *testing.T) {
 		},
 		{
 			err:  nil,
-			f:    func() error { return errors.New("new error") },
-			want: "new error",
+			f:    func() error { return errors.New("f error") },
+			want: "f error",
 		},
 		{
 			err:  errors.New("some error"),
@@ -34,8 +34,8 @@ func TestCapture(t *testing.T) {
 		},
 		{
 			err:  errors.New("some error"),
-			f:    func() error { return errors.New("new error") },
-			want: "some error\nnew error",
+			f:    func() error { return errors.New("f error") },
+			want: "some error\nf error",
 		},
 		{
 			err:  errors.New("some error"),
@@ -45,7 +45,7 @@ func TestCapture(t *testing.T) {
 	}
 	for _, tt := range tests {
 		err := tt.err
-		errorsx.Capture(&err, tt.f)
+		errcapture.Do(&err, tt.f)
 
 		if tt.want == "" {
 			assert.Nil(t, err)
