@@ -97,7 +97,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("failed to create database client: %s", err)
 	}
-	defer errcapture.Fatal(func() error { return tdb.Close(ctx) })
+	defer errcapture.Fatal(db.Close)
 
 	h, err := handler.New(&factory.Factory{
 		Auth: authn,
