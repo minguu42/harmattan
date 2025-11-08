@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log/slog"
 	"strings"
 	"sync"
+
+	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 type JSONIndentHandler struct {
@@ -37,14 +38,14 @@ func (h *JSONIndentHandler) Handle(ctx context.Context, record slog.Record) erro
 	defer h.mu.Unlock()
 
 	if err := h.handler.Handle(ctx, record); err != nil {
-		return err
+		return errors.Wrap(err)
 	}
 
 	encoder := json.NewEncoder(h.w)
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent("", strings.Repeat(" ", 2))
 	if err := encoder.Encode(json.RawMessage(h.buf.Bytes())); err != nil {
-		return fmt.Errorf("failed to encode log entry: %w", err)
+		return errors.Wrap(err)
 	}
 	h.buf.Reset()
 	return nil

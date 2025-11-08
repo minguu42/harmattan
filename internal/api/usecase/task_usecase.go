@@ -2,14 +2,13 @@ package usecase
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
@@ -36,7 +35,7 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, ProjectNotFoundError(err)
 		}
-		return nil, fmt.Errorf("failed to get project: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	if !user.HasProject(p) {
 		return nil, ProjectAccessDeniedError()
@@ -53,7 +52,7 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 		UpdatedAt: now,
 	}
 	if err := uc.DB.CreateTask(ctx, &t); err != nil {
-		return nil, fmt.Errorf("failed to create task: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &TaskOutput{Task: &t}, nil
 }
@@ -78,7 +77,7 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, ProjectNotFoundError(err)
 		}
-		return nil, fmt.Errorf("failed to get project: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	if !user.HasProject(p) {
 		return nil, ProjectAccessDeniedError()
@@ -86,12 +85,12 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 
 	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list tasks: %w", err)
+		return nil, errors.Wrap(err)
 	}
 
 	tags, err := uc.DB.GetTagsByIDs(ctx, ts.TagIDs())
 	if err != nil {
-		return nil, fmt.Errorf("failed to get tags: %w", err)
+		return nil, errors.Wrap(err)
 	}
 
 	hasNext := false
@@ -114,7 +113,7 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, TaskNotFoundError(err)
 		}
-		return nil, fmt.Errorf("failed to get task: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	if !user.HasTask(task) {
 		return nil, TaskAccessDeniedError()
@@ -122,7 +121,7 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 
 	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get tags: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &TaskOutput{Task: task, Tags: tags}, nil
 }
@@ -145,7 +144,7 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, TaskNotFoundError(err)
 		}
-		return nil, fmt.Errorf("failed to get task: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	if !user.HasTask(task) {
 		return nil, TaskAccessDeniedError()
@@ -158,7 +157,7 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	if in.TagIDs.Valid {
 		tags, err = uc.DB.GetTagsByIDs(ctx, in.TagIDs.V)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get tags: %w", err)
+			return nil, errors.Wrap(err)
 		}
 		validTags := make(domain.Tags, 0, len(tags))
 		for _, t := range tags {
@@ -171,7 +170,7 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	} else {
 		tags, err = uc.DB.GetTagsByIDs(ctx, task.TagIDs)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get tags: %w", err)
+			return nil, errors.Wrap(err)
 		}
 	}
 	if in.Content.Valid {
@@ -188,7 +187,7 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	}
 	task.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateTask(ctx, task); err != nil {
-		return nil, fmt.Errorf("failed to update task: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &TaskOutput{Task: task, Tags: tags}, nil
 }
@@ -205,14 +204,14 @@ func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 		if errors.Is(err, database.ErrModelNotFound) {
 			return TaskNotFoundError(err)
 		}
-		return fmt.Errorf("failed to get task: %w", err)
+		return errors.Wrap(err)
 	}
 	if !user.HasTask(task) {
 		return TaskAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteTaskByID(ctx, task.ID); err != nil {
-		return fmt.Errorf("failed to delete task: %w", err)
+		return errors.Wrap(err)
 	}
 	return nil
 }

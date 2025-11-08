@@ -2,12 +2,12 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
@@ -23,7 +23,7 @@ func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 		Priority:  req.Priority,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute CreateTask usecase: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return convertTask(out.Task, out.Tags), nil
 }
@@ -35,7 +35,7 @@ func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams)
 		Offset:    params.Offset.Value,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute ListTasks usecase: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &openapi.ListTasksOK{
 		Tasks:   convertTasks(out.Tasks, out.Tags),
@@ -46,7 +46,7 @@ func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams)
 func (h *handler) GetTask(ctx context.Context, params openapi.GetTaskParams) (*openapi.Task, error) {
 	out, err := h.task.GetTask(ctx, &usecase.GetTaskInput{ID: domain.TaskID(params.TaskID)})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute GetTask usecase: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return convertTask(out.Task, out.Tags), nil
 }
@@ -70,14 +70,14 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 		CompletedAt: usecase.Option[*time.Time]{V: ternary(req.CompletedAt.Null, nil, &req.CompletedAt.Value), Valid: req.CompletedAt.Set},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute UpdateTask usecase: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return convertTask(out.Task, out.Tags), nil
 }
 
 func (h *handler) DeleteTask(ctx context.Context, params openapi.DeleteTaskParams) error {
 	if err := h.task.DeleteTask(ctx, &usecase.DeleteTaskInput{ID: domain.TaskID(params.TaskID)}); err != nil {
-		return fmt.Errorf("failed to execute DeleteTask usecase: %w", err)
+		return errors.Wrap(err)
 	}
 	return nil
 }

@@ -2,12 +2,11 @@ package usecase
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -25,7 +24,7 @@ type SignUpInput struct {
 func (in *SignUpInput) User(ctx context.Context) (*domain.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate hashed password: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &domain.User{
 		ID:             domain.UserID(idgen.ULID(ctx)),
@@ -45,16 +44,16 @@ func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpO
 
 	user, err := in.User(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate user: %w", err)
+		return nil, errors.Wrap(err)
 	}
 
 	token, err := uc.Auth.CreateIDToken(ctx, user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create id token: %w", err)
+		return nil, errors.Wrap(err)
 	}
 
 	if err := uc.DB.CreateUser(ctx, user); err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &SignUpOutput{IDToken: token}, nil
 }
@@ -74,7 +73,7 @@ func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInO
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, InvalidEmailOrPasswordError(err)
 		}
-		return nil, fmt.Errorf("failed to get user: %w", err)
+		return nil, errors.Wrap(err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(in.Password)); err != nil {
@@ -83,7 +82,7 @@ func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInO
 
 	token, err := uc.Auth.CreateIDToken(ctx, user.ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create id token: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &SignInOutput{IDToken: token}, nil
 }

@@ -2,11 +2,11 @@ package factory
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 type Factory struct {
@@ -17,12 +17,12 @@ type Factory struct {
 func New(ctx context.Context, conf Config, logger *alog.Logger) (*Factory, error) {
 	authn, err := auth.NewAuthenticator(conf.Auth)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create authenticator: %w", err)
+		return nil, errors.Wrap(err)
 	}
 
 	db, err := database.NewClient(ctx, conf.DB, logger)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create database client: %w", err)
+		return nil, errors.Wrap(err)
 	}
 
 	return &Factory{
@@ -33,7 +33,7 @@ func New(ctx context.Context, conf Config, logger *alog.Logger) (*Factory, error
 
 func (f *Factory) Close() error {
 	if err := f.DB.Close(); err != nil {
-		return fmt.Errorf("failed to close database: %w", err)
+		return errors.Wrap(err)
 	}
 	return nil
 }

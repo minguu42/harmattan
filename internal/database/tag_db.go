@@ -2,11 +2,10 @@ package database
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 	"gorm.io/gorm"
 )
 
@@ -47,7 +46,7 @@ func (c *Client) CreateTag(ctx context.Context, t *domain.Tag) error {
 		UpdatedAt: t.UpdatedAt,
 	}
 	if err := c.db(ctx).Create(&tag).Error; err != nil {
-		return fmt.Errorf("failed to create tag: %w", err)
+		return errors.Wrap(err)
 	}
 	return nil
 }
@@ -55,7 +54,7 @@ func (c *Client) CreateTag(ctx context.Context, t *domain.Tag) error {
 func (c *Client) ListTags(ctx context.Context, id domain.UserID, limit, offset int) (domain.Tags, error) {
 	var ts Tags
 	if err := c.db(ctx).Where("user_id = ?", id).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
-		return nil, fmt.Errorf("failed to get tags: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return ts.ToDomain(), nil
 }
@@ -66,7 +65,7 @@ func (c *Client) GetTagByID(ctx context.Context, id domain.TagID) (*domain.Tag, 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}
-		return nil, fmt.Errorf("failed to get tag: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return t.ToDomain(), nil
 }
@@ -78,7 +77,7 @@ func (c *Client) GetTagsByIDs(ctx context.Context, ids []domain.TagID) (domain.T
 
 	var ts Tags
 	if err := c.db(ctx).Where("id in ?", ids).Find(&ts).Error; err != nil {
-		return nil, fmt.Errorf("failed to query tags: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return ts.ToDomain(), nil
 }
@@ -89,14 +88,14 @@ func (c *Client) UpdateTag(ctx context.Context, t *domain.Tag) error {
 		"updated_at": t.UpdatedAt,
 	}).Error
 	if err != nil {
-		return fmt.Errorf("failed to update tag: %w", err)
+		return errors.Wrap(err)
 	}
 	return nil
 }
 
 func (c *Client) DeleteTagByID(ctx context.Context, id domain.TagID) error {
 	if err := c.db(ctx).Where("id = ?", id).Delete(Tag{}).Error; err != nil {
-		return fmt.Errorf("failed to delete tag: %w", err)
+		return errors.Wrap(err)
 	}
 	return nil
 }
