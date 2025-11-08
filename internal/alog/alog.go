@@ -72,7 +72,7 @@ func (l *Logger) Event(ctx context.Context, message string) {
 }
 
 func (l *Logger) Error(ctx context.Context, message string, err error) {
-	l.logger(ctx).Info(message, slog.Any("errors", err))
+	l.logger(ctx).Log(ctx, slog.LevelError, message, slog.Any("error", err))
 }
 
 type AccessFields struct {
