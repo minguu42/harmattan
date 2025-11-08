@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
-	"github.com/minguu42/harmattan/internal/lib/errors"
 	ogenhttp "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/ogenerrors"
 )

@@ -67,12 +67,12 @@ func (l *Logger) ContextWithRequestID(ctx context.Context, requestID string) con
 	return context.WithValue(ctx, loggerKey{}, logger.With(slog.String("request_id", requestID)))
 }
 
-func (l *Logger) Event(ctx context.Context, message string) {
-	l.logger(ctx).Log(ctx, slog.LevelInfo, message)
+func (l *Logger) Event(ctx context.Context, msg string) {
+	l.logger(ctx).Log(ctx, slog.LevelInfo, msg)
 }
 
-func (l *Logger) Error(ctx context.Context, message string, err error) {
-	l.logger(ctx).Log(ctx, slog.LevelError, message, slog.Any("error", err))
+func (l *Logger) Error(ctx context.Context, msg string) {
+	l.logger(ctx).Log(ctx, slog.LevelError, msg)
 }
 
 type AccessFields struct {

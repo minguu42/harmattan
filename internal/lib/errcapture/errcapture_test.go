@@ -1,11 +1,11 @@
 package errcapture_test
 
 import (
+	"errors"
 	"os"
 	"testing"
 
 	"github.com/minguu42/harmattan/internal/lib/errcapture"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

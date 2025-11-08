@@ -1,11 +1,10 @@
 package errcapture
 
 import (
+	"errors"
 	"log"
 	"os"
 	"runtime"
-
-	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 // Do はfを実行し、エラーがあればerrが示すエラーに追加する。

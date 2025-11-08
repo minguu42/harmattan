@@ -1,10 +1,9 @@
 package usecase
 
 import (
+	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 func DomainValidationError(errs []error) Error {

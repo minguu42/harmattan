@@ -2,11 +2,11 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*openapi.Tag, error) {
@@ -18,7 +18,7 @@ func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*op
 
 	out, err := h.tag.CreateTag(ctx, &usecase.CreateTagInput{Name: req.Name})
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to execute CreateTag usecase: %w", err)
 	}
 	return convertTag(out.Tag), nil
 }
@@ -29,7 +29,7 @@ func (h *handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (
 		Offset: params.Offset.Value,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to execute ListTags usecase: %w", err)
 	}
 	return &openapi.ListTagsOK{
 		Tags:    convertTags(out.Tags),
@@ -51,7 +51,7 @@ func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 		Name: usecase.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
 	})
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to execute UpdateTag usecase: %w", err)
 	}
 	return convertTag(out.Tag), nil
 }
@@ -61,14 +61,14 @@ func (h *handler) GetTag(ctx context.Context, params openapi.GetTagParams) (*ope
 		ID: domain.TagID(params.TagID),
 	})
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to execute GetTag usecase: %w", err)
 	}
 	return convertTag(out.Tag), nil
 }
 
 func (h *handler) DeleteTag(ctx context.Context, params openapi.DeleteTagParams) error {
 	if err := h.tag.DeleteTag(ctx, &usecase.DeleteTagInput{ID: domain.TagID(params.TagID)}); err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to execute DeleteTag usecase: %w", err)
 	}
 	return nil
 }

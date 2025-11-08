@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.SignUpOK, error) {
@@ -21,7 +21,7 @@ func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.
 		Password: req.Password,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to execute SignUp usecase: %w", err)
 	}
 	return &openapi.SignUpOK{IDToken: out.IDToken}, nil
 }
@@ -39,7 +39,7 @@ func (h *handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.
 		Password: req.Password,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to execute SignIn usecase: %w", err)
 	}
 	return &openapi.SignInOK{IDToken: out.IDToken}, nil
 }

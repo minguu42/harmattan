@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -16,7 +17,6 @@ import (
 	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/env"
 	"github.com/minguu42/harmattan/internal/lib/errcapture"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 func init() {
@@ -30,7 +30,7 @@ func main() {
 	indent := os.Getenv("LOG_INDENT") == "true"
 	l := alog.New(level, indent)
 	if err := mainRun(ctx, l); err != nil {
-		l.Error(ctx, "failed to execute mainRun", err)
+		l.Error(ctx, err.Error())
 		os.Exit(1)
 	}
 }
@@ -38,18 +38,18 @@ func main() {
 func mainRun(ctx context.Context, logger *alog.Logger) (err error) {
 	var conf factory.Config
 	if err := env.Load(&conf); err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to load config: %w", err)
 	}
 
 	f, err := factory.New(ctx, conf, logger)
 	if err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to create factory: %w", err)
 	}
 	defer errcapture.Do(&err, f.Close)
 
 	h, err := handler.New(f, logger)
 	if err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to create handler: %w", err)
 	}
 	s := &http.Server{
 		Addr:         net.JoinHostPort(conf.API.Host, strconv.Itoa(conf.API.Port)),
@@ -68,7 +68,7 @@ func mainRun(ctx context.Context, logger *alog.Logger) (err error) {
 	signal.Notify(sigterm, syscall.SIGTERM)
 	select {
 	case err := <-serveErr:
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to listen and serve: %w", err)
 	case <-sigterm:
 	}
 
@@ -77,7 +77,7 @@ func mainRun(ctx context.Context, logger *alog.Logger) (err error) {
 
 	logger.Event(ctx, "Stop accepting requests")
 	if err := s.Shutdown(ctx); err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to shutdown server: %w", err)
 	}
 	logger.Event(ctx, "Server shutdown completed")
 	return nil

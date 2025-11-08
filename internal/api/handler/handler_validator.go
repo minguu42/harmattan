@@ -1,13 +1,12 @@
 package handler
 
 import (
+	"errors"
 	"net/mail"
 	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
-
-	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 var (
