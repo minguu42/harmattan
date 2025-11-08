@@ -75,26 +75,29 @@ type ErrorResponse struct {
 
 func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *http.Request, error) {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
+		appErr := usecase.ToError(err)
+
 		// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、ここでアクセスログを出力する
+		// 上記以外の場合のアクセスログは middleware.AccessLog で出力される
 		var operationID string
 		if requestErr := new(ogenerrors.DecodeRequestError); errors.As(err, &requestErr) {
 			operationID = requestErr.OperationID()
 		} else if paramsErr := new(ogenerrors.DecodeParamsError); errors.As(err, &paramsErr) {
 			operationID = paramsErr.OperationID()
 		}
-
-		appErr := usecase.ToError(err)
-		l.Access(ctx, &alog.AccessFields{
-			Status: appErr.Status(),
-			ErrorInfo: &alog.ErrorInfo{
-				ErrorMessage: appErr.Error(),
-				StackTrace:   appErr.Stacktrace(),
-			},
-			OperationID: operationID,
-			Method:      r.Method,
-			URL:         r.URL.String(),
-			IPAddress:   r.RemoteAddr,
-		})
+		if operationID != "" {
+			l.Access(ctx, &alog.AccessFields{
+				Status: appErr.Status(),
+				ErrorInfo: &alog.ErrorInfo{
+					ErrorMessage: appErr.Error(),
+					StackTrace:   appErr.Stacktrace(),
+				},
+				OperationID: operationID,
+				Method:      r.Method,
+				URL:         r.URL.String(),
+				IPAddress:   r.RemoteAddr,
+			})
+		}
 
 		w.WriteHeader(appErr.Status())
 		bs, _ := json.Marshal(ErrorResponse{
