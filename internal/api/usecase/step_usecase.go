@@ -2,14 +2,13 @@ package usecase
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
@@ -34,7 +33,7 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, TaskNotFoundError(err)
 		}
-		return nil, fmt.Errorf("failed to get task: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	if !user.HasTask(task) {
 		return nil, TaskAccessDeniedError()
@@ -51,7 +50,7 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 	}
 
 	if err := uc.DB.CreateStep(ctx, &s); err != nil {
-		return nil, fmt.Errorf("failed to create step: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &StepOutput{Step: &s}, nil
 }
@@ -70,7 +69,7 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, StepNotFoundError(err)
 		}
-		return nil, fmt.Errorf("failed to get step: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	if !user.HasStep(s) {
 		return nil, StepAccessDeniedError()
@@ -85,7 +84,7 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	s.UpdatedAt = clock.Now(ctx)
 
 	if err := uc.DB.UpdateStep(ctx, s); err != nil {
-		return nil, fmt.Errorf("failed to update step: %w", err)
+		return nil, errors.Wrap(err)
 	}
 	return &StepOutput{Step: s}, nil
 }
@@ -102,14 +101,14 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 		if errors.Is(err, database.ErrModelNotFound) {
 			return StepNotFoundError(err)
 		}
-		return fmt.Errorf("failed to get step: %w", err)
+		return errors.Wrap(err)
 	}
 	if !user.HasStep(s) {
 		return StepAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {
-		return fmt.Errorf("failed to delete step: %w", err)
+		return errors.Wrap(err)
 	}
 	return nil
 }

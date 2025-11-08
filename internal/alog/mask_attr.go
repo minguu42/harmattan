@@ -16,6 +16,10 @@ func MaskAttr(a slog.Attr) slog.Attr {
 		if rv.IsNil() || rv.Elem().Kind() != reflect.Struct {
 			return a
 		}
+		// TODO(furukawa): errors パッケージの stackError に対応する（公開されていない構造体を扱えるようにする）
+		if rv.Elem().Type().Name() == "stackError" {
+			return a
+		}
 		return slog.Any(a.Key, maskStructValue(rv.Elem()).Addr().Interface())
 	case reflect.Struct:
 		return slog.Any(a.Key, maskStructValue(rv).Interface())
