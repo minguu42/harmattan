@@ -2,10 +2,11 @@ package database
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 	"gorm.io/gorm"
 )
 
@@ -52,7 +53,7 @@ func (c *Client) CreateStep(ctx context.Context, s *domain.Step) error {
 		UpdatedAt:   s.UpdatedAt,
 	}
 	if err := c.db(ctx).Create(&step).Error; err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to create step: %w", err)
 	}
 	return nil
 }
@@ -63,7 +64,7 @@ func (c *Client) GetStepByID(ctx context.Context, id domain.StepID) (*domain.Ste
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
 	return s.ToDomain(), nil
 }
@@ -75,14 +76,14 @@ func (c *Client) UpdateStep(ctx context.Context, s *domain.Step) error {
 		"updated_at":   s.UpdatedAt,
 	}).Error
 	if err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to update step: %w", err)
 	}
 	return nil
 }
 
 func (c *Client) DeleteStepByID(ctx context.Context, id domain.StepID) error {
 	if err := c.db(ctx).Where("id = ?", id).Delete(Step{}).Error; err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to delete step: %w", err)
 	}
 	return nil
 }

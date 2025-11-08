@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
@@ -37,7 +38,7 @@ func (uc *Project) CreateProject(ctx context.Context, in *CreateProjectInput) (*
 		UpdatedAt: now,
 	}
 	if err := uc.DB.CreateProject(ctx, &p); err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to create project: %w", err)
 	}
 	return &ProjectOutput{Project: &p}, nil
 }
@@ -57,7 +58,7 @@ func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*Li
 
 	ps, err := uc.DB.ListProjects(ctx, user.ID, in.Limit+1, in.Offset)
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to list projects: %w", err)
 	}
 
 	hasNext := false
@@ -80,7 +81,7 @@ func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*Projec
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, ProjectNotFoundError(err)
 		}
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
 		return nil, ProjectAccessDeniedError()
@@ -104,7 +105,7 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, ProjectNotFoundError(err)
 		}
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
 		return nil, ProjectAccessDeniedError()
@@ -121,7 +122,7 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	}
 	p.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateProject(ctx, p); err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to update project: %w", err)
 	}
 	return &ProjectOutput{Project: p}, nil
 }
@@ -138,14 +139,14 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 		if errors.Is(err, database.ErrModelNotFound) {
 			return ProjectNotFoundError(err)
 		}
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
 		return ProjectAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to delete project: %w", err)
 	}
 	return nil
 }

@@ -2,12 +2,13 @@ package auth
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 )
 
 type Config struct {
@@ -52,7 +53,7 @@ func (a *Authenticator) ParseIDToken(ctx context.Context, tokenString string) (d
 		return []byte(a.idTokenSecret), nil
 	})
 	if err != nil {
-		return "", errors.Wrap(err)
+		return "", fmt.Errorf("failed to parse token: %w", err)
 	}
 
 	claims := token.Claims.(jwt.MapClaims)

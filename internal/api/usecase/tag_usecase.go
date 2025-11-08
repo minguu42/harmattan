@@ -2,12 +2,13 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
@@ -35,7 +36,7 @@ func (uc *Tag) CreateTag(ctx context.Context, in *CreateTagInput) (*TagOutput, e
 		UpdatedAt: now,
 	}
 	if err := uc.DB.CreateTag(ctx, &t); err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to create tag: %w", err)
 	}
 	return &TagOutput{Tag: &t}, nil
 }
@@ -55,7 +56,7 @@ func (uc *Tag) ListTags(ctx context.Context, in *ListTagsInput) (*ListTagsOutput
 
 	ts, err := uc.DB.ListTags(ctx, user.ID, in.Limit+1, in.Offset)
 	if err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to list tags: %w", err)
 	}
 
 	hasNext := false
@@ -79,7 +80,7 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, TagNotFoundError(err)
 		}
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
 		return nil, TagAccessDeniedError()
@@ -90,7 +91,7 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 	}
 	t.UpdatedAt = clock.Now(ctx)
 	if err := uc.DB.UpdateTag(ctx, t); err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to update tag: %w", err)
 	}
 	return &TagOutput{Tag: t}, nil
 }
@@ -107,7 +108,7 @@ func (uc *Tag) GetTag(ctx context.Context, in *GetTagInput) (*TagOutput, error) 
 		if errors.Is(err, database.ErrModelNotFound) {
 			return nil, TagNotFoundError(err)
 		}
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
 		return nil, TagAccessDeniedError()
@@ -128,14 +129,14 @@ func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
 		if errors.Is(err, database.ErrModelNotFound) {
 			return TagNotFoundError(err)
 		}
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
 		return TagAccessDeniedError()
 	}
 
 	if err := uc.DB.DeleteTagByID(ctx, t.ID); err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to delete tag: %w", err)
 	}
 	return nil
 }

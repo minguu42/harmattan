@@ -2,10 +2,11 @@ package database
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
-	"github.com/minguu42/harmattan/internal/lib/errors"
 	"gorm.io/gorm"
 )
 
@@ -52,7 +53,7 @@ func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
 		UpdatedAt:  p.UpdatedAt,
 	}
 	if err := c.db(ctx).Create(&project).Error; err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to create project: %w", err)
 	}
 	return nil
 }
@@ -60,7 +61,7 @@ func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
 func (c *Client) ListProjects(ctx context.Context, id domain.UserID, limit, offset int) (domain.Projects, error) {
 	var ps Projects
 	if err := c.db(ctx).Where("user_id = ?", id).Limit(limit).Offset(offset).Find(&ps).Error; err != nil {
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to get projects: %w", err)
 	}
 	return ps.ToDomain(), nil
 }
@@ -71,7 +72,7 @@ func (c *Client) GetProjectByID(ctx context.Context, id domain.ProjectID) (*doma
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}
-		return nil, errors.Wrap(err)
+		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	return p.ToDomain(), nil
 }
@@ -84,14 +85,14 @@ func (c *Client) UpdateProject(ctx context.Context, p *domain.Project) error {
 		"updated_at":  p.UpdatedAt,
 	}).Error
 	if err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to update project: %w", err)
 	}
 	return nil
 }
 
 func (c *Client) DeleteProjectByID(ctx context.Context, id domain.ProjectID) error {
 	if err := c.db(ctx).Where("id = ?", id).Delete(Project{}).Error; err != nil {
-		return errors.Wrap(err)
+		return fmt.Errorf("failed to delete project: %w", err)
 	}
 	return nil
 }
