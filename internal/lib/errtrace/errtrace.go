@@ -8,6 +8,14 @@ import (
 const MaxStackDepth = 8
 
 func New(err error, stack []uintptr) error {
+	if err == nil {
+		return nil
+	}
+
+	if serr := new(StackError); errors.As(err, &serr) {
+		return err
+	}
+
 	return &StackError{err: err, stack: stack}
 }
 
@@ -16,8 +24,7 @@ func Wrap(err error) error {
 		return nil
 	}
 
-	var serr *StackError
-	if errors.As(err, &serr) {
+	if serr := new(StackError); errors.As(err, &serr) {
 		return err
 	}
 
