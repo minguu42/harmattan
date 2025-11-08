@@ -5,7 +5,11 @@ import (
 	"runtime"
 )
 
-const maxStackDepth = 8
+const MaxStackDepth = 8
+
+func New(err error, stack []uintptr) error {
+	return &StackError{err: err, stack: stack}
+}
 
 func Wrap(err error) error {
 	if err == nil {
@@ -17,7 +21,7 @@ func Wrap(err error) error {
 		return err
 	}
 
-	pc := make([]uintptr, maxStackDepth)
+	pc := make([]uintptr, MaxStackDepth)
 	n := runtime.Callers(2, pc)
 
 	return &StackError{err: err, stack: pc[:n:n]}
