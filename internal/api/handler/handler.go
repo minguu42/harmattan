@@ -87,11 +87,8 @@ func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *ht
 		}
 		if operationID != "" {
 			l.Access(ctx, &alog.AccessFields{
-				Status: appErr.Status(),
-				ErrorInfo: &alog.ErrorInfo{
-					ErrorMessage: appErr.Error(),
-					StackTrace:   appErr.Stacktrace(),
-				},
+				Status:      appErr.Status(),
+				Err:         err,
 				OperationID: operationID,
 				Method:      r.Method,
 				URL:         r.URL.String(),

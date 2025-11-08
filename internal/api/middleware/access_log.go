@@ -16,22 +16,17 @@ func AccessLog(l *alog.Logger) middleware.Middleware {
 		}
 
 		status := 200
-		var errorInfo *alog.ErrorInfo
 		start := clock.Now(req.Context)
 
 		resp, err := next(req)
 		if err != nil {
 			appErr := usecase.ToError(err)
 			status = appErr.Status()
-			errorInfo = &alog.ErrorInfo{
-				ErrorMessage: appErr.Error(),
-				StackTrace:   appErr.Stacktrace(),
-			}
 		}
 
 		l.Access(req.Context, &alog.AccessFields{
 			Status:        status,
-			ErrorInfo:     errorInfo,
+			Err:           err,
 			ExecutionTime: time.Since(start),
 			OperationID:   req.OperationID,
 			Method:        req.Raw.Method,

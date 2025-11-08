@@ -2,11 +2,13 @@ package alog
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"os"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/auth"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
 type Level string
@@ -77,7 +79,7 @@ func (l *Logger) Error(ctx context.Context, msg string, err error) {
 
 type AccessFields struct {
 	Status        int
-	ErrorInfo     *ErrorInfo
+	Err           error
 	ExecutionTime time.Duration
 
 	OperationID string
@@ -85,11 +87,6 @@ type AccessFields struct {
 	URL         string
 	Body        any
 	IPAddress   string
-}
-
-type ErrorInfo struct {
-	ErrorMessage string
-	StackTrace   []string
 }
 
 func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
@@ -103,10 +100,11 @@ func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
 
 	attrs := make([]slog.Attr, 0, 5)
 	attrs = append(attrs, slog.Int("status_code", fields.Status))
-	if fields.ErrorInfo != nil {
-		attrs = append(attrs, slog.String("error_message", fields.ErrorInfo.ErrorMessage))
-		if len(fields.ErrorInfo.StackTrace) != 0 {
-			attrs = append(attrs, slog.Any("stacktrace", fields.ErrorInfo.StackTrace))
+	if fields.Err != nil {
+		if serr := new(errtrace.StackError); errors.As(fields.Err, &serr) {
+			attrs = append(attrs, slog.Any("error", serr))
+		} else {
+			attrs = append(attrs, slog.Group("error", slog.String("message", fields.Err.Error())))
 		}
 	}
 	attrs = append(attrs, slog.Int64("execution_time", fields.ExecutionTime.Milliseconds()))

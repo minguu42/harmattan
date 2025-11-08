@@ -28,8 +28,8 @@ func InvalidEmailOrPasswordError(err error) Error {
 	return Error{err: err, status: 400, message: "メールアドレスかパスワードに誤りがあります"}
 }
 
-func DuplicateUserEmailError(err error) Error {
-	return Error{err: err, status: 409, message: "そのメールアドレスは既に使用されています"}
+func DuplicateUserEmailError() Error {
+	return Error{status: 409, message: "そのメールアドレスは既に使用されています"}
 }
 
 func ProjectNotFoundError(err error) Error {

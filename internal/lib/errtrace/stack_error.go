@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"runtime"
+	"strings"
 )
 
 type StackError struct {
@@ -40,6 +41,12 @@ func generateFrames(stack []uintptr) []Frame {
 	for _, pc := range stack {
 		fn := runtime.FuncForPC(pc - 1)
 		file, line := fn.FileLine(pc - 1)
+
+		// 不要なフレームを出力しないためにフレームワーク部分のフレームは出力しない
+		if name := file[strings.LastIndex(file, "/")+1:]; name == "oas_handlers_gen.go" {
+			break
+		}
+
 		frames = append(frames, Frame{
 			Function: fn.Name(),
 			Location: fmt.Sprintf("%s:%d", file, line),
