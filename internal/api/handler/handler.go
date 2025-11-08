@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/minguu42/harmattan/internal/alog"
@@ -11,6 +10,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/factory"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/ogen-go/ogen/ogenerrors"
 )
 

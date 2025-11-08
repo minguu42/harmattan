@@ -1,12 +1,12 @@
 package middleware
 
 import (
-	"errors"
 	"fmt"
 	"runtime"
 	"strings"
 
 	"github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/lib/errors"
 	"github.com/ogen-go/ogen/middleware"
 )
 
