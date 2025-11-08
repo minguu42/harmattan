@@ -71,8 +71,8 @@ func (l *Logger) Event(ctx context.Context, msg string) {
 	l.logger(ctx).Log(ctx, slog.LevelInfo, msg)
 }
 
-func (l *Logger) Error(ctx context.Context, msg string) {
-	l.logger(ctx).Log(ctx, slog.LevelError, msg)
+func (l *Logger) Error(ctx context.Context, msg string, err error) {
+	l.logger(ctx).Log(ctx, slog.LevelError, msg, slog.Any("error", err))
 }
 
 type AccessFields struct {

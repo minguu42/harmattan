@@ -30,7 +30,7 @@ func main() {
 	indent := os.Getenv("LOG_INDENT") == "true"
 	l := alog.New(level, indent)
 	if err := mainRun(ctx, l); err != nil {
-		l.Error(ctx, err.Error())
+		l.Error(ctx, "failed to execute mainRun", err)
 		os.Exit(1)
 	}
 }
