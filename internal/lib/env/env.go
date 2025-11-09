@@ -10,21 +10,23 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
 func Load(v any) error {
 	rv := reflect.ValueOf(v)
 	if rv.Kind() != reflect.Pointer || rv.IsNil() {
-		return errors.New("v must be a pointer to a struct")
+		return errtrace.Wrap(errors.New("v must be a pointer to a struct"))
 	}
 	rv = rv.Elem()
 	if rv.Kind() != reflect.Struct {
-		return errors.New("v must be a pointer to a struct")
+		return errtrace.Wrap(errors.New("v must be a pointer to a struct"))
 	}
 
 	infos, err := gatherFieldInfos(rv)
 	if err != nil {
-		return err
+		return errtrace.Wrap(err)
 	}
 	for _, info := range infos {
 		value, ok := os.LookupEnv(info.Key)
@@ -33,14 +35,14 @@ func Load(v any) error {
 			case info.Default != "":
 				value = info.Default
 			case info.Required:
-				return fmt.Errorf("environment variables %s is required", info.Key)
+				return errtrace.Wrap(fmt.Errorf("environment variables %s is required", info.Key))
 			default:
 				continue
 			}
 		}
 
 		if err := processField(info.Field, value); err != nil {
-			return err
+			return errtrace.Wrap(err)
 		}
 	}
 	return nil
@@ -96,7 +98,7 @@ func gatherFieldInfos(v reflect.Value) ([]fieldInfo, error) {
 		if f.Kind() == reflect.Struct && textUnmarshaler(f) == nil {
 			innerInfos, err := gatherFieldInfos(f)
 			if err != nil {
-				return nil, err
+				return nil, errtrace.Wrap(err)
 			}
 			infos = append(infos[:len(infos)-1], innerInfos...)
 		}
@@ -146,7 +148,7 @@ func processField(field reflect.Value, value string) error {
 	case reflect.String:
 		field.SetString(value)
 	default:
-		return fmt.Errorf("cannot handle field of kind %s", field.Kind().String())
+		return errtrace.Wrap(fmt.Errorf("cannot handle field of kind %s", field.Kind().String()))
 	}
 	return nil
 }

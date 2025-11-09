@@ -2,11 +2,11 @@ package handler
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
 func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectReq) (*openapi.Project, error) {
@@ -21,7 +21,7 @@ func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectR
 		Color: domain.ProjectColor(req.Color),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute CreateProject usecase: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return convertProject(out.Project), nil
 }
@@ -32,7 +32,7 @@ func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsP
 		Offset: params.Offset.Value,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute ListProjects usecase: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return &openapi.ListProjectsOK{
 		Projects: convertProjects(out.Projects),
@@ -45,7 +45,7 @@ func (h *handler) GetProject(ctx context.Context, params openapi.GetProjectParam
 		ID: domain.ProjectID(params.ProjectID),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute GetProject usecase: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return convertProject(out.Project), nil
 }
@@ -66,14 +66,14 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 		IsArchived: usecase.Option[bool]{V: req.IsArchived.Value, Valid: req.IsArchived.Set},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute UpdateProject usecase: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return convertProject(out.Project), nil
 }
 
 func (h *handler) DeleteProject(ctx context.Context, params openapi.DeleteProjectParams) error {
 	if err := h.project.DeleteProject(ctx, &usecase.DeleteProjectInput{ID: domain.ProjectID(params.ProjectID)}); err != nil {
-		return fmt.Errorf("failed to execute DeleteProject usecase: %w", err)
+		return errtrace.Wrap(err)
 	}
 	return nil
 }

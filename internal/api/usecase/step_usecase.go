@@ -3,13 +3,13 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
@@ -32,12 +32,12 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, TaskNotFoundError()
+			return nil, errtrace.Wrap(TaskNotFoundError())
 		}
-		return nil, fmt.Errorf("failed to get task: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasTask(task) {
-		return nil, TaskNotFoundError()
+		return nil, errtrace.Wrap(TaskNotFoundError())
 	}
 
 	now := clock.Now(ctx)
@@ -51,7 +51,7 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 	}
 
 	if err := uc.DB.CreateStep(ctx, &s); err != nil {
-		return nil, fmt.Errorf("failed to create step: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return &StepOutput{Step: &s}, nil
 }
@@ -68,12 +68,12 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, StepNotFoundError()
+			return nil, errtrace.Wrap(StepNotFoundError())
 		}
-		return nil, fmt.Errorf("failed to get step: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasStep(s) {
-		return nil, StepNotFoundError()
+		return nil, errtrace.Wrap(StepNotFoundError())
 	}
 
 	if in.Name.Valid {
@@ -85,7 +85,7 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	s.UpdatedAt = clock.Now(ctx)
 
 	if err := uc.DB.UpdateStep(ctx, s); err != nil {
-		return nil, fmt.Errorf("failed to update step: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return &StepOutput{Step: s}, nil
 }
@@ -100,16 +100,16 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return StepNotFoundError()
+			return errtrace.Wrap(StepNotFoundError())
 		}
-		return fmt.Errorf("failed to get step: %w", err)
+		return errtrace.Wrap(err)
 	}
 	if !user.HasStep(s) {
-		return StepNotFoundError()
+		return errtrace.Wrap(StepNotFoundError())
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {
-		return fmt.Errorf("failed to delete step: %w", err)
+		return errtrace.Wrap(err)
 	}
 	return nil
 }

@@ -2,12 +2,12 @@ package handler
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
 type securityHandler struct {
@@ -23,7 +23,7 @@ func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ openapi.Operat
 
 	u, err := h.db.GetUserByID(ctx, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user by id: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return auth.ContextWithUser(ctx, u), nil
 }

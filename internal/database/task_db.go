@@ -3,10 +3,10 @@ package database
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"gorm.io/gorm"
 )
 
@@ -75,7 +75,7 @@ func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
 		UpdatedAt:   t.UpdatedAt,
 	}
 	if err := c.db(ctx).Create(&task).Error; err != nil {
-		return fmt.Errorf("failed to create task: %w", err)
+		return errtrace.Wrap(err)
 	}
 	return nil
 }
@@ -83,12 +83,12 @@ func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
 func (c *Client) ListTasks(ctx context.Context, projectID domain.ProjectID, limit, offset int) (domain.Tasks, error) {
 	var ts Tasks
 	if err := c.db(ctx).Preload("Steps").Where("project_id = ?", projectID).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
-		return nil, fmt.Errorf("failed to get tasks: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 
 	var tts TaskTags
 	if err := c.db(ctx).Where("task_id in ?", ts.IDs()).Find(&tts).Error; err != nil {
-		return nil, fmt.Errorf("failed to get task tags: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return ts.ToDomain(tts), nil
 }
@@ -99,12 +99,12 @@ func (c *Client) GetTaskByID(ctx context.Context, id domain.TaskID) (*domain.Tas
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrModelNotFound
 		}
-		return nil, fmt.Errorf("failed to get task: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 
 	var tts TaskTags
 	if err := c.db(ctx).Where("task_id = ?", t.ID).Find(&tts).Error; err != nil {
-		return nil, fmt.Errorf("failed to get task tags: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return t.ToDomain(tts), nil
 }
@@ -119,11 +119,11 @@ func (c *Client) UpdateTask(ctx context.Context, t *domain.Task) error {
 		"updated_at":   t.UpdatedAt,
 	}).Error
 	if err != nil {
-		return fmt.Errorf("failed to update task: %w", err)
+		return errtrace.Wrap(err)
 	}
 
 	if err := c.db(ctx).Where("task_id = ?", t.ID).Delete(TaskTag{}).Error; err != nil {
-		return fmt.Errorf("failed to delete task tags: %w", err)
+		return errtrace.Wrap(err)
 	}
 	if len(t.TagIDs) == 0 {
 		return nil
@@ -133,14 +133,14 @@ func (c *Client) UpdateTask(ctx context.Context, t *domain.Task) error {
 		taskTags = append(taskTags, TaskTag{TaskID: t.ID, TagID: tagID, CreatedAt: t.UpdatedAt})
 	}
 	if err := c.db(ctx).Create(&taskTags).Error; err != nil {
-		return fmt.Errorf("failed to create task tags: %w", err)
+		return errtrace.Wrap(err)
 	}
 	return nil
 }
 
 func (c *Client) DeleteTaskByID(ctx context.Context, id domain.TaskID) error {
 	if err := c.db(ctx).Where("id = ?", id).Delete(Task{}).Error; err != nil {
-		return fmt.Errorf("failed to delete task: %w", err)
+		return errtrace.Wrap(err)
 	}
 	return nil
 }

@@ -3,12 +3,12 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
 type Config struct {
@@ -18,7 +18,7 @@ type Config struct {
 
 func NewAuthenticator(conf Config) (*Authenticator, error) {
 	if conf.IDTokenSecret == "" {
-		return nil, errors.New("id token secret is required")
+		return nil, errtrace.Wrap(errors.New("id token secret is required"))
 	}
 	return &Authenticator{
 		idTokenExpiration: conf.IDTokenExpiration,
@@ -38,7 +38,11 @@ func (a *Authenticator) CreateIDToken(ctx context.Context, id domain.UserID) (st
 		ExpiresAt: jwt.NewNumericDate(now.Add(a.idTokenExpiration)),
 		IssuedAt:  jwt.NewNumericDate(now),
 	}
-	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(a.idTokenSecret))
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(a.idTokenSecret))
+	if err != nil {
+		return "", errtrace.Wrap(err)
+	}
+	return token, nil
 }
 
 func (a *Authenticator) ParseIDToken(ctx context.Context, tokenString string) (domain.UserID, error) {
@@ -53,14 +57,14 @@ func (a *Authenticator) ParseIDToken(ctx context.Context, tokenString string) (d
 		return []byte(a.idTokenSecret), nil
 	})
 	if err != nil {
-		return "", fmt.Errorf("failed to parse token: %w", err)
+		return "", errtrace.Wrap(err)
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
 	if id, ok := claims["sub"].(string); ok && id != "" {
 		return domain.UserID(id), nil
 	}
-	return "", errors.New("missing or empty sub claim")
+	return "", errtrace.Wrap(errors.New("missing or empty sub claim"))
 }
 
 type userKey struct{}

@@ -11,6 +11,7 @@ import (
 
 	"github.com/avast/retry-go/v4"
 	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -42,7 +43,7 @@ func NewClient(ctx context.Context, conf Config, l *alog.Logger) (*Client, error
 	)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	db.SetMaxOpenConns(conf.MaxOpenConns)
 	db.SetMaxIdleConns(conf.MaxIdleConns)
@@ -50,7 +51,7 @@ func NewClient(ctx context.Context, conf Config, l *alog.Logger) (*Client, error
 
 	ping := func() error { return db.PingContext(ctx) }
 	if err := retry.Do(ping, retry.Attempts(10), retry.Context(ctx)); err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 
 	level := logger.Silent
@@ -62,7 +63,7 @@ func NewClient(ctx context.Context, conf Config, l *alog.Logger) (*Client, error
 		TranslateError: true,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create gorm client: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return &Client{gormDB: gormDB}, nil
 }
@@ -70,9 +71,9 @@ func NewClient(ctx context.Context, conf Config, l *alog.Logger) (*Client, error
 func (c *Client) Close() error {
 	db, err := c.gormDB.DB()
 	if err != nil {
-		return fmt.Errorf("failed to get *sql.DB: %w", err)
+		return errtrace.Wrap(err)
 	}
-	return db.Close()
+	return errtrace.Wrap(db.Close())
 }
 
 func (c *Client) db(ctx context.Context) *gorm.DB {
