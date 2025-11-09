@@ -7,7 +7,7 @@ import (
 
 const MaxStackDepth = 8
 
-func New(err error, stack []uintptr) error {
+func FromStack(err error, stack []uintptr) error {
 	if err == nil {
 		return nil
 	}

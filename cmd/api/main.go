@@ -15,7 +15,6 @@ import (
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/env"
-	"github.com/minguu42/harmattan/internal/lib/errcapture"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
@@ -35,19 +34,19 @@ func main() {
 	}
 }
 
-func mainRun(ctx context.Context, logger *alog.Logger) (err error) {
+func mainRun(ctx context.Context, l *alog.Logger) error {
 	var conf factory.Config
 	if err := env.Load(&conf); err != nil {
 		return errtrace.Wrap(err)
 	}
 
-	f, err := factory.New(ctx, conf, logger)
+	f, err := factory.New(ctx, conf, l)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	defer errcapture.Do(&err, f.Close)
+	defer l.Capture(ctx, "failed to close factory")(f.Close)
 
-	h, err := handler.New(f, logger)
+	h, err := handler.New(f, l)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
@@ -60,7 +59,7 @@ func mainRun(ctx context.Context, logger *alog.Logger) (err error) {
 
 	serveErr := make(chan error)
 	go func() {
-		logger.Event(ctx, "Start accepting requests")
+		l.Event(ctx, "Start accepting requests")
 		serveErr <- s.ListenAndServe()
 	}()
 
@@ -75,10 +74,10 @@ func mainRun(ctx context.Context, logger *alog.Logger) (err error) {
 	ctx, cancel := context.WithTimeout(ctx, conf.API.StopTimeout)
 	defer cancel()
 
-	logger.Event(ctx, "Stop accepting requests")
+	l.Event(ctx, "Stop accepting requests")
 	if err := s.Shutdown(ctx); err != nil {
 		return errtrace.Wrap(err)
 	}
-	logger.Event(ctx, "Server shutdown completed")
+	l.Event(ctx, "Server shutdown completed")
 	return nil
 }

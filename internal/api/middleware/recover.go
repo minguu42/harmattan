@@ -27,7 +27,7 @@ func Recover() middleware.Middleware {
 				pc := make([]uintptr, errtrace.MaxStackDepth)
 				n := runtime.Callers(2, pc)
 
-				err = errtrace.New(usecase.UnknownError(errors.New(message)), pc[:n:n])
+				err = errtrace.FromStack(usecase.UnknownError(errors.New(message)), pc[:n:n])
 			}
 		}()
 

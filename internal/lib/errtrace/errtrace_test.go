@@ -8,20 +8,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNew(t *testing.T) {
+func TestFromStack(t *testing.T) {
 	t.Parallel()
 
 	t.Run("nil", func(t *testing.T) {
 		t.Parallel()
 
-		got := errtrace.New(nil, []uintptr{1, 2, 3})
+		got := errtrace.FromStack(nil, []uintptr{1, 2, 3})
 		assert.Nil(t, got)
 	})
-	t.Run("create with stack", func(t *testing.T) {
+	t.Run("create from stack", func(t *testing.T) {
 		t.Parallel()
 
 		stack := []uintptr{1, 2, 3}
-		got := errtrace.New(errors.New("test error"), stack)
+		got := errtrace.FromStack(errors.New("test error"), stack)
 		var serr *errtrace.StackError
 		assert.ErrorAs(t, got, &serr)
 		assert.Equal(t, "test error", got.Error())
@@ -29,8 +29,8 @@ func TestNew(t *testing.T) {
 	t.Run("no double wrap", func(t *testing.T) {
 		t.Parallel()
 
-		wrapped1 := errtrace.New(errors.New("test error"), []uintptr{1, 2, 3})
-		wrapped2 := errtrace.New(wrapped1, []uintptr{4, 5, 6})
+		wrapped1 := errtrace.FromStack(errors.New("test error"), []uintptr{1, 2, 3})
+		wrapped2 := errtrace.FromStack(wrapped1, []uintptr{4, 5, 6})
 		assert.Same(t, wrapped1, wrapped2)
 	})
 }
