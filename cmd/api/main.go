@@ -34,7 +34,7 @@ func main() {
 	}
 }
 
-func mainRun(ctx context.Context, l *alog.Logger) (err error) {
+func mainRun(ctx context.Context, l *alog.Logger) error {
 	var conf factory.Config
 	if err := env.Load(&conf); err != nil {
 		return errtrace.Wrap(err)
