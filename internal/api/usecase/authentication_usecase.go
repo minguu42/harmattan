@@ -77,13 +77,13 @@ func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInO
 	user, err := uc.DB.GetUserByEmail(ctx, in.Email)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, InvalidEmailOrPasswordError(err)
+			return nil, InvalidEmailOrPasswordError()
 		}
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(in.Password)); err != nil {
-		return nil, InvalidEmailOrPasswordError(err)
+		return nil, InvalidEmailOrPasswordError()
 	}
 
 	token, err := uc.Auth.CreateIDToken(ctx, user.ID)

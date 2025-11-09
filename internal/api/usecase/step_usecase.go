@@ -32,12 +32,12 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, TaskNotFoundError(err)
+			return nil, TaskNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, TaskAccessDeniedError()
+		return nil, TaskNotFoundError()
 	}
 
 	now := clock.Now(ctx)
@@ -68,12 +68,12 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, StepNotFoundError(err)
+			return nil, StepNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return nil, StepAccessDeniedError()
+		return nil, StepNotFoundError()
 	}
 
 	if in.Name.Valid {
@@ -100,12 +100,12 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return StepNotFoundError(err)
+			return StepNotFoundError()
 		}
 		return fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return StepAccessDeniedError()
+		return StepNotFoundError()
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {

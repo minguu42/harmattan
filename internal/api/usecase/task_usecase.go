@@ -34,12 +34,12 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	now := clock.Now(ctx)
@@ -76,12 +76,12 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset)
@@ -112,12 +112,12 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, TaskNotFoundError(err)
+			return nil, TaskNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, TaskAccessDeniedError()
+		return nil, TaskNotFoundError()
 	}
 
 	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
@@ -143,12 +143,12 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, TaskNotFoundError(err)
+			return nil, TaskNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, TaskAccessDeniedError()
+		return nil, TaskNotFoundError()
 	}
 
 	if in.Name.Valid {
@@ -203,12 +203,12 @@ func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return TaskNotFoundError(err)
+			return TaskNotFoundError()
 		}
 		return fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return TaskAccessDeniedError()
+		return TaskNotFoundError()
 	}
 
 	if err := uc.DB.DeleteTaskByID(ctx, task.ID); err != nil {

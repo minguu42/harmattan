@@ -79,12 +79,12 @@ func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*Projec
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	return &ProjectOutput{Project: p}, nil
@@ -103,12 +103,12 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, ProjectNotFoundError(err)
+			return nil, ProjectNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	if in.Name.Valid {
@@ -137,12 +137,12 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return ProjectNotFoundError(err)
+			return ProjectNotFoundError()
 		}
 		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return ProjectAccessDeniedError()
+		return ProjectNotFoundError()
 	}
 
 	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {
