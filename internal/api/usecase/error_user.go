@@ -24,20 +24,20 @@ func DomainValidationError(errs []error) Error {
 	return Error{err: errors.Join(errs...), status: 400, message: message}
 }
 
-func InvalidEmailOrPasswordError(err error) Error {
-	return Error{err: err, status: 400, message: "メールアドレスかパスワードに誤りがあります"}
+func InvalidEmailOrPasswordError() Error {
+	return Error{status: 400, message: "メールアドレスかパスワードに誤りがあります"}
 }
 
 func DuplicateUserEmailError() Error {
 	return Error{status: 409, message: "そのメールアドレスは既に使用されています"}
 }
 
-func ProjectNotFoundError(err error) Error {
-	return Error{err: err, status: 404, message: "指定したプロジェクトは見つかりません"}
+func ProjectNotFoundError() Error {
+	return Error{status: 404, message: "指定したプロジェクトは見つかりません"}
 }
 
-func TaskNotFoundError(err error) Error {
-	return Error{err: err, status: 404, message: "指定したタスクは見つかりません"}
+func TaskNotFoundError() Error {
+	return Error{status: 404, message: "指定したタスクは見つかりません"}
 }
 
 func ProjectAccessDeniedError() Error {
@@ -56,10 +56,10 @@ func TagAccessDeniedError() Error {
 	return Error{status: 404, message: "指定したタグは見つかりません"}
 }
 
-func StepNotFoundError(err error) Error {
-	return Error{err: err, status: 404, message: "指定したステップは見つかりません"}
+func StepNotFoundError() Error {
+	return Error{status: 404, message: "指定したステップは見つかりません"}
 }
 
-func TagNotFoundError(err error) Error {
-	return Error{err: err, status: 404, message: "指定したタグは見つかりません"}
+func TagNotFoundError() Error {
+	return Error{status: 404, message: "指定したタグは見つかりません"}
 }

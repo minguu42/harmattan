@@ -9,10 +9,9 @@ import (
 )
 
 type Error struct {
-	err        error
-	stacktrace []string
-	status     int
-	message    string
+	err     error
+	status  int
+	message string
 }
 
 func (e Error) Error() string {
@@ -20,10 +19,6 @@ func (e Error) Error() string {
 		return e.err.Error()
 	}
 	return e.message
-}
-
-func (e Error) Stacktrace() []string {
-	return e.stacktrace
 }
 
 func (e Error) Status() int {
@@ -44,11 +39,11 @@ func ToError(err error) Error {
 	var paramsErr *ogenerrors.DecodeParamsError
 	switch {
 	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
-		return DeadlineExceededError(err)
+		return DeadlineExceededError()
 	case errors.As(err, &paramsErr) || errors.As(err, &requestErr):
-		return ValidationError(err)
+		return ValidationError()
 	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
-		return AuthorizationError(err)
+		return AuthorizationError()
 	case errors.Is(err, ogenhttp.ErrNotImplemented):
 		return NotImplementedError()
 	default:
