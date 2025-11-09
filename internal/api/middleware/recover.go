@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"runtime"
-	"strings"
 
 	"github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/ogen-go/ogen/middleware"
 )
 
@@ -24,22 +24,10 @@ func Recover() middleware.Middleware {
 					message = message + v.Error()
 				}
 
-				var stacktrace []string
-				for depth := 1; ; depth++ {
-					pc, file, line, ok := runtime.Caller(depth)
-					if !ok {
-						break
-					}
-					// 出力するスタックトレースの量を減らすために基盤部分のスタックトレースは出力しない
-					if name := file[strings.LastIndex(file, "/")+1:]; name == "oas_handlers_gen.go" {
-						break
-					}
+				pc := make([]uintptr, errtrace.MaxStackDepth)
+				n := runtime.Callers(2, pc)
 
-					fullFuncName := runtime.FuncForPC(pc).Name()
-					funcName := fullFuncName[strings.LastIndex(fullFuncName, "/")+1:]
-					stacktrace = append(stacktrace, fmt.Sprintf("%s:%d %s", file, line, funcName))
-				}
-				err = usecase.PanicError(errors.New(message), stacktrace)
+				err = errtrace.New(usecase.PanicError(errors.New(message)), pc[:n:n])
 			}
 		}()
 

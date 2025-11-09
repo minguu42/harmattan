@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	ogenhttp "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/ogenerrors"
@@ -18,7 +17,7 @@ type Error struct {
 
 func (e Error) Error() string {
 	if e.err != nil {
-		return fmt.Sprintf("%s: %s", e.message, e.err)
+		return e.err.Error()
 	}
 	return e.message
 }

@@ -12,12 +12,11 @@ func UnknownError(err error) Error {
 	return Error{err: err, status: 500, message: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください"}
 }
 
-func PanicError(err error, stacktrace []string) Error {
+func PanicError(err error) Error {
 	return Error{
-		err:        err,
-		stacktrace: stacktrace,
-		status:     500,
-		message:    "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください",
+		err:     err,
+		status:  500,
+		message: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください",
 	}
 }
 
