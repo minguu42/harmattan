@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/avast/retry-go/v4"
+	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -47,12 +48,12 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 		Started: true,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create mysql container: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 
 	portNet, err := mysqlC.MappedPort(ctx, "3306/tcp")
 	if err != nil {
-		return nil, fmt.Errorf("failed to get mapped port: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 
 	host := "127.0.0.1"
@@ -67,17 +68,17 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 	)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 
 	ping := func() error { return db.PingContext(ctx) }
 	if err := retry.Do(ping, retry.Attempts(10), retry.Context(ctx)); err != nil {
-		return nil, fmt.Errorf("failed to connect database: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 
 	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to create gorm client: %w", err)
+		return nil, errtrace.Wrap(err)
 	}
 	return &ClientWithContainer{
 		container: mysqlC,
@@ -93,10 +94,10 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 
 func (c *ClientWithContainer) Close(ctx context.Context) error {
 	if err := c.db.Close(); err != nil {
-		return fmt.Errorf("failed to close db connection: %w", err)
+		return errtrace.Wrap(err)
 	}
 	if err := c.container.Terminate(ctx); err != nil {
-		return fmt.Errorf("failed to terminate database: %w", err)
+		return errtrace.Wrap(err)
 	}
 	return nil
 }
@@ -104,7 +105,7 @@ func (c *ClientWithContainer) Close(ctx context.Context) error {
 func (c *ClientWithContainer) Migrate(ctx context.Context, name string) error {
 	data, err := os.ReadFile(name)
 	if err != nil {
-		return fmt.Errorf("failed to read file: %w", err)
+		return errtrace.Wrap(err)
 	}
 
 	for query := range strings.SplitSeq(string(data), ";") {
@@ -112,11 +113,11 @@ func (c *ClientWithContainer) Migrate(ctx context.Context, name string) error {
 			continue
 		}
 		if !strings.HasPrefix(strings.ToUpper(query), "CREATE TABLE") {
-			return errors.New("only CREATE TABLE statements are supported")
+			return errtrace.Wrap(errors.New("only CREATE TABLE statements are supported"))
 		}
 
 		if _, err := c.db.ExecContext(ctx, query); err != nil {
-			return fmt.Errorf("failed to execute query: %w", err)
+			return errtrace.Wrap(err)
 		}
 	}
 	return nil
@@ -125,7 +126,7 @@ func (c *ClientWithContainer) Migrate(ctx context.Context, name string) error {
 func (c *ClientWithContainer) Insert(ctx context.Context, data []any) error {
 	for _, rows := range data {
 		if err := c.gormDB.WithContext(ctx).Create(rows).Error; err != nil {
-			return fmt.Errorf("failed to insert rows: %w", err)
+			return errtrace.Wrap(err)
 		}
 	}
 	return nil
@@ -135,7 +136,7 @@ func (c *ClientWithContainer) Reset(ctx context.Context, data []any) error {
 	for _, table := range data {
 		// 何の条件もなしに一括削除を行えないため、"WHERE 1 = 1"で回避している
 		if err := c.gormDB.WithContext(ctx).Where("1 = 1").Delete(table).Error; err != nil {
-			return fmt.Errorf("failed to delete rows: %w", err)
+			return errtrace.Wrap(err)
 		}
 	}
 	return nil
