@@ -78,12 +78,12 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, TagNotFoundError(err)
+			return nil, TagNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return nil, TagAccessDeniedError()
+		return nil, TagNotFoundError()
 	}
 
 	if in.Name.Valid {
@@ -106,12 +106,12 @@ func (uc *Tag) GetTag(ctx context.Context, in *GetTagInput) (*TagOutput, error) 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return nil, TagNotFoundError(err)
+			return nil, TagNotFoundError()
 		}
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return nil, TagAccessDeniedError()
+		return nil, TagNotFoundError()
 	}
 
 	return &TagOutput{Tag: t}, nil
@@ -127,12 +127,12 @@ func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrModelNotFound) {
-			return TagNotFoundError(err)
+			return TagNotFoundError()
 		}
 		return fmt.Errorf("failed to get tag: %w", err)
 	}
 	if !user.HasTag(t) {
-		return TagAccessDeniedError()
+		return TagNotFoundError()
 	}
 
 	if err := uc.DB.DeleteTagByID(ctx, t.ID); err != nil {

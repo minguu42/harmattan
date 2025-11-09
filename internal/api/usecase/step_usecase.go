@@ -37,7 +37,7 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, TaskAccessDeniedError()
+		return nil, TaskNotFoundError()
 	}
 
 	now := clock.Now(ctx)
@@ -73,7 +73,7 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 		return nil, fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return nil, StepAccessDeniedError()
+		return nil, StepNotFoundError()
 	}
 
 	if in.Name.Valid {
@@ -105,7 +105,7 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 		return fmt.Errorf("failed to get step: %w", err)
 	}
 	if !user.HasStep(s) {
-		return StepAccessDeniedError()
+		return StepNotFoundError()
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {

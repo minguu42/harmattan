@@ -41,7 +41,7 @@ func ToError(err error) Error {
 	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
 		return DeadlineExceededError()
 	case errors.As(err, &paramsErr) || errors.As(err, &requestErr):
-		return ValidationError()
+		return ValidationError(err)
 	case errors.Is(err, ogenerrors.ErrSecurityRequirementIsNotSatisfied):
 		return AuthorizationError()
 	case errors.Is(err, ogenhttp.ErrNotImplemented):

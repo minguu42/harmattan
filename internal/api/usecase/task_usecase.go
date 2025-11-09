@@ -39,7 +39,7 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	now := clock.Now(ctx)
@@ -81,7 +81,7 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset)
@@ -117,7 +117,7 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, TaskAccessDeniedError()
+		return nil, TaskNotFoundError()
 	}
 
 	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
@@ -148,7 +148,7 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 		return nil, fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return nil, TaskAccessDeniedError()
+		return nil, TaskNotFoundError()
 	}
 
 	if in.Name.Valid {
@@ -208,7 +208,7 @@ func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 		return fmt.Errorf("failed to get task: %w", err)
 	}
 	if !user.HasTask(task) {
-		return TaskAccessDeniedError()
+		return TaskNotFoundError()
 	}
 
 	if err := uc.DB.DeleteTaskByID(ctx, task.ID); err != nil {

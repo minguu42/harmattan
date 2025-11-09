@@ -84,7 +84,7 @@ func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*Projec
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	return &ProjectOutput{Project: p}, nil
@@ -108,7 +108,7 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 		return nil, fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return nil, ProjectAccessDeniedError()
+		return nil, ProjectNotFoundError()
 	}
 
 	if in.Name.Valid {
@@ -142,7 +142,7 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 		return fmt.Errorf("failed to get project: %w", err)
 	}
 	if !user.HasProject(p) {
-		return ProjectAccessDeniedError()
+		return ProjectNotFoundError()
 	}
 
 	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {
