@@ -16,7 +16,6 @@ import (
 	"github.com/minguu42/harmattan/internal/database/databasetest"
 	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/clock"
-	"github.com/minguu42/harmattan/internal/lib/errcapture"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
 
@@ -42,13 +41,14 @@ func init() {
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
+	l := alog.New(alog.LevelSilent, false)
 
 	var err error
 	tdb, err = databasetest.NewClientWithContainer(ctx, "maindb_test")
 	if err != nil {
 		log.Fatalf("failed to create mysql client: %s", err)
 	}
-	defer errcapture.Fatal(func() error { return tdb.Close(ctx) })
+	defer l.Capture(ctx, "failed to close test mysql client")(tdb.Close)
 
 	_, f, _, _ := runtime.Caller(0)
 	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql")); err != nil {
@@ -83,7 +83,6 @@ func TestMain(m *testing.M) {
 		log.Fatalf("failed to create authenticator: %s", err)
 	}
 
-	l := alog.New(alog.LevelSilent, false)
 	db, err := database.NewClient(ctx, database.Config{
 		Host:            tdb.Host,
 		Port:            tdb.Port,
@@ -97,7 +96,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("failed to create database client: %s", err)
 	}
-	defer errcapture.Fatal(db.Close)
+	defer l.Capture(ctx, "failed to close database client")(tdb.Close)
 
 	h, err := handler.New(&factory.Factory{
 		Auth: authn,

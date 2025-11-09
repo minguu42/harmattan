@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/auth"
@@ -125,4 +126,23 @@ func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
 	attrs = append(attrs, slog.GroupAttrs("request", requestAttrs...))
 
 	l.logger(ctx).LogAttrs(ctx, level, "Request accepted", attrs...)
+}
+
+func (l *Logger) Capture(ctx context.Context, message string) func(func() error) {
+	pc := make([]uintptr, errtrace.MaxStackDepth)
+	n := runtime.Callers(2, pc)
+
+	return func(f func() error) {
+		err := f()
+		if err == nil {
+			return
+		}
+
+		// os.ErrClosedは2重にクローズ処理を行った場合に返され、処理的には問題がないため無視する。
+		if errors.Is(err, os.ErrClosed) {
+			return
+		}
+
+		l.Error(ctx, message, errtrace.FromStack(err, pc[:n:n]))
+	}
 }

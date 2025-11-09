@@ -92,11 +92,11 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 	}, nil
 }
 
-func (c *ClientWithContainer) Close(ctx context.Context) error {
+func (c *ClientWithContainer) Close() error {
 	if err := c.db.Close(); err != nil {
 		return errtrace.Wrap(err)
 	}
-	if err := c.container.Terminate(ctx); err != nil {
+	if err := c.container.Terminate(context.Background()); err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil
