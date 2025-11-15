@@ -16,6 +16,7 @@ services:
       - db
   db:
     image: mysql:8.0.30
+    pull_policy: missing
     container_name: harmattan-db
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
