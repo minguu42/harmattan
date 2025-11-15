@@ -23,7 +23,7 @@ func (e *StackError) Unwrap() error {
 func (e *StackError) MarshalJSON() ([]byte, error) {
 	v := struct {
 		Message string  `json:"message"`
-		Frames  []Frame `json:"frames"`
+		Frames  []frame `json:"frames"`
 	}{
 		Message: e.Error(),
 		Frames:  generateFrames(e.stack),
@@ -31,13 +31,13 @@ func (e *StackError) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v)
 }
 
-type Frame struct {
+type frame struct {
 	Function string `json:"function"`
 	Location string `json:"location"`
 }
 
-func generateFrames(stack []uintptr) []Frame {
-	frames := make([]Frame, 0, len(stack))
+func generateFrames(stack []uintptr) []frame {
+	frames := make([]frame, 0, len(stack))
 	for _, pc := range stack {
 		fn := runtime.FuncForPC(pc - 1)
 		file, line := fn.FileLine(pc - 1)
@@ -53,7 +53,7 @@ func generateFrames(stack []uintptr) []Frame {
 			file = "./" + strings.TrimPrefix(file, "/myapp/")
 		}
 
-		frames = append(frames, Frame{
+		frames = append(frames, frame{
 			Function: fn.Name(),
 			Location: fmt.Sprintf("%s:%d", file, line),
 		})
