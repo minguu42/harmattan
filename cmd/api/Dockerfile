@@ -1,5 +1,5 @@
 FROM golang:1.25.0 AS local
-WORKDIR /go/src/myapp
+WORKDIR /myapp
 
 RUN go install github.com/air-verse/air@latest
 
@@ -10,7 +10,7 @@ RUN --mount=type=bind,source=go.mod,target=go.mod \
 CMD ["air", "-c", "./cmd/api/.air.toml"]
 
 FROM golang:1.25.0 AS build
-WORKDIR /go/src/myapp
+WORKDIR /myapp
 
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,source=go.mod,target=go.mod \
