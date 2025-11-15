@@ -47,6 +47,12 @@ func generateFrames(stack []uintptr) []Frame {
 			break
 		}
 
+		// コンテナイメージ内でビルドするのでそのままだとロケーションが/myapp/から始まることになる
+		// そのため、/myapp/を./で置き換えて開発者がロケーションを参照しやすいようにする
+		if strings.HasPrefix(file, "/myapp/") {
+			file = "./" + strings.TrimPrefix(file, "/myapp/")
+		}
+
 		frames = append(frames, Frame{
 			Function: fn.Name(),
 			Location: fmt.Sprintf("%s:%d", file, line),
