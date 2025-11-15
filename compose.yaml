@@ -1,6 +1,7 @@
 services:
   api:
     image: harmattan-api-dev
+    pull_policy: build
     build:
       context: .
       dockerfile: cmd/api/Dockerfile
@@ -15,6 +16,7 @@ services:
       - db
   db:
     image: mysql:8.0.30
+    pull_policy: missing
     container_name: harmattan-db
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
@@ -24,5 +26,9 @@ services:
     volumes:
       - ./infra/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - db_data:/var/lib/mysql
+networks:
+  default:
+    name: harmattan
 volumes:
   db_data:
+    name: harmattan-db-data
