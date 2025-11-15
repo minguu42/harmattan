@@ -1,6 +1,7 @@
 services:
   api:
     image: harmattan-api-dev
+    pull_policy: build
     build:
       context: .
       dockerfile: cmd/api/Dockerfile
@@ -24,5 +25,9 @@ services:
     volumes:
       - ./infra/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - db_data:/var/lib/mysql
+networks:
+  default:
+    name: harmattan
 volumes:
   db_data:
+    name: harmattan-db-data
