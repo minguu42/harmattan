@@ -158,7 +158,8 @@ func TestLoad(t *testing.T) {
 	})
 	t.Run("unexported field", func(t *testing.T) {
 		type Foo struct {
-			ExportedField   string
+			ExportedField string
+			//lint:ignore U1000 This field is intentionally unexported to test that unexported fields are not loaded from environment variables.
 			unexportedField string
 		}
 		t.Setenv("ExportedField", "exported")
