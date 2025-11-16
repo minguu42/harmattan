@@ -12,12 +12,8 @@ import (
 
 func TestLoad(t *testing.T) {
 	t.Run("supported types", func(t *testing.T) {
-		type Foo struct {
-			FooField string
-		}
-		type Bar struct {
-			BarField string
-		}
+		type Foo struct{ FooField string }
+		type Bar struct{ BarField string }
 		type Config struct {
 			BoolField    bool
 			IntField     int
@@ -39,7 +35,6 @@ func TestLoad(t *testing.T) {
 			TimeField     time.Time
 			DurationField time.Duration
 		}
-
 		t.Setenv("BoolField", "true")
 		t.Setenv("IntField", "-1")
 		t.Setenv("Int8Field", "-8")
@@ -86,27 +81,25 @@ func TestLoad(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 	})
-
 	t.Run("env tag", func(t *testing.T) {
 		type Foo struct {
 			Field1 string `env:"FIELD_1"`
-			Field2 string `env:"-"`
-			Field3 string `env:"-,"`
+			Field2 string `env:"FIELD_2"`
+			Field3 string `env:"-"`
+			Field4 string `env:"-,"`
 		}
-
 		t.Setenv("FIELD_1", "foo")
 		t.Setenv("Field1", "v1")
-		t.Setenv("Field2", "v2")
 		t.Setenv("Field3", "v3")
+		t.Setenv("Field4", "v4")
 		t.Setenv("-", "hyphen")
 
-		want := Foo{Field1: "foo", Field3: "hyphen"}
+		want := Foo{Field1: "foo", Field4: "hyphen"}
 		var got Foo
 		err := env.Load(&got)
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 	})
-
 	t.Run("required option", func(t *testing.T) {
 		type Foo struct {
 			Field1 string `env:",required"`
@@ -116,7 +109,6 @@ func TestLoad(t *testing.T) {
 		err := env.Load(&got)
 		assert.Error(t, err)
 	})
-
 	t.Run("default tag", func(t *testing.T) {
 		type Foo struct {
 			Field1 string `default:"dv1"`
@@ -124,10 +116,56 @@ func TestLoad(t *testing.T) {
 			Field3 string `env:"-" default:"dv3"`
 			Field4 string `env:",required" default:"dv4"`
 		}
-
 		t.Setenv("Field1", "v1")
 
 		want := Foo{Field1: "v1", Field2: "dv2", Field4: "dv4"}
+		var got Foo
+		err := env.Load(&got)
+		require.NoError(t, err)
+		assert.Equal(t, want, got)
+	})
+	t.Run("nil pointer", func(t *testing.T) {
+		var p *struct{}
+		assert.Error(t, env.Load(p))
+	})
+	t.Run("non-pointer value", func(t *testing.T) {
+		type Foo struct{ Field string }
+
+		var foo Foo
+		err := env.Load(foo)
+		assert.Error(t, err)
+	})
+	t.Run("pointer to non-struct", func(t *testing.T) {
+		s := "some"
+		err := env.Load(&s)
+		assert.Error(t, err)
+	})
+	t.Run("slice type not supported", func(t *testing.T) {
+		type Foo struct{ Field []string }
+		t.Setenv("Field", "value")
+
+		var got Foo
+		err := env.Load(&got)
+		assert.Error(t, err)
+	})
+	t.Run("map type not supported", func(t *testing.T) {
+		type Foo struct{ Field map[string]string }
+		t.Setenv("Field", "value")
+
+		var got Foo
+		err := env.Load(&got)
+		assert.Error(t, err)
+	})
+	t.Run("unexported field", func(t *testing.T) {
+		type Foo struct {
+			ExportedField string
+			//lint:ignore U1000 This field is intentionally unexported to test that unexported fields are not loaded from environment variables.
+			unexportedField string
+		}
+		t.Setenv("ExportedField", "exported")
+		t.Setenv("unexportedField", "unexported")
+
+		want := Foo{ExportedField: "exported"}
 		var got Foo
 		err := env.Load(&got)
 		require.NoError(t, err)
