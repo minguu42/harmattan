@@ -44,7 +44,7 @@ func mainRun(ctx context.Context, l *alog.Logger) error {
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	defer l.Capture(ctx, "failed to close factory")(f.Close)
+	defer l.Capture(ctx, "Failed to close factory")(f.Close)
 
 	h, err := handler.New(f, l)
 	if err != nil {

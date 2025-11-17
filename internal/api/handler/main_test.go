@@ -48,7 +48,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("failed to create mysql client: %s", err)
 	}
-	defer l.Capture(ctx, "failed to close test mysql client")(tdb.Close)
+	defer l.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
 	_, f, _, _ := runtime.Caller(0)
 	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql")); err != nil {
@@ -96,7 +96,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("failed to create database client: %s", err)
 	}
-	defer l.Capture(ctx, "failed to close database client")(db.Close)
+	defer l.Capture(ctx, "Failed to close database client")(db.Close)
 
 	h, err := handler.New(&factory.Factory{
 		Auth: authn,
