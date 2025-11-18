@@ -20,6 +20,18 @@ func (e *StackError) Unwrap() error {
 	return e.err
 }
 
+func (e *StackError) Format(s fmt.State, verb rune) {
+	if verb == 'v' && s.Flag('+') {
+		var buf strings.Builder
+		for _, f := range generateFrames(e.stack) {
+			buf.WriteString(fmt.Sprintf("%s\n\t%s\n", f.Function, f.Location))
+		}
+		_, _ = s.Write([]byte(fmt.Sprintf("%s\n%s", e.Error(), buf.String())))
+		return
+	}
+	_, _ = s.Write([]byte(e.Error()))
+}
+
 func (e *StackError) MarshalJSON() ([]byte, error) {
 	v := struct {
 		Message string  `json:"message"`
