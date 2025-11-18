@@ -46,13 +46,13 @@ func TestMain(m *testing.M) {
 	var err error
 	tdb, err = databasetest.NewClientWithContainer(ctx, "maindb_test")
 	if err != nil {
-		log.Fatalf("failed to create mysql client: %s", err)
+		log.Fatalf("%+v", err)
 	}
 	defer l.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
 	_, f, _, _ := runtime.Caller(0)
 	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql")); err != nil {
-		log.Fatalf("failed to migrate test db: %s", err)
+		log.Fatalf("%+v", err)
 	}
 
 	err = tdb.Insert(ctx, []any{database.Users{
@@ -72,7 +72,7 @@ func TestMain(m *testing.M) {
 		},
 	}})
 	if err != nil {
-		log.Fatalf("failed to insert user: %s", err)
+		log.Fatalf("%+v", err)
 	}
 
 	authn, err := auth.NewAuthenticator(auth.Config{
@@ -80,7 +80,7 @@ func TestMain(m *testing.M) {
 		IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
 	})
 	if err != nil {
-		log.Fatalf("failed to create authenticator: %s", err)
+		log.Fatalf("%+v", err)
 	}
 
 	db, err := database.NewClient(ctx, database.Config{
@@ -94,7 +94,7 @@ func TestMain(m *testing.M) {
 		ConnMaxLifetime: 5 * time.Minute,
 	}, l)
 	if err != nil {
-		log.Fatalf("failed to create database client: %s", err)
+		log.Fatalf("%+v", err)
 	}
 	defer l.Capture(ctx, "Failed to close database client")(db.Close)
 
@@ -103,7 +103,7 @@ func TestMain(m *testing.M) {
 		DB:   db,
 	}, l)
 	if err != nil {
-		log.Fatalf("failed to create handler: %s", err)
+		log.Fatalf("%+v", err)
 	}
 	th = fixNow(fixID(h, fixedID), fixedNow)
 
