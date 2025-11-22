@@ -12,70 +12,12 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-type Level string
-
-const (
-	LevelDebug  = "debug"
-	LevelInfo   = "info"
-	LevelSilent = "silent"
-)
-
-func (l Level) Level() slog.Level {
-	switch l {
-	case LevelDebug:
-		return slog.LevelDebug
-	case LevelInfo:
-		return slog.LevelInfo
-	case LevelSilent:
-		return 12
-	default:
-		return slog.LevelInfo
-	}
+func Event(ctx context.Context, message string) {
+	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
-type Logger struct {
-	base  *slog.Logger
-	Level Level
-}
-
-func New(level Level, indented bool) *Logger {
-	opts := &slog.HandlerOptions{
-		Level: level,
-		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-			if a.Key == slog.MessageKey {
-				a.Key = "message"
-			}
-			return MaskAttr(a)
-		}}
-	if indented {
-		return &Logger{base: slog.New(NewJSONIndentHandler(os.Stdout, opts)), Level: level}
-	}
-	return &Logger{base: slog.New(slog.NewJSONHandler(os.Stdout, opts)), Level: level}
-}
-
-type loggerKey struct{}
-
-func (l *Logger) logger(ctx context.Context) *slog.Logger {
-	if logger, ok := ctx.Value(loggerKey{}).(*slog.Logger); ok {
-		return logger
-	}
-	return l.base
-}
-
-func (l *Logger) ContextWithRequestID(ctx context.Context, requestID string) context.Context {
-	logger, ok := ctx.Value(loggerKey{}).(*slog.Logger)
-	if !ok {
-		logger = l.base
-	}
-	return context.WithValue(ctx, loggerKey{}, logger.With(slog.String("request_id", requestID)))
-}
-
-func (l *Logger) Event(ctx context.Context, msg string) {
-	l.logger(ctx).Log(ctx, slog.LevelInfo, msg)
-}
-
-func (l *Logger) Error(ctx context.Context, msg string, err error) {
-	l.logger(ctx).Log(ctx, slog.LevelError, msg, slog.Any("error", err))
+func Error(ctx context.Context, message string, err error) {
+	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", err))
 }
 
 type AccessFields struct {
@@ -90,7 +32,7 @@ type AccessFields struct {
 	IPAddress   string
 }
 
-func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
+func Access(ctx context.Context, fields *AccessFields) {
 	level := slog.LevelInfo
 	switch {
 	case 400 <= fields.Status && fields.Status < 500:
@@ -125,10 +67,10 @@ func (l *Logger) Access(ctx context.Context, fields *AccessFields) {
 	requestAttrs = append(requestAttrs, slog.String("ip_address", fields.IPAddress))
 	attrs = append(attrs, slog.GroupAttrs("request", requestAttrs...))
 
-	l.logger(ctx).LogAttrs(ctx, level, "Request accepted", attrs...)
+	logger(ctx).base.LogAttrs(ctx, level, "Request accepted", attrs...)
 }
 
-func (l *Logger) Capture(ctx context.Context, message string) func(func() error) {
+func Capture(ctx context.Context, message string) func(func() error) {
 	pc := make([]uintptr, errtrace.MaxStackDepth)
 	n := runtime.Callers(2, pc)
 
@@ -143,6 +85,6 @@ func (l *Logger) Capture(ctx context.Context, message string) func(func() error)
 			return
 		}
 
-		l.Error(ctx, message, errtrace.FromStack(err, pc[:n:n]))
+		Error(ctx, message, errtrace.FromStack(err, pc[:n:n]))
 	}
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/ogen-go/ogen/middleware"
 )
 
-func AttachRequestIDToLogger(l *alog.Logger) middleware.Middleware {
+func AttachRequestIDToLogger() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
-		req.SetContext(l.ContextWithRequestID(req.Context, idgen.ULID(req.Context)))
+		req.SetContext(alog.ContextWithRequestID(req.Context, idgen.ULID(req.Context)))
 		return next(req)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
@@ -37,18 +38,18 @@ var (
 
 func init() {
 	time.Local = jst
+	alog.SetDefaultLogger(alog.New(os.Stdout, alog.LevelError, false))
 }
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
-	l := alog.New(alog.LevelSilent, false)
 
 	var err error
 	tdb, err = databasetest.NewClientWithContainer(ctx, "maindb_test")
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer l.Capture(ctx, "Failed to close test database client")(tdb.Close)
+	defer alog.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
 	_, f, _, _ := runtime.Caller(0)
 	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql")); err != nil {
@@ -92,16 +93,16 @@ func TestMain(m *testing.M) {
 		MaxOpenConns:    25,
 		MaxIdleConns:    25,
 		ConnMaxLifetime: 5 * time.Minute,
-	}, l)
+	})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer l.Capture(ctx, "Failed to close database client")(db.Close)
+	defer alog.Capture(ctx, "Failed to close database client")(db.Close)
 
 	h, err := handler.New(&factory.Factory{
 		Auth: authn,
 		DB:   db,
-	}, l)
+	})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

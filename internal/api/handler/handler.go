@@ -26,7 +26,7 @@ type handler struct {
 	task           usecase.Task
 }
 
-func New(f *factory.Factory, l *alog.Logger) (http.Handler, error) {
+func New(f *factory.Factory) (http.Handler, error) {
 	h := handler{
 		UnimplementedHandler: openapi.UnimplementedHandler{},
 		authentication:       usecase.Authentication{Auth: f.Auth, DB: f.DB},
@@ -38,14 +38,14 @@ func New(f *factory.Factory, l *alog.Logger) (http.Handler, error) {
 	}
 	sh := securityHandler{auth: f.Auth, db: f.DB}
 	middlewares := []openapi.Middleware{
-		middleware.AttachRequestIDToLogger(l),
-		middleware.AccessLog(l),
+		middleware.AttachRequestIDToLogger(),
+		middleware.AccessLog(),
 		middleware.Recover(),
 	}
 	return openapi.NewServer(&h, &sh,
 		openapi.WithNotFound(notFound),
 		openapi.WithMethodNotAllowed(methodNotAllowed),
-		openapi.WithErrorHandler(errorHandler(l)),
+		openapi.WithErrorHandler(errorHandler()),
 		openapi.WithMiddleware(middlewares...),
 	)
 }
@@ -73,7 +73,7 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *http.Request, error) {
+func errorHandler() func(context.Context, http.ResponseWriter, *http.Request, error) {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
 		appErr := usecase.ToError(err)
 
@@ -86,7 +86,7 @@ func errorHandler(l *alog.Logger) func(context.Context, http.ResponseWriter, *ht
 			operationID = paramsErr.OperationID()
 		}
 		if operationID != "" {
-			l.Access(ctx, &alog.AccessFields{
+			alog.Access(ctx, &alog.AccessFields{
 				Status:      appErr.Status(),
 				Err:         err,
 				OperationID: operationID,

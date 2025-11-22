@@ -3,7 +3,6 @@ package factory
 import (
 	"context"
 
-	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
@@ -14,13 +13,13 @@ type Factory struct {
 	DB   *database.Client
 }
 
-func New(ctx context.Context, conf Config, logger *alog.Logger) (*Factory, error) {
+func New(ctx context.Context, conf Config) (*Factory, error) {
 	authn, err := auth.NewAuthenticator(conf.Auth)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
-	db, err := database.NewClient(ctx, conf.DB, logger)
+	db, err := database.NewClient(ctx, conf.DB)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
