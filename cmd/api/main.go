@@ -20,33 +20,33 @@ import (
 
 func init() {
 	time.Local = time.FixedZone("JST", 9*60*60)
+
+	level := alog.Level(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
+	prettyPrint := os.Getenv("LOG_PRETTY_PRINT") == "true"
+	alog.SetDefaultLogger(alog.New(os.Stdout, level, prettyPrint))
 }
 
 func main() {
 	ctx := context.Background()
-
-	level := alog.Level(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
-	indent := os.Getenv("LOG_INDENT") == "true"
-	l := alog.New(level, indent)
-	if err := mainRun(ctx, l); err != nil {
-		l.Error(ctx, "failed to execute mainRun", err)
+	if err := mainRun(context.Background()); err != nil {
+		alog.Error(ctx, "failed to execute mainRun", err)
 		os.Exit(1)
 	}
 }
 
-func mainRun(ctx context.Context, l *alog.Logger) error {
+func mainRun(ctx context.Context) error {
 	var conf factory.Config
 	if err := env.Load(&conf); err != nil {
 		return errtrace.Wrap(err)
 	}
 
-	f, err := factory.New(ctx, conf, l)
+	f, err := factory.New(ctx, conf)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	defer l.Capture(ctx, "Failed to close factory")(f.Close)
+	defer alog.Capture(ctx, "Failed to close factory")(f.Close)
 
-	h, err := handler.New(f, l)
+	h, err := handler.New(f)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
@@ -59,7 +59,7 @@ func mainRun(ctx context.Context, l *alog.Logger) error {
 
 	serveErr := make(chan error)
 	go func() {
-		l.Event(ctx, "Start accepting requests")
+		alog.Event(ctx, "Start accepting requests")
 		serveErr <- s.ListenAndServe()
 	}()
 
@@ -74,10 +74,10 @@ func mainRun(ctx context.Context, l *alog.Logger) error {
 	ctx, cancel := context.WithTimeout(ctx, conf.API.StopTimeout)
 	defer cancel()
 
-	l.Event(ctx, "Stop accepting requests")
+	alog.Event(ctx, "Stop accepting requests")
 	if err := s.Shutdown(ctx); err != nil {
 		return errtrace.Wrap(err)
 	}
-	l.Event(ctx, "Server shutdown completed")
+	alog.Event(ctx, "Server shutdown completed")
 	return nil
 }

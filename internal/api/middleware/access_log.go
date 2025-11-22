@@ -9,7 +9,7 @@ import (
 	"github.com/ogen-go/ogen/middleware"
 )
 
-func AccessLog(l *alog.Logger) middleware.Middleware {
+func AccessLog() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
 		if req.OperationID == "CheckHealth" {
 			return next(req)
@@ -24,7 +24,7 @@ func AccessLog(l *alog.Logger) middleware.Middleware {
 			status = appErr.Status()
 		}
 
-		l.Access(req.Context, &alog.AccessFields{
+		alog.Access(req.Context, &alog.AccessFields{
 			Status:        status,
 			Err:           err,
 			ExecutionTime: time.Since(start),
