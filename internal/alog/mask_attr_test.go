@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/lib/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -14,15 +15,32 @@ import (
 func TestMaskAttr(t *testing.T) {
 	t.Parallel()
 
-	type Foo struct {
-		F1 string `json:"f1"`
-		F2 string `json:"f2" log:"mask"`
+	type AllFieldsExported struct {
+		Unmask  string            `json:"f1"`
+		Bool    bool              `json:"f2" log:"mask"`
+		Int     int               `json:"f3" log:"mask"`
+		Uint    uint              `json:"f4" log:"mask"`
+		Float   float64           `json:"f5" log:"mask"`
+		Map     map[string]string `json:"f6" log:"mask"`
+		Slice   []string          `json:"f7" log:"mask"`
+		String  string            `json:"f8" log:"mask"`
+		Pointer *string           `json:"f9" log:"mask"`
 	}
-	type Bar struct {
-		Foo Foo `json:"foo"`
+	type StructWrapper struct {
+		F AllFieldsExported `json:"f"`
 	}
-	type Baz struct {
-		Foo *Foo `json:"foo"`
+	type StructPointerWrapper struct {
+		F *AllFieldsExported `json:"f"`
+	}
+	type WithUnexported struct {
+		Public  string `json:"public" log:"mask"`
+		private string
+	}
+	type StructWrapperWithUnexported struct {
+		F WithUnexported `json:"f"`
+	}
+	type StructPointerWrapperWithUnexported struct {
+		F *WithUnexported `json:"f"`
 	}
 	tests := []struct {
 		name  string
@@ -30,24 +48,124 @@ func TestMaskAttr(t *testing.T) {
 		want  map[string]any
 	}{
 		{
-			name:  "mask",
-			value: Foo{F1: "v1", F2: "v2"},
-			want:  map[string]any{"f1": "v1", "f2": "<hidden>"},
+			name: "mask",
+			value: AllFieldsExported{
+				Unmask:  "foo",
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "bar",
+				Pointer: ptr.Ref("baz"),
+			},
+			want: map[string]any{
+				"f1": "foo",
+				"f2": false,
+				"f3": 0.0,
+				"f4": 0.0,
+				"f5": 0.0,
+				"f6": map[string]any{},
+				"f7": []any{},
+				"f8": "<hidden>",
+				"f9": nil,
+			},
 		},
 		{
-			name:  "mask-pointer",
-			value: &Foo{F1: "v1", F2: "v2"},
-			want:  map[string]any{"f1": "v1", "f2": "<hidden>"},
+			name: "mask-pointer",
+			value: &AllFieldsExported{
+				Unmask:  "foo",
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1"},
+				Slice:   []string{"1", "2"},
+				String:  "bar",
+				Pointer: ptr.Ref("baz"),
+			},
+			want: map[string]any{
+				"f1": "foo",
+				"f2": false,
+				"f3": 0.0,
+				"f4": 0.0,
+				"f5": 0.0,
+				"f6": map[string]any{},
+				"f7": []any{},
+				"f8": "<hidden>",
+				"f9": nil,
+			},
 		},
 		{
-			name:  "mask-deep",
-			value: Bar{Foo: Foo{F1: "v1", F2: "v2"}},
-			want:  map[string]any{"foo": map[string]any{"f1": "v1", "f2": "<hidden>"}},
+			name: "mask-deep",
+			value: StructWrapper{F: AllFieldsExported{
+				Unmask:  "foo",
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "bar",
+				Pointer: ptr.Ref("baz"),
+			}},
+			want: map[string]any{"f": map[string]any{
+				"f1": "foo",
+				"f2": false,
+				"f3": 0.0,
+				"f4": 0.0,
+				"f5": 0.0,
+				"f6": map[string]any{},
+				"f7": []any{},
+				"f8": "<hidden>",
+				"f9": nil,
+			}},
 		},
 		{
-			name:  "mask-deep-pointer",
-			value: Baz{Foo: &Foo{F1: "v1", F2: "v2"}},
-			want:  map[string]any{"foo": map[string]any{"f1": "v1", "f2": "<hidden>"}},
+			name: "mask-deep-pointer",
+			value: StructPointerWrapper{F: &AllFieldsExported{
+				Unmask:  "foo",
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "bar",
+				Pointer: ptr.Ref("baz"),
+			}},
+			want: map[string]any{"f": map[string]any{
+				"f1": "foo",
+				"f2": false,
+				"f3": 0.0,
+				"f4": 0.0,
+				"f5": 0.0,
+				"f6": map[string]any{},
+				"f7": []any{},
+				"f8": "<hidden>",
+				"f9": nil,
+			}},
+		},
+		{
+			name:  "contains-unexported-field",
+			value: WithUnexported{Public: "secret", private: "ignore"},
+			want:  map[string]any{"public": "secret"},
+		},
+		{
+			name:  "contains-unexported-field-pointer",
+			value: &WithUnexported{Public: "secret", private: "ignore"},
+			want:  map[string]any{"public": "secret"},
+		},
+		{
+			name:  "contains-unexported-field-deep",
+			value: StructWrapperWithUnexported{F: WithUnexported{Public: "secret", private: "ignore"}},
+			want:  map[string]any{"f": map[string]any{"public": "secret"}},
+		},
+		{
+			name:  "contains-unexported-field-deep-pointer",
+			value: StructPointerWrapperWithUnexported{F: &WithUnexported{Public: "secret", private: "ignore"}},
+			want:  map[string]any{"f": map[string]any{"public": "secret"}},
 		},
 	}
 	for _, tt := range tests {
