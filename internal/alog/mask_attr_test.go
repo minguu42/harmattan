@@ -158,7 +158,7 @@ func TestMaskAttr(t *testing.T) {
 			want:  map[string]any{"public": "secret"},
 		},
 		{
-			name:  "contains-unexported-field-deep-pointer",
+			name:  "contains-unexported-field-deep",
 			value: StructWrapperWithUnexported{F: WithUnexported{Public: "secret", private: "ignore"}},
 			want:  map[string]any{"f": map[string]any{"public": "secret"}},
 		},

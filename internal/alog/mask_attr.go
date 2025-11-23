@@ -59,6 +59,9 @@ func maskStructValue(v reflect.Value) reflect.Value {
 	for i := range v.NumField() {
 		structField := t.Field(i)
 		newField := newStruct.Field(i)
+		if !newField.CanSet() {
+			continue
+		}
 
 		if tag := structField.Tag.Get("log"); tag == "mask" {
 			setMaskedValue(newField)
