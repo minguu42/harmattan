@@ -12,7 +12,7 @@ import (
 )
 
 func TestHandler_CreateTag(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{database.Tags{}}))
 
 	want := &openapi.Tag{
 		ID:        fixedID,
@@ -28,8 +28,7 @@ func TestHandler_CreateTag(t *testing.T) {
 }
 
 func TestHandler_ListTags(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Tags{
 			{
 				ID:        "TAG-0000000000000000000001",
@@ -81,8 +80,7 @@ func TestHandler_ListTags(t *testing.T) {
 }
 
 func TestHandler_GetTag(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Tags{
 			{
 				ID:        "TAG-0000000000000000000001",
@@ -127,8 +125,7 @@ func TestHandler_GetTag(t *testing.T) {
 }
 
 func TestHandler_UpdateTag(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Tags{
 			{
 				ID:        "TAG-0000000000000000000001",
@@ -179,8 +176,7 @@ func TestHandler_UpdateTag(t *testing.T) {
 }
 
 func TestHandler_DeleteTag(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Tags{
 			{
 				ID:        "TAG-0000000000000000000001",

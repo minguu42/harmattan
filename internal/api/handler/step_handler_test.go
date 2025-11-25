@@ -12,8 +12,7 @@ import (
 )
 
 func TestHandler_CreateStep(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:     "PROJECT-000000000000000001",
@@ -42,6 +41,7 @@ func TestHandler_CreateStep(t *testing.T) {
 				Name:      "タスク2",
 			},
 		},
+		database.Steps{},
 	}))
 
 	t.Run("task not found", func(t *testing.T) {
@@ -77,8 +77,7 @@ func TestHandler_CreateStep(t *testing.T) {
 }
 
 func TestHandler_UpdateStep(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:     "PROJECT-000000000000000001",
@@ -157,8 +156,7 @@ func TestHandler_UpdateStep(t *testing.T) {
 }
 
 func TestHandler_DeleteStep(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:     "PROJECT-000000000000000001",

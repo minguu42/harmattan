@@ -12,7 +12,7 @@ import (
 )
 
 func TestHandler_CreateProject(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}}))
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{database.Projects{}}))
 
 	want := &openapi.Project{
 		ID:        fixedID,
@@ -29,8 +29,7 @@ func TestHandler_CreateProject(t *testing.T) {
 }
 
 func TestHandler_ListProjects(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:        "PROJECT-000000000000000001",
@@ -112,8 +111,7 @@ func TestHandler_ListProjects(t *testing.T) {
 }
 
 func TestHandler_GetProject(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:        "PROJECT-000000000000000001",
@@ -161,8 +159,7 @@ func TestHandler_GetProject(t *testing.T) {
 }
 
 func TestHandler_UpdateProject(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:        "PROJECT-000000000000000001",
@@ -217,8 +214,7 @@ func TestHandler_UpdateProject(t *testing.T) {
 }
 
 func TestHandler_DeleteProject(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:        "PROJECT-000000000000000001",

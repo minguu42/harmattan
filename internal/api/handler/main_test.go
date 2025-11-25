@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
-	"runtime"
 	"testing"
 	"time"
 
@@ -51,12 +49,7 @@ func TestMain(m *testing.M) {
 	}
 	defer alog.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
-	_, f, _, _ := runtime.Caller(0)
-	if err := tdb.Migrate(ctx, filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql")); err != nil {
-		log.Fatalf("%+v", err)
-	}
-
-	err = tdb.Insert(ctx, []any{database.Users{
+	err = tdb.TruncateAndInsert(ctx, []any{database.Users{
 		{
 			ID:             testUserID,
 			Email:          "user1@dummy.invalid",

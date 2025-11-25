@@ -12,8 +12,7 @@ import (
 )
 
 func TestHandler_CreateTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:     "PROJECT-000000000000000001",
@@ -28,6 +27,9 @@ func TestHandler_CreateTask(t *testing.T) {
 				Color:  "gray",
 			},
 		},
+		database.Tasks{},
+		database.Steps{},
+		database.Tags{},
 	}))
 
 	t.Run("project not found", func(t *testing.T) {
@@ -64,8 +66,7 @@ func TestHandler_CreateTask(t *testing.T) {
 }
 
 func TestHandler_ListTasks(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:        "PROJECT-000000000000000001",
@@ -189,8 +190,7 @@ func TestHandler_ListTasks(t *testing.T) {
 }
 
 func TestHandler_GetTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:        "PROJECT-000000000000000001",
@@ -262,8 +262,7 @@ func TestHandler_GetTask(t *testing.T) {
 }
 
 func TestHandler_UpdateTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}, database.TaskTag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:     "PROJECT-000000000000000001",
@@ -355,8 +354,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 }
 
 func TestHandler_DeleteTask(t *testing.T) {
-	require.NoError(t, tdb.Reset(t.Context(), []any{database.Project{}, database.Task{}, database.Step{}, database.Tag{}}))
-	require.NoError(t, tdb.Insert(t.Context(), []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
 				ID:     "PROJECT-000000000000000001",
