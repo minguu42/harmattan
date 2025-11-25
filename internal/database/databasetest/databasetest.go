@@ -81,6 +81,9 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 	if err := applySchema(ctx, db); err != nil {
 		return nil, errtrace.Wrap(err)
 	}
+	if _, err := db.ExecContext(ctx, "set FOREIGN_KEY_CHECKS = 0"); err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{})
 	if err != nil {
@@ -131,13 +134,6 @@ func applySchema(ctx context.Context, db *sql.DB) error {
 }
 
 func (c *ClientWithContainer) TruncateAndInsert(ctx context.Context, tableRows []any) error {
-	if _, err := c.db.ExecContext(ctx, "SET FOREIGN_KEY_CHECKS = 0"); err != nil {
-		return errtrace.Wrap(err)
-	}
-	defer func() {
-		_, _ = c.db.ExecContext(context.Background(), "SET FOREIGN_KEY_CHECKS = 1")
-	}()
-
 	for _, rows := range tableRows {
 		stmt := &gorm.Statement{DB: c.gormDB}
 		if err := stmt.Parse(rows); err != nil {
@@ -153,25 +149,6 @@ func (c *ClientWithContainer) TruncateAndInsert(ctx context.Context, tableRows [
 			continue
 		}
 		if err := c.gormDB.WithContext(ctx).Table(table).Create(rows).Error; err != nil {
-			return errtrace.Wrap(err)
-		}
-	}
-	return nil
-}
-
-func (c *ClientWithContainer) Insert(ctx context.Context, data []any) error {
-	for _, rows := range data {
-		if err := c.gormDB.WithContext(ctx).Create(rows).Error; err != nil {
-			return errtrace.Wrap(err)
-		}
-	}
-	return nil
-}
-
-func (c *ClientWithContainer) Reset(ctx context.Context, data []any) error {
-	for _, table := range data {
-		// 何の条件もなしに一括削除を行えないため、"WHERE 1 = 1"で回避している
-		if err := c.gormDB.WithContext(ctx).Where("1 = 1").Delete(table).Error; err != nil {
 			return errtrace.Wrap(err)
 		}
 	}
