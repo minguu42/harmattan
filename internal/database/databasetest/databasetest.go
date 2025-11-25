@@ -5,10 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"os"
+	"path/filepath"
 	"reflect"
+	"runtime"
 	"strconv"
 	"strings"
 	"testing"
@@ -16,6 +17,7 @@ import (
 	"github.com/avast/retry-go/v4"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"gorm.io/driver/mysql"
@@ -76,6 +78,10 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 		return nil, errtrace.Wrap(err)
 	}
 
+	if err := applySchema(ctx, db); err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+
 	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{})
 	if err != nil {
 		return nil, errtrace.Wrap(err)
@@ -102,8 +108,9 @@ func (c *ClientWithContainer) Close() error {
 	return nil
 }
 
-func (c *ClientWithContainer) Migrate(ctx context.Context, name string) error {
-	data, err := os.ReadFile(name)
+func applySchema(ctx context.Context, db *sql.DB) error {
+	_, f, _, _ := runtime.Caller(0)
+	data, err := os.ReadFile(filepath.Join(filepath.Dir(f), "..", "..", "..", "infra", "mysql", "schema.sql"))
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
@@ -116,7 +123,36 @@ func (c *ClientWithContainer) Migrate(ctx context.Context, name string) error {
 			return errtrace.Wrap(errors.New("only CREATE TABLE statements are supported"))
 		}
 
-		if _, err := c.db.ExecContext(ctx, query); err != nil {
+		if _, err := db.ExecContext(ctx, query); err != nil {
+			return errtrace.Wrap(err)
+		}
+	}
+	return nil
+}
+
+func (c *ClientWithContainer) TruncateAndInsert(ctx context.Context, tableRows []any) error {
+	if _, err := c.db.ExecContext(ctx, "SET FOREIGN_KEY_CHECKS = 0"); err != nil {
+		return errtrace.Wrap(err)
+	}
+	defer func() {
+		_, _ = c.db.ExecContext(context.Background(), "SET FOREIGN_KEY_CHECKS = 1")
+	}()
+
+	for _, rows := range tableRows {
+		stmt := &gorm.Statement{DB: c.gormDB}
+		if err := stmt.Parse(rows); err != nil {
+			return errtrace.Wrap(err)
+		}
+		table := stmt.Schema.Table
+
+		if _, err := c.db.ExecContext(ctx, fmt.Sprintf("truncate table %s", table)); err != nil {
+			return errtrace.Wrap(err)
+		}
+
+		if rv := reflect.ValueOf(rows); rv.Len() == 0 {
+			continue
+		}
+		if err := c.gormDB.WithContext(ctx).Table(table).Create(rows).Error; err != nil {
 			return errtrace.Wrap(err)
 		}
 	}
@@ -142,25 +178,20 @@ func (c *ClientWithContainer) Reset(ctx context.Context, data []any) error {
 	return nil
 }
 
-func (c *ClientWithContainer) Assert(t *testing.T, ctx context.Context, data []any) {
+func (c *ClientWithContainer) Assert(t *testing.T, data []any) {
+	t.Helper()
+
 	for _, want := range data {
 		rv := reflect.ValueOf(want)
 		if rv.Kind() != reflect.Slice {
-			log.Fatalf("expecting slice type, got %s", rv.Kind())
+			t.Fatalf("want slice type, got: %T", want)
 		}
 
-		elemType := rv.Type().Elem()
-		slicePtr := reflect.New(reflect.SliceOf(elemType)).Interface()
-		if err := c.gormDB.WithContext(ctx).Find(slicePtr).Error; err != nil {
-			log.Fatal(err)
-		}
+		gotPointer := reflect.New(reflect.SliceOf(rv.Type().Elem())).Interface()
+		err := c.gormDB.Find(gotPointer).Error
+		require.NoError(t, err)
 
-		actualSlice := reflect.ValueOf(slicePtr).Elem()
-		if actualSlice.Len() != rv.Len() {
-			log.Fatalf("expecting %d elements, got %d", rv.Len(), actualSlice.Len())
-		}
-
-		got := actualSlice.Interface()
-		assert.Equal(t, want, got)
+		got := reflect.ValueOf(gotPointer).Elem().Interface()
+		assert.ElementsMatch(t, want, got)
 	}
 }
