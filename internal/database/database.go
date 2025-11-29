@@ -13,7 +13,6 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var ErrModelNotFound = errors.New("model not found in database")
@@ -54,7 +53,7 @@ func NewClient(ctx context.Context, conf Config) (*Client, error) {
 	}
 
 	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{
-		Logger:         logger.Default.LogMode(logger.Info),
+		Logger:         customLogger{},
 		TranslateError: true,
 	})
 	if err != nil {
