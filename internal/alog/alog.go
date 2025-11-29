@@ -97,7 +97,7 @@ func Capture(ctx context.Context, message string) func(func() error) {
 }
 
 func GORMTrace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
-	if logger(ctx).level.Level() < slog.LevelDebug {
+	if logger(ctx).level.Level() > slog.LevelDebug {
 		return
 	}
 
