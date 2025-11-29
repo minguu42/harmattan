@@ -3,6 +3,7 @@ package alog
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"os"
 	"runtime"
@@ -10,6 +11,12 @@ import (
 
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
+)
+
+const (
+	reset = "\033[0m"
+	green = "\033[32m"
+	cyan  = "\033[36m"
 )
 
 func Event(ctx context.Context, message string) {
@@ -86,5 +93,32 @@ func Capture(ctx context.Context, message string) func(func() error) {
 		}
 
 		Error(ctx, message, errtrace.FromStack(err, pc[:n:n]))
+	}
+}
+
+func GORMTrace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
+	if logger(ctx).level.Level() > slog.LevelDebug {
+		return
+	}
+
+	query, _ := fc()
+	ms := float64(time.Since(begin)) / float64(time.Millisecond)
+	var loc string
+	if _, file, line, ok := runtime.Caller(4); ok {
+		loc = fmt.Sprintf("%s:%d", file, line)
+	}
+
+	if logger(ctx).prettyPrint {
+		fmt.Printf("\n-- %s[%.3fms]%s %s%s%s\n%s\n",
+			green, ms, reset,
+			cyan, loc, reset,
+			query,
+		)
+	} else {
+		logger(ctx).base.LogAttrs(ctx, slog.LevelDebug, "",
+			slog.String("elapsed(ms)", fmt.Sprintf("%.3f", ms)),
+			slog.String("location", loc),
+			slog.String("query", query),
+		)
 	}
 }

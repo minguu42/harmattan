@@ -107,6 +107,8 @@ func TestHandler_ListTasks(t *testing.T) {
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
 		},
+		database.Steps{},
+		database.TaskTags{},
 	}))
 
 	t.Run("no limit and offset", func(t *testing.T) {
@@ -231,6 +233,8 @@ func TestHandler_GetTask(t *testing.T) {
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
 			},
 		},
+		database.Steps{},
+		database.TaskTags{},
 	}))
 
 	t.Run("task not found", func(t *testing.T) {
@@ -307,6 +311,8 @@ func TestHandler_UpdateTask(t *testing.T) {
 				Name:   "タグ2",
 			},
 		},
+		database.Steps{},
+		database.TaskTags{},
 	}))
 
 	t.Run("task not found", func(t *testing.T) {
