@@ -75,6 +75,7 @@ func (s *CreateTaskReq) Validate() error {
 			MaxExclusive:  false,
 			MultipleOfSet: false,
 			MultipleOf:    0,
+			Pattern:       nil,
 		}).Validate(int64(s.Priority)); err != nil {
 			return errors.Wrap(err, "int")
 		}
@@ -353,6 +354,7 @@ func (s *UpdateTaskReq) Validate() error {
 					MaxExclusive:  false,
 					MultipleOfSet: false,
 					MultipleOf:    0,
+					Pattern:       nil,
 				}).Validate(int64(value)); err != nil {
 					return errors.Wrap(err, "int")
 				}

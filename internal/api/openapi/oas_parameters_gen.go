@@ -67,13 +67,17 @@ func decodeCreateStepParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.TaskID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -148,13 +152,17 @@ func decodeCreateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.ProjectID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -229,13 +237,17 @@ func decodeDeleteProjectParams(args [1]string, argsEscaped bool, r *http.Request
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.ProjectID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -310,13 +322,17 @@ func decodeDeleteStepParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.StepID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -391,13 +407,17 @@ func decodeDeleteTagParams(args [1]string, argsEscaped bool, r *http.Request) (p
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.TagID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -472,13 +492,17 @@ func decodeDeleteTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.TaskID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -553,13 +577,17 @@ func decodeGetProjectParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.ProjectID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -634,13 +662,17 @@ func decodeGetTagParams(args [1]string, argsEscaped bool, r *http.Request) (para
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.TagID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -715,13 +747,17 @@ func decodeGetTaskParams(args [1]string, argsEscaped bool, r *http.Request) (par
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.TaskID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -822,6 +858,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
+							Pattern:       nil,
 						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
@@ -892,6 +929,7 @@ func decodeListProjectsParams(args [0]string, argsEscaped bool, r *http.Request)
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
+							Pattern:       nil,
 						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
@@ -995,6 +1033,7 @@ func decodeListTagsParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
+							Pattern:       nil,
 						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
@@ -1065,6 +1104,7 @@ func decodeListTagsParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
+							Pattern:       nil,
 						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
@@ -1176,6 +1216,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
+							Pattern:       nil,
 						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
@@ -1246,6 +1287,7 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 							MaxExclusive:  false,
 							MultipleOfSet: false,
 							MultipleOf:    0,
+							Pattern:       nil,
 						}).Validate(int64(value)); err != nil {
 							return errors.Wrap(err, "int")
 						}
@@ -1303,13 +1345,17 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.ProjectID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -1384,13 +1430,17 @@ func decodeUpdateProjectParams(args [1]string, argsEscaped bool, r *http.Request
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.ProjectID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -1465,13 +1515,17 @@ func decodeUpdateStepParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.StepID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -1546,13 +1600,17 @@ func decodeUpdateTagParams(args [1]string, argsEscaped bool, r *http.Request) (p
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.TagID)); err != nil {
 					return errors.Wrap(err, "string")
 				}
@@ -1627,13 +1685,17 @@ func decodeUpdateTaskParams(args [1]string, argsEscaped bool, r *http.Request) (
 			}
 			if err := func() error {
 				if err := (validate.String{
-					MinLength:    26,
-					MinLengthSet: true,
-					MaxLength:    26,
-					MaxLengthSet: true,
-					Email:        false,
-					Hostname:     false,
-					Regex:        nil,
+					MinLength:     26,
+					MinLengthSet:  true,
+					MaxLength:     26,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
 				}).Validate(string(params.TaskID)); err != nil {
 					return errors.Wrap(err, "string")
 				}

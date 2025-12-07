@@ -420,12 +420,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Route is route object.
 type Route struct {
-	name        string
-	summary     string
-	operationID string
-	pathPattern string
-	count       int
-	args        [1]string
+	name           string
+	summary        string
+	operationID    string
+	operationGroup string
+	pathPattern    string
+	count          int
+	args           [1]string
 }
 
 // Name returns ogen operation name.
@@ -443,6 +444,11 @@ func (r Route) Summary() string {
 // OperationID returns OpenAPI operationId.
 func (r Route) OperationID() string {
 	return r.operationID
+}
+
+// OperationGroup returns the x-ogen-operation-group value.
+func (r Route) OperationGroup() string {
+	return r.operationGroup
 }
 
 // PathPattern returns OpenAPI path.
@@ -520,6 +526,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = CheckHealthOperation
 						r.summary = ""
 						r.operationID = "CheckHealth"
+						r.operationGroup = ""
 						r.pathPattern = "/health"
 						r.args = args
 						r.count = 0
@@ -543,6 +550,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = ListProjectsOperation
 						r.summary = ""
 						r.operationID = "ListProjects"
+						r.operationGroup = ""
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
@@ -551,6 +559,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = CreateProjectOperation
 						r.summary = ""
 						r.operationID = "CreateProject"
+						r.operationGroup = ""
 						r.pathPattern = "/projects"
 						r.args = args
 						r.count = 0
@@ -583,6 +592,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = DeleteProjectOperation
 							r.summary = ""
 							r.operationID = "DeleteProject"
+							r.operationGroup = ""
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
@@ -591,6 +601,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetProjectOperation
 							r.summary = ""
 							r.operationID = "GetProject"
+							r.operationGroup = ""
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
@@ -599,6 +610,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = UpdateProjectOperation
 							r.summary = ""
 							r.operationID = "UpdateProject"
+							r.operationGroup = ""
 							r.pathPattern = "/projects/{projectID}"
 							r.args = args
 							r.count = 1
@@ -623,6 +635,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = ListTasksOperation
 								r.summary = ""
 								r.operationID = "ListTasks"
+								r.operationGroup = ""
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
@@ -631,6 +644,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = CreateTaskOperation
 								r.summary = ""
 								r.operationID = "CreateTask"
+								r.operationGroup = ""
 								r.pathPattern = "/projects/{projectID}/tasks"
 								r.args = args
 								r.count = 1
@@ -683,6 +697,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = SignInOperation
 								r.summary = ""
 								r.operationID = "SignIn"
+								r.operationGroup = ""
 								r.pathPattern = "/sign-in"
 								r.args = args
 								r.count = 0
@@ -707,6 +722,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = SignUpOperation
 								r.summary = ""
 								r.operationID = "SignUp"
+								r.operationGroup = ""
 								r.pathPattern = "/sign-up"
 								r.args = args
 								r.count = 0
@@ -742,6 +758,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = DeleteStepOperation
 							r.summary = ""
 							r.operationID = "DeleteStep"
+							r.operationGroup = ""
 							r.pathPattern = "/steps/{stepID}"
 							r.args = args
 							r.count = 1
@@ -750,6 +767,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = UpdateStepOperation
 							r.summary = ""
 							r.operationID = "UpdateStep"
+							r.operationGroup = ""
 							r.pathPattern = "/steps/{stepID}"
 							r.args = args
 							r.count = 1
@@ -787,6 +805,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = ListTagsOperation
 							r.summary = ""
 							r.operationID = "ListTags"
+							r.operationGroup = ""
 							r.pathPattern = "/tags"
 							r.args = args
 							r.count = 0
@@ -795,6 +814,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = CreateTagOperation
 							r.summary = ""
 							r.operationID = "CreateTag"
+							r.operationGroup = ""
 							r.pathPattern = "/tags"
 							r.args = args
 							r.count = 0
@@ -828,6 +848,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = DeleteTagOperation
 								r.summary = ""
 								r.operationID = "DeleteTag"
+								r.operationGroup = ""
 								r.pathPattern = "/tags/{tagID}"
 								r.args = args
 								r.count = 1
@@ -836,6 +857,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetTagOperation
 								r.summary = ""
 								r.operationID = "GetTag"
+								r.operationGroup = ""
 								r.pathPattern = "/tags/{tagID}"
 								r.args = args
 								r.count = 1
@@ -844,6 +866,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = UpdateTagOperation
 								r.summary = ""
 								r.operationID = "UpdateTag"
+								r.operationGroup = ""
 								r.pathPattern = "/tags/{tagID}"
 								r.args = args
 								r.count = 1
@@ -878,6 +901,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = DeleteTaskOperation
 							r.summary = ""
 							r.operationID = "DeleteTask"
+							r.operationGroup = ""
 							r.pathPattern = "/tasks/{taskID}"
 							r.args = args
 							r.count = 1
@@ -886,6 +910,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetTaskOperation
 							r.summary = ""
 							r.operationID = "GetTask"
+							r.operationGroup = ""
 							r.pathPattern = "/tasks/{taskID}"
 							r.args = args
 							r.count = 1
@@ -894,6 +919,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = UpdateTaskOperation
 							r.summary = ""
 							r.operationID = "UpdateTask"
+							r.operationGroup = ""
 							r.pathPattern = "/tasks/{taskID}"
 							r.args = args
 							r.count = 1
@@ -918,6 +944,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = CreateStepOperation
 								r.summary = ""
 								r.operationID = "CreateStep"
+								r.operationGroup = ""
 								r.pathPattern = "/tasks/{taskID}/steps"
 								r.args = args
 								r.count = 1
