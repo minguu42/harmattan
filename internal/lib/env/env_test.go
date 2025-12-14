@@ -76,8 +76,7 @@ func TestLoad(t *testing.T) {
 			TimeField:     time.Date(2024, 2, 29, 12, 34, 56, 0, time.UTC),
 			DurationField: 1*time.Hour + 20*time.Minute + 30*time.Second,
 		}
-		var got Config
-		err := env.Load(&got)
+		got, err := env.Load[Config]()
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 	})
@@ -95,8 +94,7 @@ func TestLoad(t *testing.T) {
 		t.Setenv("-", "hyphen")
 
 		want := Foo{Field1: "foo", Field4: "hyphen"}
-		var got Foo
-		err := env.Load(&got)
+		got, err := env.Load[Foo]()
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 	})
@@ -105,9 +103,9 @@ func TestLoad(t *testing.T) {
 			Field1 string `env:",required"`
 		}
 
-		var got Foo
-		err := env.Load(&got)
+		got, err := env.Load[Foo]()
 		assert.Error(t, err)
+		assert.Equal(t, Foo{}, got)
 	})
 	t.Run("default tag", func(t *testing.T) {
 		type Foo struct {
@@ -119,42 +117,30 @@ func TestLoad(t *testing.T) {
 		t.Setenv("Field1", "v1")
 
 		want := Foo{Field1: "v1", Field2: "dv2", Field4: "dv4"}
-		var got Foo
-		err := env.Load(&got)
+		got, err := env.Load[Foo]()
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 	})
-	t.Run("nil pointer", func(t *testing.T) {
-		var p *struct{}
-		assert.Error(t, env.Load(p))
-	})
-	t.Run("non-pointer value", func(t *testing.T) {
-		type Foo struct{ Field string }
-
-		var foo Foo
-		err := env.Load(foo)
+	t.Run("non-struct type", func(t *testing.T) {
+		got, err := env.Load[string]()
 		assert.Error(t, err)
-	})
-	t.Run("pointer to non-struct", func(t *testing.T) {
-		s := "some"
-		err := env.Load(&s)
-		assert.Error(t, err)
+		assert.Equal(t, "", got)
 	})
 	t.Run("slice type not supported", func(t *testing.T) {
 		type Foo struct{ Field []string }
 		t.Setenv("Field", "value")
 
-		var got Foo
-		err := env.Load(&got)
+		got, err := env.Load[Foo]()
 		assert.Error(t, err)
+		assert.Equal(t, Foo{}, got)
 	})
 	t.Run("map type not supported", func(t *testing.T) {
 		type Foo struct{ Field map[string]string }
 		t.Setenv("Field", "value")
 
-		var got Foo
-		err := env.Load(&got)
+		got, err := env.Load[Foo]()
 		assert.Error(t, err)
+		assert.Equal(t, Foo{}, got)
 	})
 	t.Run("unexported field", func(t *testing.T) {
 		type Foo struct {
@@ -166,8 +152,7 @@ func TestLoad(t *testing.T) {
 		t.Setenv("unexportedField", "unexported")
 
 		want := Foo{ExportedField: "exported"}
-		var got Foo
-		err := env.Load(&got)
+		got, err := env.Load[Foo]()
 		require.NoError(t, err)
 		assert.Equal(t, want, got)
 	})
