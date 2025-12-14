@@ -18,7 +18,7 @@ func Load[T any]() (T, error) {
 	var v T
 	rv := reflect.ValueOf(&v).Elem()
 	if rv.Kind() != reflect.Struct {
-		return zero, errors.New("T must be a struct")
+		return zero, errors.New("type T must be a struct")
 	}
 
 	infos, err := gatherFieldInfos(rv)
@@ -32,7 +32,7 @@ func Load[T any]() (T, error) {
 			case info.Default != "":
 				value = info.Default
 			case info.Required:
-				return zero, fmt.Errorf("environment variables %s is required", info.Key)
+				return zero, fmt.Errorf("environment variable %s is required", info.Key)
 			default:
 				continue
 			}
