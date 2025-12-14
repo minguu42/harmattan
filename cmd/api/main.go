@@ -35,8 +35,8 @@ func main() {
 }
 
 func mainRun(ctx context.Context) error {
-	var conf factory.Config
-	if err := env.Load(&conf); err != nil {
+	conf, err := env.Load[factory.Config]()
+	if err != nil {
 		return errtrace.Wrap(err)
 	}
 

@@ -12,19 +12,18 @@ import (
 	"time"
 )
 
-func Load(v any) error {
-	rv := reflect.ValueOf(v)
-	if rv.Kind() != reflect.Pointer || rv.IsNil() {
-		return errors.New("v must be a pointer to a struct")
-	}
-	rv = rv.Elem()
+func Load[T any]() (T, error) {
+	var zero T
+
+	var v T
+	rv := reflect.ValueOf(&v).Elem()
 	if rv.Kind() != reflect.Struct {
-		return errors.New("v must be a pointer to a struct")
+		return zero, errors.New("type T must be a struct")
 	}
 
 	infos, err := gatherFieldInfos(rv)
 	if err != nil {
-		return err
+		return zero, err
 	}
 	for _, info := range infos {
 		value, ok := os.LookupEnv(info.Key)
@@ -33,17 +32,17 @@ func Load(v any) error {
 			case info.Default != "":
 				value = info.Default
 			case info.Required:
-				return fmt.Errorf("environment variables %s is required", info.Key)
+				return zero, fmt.Errorf("environment variable %s is required", info.Key)
 			default:
 				continue
 			}
 		}
 
 		if err := processField(info.Field, value); err != nil {
-			return err
+			return zero, err
 		}
 	}
-	return nil
+	return v, nil
 }
 
 type fieldInfo struct {
