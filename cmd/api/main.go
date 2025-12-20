@@ -21,7 +21,7 @@ import (
 func init() {
 	time.Local = time.FixedZone("JST", 9*60*60)
 
-	level := alog.Level(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
+	level := alog.ParseLevel(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
 	prettyPrint := os.Getenv("LOG_PRETTY_PRINT") == "true"
 	alog.SetDefaultLogger(alog.New(os.Stdout, level, prettyPrint))
 }
