@@ -2,14 +2,31 @@ package alog
 
 import "log/slog"
 
-type Level string
+//go:generate go tool stringer -type=Level -trimprefix=Level
+type Level int
 
 const (
-	LevelDebug = "debug"
-	LevelInfo  = "info"
-	LevelWarn  = "warn"
-	LevelError = "error"
+	LevelUnknown Level = iota
+	LevelDebug
+	LevelInfo
+	LevelWarn
+	LevelError
 )
+
+func ParseLevel(s string) Level {
+	switch s {
+	case "debug":
+		return LevelDebug
+	case "info":
+		return LevelInfo
+	case "warn":
+		return LevelWarn
+	case "error":
+		return LevelError
+	default:
+		return LevelUnknown
+	}
+}
 
 func (l Level) Level() slog.Level {
 	switch l {
