@@ -23,6 +23,10 @@ func Event(ctx context.Context, message string) {
 	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
+func Warn(ctx context.Context, message string, err error) {
+	logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, slog.Any("error", err))
+}
+
 func Error(ctx context.Context, message string, err error) {
 	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", err))
 }
@@ -41,10 +45,7 @@ type AccessFields struct {
 
 func Access(ctx context.Context, fields *AccessFields) {
 	level := slog.LevelInfo
-	switch {
-	case 400 <= fields.Status && fields.Status < 500:
-		level = slog.LevelWarn
-	case 500 <= fields.Status && fields.Status < 600:
+	if 500 <= fields.Status && fields.Status < 600 {
 		level = slog.LevelError
 	}
 
@@ -92,7 +93,7 @@ func Capture(ctx context.Context, message string) func(func() error) {
 			return
 		}
 
-		Error(ctx, message, errtrace.FromStack(err, pc[:n:n]))
+		Warn(ctx, message, errtrace.FromStack(err, pc[:n:n]))
 	}
 }
 
