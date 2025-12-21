@@ -8,6 +8,10 @@ func AuthorizationError() Error {
 	return Error{status: 401, message: "ユーザの認証に失敗しました"}
 }
 
+func ClientDisconnectedError() Error {
+	return Error{status: 499, message: "クライアントから接続が切断されました"}
+}
+
 func UnknownError(err error) Error {
 	return Error{err: err, status: 500, message: "サーバ側で何らかのエラーが発生しました。時間を置いてから再度お試しください"}
 }
