@@ -38,7 +38,9 @@ func ToError(err error) Error {
 	var requestErr *ogenerrors.DecodeRequestError
 	var paramsErr *ogenerrors.DecodeParamsError
 	switch {
-	case errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded):
+	case errors.Is(err, context.Canceled):
+		return ClientDisconnectedError()
+	case errors.Is(err, context.DeadlineExceeded):
 		return DeadlineExceededError()
 	case errors.As(err, &paramsErr) || errors.As(err, &requestErr):
 		return ValidationError(err)
