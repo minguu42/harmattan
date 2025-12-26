@@ -17,11 +17,13 @@ func Recover() middleware.Middleware {
 				message := "panic: "
 				switch v := r.(type) {
 				case string:
-					message = message + v
+					message += v
 				case fmt.Stringer:
-					message = message + v.String()
+					message += v.String()
 				case error:
-					message = message + v.Error()
+					message += v.Error()
+				default:
+					message += fmt.Sprintf("%v", v)
 				}
 
 				pc := make([]uintptr, errtrace.MaxStackDepth)
