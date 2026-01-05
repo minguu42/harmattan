@@ -48,8 +48,8 @@ func (s *CheckHealthOK) SetRevision(val string) {
 }
 
 type CreateProjectReq struct {
-	Name  string                `json:"name"`
-	Color CreateProjectReqColor `json:"color"`
+	Name  string                   `json:"name"`
+	Color OptCreateProjectReqColor `json:"color"`
 }
 
 // GetName returns the value of Name.
@@ -58,7 +58,7 @@ func (s *CreateProjectReq) GetName() string {
 }
 
 // GetColor returns the value of Color.
-func (s *CreateProjectReq) GetColor() CreateProjectReqColor {
+func (s *CreateProjectReq) GetColor() OptCreateProjectReqColor {
 	return s.Color
 }
 
@@ -68,7 +68,7 @@ func (s *CreateProjectReq) SetName(val string) {
 }
 
 // SetColor sets the value of Color.
-func (s *CreateProjectReq) SetColor(val CreateProjectReqColor) {
+func (s *CreateProjectReq) SetColor(val OptCreateProjectReqColor) {
 	s.Color = val
 }
 
@@ -199,7 +199,7 @@ func (s *CreateTagReq) SetName(val string) {
 
 type CreateTaskReq struct {
 	Name     string `json:"name"`
-	Priority int    `json:"priority"`
+	Priority OptInt `json:"priority"`
 }
 
 // GetName returns the value of Name.
@@ -208,7 +208,7 @@ func (s *CreateTaskReq) GetName() string {
 }
 
 // GetPriority returns the value of Priority.
-func (s *CreateTaskReq) GetPriority() int {
+func (s *CreateTaskReq) GetPriority() OptInt {
 	return s.Priority
 }
 
@@ -218,7 +218,7 @@ func (s *CreateTaskReq) SetName(val string) {
 }
 
 // SetPriority sets the value of Priority.
-func (s *CreateTaskReq) SetPriority(val int) {
+func (s *CreateTaskReq) SetPriority(val OptInt) {
 	s.Priority = val
 }
 
@@ -349,6 +349,52 @@ func (o OptBool) Get() (v bool, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptCreateProjectReqColor returns new OptCreateProjectReqColor with value set to v.
+func NewOptCreateProjectReqColor(v CreateProjectReqColor) OptCreateProjectReqColor {
+	return OptCreateProjectReqColor{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptCreateProjectReqColor is optional CreateProjectReqColor.
+type OptCreateProjectReqColor struct {
+	Value CreateProjectReqColor
+	Set   bool
+}
+
+// IsSet returns true if OptCreateProjectReqColor was set.
+func (o OptCreateProjectReqColor) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptCreateProjectReqColor) Reset() {
+	var v CreateProjectReqColor
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptCreateProjectReqColor) SetTo(v CreateProjectReqColor) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptCreateProjectReqColor) Get() (v CreateProjectReqColor, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptCreateProjectReqColor) Or(d CreateProjectReqColor) CreateProjectReqColor {
 	if v, ok := o.Get(); ok {
 		return v
 	}
