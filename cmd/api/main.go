@@ -45,7 +45,7 @@ func mainRun(ctx context.Context) error {
 	}
 	defer alog.Capture(ctx, "Failed to close factory")(f.Close)
 
-	h, err := api.NewHandler(f, []string{conf.AllowedOrigins})
+	h, err := api.NewHandler(f, conf.AllowedOrigins)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
