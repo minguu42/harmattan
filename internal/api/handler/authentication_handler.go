@@ -8,7 +8,7 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.SignUpOK, error) {
+func (h *Handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.SignUpOK, error) {
 	var errs []error
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
@@ -16,7 +16,7 @@ func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.authentication.SignUp(ctx, &usecase.SignUpInput{
+	out, err := h.Authentication.SignUp(ctx, &usecase.SignUpInput{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -26,7 +26,7 @@ func (h *handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.
 	return &openapi.SignUpOK{IDToken: out.IDToken}, nil
 }
 
-func (h *handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.SignInOK, error) {
+func (h *Handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.SignInOK, error) {
 	var errs []error
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
@@ -34,7 +34,7 @@ func (h *handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.authentication.SignIn(ctx, &usecase.SignInInput{
+	out, err := h.Authentication.SignIn(ctx, &usecase.SignInInput{
 		Email:    req.Email,
 		Password: req.Password,
 	})

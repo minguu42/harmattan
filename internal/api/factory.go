@@ -1,4 +1,4 @@
-package factory
+package api
 
 import (
 	"context"
@@ -13,7 +13,7 @@ type Factory struct {
 	DB   *database.Client
 }
 
-func New(ctx context.Context, conf Config) (*Factory, error) {
+func NewFactory(ctx context.Context, conf *Config) (*Factory, error) {
 	authn, err := auth.NewAuthenticator(conf.Auth)
 	if err != nil {
 		return nil, errtrace.Wrap(err)

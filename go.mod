@@ -17,6 +17,7 @@ require (
 	github.com/ikawaha/httpcheck v1.12.5
 	github.com/ogen-go/ogen v1.18.0
 	github.com/oklog/ulid/v2 v2.1.1
+	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.40.0
 	golang.org/x/crypto v0.46.0

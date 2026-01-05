@@ -12,8 +12,7 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/alog"
-	"github.com/minguu42/harmattan/internal/api/handler"
-	"github.com/minguu42/harmattan/internal/factory"
+	"github.com/minguu42/harmattan/internal/api"
 	"github.com/minguu42/harmattan/internal/lib/env"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
@@ -35,26 +34,26 @@ func main() {
 }
 
 func mainRun(ctx context.Context) error {
-	conf, err := env.Load[factory.Config]()
+	conf, err := env.Load[api.Config]()
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
 
-	f, err := factory.New(ctx, conf)
+	f, err := api.NewFactory(ctx, &conf)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
 	defer alog.Capture(ctx, "Failed to close factory")(f.Close)
 
-	h, err := handler.New(f)
+	h, err := api.NewHandler(f, []string{conf.AllowedOrigins})
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	s := &http.Server{
-		Addr:         net.JoinHostPort(conf.API.Host, strconv.Itoa(conf.API.Port)),
+	s := http.Server{
+		Addr:         net.JoinHostPort(conf.Host, strconv.Itoa(conf.Port)),
 		Handler:      h,
-		ReadTimeout:  conf.API.ReadTimeout,
-		WriteTimeout: conf.API.WriteTimeout,
+		ReadTimeout:  conf.ReadTimeout,
+		WriteTimeout: conf.WriteTimeout,
 	}
 
 	serveErr := make(chan error)
@@ -71,7 +70,7 @@ func mainRun(ctx context.Context) error {
 	case <-sigterm:
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, conf.API.StopTimeout)
+	ctx, cancel := context.WithTimeout(ctx, conf.StopTimeout)
 	defer cancel()
 
 	alog.Event(ctx, "Stop accepting requests")
