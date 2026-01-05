@@ -9,14 +9,14 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectReq) (*openapi.Project, error) {
+func (h *Handler) CreateProject(ctx context.Context, req *openapi.CreateProjectReq) (*openapi.Project, error) {
 	var errs []error
 	errs = append(errs, validateProjectName(req.Name)...)
 	if len(errs) > 0 {
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.project.CreateProject(ctx, &usecase.CreateProjectInput{
+	out, err := h.Project.CreateProject(ctx, &usecase.CreateProjectInput{
 		Name:  req.Name,
 		Color: domain.ProjectColor(req.Color),
 	})
@@ -26,8 +26,8 @@ func (h *handler) CreateProject(ctx context.Context, req *openapi.CreateProjectR
 	return convertProject(out.Project), nil
 }
 
-func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsParams) (*openapi.ListProjectsOK, error) {
-	out, err := h.project.ListProjects(ctx, &usecase.ListProjectsInput{
+func (h *Handler) ListProjects(ctx context.Context, params openapi.ListProjectsParams) (*openapi.ListProjectsOK, error) {
+	out, err := h.Project.ListProjects(ctx, &usecase.ListProjectsInput{
 		Limit:  params.Limit.Value,
 		Offset: params.Offset.Value,
 	})
@@ -40,8 +40,8 @@ func (h *handler) ListProjects(ctx context.Context, params openapi.ListProjectsP
 	}, nil
 }
 
-func (h *handler) GetProject(ctx context.Context, params openapi.GetProjectParams) (*openapi.Project, error) {
-	out, err := h.project.GetProject(ctx, &usecase.GetProjectInput{
+func (h *Handler) GetProject(ctx context.Context, params openapi.GetProjectParams) (*openapi.Project, error) {
+	out, err := h.Project.GetProject(ctx, &usecase.GetProjectInput{
 		ID: domain.ProjectID(params.ProjectID),
 	})
 	if err != nil {
@@ -50,7 +50,7 @@ func (h *handler) GetProject(ctx context.Context, params openapi.GetProjectParam
 	return convertProject(out.Project), nil
 }
 
-func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectReq, params openapi.UpdateProjectParams) (*openapi.Project, error) {
+func (h *Handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectReq, params openapi.UpdateProjectParams) (*openapi.Project, error) {
 	var errs []error
 	if name, ok := req.Name.Get(); ok {
 		errs = append(errs, validateProjectName(name)...)
@@ -59,7 +59,7 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.project.UpdateProject(ctx, &usecase.UpdateProjectInput{
+	out, err := h.Project.UpdateProject(ctx, &usecase.UpdateProjectInput{
 		ID:         domain.ProjectID(params.ProjectID),
 		Name:       usecase.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
 		Color:      usecase.Option[domain.ProjectColor]{V: domain.ProjectColor(req.Color.Value), Valid: req.Color.Set},
@@ -71,8 +71,8 @@ func (h *handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 	return convertProject(out.Project), nil
 }
 
-func (h *handler) DeleteProject(ctx context.Context, params openapi.DeleteProjectParams) error {
-	if err := h.project.DeleteProject(ctx, &usecase.DeleteProjectInput{ID: domain.ProjectID(params.ProjectID)}); err != nil {
+func (h *Handler) DeleteProject(ctx context.Context, params openapi.DeleteProjectParams) error {
+	if err := h.Project.DeleteProject(ctx, &usecase.DeleteProjectInput{ID: domain.ProjectID(params.ProjectID)}); err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil

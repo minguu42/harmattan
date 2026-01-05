@@ -9,11 +9,10 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/alog"
-	"github.com/minguu42/harmattan/internal/api/handler"
+	"github.com/minguu42/harmattan/internal/api"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
-	"github.com/minguu42/harmattan/internal/factory"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
 )
@@ -92,10 +91,10 @@ func TestMain(m *testing.M) {
 	}
 	defer alog.Capture(ctx, "Failed to close database client")(db.Close)
 
-	h, err := handler.New(&factory.Factory{
+	h, err := api.NewHandler(&api.Factory{
 		Auth: authn,
 		DB:   db,
-	})
+	}, []string{"*"})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

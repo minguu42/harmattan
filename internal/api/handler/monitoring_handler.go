@@ -6,7 +6,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/openapi"
 )
 
-func (h *handler) CheckHealth(_ context.Context) (*openapi.CheckHealthOK, error) {
-	out := h.monitoring.CheckHealth()
+func (h *Handler) CheckHealth(_ context.Context) (*openapi.CheckHealthOK, error) {
+	out := h.Monitoring.CheckHealth()
 	return &openapi.CheckHealthOK{Revision: out.Revision}, nil
 }

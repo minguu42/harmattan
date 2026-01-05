@@ -144,6 +144,20 @@ func processField(field reflect.Value, value string) error {
 		field.SetFloat(v)
 	case reflect.String:
 		field.SetString(value)
+	case reflect.Slice:
+		if t.Elem().Kind() != reflect.String {
+			return fmt.Errorf("cannot handle slice of %s", t.Elem().Kind().String())
+		}
+		if value == "" {
+			field.Set(reflect.MakeSlice(t, 0, 0))
+		} else {
+			parts := strings.Split(value, ",")
+			slice := reflect.MakeSlice(t, len(parts), len(parts))
+			for i, part := range parts {
+				slice.Index(i).SetString(part)
+			}
+			field.Set(slice)
+		}
 	default:
 		return fmt.Errorf("cannot handle field of kind %s", field.Kind().String())
 	}

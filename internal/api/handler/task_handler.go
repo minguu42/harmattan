@@ -10,14 +10,14 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
+func (h *Handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
 	var errs []error
 	errs = append(errs, validateTaskName(req.Name)...)
 	if len(errs) > 0 {
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.task.CreateTask(ctx, &usecase.CreateTaskInput{
+	out, err := h.Task.CreateTask(ctx, &usecase.CreateTaskInput{
 		ProjectID: domain.ProjectID(params.ProjectID),
 		Name:      req.Name,
 		Priority:  req.Priority,
@@ -28,8 +28,8 @@ func (h *handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 	return convertTask(out.Task, out.Tags), nil
 }
 
-func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams) (*openapi.ListTasksOK, error) {
-	out, err := h.task.ListTasks(ctx, &usecase.ListTasksInput{
+func (h *Handler) ListTasks(ctx context.Context, params openapi.ListTasksParams) (*openapi.ListTasksOK, error) {
+	out, err := h.Task.ListTasks(ctx, &usecase.ListTasksInput{
 		ProjectID: domain.ProjectID(params.ProjectID),
 		Limit:     params.Limit.Value,
 		Offset:    params.Offset.Value,
@@ -43,15 +43,15 @@ func (h *handler) ListTasks(ctx context.Context, params openapi.ListTasksParams)
 	}, nil
 }
 
-func (h *handler) GetTask(ctx context.Context, params openapi.GetTaskParams) (*openapi.Task, error) {
-	out, err := h.task.GetTask(ctx, &usecase.GetTaskInput{ID: domain.TaskID(params.TaskID)})
+func (h *Handler) GetTask(ctx context.Context, params openapi.GetTaskParams) (*openapi.Task, error) {
+	out, err := h.Task.GetTask(ctx, &usecase.GetTaskInput{ID: domain.TaskID(params.TaskID)})
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 	return convertTask(out.Task, out.Tags), nil
 }
 
-func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, params openapi.UpdateTaskParams) (*openapi.Task, error) {
+func (h *Handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, params openapi.UpdateTaskParams) (*openapi.Task, error) {
 	var errs []error
 	if name, ok := req.Name.Get(); ok {
 		errs = append(errs, validateTaskName(name)...)
@@ -60,7 +60,7 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.task.UpdateTask(ctx, &usecase.UpdateTaskInput{
+	out, err := h.Task.UpdateTask(ctx, &usecase.UpdateTaskInput{
 		ID:          domain.TaskID(params.TaskID),
 		Name:        usecase.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
 		TagIDs:      usecase.Option[[]domain.TagID]{V: convertSlice[domain.TagID](req.TagIds), Valid: req.TagIds != nil},
@@ -75,8 +75,8 @@ func (h *handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 	return convertTask(out.Task, out.Tags), nil
 }
 
-func (h *handler) DeleteTask(ctx context.Context, params openapi.DeleteTaskParams) error {
-	if err := h.task.DeleteTask(ctx, &usecase.DeleteTaskInput{ID: domain.TaskID(params.TaskID)}); err != nil {
+func (h *Handler) DeleteTask(ctx context.Context, params openapi.DeleteTaskParams) error {
+	if err := h.Task.DeleteTask(ctx, &usecase.DeleteTaskInput{ID: domain.TaskID(params.TaskID)}); err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil

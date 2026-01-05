@@ -9,22 +9,22 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-func (h *handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*openapi.Tag, error) {
+func (h *Handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*openapi.Tag, error) {
 	var errs []error
 	errs = append(errs, validateTagName(req.Name)...)
 	if len(errs) > 0 {
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.tag.CreateTag(ctx, &usecase.CreateTagInput{Name: req.Name})
+	out, err := h.Tag.CreateTag(ctx, &usecase.CreateTagInput{Name: req.Name})
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 	return convertTag(out.Tag), nil
 }
 
-func (h *handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (*openapi.ListTagsOK, error) {
-	out, err := h.tag.ListTags(ctx, &usecase.ListTagsInput{
+func (h *Handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (*openapi.ListTagsOK, error) {
+	out, err := h.Tag.ListTags(ctx, &usecase.ListTagsInput{
 		Limit:  params.Limit.Value,
 		Offset: params.Offset.Value,
 	})
@@ -37,7 +37,7 @@ func (h *handler) ListTags(ctx context.Context, params openapi.ListTagsParams) (
 	}, nil
 }
 
-func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, params openapi.UpdateTagParams) (*openapi.Tag, error) {
+func (h *Handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, params openapi.UpdateTagParams) (*openapi.Tag, error) {
 	var errs []error
 	if name, ok := req.Name.Get(); ok {
 		errs = validateTagName(name)
@@ -46,7 +46,7 @@ func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 		return nil, usecase.DomainValidationError(errs)
 	}
 
-	out, err := h.tag.UpdateTag(ctx, &usecase.UpdateTagInput{
+	out, err := h.Tag.UpdateTag(ctx, &usecase.UpdateTagInput{
 		ID:   domain.TagID(params.TagID),
 		Name: usecase.Option[string]{V: req.Name.Value, Valid: req.Name.Set},
 	})
@@ -56,8 +56,8 @@ func (h *handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 	return convertTag(out.Tag), nil
 }
 
-func (h *handler) GetTag(ctx context.Context, params openapi.GetTagParams) (*openapi.Tag, error) {
-	out, err := h.tag.GetTag(ctx, &usecase.GetTagInput{
+func (h *Handler) GetTag(ctx context.Context, params openapi.GetTagParams) (*openapi.Tag, error) {
+	out, err := h.Tag.GetTag(ctx, &usecase.GetTagInput{
 		ID: domain.TagID(params.TagID),
 	})
 	if err != nil {
@@ -66,8 +66,8 @@ func (h *handler) GetTag(ctx context.Context, params openapi.GetTagParams) (*ope
 	return convertTag(out.Tag), nil
 }
 
-func (h *handler) DeleteTag(ctx context.Context, params openapi.DeleteTagParams) error {
-	if err := h.tag.DeleteTag(ctx, &usecase.DeleteTagInput{ID: domain.TagID(params.TagID)}); err != nil {
+func (h *Handler) DeleteTag(ctx context.Context, params openapi.DeleteTagParams) error {
+	if err := h.Tag.DeleteTag(ctx, &usecase.DeleteTagInput{ID: domain.TagID(params.TagID)}); err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil

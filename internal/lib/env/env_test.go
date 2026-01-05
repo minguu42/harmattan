@@ -15,22 +15,23 @@ func TestLoad(t *testing.T) {
 		type Foo struct{ FooField string }
 		type Bar struct{ BarField string }
 		type Config struct {
-			BoolField    bool
-			IntField     int
-			Int8Field    int8
-			Int16Field   int16
-			Int32Field   int32
-			Int64Field   int64
-			UintField    uint
-			Uint8Field   uint8
-			Uint16Field  uint16
-			Uint32Field  uint32
-			Uint64Field  uint64
-			Float32Field float32
-			Float64Field float64
-			StringField  string
-			PointerField *string
-			Foo          Foo
+			BoolField        bool
+			IntField         int
+			Int8Field        int8
+			Int16Field       int16
+			Int32Field       int32
+			Int64Field       int64
+			UintField        uint
+			Uint8Field       uint8
+			Uint16Field      uint16
+			Uint32Field      uint32
+			Uint64Field      uint64
+			Float32Field     float32
+			Float64Field     float64
+			StringField      string
+			StringSliceField []string
+			PointerField     *string
+			Foo              Foo
 			Bar
 			TimeField     time.Time
 			DurationField time.Duration
@@ -49,6 +50,7 @@ func TestLoad(t *testing.T) {
 		t.Setenv("Float32Field", "3.14")
 		t.Setenv("Float64Field", "3.1415")
 		t.Setenv("StringField", "Hello, World!")
+		t.Setenv("StringSliceField", "a,b,c")
 		t.Setenv("PointerField", "こんにちは、世界！")
 		t.Setenv("FooField", "foo")
 		t.Setenv("BarField", "bar")
@@ -56,25 +58,26 @@ func TestLoad(t *testing.T) {
 		t.Setenv("DurationField", "1h20m30s")
 
 		want := Config{
-			BoolField:     true,
-			IntField:      -1,
-			Int8Field:     -8,
-			Int16Field:    -16,
-			Int32Field:    -32,
-			Int64Field:    -64,
-			UintField:     1,
-			Uint8Field:    8,
-			Uint16Field:   16,
-			Uint32Field:   32,
-			Uint64Field:   64,
-			Float32Field:  3.14,
-			Float64Field:  3.1415,
-			StringField:   "Hello, World!",
-			PointerField:  ptr.Ref("こんにちは、世界！"),
-			Foo:           Foo{FooField: "foo"},
-			Bar:           Bar{BarField: "bar"},
-			TimeField:     time.Date(2024, 2, 29, 12, 34, 56, 0, time.UTC),
-			DurationField: 1*time.Hour + 20*time.Minute + 30*time.Second,
+			BoolField:        true,
+			IntField:         -1,
+			Int8Field:        -8,
+			Int16Field:       -16,
+			Int32Field:       -32,
+			Int64Field:       -64,
+			UintField:        1,
+			Uint8Field:       8,
+			Uint16Field:      16,
+			Uint32Field:      32,
+			Uint64Field:      64,
+			Float32Field:     3.14,
+			Float64Field:     3.1415,
+			StringField:      "Hello, World!",
+			StringSliceField: []string{"a", "b", "c"},
+			PointerField:     ptr.Ref("こんにちは、世界！"),
+			Foo:              Foo{FooField: "foo"},
+			Bar:              Bar{BarField: "bar"},
+			TimeField:        time.Date(2024, 2, 29, 12, 34, 56, 0, time.UTC),
+			DurationField:    1*time.Hour + 20*time.Minute + 30*time.Second,
 		}
 		got, err := env.Load[Config]()
 		require.NoError(t, err)
@@ -126,9 +129,9 @@ func TestLoad(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, "", got)
 	})
-	t.Run("slice type not supported", func(t *testing.T) {
-		type Foo struct{ Field []string }
-		t.Setenv("Field", "value")
+	t.Run("int slice type not supported", func(t *testing.T) {
+		type Foo struct{ Field []int }
+		t.Setenv("Field", "1,2,3")
 
 		got, err := env.Load[Foo]()
 		assert.Error(t, err)
