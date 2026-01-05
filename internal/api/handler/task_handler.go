@@ -20,7 +20,7 @@ func (h *Handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 	out, err := h.Task.CreateTask(ctx, &usecase.CreateTaskInput{
 		ProjectID: domain.ProjectID(params.ProjectID),
 		Name:      req.Name,
-		Priority:  req.Priority,
+		Priority:  req.Priority.Value,
 	})
 	if err != nil {
 		return nil, errtrace.Wrap(err)

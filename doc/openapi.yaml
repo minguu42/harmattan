@@ -94,7 +94,8 @@ paths:
                 color:
                   type: string
                   enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
-              required: [name, color]
+                  default: default
+              required: [name]
         required: true
       responses:
         200:
@@ -183,8 +184,9 @@ paths:
                   type: string
                 priority:
                   type: integer
+                  default: 0
                   maximum: 3
-              required: [name, priority]
+              required: [name]
         required: true
       responses:
         200:

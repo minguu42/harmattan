@@ -123,8 +123,10 @@ func (s *CreateProjectReq) encodeFields(e *jx.Encoder) {
 		e.Str(s.Name)
 	}
 	{
-		e.FieldStart("color")
-		s.Color.Encode(e)
+		if s.Color.Set {
+			e.FieldStart("color")
+			s.Color.Encode(e)
+		}
 	}
 }
 
@@ -139,6 +141,7 @@ func (s *CreateProjectReq) Decode(d *jx.Decoder) error {
 		return errors.New("invalid: unable to decode CreateProjectReq to nil")
 	}
 	var requiredBitSet [1]uint8
+	s.setDefaults()
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
@@ -155,8 +158,8 @@ func (s *CreateProjectReq) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
 		case "color":
-			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
+				s.Color.Reset()
 				if err := s.Color.Decode(d); err != nil {
 					return err
 				}
@@ -174,7 +177,7 @@ func (s *CreateProjectReq) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -482,8 +485,10 @@ func (s *CreateTaskReq) encodeFields(e *jx.Encoder) {
 		e.Str(s.Name)
 	}
 	{
-		e.FieldStart("priority")
-		e.Int(s.Priority)
+		if s.Priority.Set {
+			e.FieldStart("priority")
+			s.Priority.Encode(e)
+		}
 	}
 }
 
@@ -498,6 +503,7 @@ func (s *CreateTaskReq) Decode(d *jx.Decoder) error {
 		return errors.New("invalid: unable to decode CreateTaskReq to nil")
 	}
 	var requiredBitSet [1]uint8
+	s.setDefaults()
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
@@ -514,11 +520,9 @@ func (s *CreateTaskReq) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
 		case "priority":
-			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Int()
-				s.Priority = int(v)
-				if err != nil {
+				s.Priority.Reset()
+				if err := s.Priority.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -535,7 +539,7 @@ func (s *CreateTaskReq) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -981,6 +985,39 @@ func (s OptBool) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptBool) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes CreateProjectReqColor as json.
+func (o OptCreateProjectReqColor) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes CreateProjectReqColor from json.
+func (o *OptCreateProjectReqColor) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptCreateProjectReqColor to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptCreateProjectReqColor) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptCreateProjectReqColor) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

@@ -18,7 +18,7 @@ func (h *Handler) CreateProject(ctx context.Context, req *openapi.CreateProjectR
 
 	out, err := h.Project.CreateProject(ctx, &usecase.CreateProjectInput{
 		Name:  req.Name,
-		Color: domain.ProjectColor(req.Color),
+		Color: domain.ProjectColor(req.Color.Value),
 	})
 	if err != nil {
 		return nil, errtrace.Wrap(err)
