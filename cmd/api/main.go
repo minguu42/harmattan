@@ -49,7 +49,7 @@ func mainRun(ctx context.Context) error {
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	s := http.Server{
+	s := &http.Server{
 		Addr:         net.JoinHostPort(conf.Host, strconv.Itoa(conf.Port)),
 		Handler:      h,
 		ReadTimeout:  conf.ReadTimeout,
