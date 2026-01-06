@@ -1,14 +1,29 @@
+.DS_Store
+.claude/
 .dockerignore
+.github/
 .gitignore
 .idea/
 .ogen.yaml
 .private/
+.tanstack/
 .vscode/
-Dockerfile
+CLAUDE.md
+Makefile
 compose.yaml
 doc/
+eslint.config.js
 infra/
+node_modules/
+package.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
 staticcheck.conf
+tsconfig.app.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+web/
 
 # Used to retrieve the revision
 # .git/

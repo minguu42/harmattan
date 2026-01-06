@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+@layer components {
+  .state-layer-parent {
+    @apply relative
+  }
+
+  .state-layer {
+    @apply absolute opacity-0 inset-0 m-auto size-full rounded-[inherit]
+    [.state-layer-parent:hover>&]:opacity-8
+    [.state-layer-parent:focus-visible>&]:opacity-10
+    [.state-layer-parent:active>&]:opacity-10
+    ;
+  }
+}
