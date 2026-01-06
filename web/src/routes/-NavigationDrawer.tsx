@@ -11,7 +11,7 @@ import {
 	Trash2Icon,
 } from "lucide-react"
 import {Link} from "@tanstack/react-router"
-import {type Project, useCreateProject, useProjects} from "./-api_projects.ts"
+import {type Project, useCreateProject, useProjects} from "./-api_project.ts"
 import {Button} from "./-Button.tsx"
 
 export function NavigationDrawer() {
@@ -26,8 +26,8 @@ export function NavigationDrawer() {
 			<IconButton icon={MenuIcon} onClick={toggleDrawer} />
 			<Dialog.Portal>
 				<Dialog.Backdrop className="fixed inset-0 bg-scrim" />
-				<Dialog.Popup className="group fixed top-0 left-0 w-90 min-h-screen bg-surface rounded-r-xl px-3">
-					<div className="fixed top-0 left-0 w-90 min-h-screen bg-scrim rounded-r-xl hidden group-data-nested-dialog-open:block" />
+				<Dialog.Popup className="group/nd fixed top-0 left-0 w-90 min-h-screen bg-surface rounded-r-xl px-3">
+					<div className="fixed inset-0 bg-scrim hidden group-data-nested-dialog-open/nd:block" />
 					<div className="h-16 flex items-center pl-4">
 						<p className="text-on-surface-variant">タスク</p>
 					</div>

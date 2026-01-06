@@ -21,6 +21,26 @@ function isProjects(arg: unknown): arg is Projects {
 
 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUtBM01QSk1URzRTNVlTTTNXME5TRlk3OSIsImV4cCI6MTc3MDk4MzE0MCwiaWF0IjoxNzYzMjA3MTQwfQ.tJ8WOl0vp3ccLTXdO6bzW5V7CAIkfkw5WU1mKNihIQY"
 
+export function useProject(projectID: string) {
+	return useQuery({
+		queryKey: ["projects", projectID],
+		queryFn: async () => {
+			const response = await fetch(`http://127.0.0.1:8080/projects/${projectID}`, {
+				method: "GET",
+				headers: {"Authorization": `Bearer ${token}`},
+			});
+			if (!response.ok) {
+				throw new Error(`HTTP error status: ${response.status}`);
+			}
+			const data: unknown = await response.json();
+			if (isProject(data)) {
+				return data;
+			}
+			throw new Error("invalid response body");
+		},
+	});
+}
+
 export function useProjects() {
 	return useQuery({
 		queryKey: ["projects"],
