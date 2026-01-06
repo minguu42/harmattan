@@ -1,4 +1,6 @@
 import {createFileRoute} from "@tanstack/react-router"
+import {IconButton} from "./-IconButton.tsx"
+import {Pencil} from "lucide-react"
 
 export const Route = createFileRoute("/")({
 	component: Index,
@@ -7,7 +9,7 @@ export const Route = createFileRoute("/")({
 function Index() {
 	return (
 		<div className="grid place-items-center min-h-screen">
-			<h1 className="text-3xl">Hello, World!</h1>
+			<IconButton icon={Pencil} />
 		</div>
 	)
 }

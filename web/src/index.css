@@ -10,9 +10,18 @@ button,
   cursor: pointer;
 }
 
+@theme {
+  --color-primary: #6750A4;
+  --color-surface: #FEF7FF;
+  --color-on-surface: #1D1B20;
+  --color-on-surface-variant: #49454F;
+  --color-scrim: rgba(0, 0, 0, 0.32);
+  --color-focus-ring: #0060CC;
+}
+
 @layer components {
   .state-layer-parent {
-    @apply relative
+    @apply relative focus-visible:outline-none
   }
 
   .state-layer {
@@ -20,6 +29,10 @@ button,
     [.state-layer-parent:hover>&]:opacity-8
     [.state-layer-parent:focus-visible>&]:opacity-10
     [.state-layer-parent:active>&]:opacity-10
-    ;
+  }
+
+  .state-layer-ring {
+    @apply absolute inset-0 m-auto size-full rounded-[inherit]
+    [.state-layer-parent:focus-visible>&]:outline-2 outline-focus-ring
   }
 }

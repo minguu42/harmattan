@@ -13,7 +13,7 @@ type Config struct {
 	ReadTimeout    time.Duration `env:"API_READ_TIMEOUT" default:"2s"`
 	WriteTimeout   time.Duration `env:"API_WRITE_TIMEOUT" default:"2s"`
 	StopTimeout    time.Duration `env:"API_STOP_TIMEOUT" default:"25s"`
-	AllowedOrigins []string      `env:"API_ALLOWED_ORIGINS" default:"http://127.0.0.1:5173"`
+	AllowedOrigins []string      `env:"API_ALLOWED_ORIGINS" default:"http://localhost:5173,http://127.0.0.1:5173"`
 
 	Auth auth.Config
 	DB   database.Config
