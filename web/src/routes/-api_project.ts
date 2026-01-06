@@ -83,3 +83,21 @@ export function useCreateProject() {
 		},
 	})
 }
+
+export function useDeleteProject() {
+	const client = useQueryClient()
+	return useMutation({
+		mutationFn: async (projectID: string) => {
+			const response = await fetch(`http://127.0.0.1:8080/projects/${projectID}`, {
+				method: "DELETE",
+				headers: {"Authorization": `Bearer ${token}`},
+			})
+			if (!response.ok) {
+				throw new Error(`HTTP error status: ${response.status}`)
+			}
+		},
+		onSuccess: () => {
+			void client.invalidateQueries({queryKey: ["projects"]})
+		}
+	})
+}

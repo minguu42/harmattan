@@ -11,7 +11,7 @@ import {
 	Trash2Icon,
 } from "lucide-react"
 import {Link} from "@tanstack/react-router"
-import {type Project, useCreateProject, useProjects} from "./-api_project.ts"
+import {type Project, useCreateProject, useDeleteProject, useProjects} from "./-api_project.ts"
 import {Button} from "./-Button.tsx"
 
 export function NavigationDrawer() {
@@ -144,6 +144,8 @@ type ProjectIndicatorProps = {
 }
 
 function ProjectIndicator({project}: ProjectIndicatorProps) {
+	const deleteProject = useDeleteProject()
+
 	return (
 		<li>
 			<Link
@@ -158,7 +160,7 @@ function ProjectIndicator({project}: ProjectIndicatorProps) {
 				<div className="test-sm text-on-surface-variant">{project.name}</div>
 				<div className="flex-1" />
 				<div className="hidden group-hover/i:block">
-					<IconButton icon={Trash2Icon} onClick={() => alert("プロジェクトの削除")} />
+					<IconButton icon={Trash2Icon} onClick={() => deleteProject.mutate(project.id)} />
 				</div>
 			</Link>
 		</li>
