@@ -10,7 +10,6 @@
 .vscode/
 CLAUDE.md
 Makefile
-README.md
 compose.yaml
 doc/
 eslint.config.js
