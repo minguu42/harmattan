@@ -59,9 +59,10 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 }
 
 type ListTasksInput struct {
-	ProjectID domain.ProjectID
-	Limit     int
-	Offset    int
+	ProjectID     domain.ProjectID
+	Limit         int
+	Offset        int
+	ShowCompleted bool
 }
 
 type ListTasksOutput struct {
@@ -84,7 +85,7 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 		return nil, errtrace.Wrap(ProjectNotFoundError())
 	}
 
-	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset)
+	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset, in.ShowCompleted)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}

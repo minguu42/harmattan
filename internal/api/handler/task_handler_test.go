@@ -66,6 +66,7 @@ func TestHandler_CreateTask(t *testing.T) {
 }
 
 func TestHandler_ListTasks(t *testing.T) {
+	completedAt := time.Date(2025, 1, 1, 12, 0, 0, 0, jst)
 	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Projects{
 			{
@@ -106,12 +107,23 @@ func TestHandler_ListTasks(t *testing.T) {
 				CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
+			{
+				ID:          "TASK-000000000000000000003",
+				UserID:      testUserID,
+				ProjectID:   "PROJECT-000000000000000001",
+				Name:        "タスク3（完了済み）",
+				Content:     "タスク3の内容",
+				Priority:    3,
+				CompletedAt: &completedAt,
+				CreatedAt:   time.Date(2025, 1, 1, 0, 0, 3, 0, jst),
+				UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 3, 0, jst),
+			},
 		},
 		database.Steps{},
 		database.TaskTags{},
 	}))
 
-	t.Run("no limit and offset", func(t *testing.T) {
+	t.Run("showCompleted=false (default)", func(t *testing.T) {
 		want := &openapi.ListTasksOK{
 			Tasks: []openapi.Task{
 				{
@@ -136,6 +148,44 @@ func TestHandler_ListTasks(t *testing.T) {
 			HasNext: false,
 		}
 		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks").
+			WithHeader("Authorization", "Bearer "+token).
+			Check().HasStatus(200).HasJSON(want)
+	})
+	t.Run("showCompleted=true", func(t *testing.T) {
+		want := &openapi.ListTasksOK{
+			Tasks: []openapi.Task{
+				{
+					ID:        "TASK-000000000000000000001",
+					ProjectID: "PROJECT-000000000000000001",
+					Name:      "タスク1",
+					Content:   "タスク1の内容",
+					Priority:  1,
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				},
+				{
+					ID:        "TASK-000000000000000000002",
+					ProjectID: "PROJECT-000000000000000001",
+					Name:      "タスク2",
+					Content:   "タスク2の内容",
+					Priority:  2,
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+				},
+				{
+					ID:          "TASK-000000000000000000003",
+					ProjectID:   "PROJECT-000000000000000001",
+					Name:        "タスク3（完了済み）",
+					Content:     "タスク3の内容",
+					Priority:    3,
+					CompletedAt: openapi.OptDateTime{Value: completedAt, Set: true},
+					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 3, 0, jst),
+					UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 3, 0, jst),
+				},
+			},
+			HasNext: false,
+		}
+		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000001/tasks?showCompleted=true").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(200).HasJSON(want)
 	})

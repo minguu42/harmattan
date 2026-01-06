@@ -1858,6 +1858,10 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 					In:   "query",
 				}: params.Offset,
 				{
+					Name: "showCompleted",
+					In:   "query",
+				}: params.ShowCompleted,
+				{
 					Name: "projectID",
 					In:   "path",
 				}: params.ProjectID,

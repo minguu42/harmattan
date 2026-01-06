@@ -30,9 +30,10 @@ func (h *Handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 
 func (h *Handler) ListTasks(ctx context.Context, params openapi.ListTasksParams) (*openapi.ListTasksOK, error) {
 	out, err := h.Task.ListTasks(ctx, &usecase.ListTasksInput{
-		ProjectID: domain.ProjectID(params.ProjectID),
-		Limit:     params.Limit.Value,
-		Offset:    params.Offset.Value,
+		ProjectID:     domain.ProjectID(params.ProjectID),
+		Limit:         params.Limit.Value,
+		Offset:        params.Offset.Value,
+		ShowCompleted: params.ShowCompleted.Value,
 	})
 	if err != nil {
 		return nil, errtrace.Wrap(err)

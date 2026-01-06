@@ -80,9 +80,13 @@ func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
 	return nil
 }
 
-func (c *Client) ListTasks(ctx context.Context, projectID domain.ProjectID, limit, offset int) (domain.Tasks, error) {
+func (c *Client) ListTasks(ctx context.Context, projectID domain.ProjectID, limit, offset int, showCompleted bool) (domain.Tasks, error) {
 	var ts Tasks
-	if err := c.db(ctx).Preload("Steps").Where("project_id = ?", projectID).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
+	q := c.db(ctx).Preload("Steps").Where("project_id = ?", projectID)
+	if !showCompleted {
+		q = q.Where("completed_at IS NULL")
+	}
+	if err := q.Limit(limit).Offset(offset).Find(&ts).Error; err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
