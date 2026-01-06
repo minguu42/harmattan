@@ -1,10 +1,12 @@
 import {createRootRoute, Outlet} from "@tanstack/react-router"
+import {NavigationDrawer} from "./-NavigationDrawer.tsx"
 
-export const Route = createRootRoute({component: Root})
+export const Route = createRootRoute({component: RouteComponent})
 
-function Root() {
+function RouteComponent() {
 	return (
-		<div className="isolate">
+		<div className="isolate min-h-screen bg-surface">
+			<NavigationDrawer />
 			<Outlet />
 		</div>
 	)
