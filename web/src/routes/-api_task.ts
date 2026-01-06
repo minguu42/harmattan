@@ -56,7 +56,7 @@ export function useCreateTask(projectID: string) {
 			if (!response.ok) {
 				throw new Error(`HTTP error status: ${response.status}`)
 			}
-			return await response.json() as Task
+			return await response.json()
 		},
 		onSuccess: () => {
 			void queryClient.invalidateQueries({queryKey: ["projects", projectID, "tasks"]})

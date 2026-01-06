@@ -157,7 +157,7 @@ function ProjectIndicator({project}: ProjectIndicatorProps) {
 				<div className="state-layer-ring" />
 				<FolderOpenDotIcon className="text-on-surface-variant" />
 				<div className="w-3" />
-				<div className="test-sm text-on-surface-variant">{project.name}</div>
+				<div className="text-sm text-on-surface-variant">{project.name}</div>
 				<div className="flex-1" />
 				<div className="hidden group-hover/i:block">
 					<IconButton icon={Trash2Icon} onClick={() => deleteProject.mutate(project.id)} />
