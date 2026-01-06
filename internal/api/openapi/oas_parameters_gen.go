@@ -1131,9 +1131,10 @@ func decodeListTagsParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 
 // ListTasksParams is parameters of ListTasks operation.
 type ListTasksParams struct {
-	Limit     OptInt `json:",omitempty,omitzero"`
-	Offset    OptInt `json:",omitempty,omitzero"`
-	ProjectID string
+	Limit         OptInt  `json:",omitempty,omitzero"`
+	Offset        OptInt  `json:",omitempty,omitzero"`
+	ShowCompleted OptBool `json:",omitempty,omitzero"`
+	ProjectID     string
 }
 
 func unpackListTasksParams(packed middleware.Parameters) (params ListTasksParams) {
@@ -1153,6 +1154,15 @@ func unpackListTasksParams(packed middleware.Parameters) (params ListTasksParams
 		}
 		if v, ok := packed[key]; ok {
 			params.Offset = v.(OptInt)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "showCompleted",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.ShowCompleted = v.(OptBool)
 		}
 	}
 	{
@@ -1305,6 +1315,52 @@ func decodeListTasksParams(args [1]string, argsEscaped bool, r *http.Request) (p
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "offset",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: showCompleted.
+	{
+		val := bool(false)
+		params.ShowCompleted.SetTo(val)
+	}
+	// Decode query: showCompleted.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "showCompleted",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotShowCompletedVal bool
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToBool(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotShowCompletedVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.ShowCompleted.SetTo(paramsDotShowCompletedVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "showCompleted",
 			In:   "query",
 			Err:  err,
 		}
