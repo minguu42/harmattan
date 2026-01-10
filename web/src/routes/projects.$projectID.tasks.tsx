@@ -1,8 +1,8 @@
 import {createFileRoute} from "@tanstack/react-router"
-import {useProject} from "./-api_project.ts"
+import {useProject} from "../api/project.ts"
 import {CheckIcon, CircleIcon, FolderOpenDotIcon, PlusIcon, Trash2Icon} from "lucide-react"
 import {useState} from "react"
-import {useCompleteTask, useCreateTask, useDeleteTask, useTasks} from "./-api_task.ts"
+import {useCompleteTask, useCreateTask, useDeleteTask, useTasks} from "../api/task.ts"
 import {Field, Form} from "@base-ui/react"
 import {IconButton} from "../components/IconButton.tsx"
 

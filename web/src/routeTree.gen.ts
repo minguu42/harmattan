@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ComponentsRouteImport } from './routes/components'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsProjectIDTasksRouteImport } from './routes/projects.$projectID.tasks'
 
+const ComponentsRoute = ComponentsRouteImport.update({
+  id: '/components',
+  path: '/components',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -25,32 +31,43 @@ const ProjectsProjectIDTasksRoute = ProjectsProjectIDTasksRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/components': typeof ComponentsRoute
   '/projects/$projectID/tasks': typeof ProjectsProjectIDTasksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/components': typeof ComponentsRoute
   '/projects/$projectID/tasks': typeof ProjectsProjectIDTasksRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/components': typeof ComponentsRoute
   '/projects/$projectID/tasks': typeof ProjectsProjectIDTasksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/projects/$projectID/tasks'
+  fullPaths: '/' | '/components' | '/projects/$projectID/tasks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/projects/$projectID/tasks'
-  id: '__root__' | '/' | '/projects/$projectID/tasks'
+  to: '/' | '/components' | '/projects/$projectID/tasks'
+  id: '__root__' | '/' | '/components' | '/projects/$projectID/tasks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ComponentsRoute: typeof ComponentsRoute
   ProjectsProjectIDTasksRoute: typeof ProjectsProjectIDTasksRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/components': {
+      id: '/components'
+      path: '/components'
+      fullPath: '/components'
+      preLoaderRoute: typeof ComponentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ComponentsRoute: ComponentsRoute,
   ProjectsProjectIDTasksRoute: ProjectsProjectIDTasksRoute,
 }
 export const routeTree = rootRouteImport

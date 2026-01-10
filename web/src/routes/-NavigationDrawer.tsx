@@ -1,17 +1,20 @@
 import {Dialog, Field, Form} from "@base-ui/react"
 import {useState} from "react"
 import {IconButton} from "../components/IconButton.tsx"
+import {Menu, MenuItem} from "../components/Menu.tsx"
 import {
+	ComponentIcon,
 	FolderOpenDotIcon,
 	FolderPlusIcon,
 	ListTodoIcon,
 	type LucideIcon,
 	MenuIcon,
+	PencilIcon,
 	SunIcon,
 	Trash2Icon,
 } from "lucide-react"
 import {Link} from "@tanstack/react-router"
-import {type Project, useCreateProject, useDeleteProject, useProjects} from "./-api_project.ts"
+import {type Project, useCreateProject, useDeleteProject, useProjects} from "../api/project.ts"
 import {Button} from "../components/Button.tsx"
 
 export function NavigationDrawer() {
@@ -43,6 +46,13 @@ export function NavigationDrawer() {
 						<ProjectCreateDialog />
 					</div>
 					<ProjectIndicatorList />
+					<div className="border w-78 mx-auto my-px border-on-surface-variant" />
+					<div className="h-16 flex items-center pl-4">
+						<p className="text-on-surface-variant">開発</p>
+					</div>
+					<ul>
+						<Indicator icon={ComponentIcon} label="コンポーネント一覧" to="/components" />
+					</ul>
 				</Dialog.Popup>
 			</Dialog.Portal>
 		</Dialog.Root>
@@ -52,12 +62,13 @@ export function NavigationDrawer() {
 type IndicatorProps = {
 	icon: LucideIcon
 	label: string
+	to?: string
 }
 
-function Indicator({icon: Icon, label}: IndicatorProps) {
+function Indicator({icon: Icon, label, to = "/"}: IndicatorProps) {
 	return (
 		<li>
-			<Link to="/" className="state-layer-parent flex items-center h-14 pl-4 rounded-xl">
+			<Link to={to} className="state-layer-parent flex items-center h-14 pl-4 rounded-xl">
 				<div className="state-layer bg-on-surface-variant" />
 				<div className="state-layer-ring" />
 				<Icon className="text-on-surface-variant" />
@@ -160,8 +171,11 @@ function ProjectIndicator({project}: ProjectIndicatorProps) {
 			<div className="w-3" />
 			<span className="text-sm text-on-surface-variant">{project.name}</span>
 			<div className="flex-1" />
-			<div className="invisible group-hover/i:visible group-focus-within/i:visible">
-				<IconButton icon={Trash2Icon} onClick={() => deleteProject.mutate(project.id)} />
+			<div className="invisible group-hover/i:visible group-focus-within/i:visible relative z-10">
+				<Menu>
+					<MenuItem icon={PencilIcon} label="変更" />
+					<MenuItem icon={Trash2Icon} label="削除" onClick={() => deleteProject.mutate(project.id)} />
+				</Menu>
 			</div>
 		</li>
 	)

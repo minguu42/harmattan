@@ -25,11 +25,12 @@ export function Menu({children}: MenuProps) {
 type MenuItemProps = {
 	icon: LucideIcon
 	label: string
+	onClick?: () => void
 }
 
-export function MenuItem({icon: Icon, label}: MenuItemProps) {
+export function MenuItem({icon: Icon, label, onClick}: MenuItemProps) {
 	return (
-		<BMenu.Item className="h-12 flex items-center pl-3 rounded-xl state-layer-parent">
+		<BMenu.Item className="h-12 flex items-center pl-3 rounded-xl state-layer-parent" onClick={onClick}>
 			<div className="state-layer bg-on-surface-variant" />
 			<Icon className="size-5 text-on-surface-variant" />
 			<div className="w-2" />
