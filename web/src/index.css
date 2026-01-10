@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: system-ui, sans-serif;
   color-scheme: light;
 }
 
@@ -13,10 +13,13 @@ button,
 @theme {
   --color-primary: #6750A4;
   --color-surface: #FEF7FF;
+  --color-surface-container-low: #F7F2FA;
   --color-on-surface: #1D1B20;
   --color-on-surface-variant: #49454F;
   --color-scrim: rgba(0, 0, 0, 0.32);
   --color-focus-ring: #0060CC;
+
+  --shadow-custom: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
 @layer components {
@@ -26,13 +29,13 @@ button,
 
   .state-layer {
     @apply absolute opacity-0 inset-0 m-auto size-full rounded-[inherit]
-    [.state-layer-parent:hover>&]:opacity-8
-    [.state-layer-parent:focus-visible>&]:opacity-10
-    [.state-layer-parent:active>&]:opacity-10
+    [.state-layer-parent:hover>&]:opacity-10
+    [.state-layer-parent:focus-within>&]:opacity-10
+    [.state-layer-parent:active>&]:opacity-12
   }
 
   .state-layer-ring {
     @apply absolute inset-0 m-auto size-full rounded-[inherit]
-    [.state-layer-parent:focus-visible>&]:outline-2 outline-focus-ring
+    [.state-layer-parent:focus-within>&]:outline-2 outline-focus-ring
   }
 }

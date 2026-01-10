@@ -4,7 +4,7 @@ import {CheckIcon, CircleIcon, FolderOpenDotIcon, PlusIcon, Trash2Icon} from "lu
 import {useState} from "react"
 import {useCompleteTask, useCreateTask, useDeleteTask, useTasks} from "./-api_task.ts"
 import {Field, Form} from "@base-ui/react"
-import {IconButton} from "./-IconButton.tsx"
+import {IconButton} from "../components/IconButton.tsx"
 
 export const Route = createFileRoute("/projects/$projectID/tasks")({
 	component: RouteComponent,

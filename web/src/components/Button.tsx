@@ -8,7 +8,7 @@ type Props = {
 
 export function Button({label, type, onClick}: Props) {
 	return (
-		<BaseButton type={type} className="state-layer-parent rounded-xl text-primary h-12 min-w-12 text-sm" onClick={onClick}>
+		<BaseButton type={type} className="state-layer-parent rounded-xl text-primary font-medium h-12 min-w-12 text-sm" onClick={onClick}>
 			<div className="state-layer bg-primary h-8" />
 			<div className="state-layer-ring h-8" />
 			{label}

@@ -1,6 +1,6 @@
 import {Dialog, Field, Form} from "@base-ui/react"
 import {useState} from "react"
-import {IconButton} from "./-IconButton.tsx"
+import {IconButton} from "../components/IconButton.tsx"
 import {
 	FolderOpenDotIcon,
 	FolderPlusIcon,
@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import {Link} from "@tanstack/react-router"
 import {type Project, useCreateProject, useDeleteProject, useProjects} from "./-api_project.ts"
-import {Button} from "./-Button.tsx"
+import {Button} from "../components/Button.tsx"
 
 export function NavigationDrawer() {
 	const [open, setOpen] = useState(false)
@@ -147,22 +147,22 @@ function ProjectIndicator({project}: ProjectIndicatorProps) {
 	const deleteProject = useDeleteProject()
 
 	return (
-		<li>
+		<li className="state-layer-parent flex items-center h-14 pl-4 rounded-xl group/i">
+			<div className="state-layer bg-on-surface-variant" />
+			<div className="state-layer-ring" />
 			<Link
 				to="/projects/$projectID/tasks"
 				params={{projectID: project.id}}
-				className="state-layer-parent group/i flex items-center h-14 pl-4 rounded-xl"
-			>
-				<div className="state-layer bg-on-surface-variant" />
-				<div className="state-layer-ring" />
-				<FolderOpenDotIcon className="text-on-surface-variant" />
-				<div className="w-3" />
-				<div className="text-sm text-on-surface-variant">{project.name}</div>
-				<div className="flex-1" />
-				<div className="hidden group-hover/i:block">
-					<IconButton icon={Trash2Icon} onClick={() => deleteProject.mutate(project.id)} />
-				</div>
-			</Link>
+				aria-label={`${project.name}のタスク一覧`}
+				className="absolute inset-0 focus-visible:outline-none"
+			/>
+			<FolderOpenDotIcon className="text-on-surface-variant" />
+			<div className="w-3" />
+			<span className="text-sm text-on-surface-variant">{project.name}</span>
+			<div className="flex-1" />
+			<div className="invisible group-hover/i:visible group-focus-within/i:visible">
+				<IconButton icon={Trash2Icon} onClick={() => deleteProject.mutate(project.id)} />
+			</div>
 		</li>
 	)
 }
