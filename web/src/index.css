@@ -12,10 +12,12 @@ button,
 
 @theme {
   --color-primary: #6750A4;
+  --color-on-primary: #FFFFFF;
   --color-surface: #FEF7FF;
   --color-surface-container-low: #F7F2FA;
   --color-on-surface: #1D1B20;
   --color-on-surface-variant: #49454F;
+  --color-outline: #79747E;
   --color-scrim: rgba(0, 0, 0, 0.32);
   --color-focus-ring: #0060CC;
 
