@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ikawaha/httpcheck"
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/lib/httpcheck"
 	"github.com/stretchr/testify/require"
 )
 
