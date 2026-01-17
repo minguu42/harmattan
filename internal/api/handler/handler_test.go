@@ -3,8 +3,8 @@ package handler_test
 import (
 	"testing"
 
-	"github.com/ikawaha/httpcheck"
 	"github.com/minguu42/harmattan/internal/api/handler"
+	"github.com/minguu42/harmattan/internal/lib/httpcheck"
 )
 
 func TestHandler_NotFound(t *testing.T) {

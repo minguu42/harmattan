@@ -3,8 +3,8 @@ package handler_test
 import (
 	"testing"
 
-	"github.com/ikawaha/httpcheck"
 	"github.com/minguu42/harmattan/internal/api/openapi"
+	"github.com/minguu42/harmattan/internal/lib/httpcheck"
 )
 
 func TestHandler_CheckHealth(t *testing.T) {
