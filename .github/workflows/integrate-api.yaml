@@ -28,7 +28,9 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Format code
-        run: go tool goimports -w ./cmd/api ./internal
+        run: |
+          gofmt -l -s -w ./cmd/api ./internal
+          go tool goimports -l -w ./cmd/api ./internal
       - name: Check for changes
         run: git diff --exit-code
   check-generated-code:
@@ -44,7 +46,10 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Generate code
-        run: go generate ./cmd/api/... ./internal/...
+        run: |
+          go generate ./cmd/api/... ./internal/...
+          gofmt -l -s -w ./cmd/api ./internal
+          go tool goimports -l -w ./cmd/api ./internal
       - name: Check for changes
         run: |
           git add -N .
