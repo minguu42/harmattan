@@ -1,4 +1,4 @@
-name: Integrate api
+name: Integrate API
 on:
   pull_request:
     paths:
