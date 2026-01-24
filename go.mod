@@ -11,7 +11,7 @@ tool (
 
 require (
 	github.com/avast/retry-go/v4 v4.7.0
-	github.com/aws/aws-lambda-go v1.47.0
+	github.com/aws/aws-lambda-go v1.52.0
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.2.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
