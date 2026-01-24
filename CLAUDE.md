@@ -1,104 +1,69 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## 概要
 
-## Project Overview
+Harmattanはタスク管理アプリである。
+フロントエンドはReact、バックエンドAPIはGoで作成されている。
+インフラストラクチャはAWSで、そのリソースはTerraformで管理されているが、開発中のため、すべてのリソースがTerraform管理対象外のものもある。
 
-Harmattan is a Go-based REST API service that provides authentication and project management functionality. It uses OpenAPI 3.0 specification with code generation via ogen.
+## ディレクトリ構成
 
-## Key Architecture
+- `cmd`: バックエンドコードのエントリポイント
+- `doc`: OpenAPIドキュメント
+- `infra`: インフラストラクチャ関係のコード（詳細は`infra/CLAUDE.md`を参照）
+- `internal`: バックエンドコード
+- `web`: フロントエンドコード（詳細は`web/CLAUDE.md`を参照）
 
-- **cmd/api/**: Main application entry point
-- **doc/**: API documentation including OpenAPI specification
-- **infra/**: Infrastructure configuration (MySQL, etc.)
-- **internal/**: Private application and library code
-  - **api/**: API layer components
-    - **handler/**: HTTP request handlers
-    - **middleware/**: HTTP middleware
-    - **openapi/**: Auto-generated OpenAPI client/server code
-    - **usecase/**: Business logic layer
-  - **auth/**: Authentication logic
-  - **database/**: Database access layer using GORM
-    - **databasetest/**: Test utilities for database testing
-  - **domain/**: Core business entities (Project, Task, Step, Tag, User)
-  - **factory/**: Dependency injection and initialization
-  - **lib/**: Shared utility libraries
-    - **alog/**: Application logging (slog wrapper)
-    - **clock/**: Time utilities with testable interface
-    - **env/**: Environment variable loading
-    - **idgen/**: ID generation (ULID-based)
-    - **ptr/**: Pointer utilities
+## バックエンド(Go)
 
-## Core Commands
+### アーキテクチャ
+
+- **レイヤー構造**: Handler → Usecase → Database/Domain
+  - `internal/api/handler`: OpenAPI仕様に基づくHTTPハンドラー
+  - `internal/api/usecase`: ビジネスロジック層
+  - `internal/database`: GORMを使用したデータアクセス層
+  - `internal/domain`: Harmattanのメンタルモデルを素直に表現するドメインモデル
+- **OpenAPI駆動**: `doc/openapi.yaml`から`ogen`により`internal/api/openapi`配下のコードを生成
+- **認証**: JWT (internal/auth)
+- **ログ**: 構造化ログ (internal/alog)
+
+### コマンド
 
 ```bash
-# Generate OpenAPI code
-go generate ./...
+# コード生成 (OpenAPI、stringer等)
+go generate ./cmd/api/... ./internal/...
 
-# Build the API server
+# フォーマット
+gofmt -l -s -w ./cmd/api ./internal
+go tool goimports -l -w ./cmd/api ./internal
+
+# リント
+go vet ./cmd/api/... ./internal/...
+go tool staticcheck ./cmd/api/... ./internal/...
+
+# ビルドチェック
 go build -o /dev/null ./cmd/api
 
-# Run all tests with shuffling
-go test -shuffle=on ./...
+# テスト
+go test -shuffle=on ./cmd/api/... ./internal/...
 
-# Run tests with coverage
-go test -cover ./...
+# 特定のパッケージのテスト
+go test -shuffle=on ./internal/api/handler
 
-# Format code
-go tool goimports -w .
-
-# Run linters
-go vet ./...
-go tool staticcheck ./...
+# 特定のテスト関数を実行
+go test -shuffle=on ./internal/api/handler -run TestHandlerName
 ```
 
-## OpenAPI Integration
+### 開発ノート
 
-The project uses ogen for OpenAPI code generation:
-- **API specification**: `doc/openapi.yaml`
-- **Generated code**: `internal/api/openapi/`
-- **Code generation directive**: In `internal/api/handler/handler.go`
-- **Configuration**: `.ogen.yaml` specifies generator options
-- Generate with: `go generate ./...`
+#### Code Generation
+- `internal/api/openapi`のコードは自動生成のため直接編集不可
+- OpenAPI仕様を変更した場合は`go generate ./internal/api/...`を実行
 
-## Testing Architecture
+#### Testing
+- データベース関連のテストは`testcontainers-go`を使用したコンテナベーステストを実行
+- テストヘルパーは`internal/database/databasetest`にある
 
-- **Testing framework**: testify for assertions and test utilities
-- **Integration testing**: testcontainers for MySQL integration tests
-- **HTTP testing**: ikawaha/httpcheck for API endpoint testing
-- **Test utilities**:
-  - `internal/lib/clock`: Testable time interface
-  - `internal/lib/idgen`: Testable ID generation
-  - `internal/database/databasetest`: Database test helpers
-- Run tests with: `go test -shuffle=on ./...`
-
-## Key Dependencies
-
-- **Go version**: 1.25.0
-- **Web framework**: ogen-generated server code
-- **Database**: GORM v1.31+ with MySQL driver
-- **Authentication**: JWT via golang-jwt/jwt v5
-- **Logging**: slog (standard library) with custom wrapper (alog)
-- **Testing**: testify, testcontainers, httpcheck
-- **ID generation**: ULID via oklog/ulid with custom wrapper (idgen)
-
-## Development Notes
-
-- **Timezone**: Set to JST (Japan Standard Time) in `cmd/api/main.go`
-- **ID generation**: Uses ULID for all entity IDs
-- **Logging**: Structured JSON logging via `alog` package (slog wrapper)
-  - Configurable via `LOG_LEVEL` (debug/info/silent) and `LOG_INDENT` env vars
-- **Middleware**: Custom middleware for access logging, recovery, and request ID context
-- **Database**: GORM conventions with MySQL
-- **Authentication**: JWT-based with custom security handler
-- **Error handling**: Centralized error types in `internal/api/usecase/error*.go`
-  - System errors: ValidationError, AuthorizationError, etc.
-  - User-facing errors: DomainValidationError, ProjectNotFoundError, etc.
-
-## Code Style
-
-- No unnecessary code comments (self-documenting code preferred)
-- Use generics where appropriate (e.g., `ptr.Ref[T]`, `ternary[T]`)
-- Private helper functions for type conversions
-- Consistent naming: `convert*` for type conversions, `validate*` for validation
-- Domain-specific utilities over generic ones
+#### Environment Variables
+- APIサーバーの環境変数は`internal/api/config.go`で`env.Load[api.Config]()`により読み込み
+- ローカル開発時は`cmd/api/.env`ファイルを使用
