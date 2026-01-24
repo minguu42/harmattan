@@ -73,13 +73,29 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const output = `Terraform Plan: \`${{ steps.plan.outcome }}\`
+            const stdout = `${{ steps.plan.outputs.stdout }}`;
+            const stderr = `${{ steps.plan.outputs.stderr }}`;
+
+            let output = `Terraform Plan: \`${{ steps.plan.outcome }}\`
+
             <details><summary>Show plan</summary>
 
             \`\`\`
-            ${{ steps.plan.outputs.stdout }}
+            ${stdout}
             \`\`\`
-            </details>`
+            </details>`;
+
+            if (stderr) {
+              output += `
+            <details><summary>Show errors</summary>
+
+            \`\`\`
+            ${stderr}
+            \`\`\`
+            </details>
+            `;
+            }
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
