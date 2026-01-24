@@ -1,20 +1,7 @@
-resource "terraform_data" "hello_lambda_build" {
-  triggers_replace = [
-    [for f in fileset("../lambdas/hello", "*.go") : filemd5("../lambdas/hello/${f}")],
-    filemd5("../../go.mod"),
-    filemd5("../../go.sum")
-  ]
-  provisioner "local-exec" {
-    command     = "GOOS=linux GOARCH=arm64 go build -o ./infra/lambdas/hello/bootstrap ./infra/lambdas/hello"
-    working_dir = "${path.module}/../.."
-  }
-}
-
 data "archive_file" "hello_lambda" {
   type        = "zip"
   source_file = "${path.module}/../lambdas/hello/bootstrap"
   output_path = "${path.module}/../lambdas/hello/hello.zip"
-  depends_on  = [terraform_data.hello_lambda_build]
 }
 
 resource "aws_lambda_function" "hello" {
