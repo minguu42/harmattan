@@ -3,12 +3,11 @@
 ## 概要
 
 Harmattanはタスク管理アプリである。
-フロントエンドはReact、バックエンドAPIはGoで作成されている。
-インフラストラクチャはAWSで、そのリソースはTerraformで管理されているが、開発中のため、すべてのリソースがTerraform管理対象外のものもある。
+フロントエンドはReact、バックエンドはGoで作成されている。
 
 ## ディレクトリ構成
 
-- `cmd`: バックエンドコードのエントリポイント
+- `cmd`: バックエンドアプリケーションのエントリポイント
 - `doc`: OpenAPIドキュメント
 - `infra`: インフラストラクチャ関係のコード（詳細は`infra/CLAUDE.md`を参照）
 - `internal`: バックエンドコード
@@ -29,30 +28,12 @@ Harmattanはタスク管理アプリである。
 
 ### コマンド
 
-```bash
-# コード生成 (OpenAPI、stringer等)
-go generate ./cmd/api/... ./internal/...
-
-# フォーマット
-gofmt -l -s -w ./cmd/api ./internal
-go tool goimports -l -w ./cmd/api ./internal
-
-# リント
-go vet ./cmd/api/... ./internal/...
-go tool staticcheck ./cmd/api/... ./internal/...
-
-# ビルドチェック
-go build -o /dev/null ./cmd/api
-
-# テスト
-go test -shuffle=on ./cmd/api/... ./internal/...
-
-# 特定のパッケージのテスト
-go test -shuffle=on ./internal/api/handler
-
-# 特定のテスト関数を実行
-go test -shuffle=on ./internal/api/handler -run TestHandlerName
-```
+- `go generate ./...`: OpenAPIやstringerでコードを生成する
+- `gofmt -s -w . && go tool goimports -w .`: コードを整形する
+- `go build ./... && go vet ./... && go tool staticcheck ./...`: 静的解析を実行する
+- `go test -shuffle=on ./...`: テストを実行する
+- `go test -shuffle=on ./internal/api/handler`: 特定のパッケージのテストを実行する
+- `go test -shuffle=on ./internal/api/handler -run TestHandlerName`: 特定のテストを実行する
 
 ### 開発ノート
 
@@ -63,6 +44,9 @@ go test -shuffle=on ./internal/api/handler -run TestHandlerName
 #### Testing
 - データベース関連のテストは`testcontainers-go`を使用したコンテナベーステストを実行
 - テストヘルパーは`internal/database/databasetest`にある
+- テストでの列挙型の扱い:
+  - 値が意味を持つ列挙型は文字列リテラルで代入（例: `Color: "blue"` not `Color: domain.ProjectColorBlue`）
+  - iotaなど値が意味を持たない列挙型は定数を使用
 
 #### Environment Variables
 - APIサーバーの環境変数は`internal/api/config.go`で`env.Load[api.Config]()`により読み込み
