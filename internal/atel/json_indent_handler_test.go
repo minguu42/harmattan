@@ -1,4 +1,4 @@
-package alog_test
+package atel_test
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"testing"
 	"testing/slogtest"
 
-	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/atel"
 )
 
 func TestJSONIndentHandler(t *testing.T) {
@@ -15,7 +15,7 @@ func TestJSONIndentHandler(t *testing.T) {
 
 	newHandler := func(t *testing.T) slog.Handler {
 		buf.Reset()
-		return alog.NewJSONIndentHandler(&buf, nil)
+		return atel.NewJSONIndentHandler(&buf, nil)
 	}
 	result := func(t *testing.T) map[string]any {
 		line := buf.Bytes()

@@ -1,10 +1,12 @@
-package alog
+package atel
 
 import (
 	"context"
 	"io"
 	"log/slog"
 	"os"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Level string
@@ -67,10 +69,15 @@ func logger(ctx context.Context) *Logger {
 	return globalLogger
 }
 
-func ContextWithRequestID(ctx context.Context, requestID string) context.Context {
+func ContextWithTracedLogger(ctx context.Context) context.Context {
+	spanContext := trace.SpanContextFromContext(ctx)
+	if !spanContext.IsValid() {
+		return ctx
+	}
+
 	l := logger(ctx)
 	return context.WithValue(ctx, loggerKey{}, &Logger{
-		base:        l.base.With(slog.String("request_id", requestID)),
+		base:        l.base.With(slog.String("request_id", spanContext.TraceID().String())),
 		level:       l.level,
 		prettyPrint: l.prettyPrint,
 	})

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 
-	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
@@ -30,7 +29,7 @@ func NewFactory(ctx context.Context, conf *Config) (*Factory, error) {
 		return nil, errtrace.Wrap(err)
 	}
 
-	alog.SetLogger(alog.New(os.Stdout, conf.LogLevel, conf.LogPrettyPrint))
+	atel.SetLogger(atel.New(os.Stdout, conf.LogLevel, conf.LogPrettyPrint))
 
 	var exporter trace.SpanExporter
 	switch conf.TraceExporter {

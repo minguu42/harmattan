@@ -3,7 +3,7 @@ package api
 import (
 	"time"
 
-	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 )
@@ -19,7 +19,7 @@ type Config struct {
 	Auth auth.Config
 	DB   database.Config
 
-	LogLevel           alog.Level `env:"LOG_LEVEL" default:"info"` // "debug" || "info" || "warn" || "error"
+	LogLevel           atel.Level `env:"LOG_LEVEL" default:"info"` // "debug" || "info" || "warn" || "error"
 	LogPrettyPrint     bool       `env:"LOG_PRETTY_PRINT" default:"false"`
 	TraceExporter      string     `env:"TRACE_EXPORTER"` // "otlp" || "stdout" || ""
 	TraceCollectorHost string     `env:"TRACE_COLLECTOR_HOST"`

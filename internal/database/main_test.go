@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
 )
@@ -21,7 +21,7 @@ var (
 
 func init() {
 	time.Local = jst
-	alog.SetLogger(alog.New(os.Stdout, alog.LevelError, false))
+	atel.SetLogger(atel.New(os.Stdout, atel.LevelError, false))
 }
 
 func TestMain(m *testing.M) {
@@ -32,7 +32,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer alog.Capture(ctx, "Failed to close test database client")(tdb.Close)
+	defer atel.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
 	c, err = database.NewClient(ctx, database.Config{
 		Host:            tdb.Host,
@@ -47,7 +47,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer alog.Capture(ctx, "Failed to close database client")(c.Close)
+	defer atel.Capture(ctx, "Failed to close database client")(c.Close)
 
 	m.Run()
 }

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/api"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
@@ -35,7 +35,7 @@ var (
 
 func init() {
 	time.Local = jst
-	alog.SetLogger(alog.New(os.Stdout, alog.LevelError, false))
+	atel.SetLogger(atel.New(os.Stdout, atel.LevelError, false))
 }
 
 func TestMain(m *testing.M) {
@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer alog.Capture(ctx, "Failed to close test database client")(tdb.Close)
+	defer atel.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
 	err = tdb.TruncateAndInsert(ctx, []any{database.Users{
 		{
@@ -89,7 +89,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer alog.Capture(ctx, "Failed to close database client")(db.Close)
+	defer atel.Capture(ctx, "Failed to close database client")(db.Close)
 
 	h, err := api.NewHandler(&api.Factory{
 		Auth: authn,
