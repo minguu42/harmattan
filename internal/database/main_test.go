@@ -21,7 +21,7 @@ var (
 
 func init() {
 	time.Local = jst
-	alog.SetDefaultLogger(alog.New(os.Stdout, alog.LevelError, false))
+	alog.SetLogger(alog.New(os.Stdout, alog.LevelError, false))
 }
 
 func TestMain(m *testing.M) {

@@ -2,6 +2,9 @@ package atel
 
 import (
 	"context"
+	"errors"
+	"net"
+	"strconv"
 
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
@@ -34,10 +37,17 @@ func SetupTracerProvider(ctx context.Context, exporter trace.SpanExporter) (func
 	return func() error { return provider.Shutdown(context.Background()) }, nil
 }
 
-func NewOTLPExporter(ctx context.Context) (trace.SpanExporter, error) {
+func NewOTLPExporter(ctx context.Context, host string, port int) (trace.SpanExporter, error) {
+	if host == "" {
+		return nil, errtrace.Wrap(errors.New("host is required"))
+	}
+	if port == 0 {
+		return nil, errtrace.Wrap(errors.New("port is required"))
+	}
+
 	exporter, err := otlptracegrpc.New(ctx,
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint("otel-collector:4317"),
+		otlptracegrpc.WithEndpoint(net.JoinHostPort(host, strconv.Itoa(port))),
 	)
 	if err != nil {
 		return nil, errtrace.Wrap(err)

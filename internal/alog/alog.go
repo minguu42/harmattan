@@ -23,12 +23,9 @@ func Event(ctx context.Context, message string) {
 	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
-func Warn(ctx context.Context, message string, err error) {
-	logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, slog.Any("error", err))
-}
-
-func Error(ctx context.Context, message string, err error) {
+func Fatal(ctx context.Context, message string, err error) {
 	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", err))
+	os.Exit(1)
 }
 
 type AccessFields struct {
@@ -75,7 +72,7 @@ func Access(ctx context.Context, fields *AccessFields) {
 	requestAttrs = append(requestAttrs, slog.String("ip_address", fields.IPAddress))
 	attrs = append(attrs, slog.GroupAttrs("request", requestAttrs...))
 
-	logger(ctx).base.LogAttrs(ctx, level, "Request accepted", attrs...)
+	logger(ctx).base.LogAttrs(ctx, level, "Request processed", attrs...)
 }
 
 func Capture(ctx context.Context, message string) func(func() error) {
@@ -83,6 +80,9 @@ func Capture(ctx context.Context, message string) func(func() error) {
 	n := runtime.Callers(2, pc)
 
 	return func(f func() error) {
+		if f == nil {
+			return
+		}
 		err := f()
 		if err == nil {
 			return
@@ -93,7 +93,7 @@ func Capture(ctx context.Context, message string) func(func() error) {
 			return
 		}
 
-		Warn(ctx, message, errtrace.FromStack(err, pc[:n:n]))
+		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, slog.Any("error", errtrace.FromStack(err, pc[:n:n])))
 	}
 }
 
