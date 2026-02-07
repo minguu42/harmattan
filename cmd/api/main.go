@@ -18,7 +18,7 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-var revision = "unknown"
+var revision = "xxxxxxx"
 
 func init() {
 	time.Local = time.FixedZone("JST", 9*60*60)

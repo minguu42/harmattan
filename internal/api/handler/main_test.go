@@ -94,7 +94,7 @@ func TestMain(m *testing.M) {
 	h, err := api.NewHandler(&api.Factory{
 		Auth: authn,
 		DB:   db,
-	}, []string{"*"})
+	}, "xxxxxxx", []string{"*"})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
