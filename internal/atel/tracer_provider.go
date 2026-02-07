@@ -2,7 +2,6 @@ package atel
 
 import (
 	"context"
-	"time"
 
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"go.opentelemetry.io/contrib/detectors/aws/ecs"
@@ -26,7 +25,7 @@ func SetupTracerProvider(ctx context.Context, exporter trace.SpanExporter) (func
 		trace.WithResource(res),
 	}
 	if exporter != nil {
-		opts = append(opts, trace.WithBatcher(exporter, trace.WithBatchTimeout(time.Second)))
+		opts = append(opts, trace.WithBatcher(exporter))
 	}
 	provider := trace.NewTracerProvider(opts...)
 
