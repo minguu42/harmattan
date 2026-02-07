@@ -7,11 +7,14 @@ import (
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func encodeCheckHealthResponse(response *CheckHealthOK, w http.ResponseWriter) error {
+func encodeCheckHealthResponse(response *CheckHealthOK, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -22,9 +25,10 @@ func encodeCheckHealthResponse(response *CheckHealthOK, w http.ResponseWriter) e
 	return nil
 }
 
-func encodeCreateProjectResponse(response *Project, w http.ResponseWriter) error {
+func encodeCreateProjectResponse(response *Project, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -35,9 +39,10 @@ func encodeCreateProjectResponse(response *Project, w http.ResponseWriter) error
 	return nil
 }
 
-func encodeCreateStepResponse(response *Step, w http.ResponseWriter) error {
+func encodeCreateStepResponse(response *Step, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -48,9 +53,10 @@ func encodeCreateStepResponse(response *Step, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeCreateTagResponse(response *Tag, w http.ResponseWriter) error {
+func encodeCreateTagResponse(response *Tag, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -61,9 +67,10 @@ func encodeCreateTagResponse(response *Tag, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeCreateTaskResponse(response *Task, w http.ResponseWriter) error {
+func encodeCreateTaskResponse(response *Task, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -74,33 +81,38 @@ func encodeCreateTaskResponse(response *Task, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeDeleteProjectResponse(response *DeleteProjectOK, w http.ResponseWriter) error {
+func encodeDeleteProjectResponse(response *DeleteProjectOK, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	return nil
 }
 
-func encodeDeleteStepResponse(response *DeleteStepOK, w http.ResponseWriter) error {
+func encodeDeleteStepResponse(response *DeleteStepOK, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	return nil
 }
 
-func encodeDeleteTagResponse(response *DeleteTagOK, w http.ResponseWriter) error {
+func encodeDeleteTagResponse(response *DeleteTagOK, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	return nil
 }
 
-func encodeDeleteTaskResponse(response *DeleteTaskOK, w http.ResponseWriter) error {
+func encodeDeleteTaskResponse(response *DeleteTaskOK, w http.ResponseWriter, span trace.Span) error {
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	return nil
 }
 
-func encodeGetProjectResponse(response *Project, w http.ResponseWriter) error {
+func encodeGetProjectResponse(response *Project, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -111,9 +123,10 @@ func encodeGetProjectResponse(response *Project, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeGetTagResponse(response *Tag, w http.ResponseWriter) error {
+func encodeGetTagResponse(response *Tag, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -124,9 +137,10 @@ func encodeGetTagResponse(response *Tag, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeGetTaskResponse(response *Task, w http.ResponseWriter) error {
+func encodeGetTaskResponse(response *Task, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -137,9 +151,10 @@ func encodeGetTaskResponse(response *Task, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeListProjectsResponse(response *ListProjectsOK, w http.ResponseWriter) error {
+func encodeListProjectsResponse(response *ListProjectsOK, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -150,9 +165,10 @@ func encodeListProjectsResponse(response *ListProjectsOK, w http.ResponseWriter)
 	return nil
 }
 
-func encodeListTagsResponse(response *ListTagsOK, w http.ResponseWriter) error {
+func encodeListTagsResponse(response *ListTagsOK, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -163,9 +179,10 @@ func encodeListTagsResponse(response *ListTagsOK, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeListTasksResponse(response *ListTasksOK, w http.ResponseWriter) error {
+func encodeListTasksResponse(response *ListTasksOK, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -176,9 +193,10 @@ func encodeListTasksResponse(response *ListTasksOK, w http.ResponseWriter) error
 	return nil
 }
 
-func encodeSignInResponse(response *SignInOK, w http.ResponseWriter) error {
+func encodeSignInResponse(response *SignInOK, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -189,9 +207,10 @@ func encodeSignInResponse(response *SignInOK, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeSignUpResponse(response *SignUpOK, w http.ResponseWriter) error {
+func encodeSignUpResponse(response *SignUpOK, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -202,9 +221,10 @@ func encodeSignUpResponse(response *SignUpOK, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeUpdateProjectResponse(response *Project, w http.ResponseWriter) error {
+func encodeUpdateProjectResponse(response *Project, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -215,9 +235,10 @@ func encodeUpdateProjectResponse(response *Project, w http.ResponseWriter) error
 	return nil
 }
 
-func encodeUpdateStepResponse(response *Step, w http.ResponseWriter) error {
+func encodeUpdateStepResponse(response *Step, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -228,9 +249,10 @@ func encodeUpdateStepResponse(response *Step, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeUpdateTagResponse(response *Tag, w http.ResponseWriter) error {
+func encodeUpdateTagResponse(response *Tag, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)
@@ -241,9 +263,10 @@ func encodeUpdateTagResponse(response *Tag, w http.ResponseWriter) error {
 	return nil
 }
 
-func encodeUpdateTaskResponse(response *Task, w http.ResponseWriter) error {
+func encodeUpdateTaskResponse(response *Task, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
 
 	e := new(jx.Encoder)
 	response.Encode(e)

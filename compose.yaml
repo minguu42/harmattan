@@ -26,6 +26,11 @@ services:
     volumes:
       - ./infra/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - db_data:/var/lib/mysql
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: harmattan-otel-collector
+    volumes:
+      - ./infra/otel/otel-collector-config.local.yaml:/etc/otelcol-contrib/config.yaml
 networks:
   default:
     name: harmattan
