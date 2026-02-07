@@ -81,7 +81,7 @@ func TestLoad(t *testing.T) {
 		}
 		got, err := env.Load[Config]()
 		require.NoError(t, err)
-		assert.Equal(t, want, got)
+		assert.Equal(t, want, *got)
 	})
 	t.Run("env tag", func(t *testing.T) {
 		type Foo struct {
@@ -99,7 +99,7 @@ func TestLoad(t *testing.T) {
 		want := Foo{Field1: "foo", Field4: "hyphen"}
 		got, err := env.Load[Foo]()
 		require.NoError(t, err)
-		assert.Equal(t, want, got)
+		assert.Equal(t, want, *got)
 	})
 	t.Run("required option", func(t *testing.T) {
 		type Foo struct {
@@ -108,7 +108,7 @@ func TestLoad(t *testing.T) {
 
 		got, err := env.Load[Foo]()
 		assert.Error(t, err)
-		assert.Equal(t, Foo{}, got)
+		assert.Nil(t, got)
 	})
 	t.Run("default tag", func(t *testing.T) {
 		type Foo struct {
@@ -122,12 +122,12 @@ func TestLoad(t *testing.T) {
 		want := Foo{Field1: "v1", Field2: "dv2", Field4: "dv4"}
 		got, err := env.Load[Foo]()
 		require.NoError(t, err)
-		assert.Equal(t, want, got)
+		assert.Equal(t, want, *got)
 	})
 	t.Run("non-struct type", func(t *testing.T) {
 		got, err := env.Load[string]()
 		assert.Error(t, err)
-		assert.Equal(t, "", got)
+		assert.Nil(t, got)
 	})
 	t.Run("int slice type not supported", func(t *testing.T) {
 		type Foo struct{ Field []int }
@@ -135,7 +135,7 @@ func TestLoad(t *testing.T) {
 
 		got, err := env.Load[Foo]()
 		assert.Error(t, err)
-		assert.Equal(t, Foo{}, got)
+		assert.Nil(t, got)
 	})
 	t.Run("map type not supported", func(t *testing.T) {
 		type Foo struct{ Field map[string]string }
@@ -143,7 +143,7 @@ func TestLoad(t *testing.T) {
 
 		got, err := env.Load[Foo]()
 		assert.Error(t, err)
-		assert.Equal(t, Foo{}, got)
+		assert.Nil(t, got)
 	})
 	t.Run("unexported field", func(t *testing.T) {
 		type Foo struct {
@@ -157,6 +157,6 @@ func TestLoad(t *testing.T) {
 		want := Foo{ExportedField: "exported"}
 		got, err := env.Load[Foo]()
 		require.NoError(t, err)
-		assert.Equal(t, want, got)
+		assert.Equal(t, want, *got)
 	})
 }

@@ -35,7 +35,7 @@ var (
 
 func init() {
 	time.Local = jst
-	alog.SetDefaultLogger(alog.New(os.Stdout, alog.LevelError, false))
+	alog.SetLogger(alog.New(os.Stdout, alog.LevelError, false))
 }
 
 func TestMain(m *testing.M) {
@@ -94,7 +94,7 @@ func TestMain(m *testing.M) {
 	h, err := api.NewHandler(&api.Factory{
 		Auth: authn,
 		DB:   db,
-	}, []string{"*"})
+	}, "xxxxxxx", []string{"*"})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

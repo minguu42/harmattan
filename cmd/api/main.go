@@ -1,79 +1,63 @@
 package main
 
 import (
-	"cmp"
 	"context"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/debug"
+	"slices"
 	"strconv"
 	"syscall"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/api"
-	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/lib/env"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
-	"go.opentelemetry.io/otel/sdk/trace"
 )
+
+var revision = "xxxxxxx"
 
 func init() {
 	time.Local = time.FixedZone("JST", 9*60*60)
 
-	level := alog.ParseLevel(cmp.Or(os.Getenv("LOG_LEVEL"), "info"))
-	prettyPrint := os.Getenv("LOG_PRETTY_PRINT") == "true"
-	alog.SetDefaultLogger(alog.New(os.Stdout, level, prettyPrint))
+	if info, ok := debug.ReadBuildInfo(); ok {
+		if i := slices.IndexFunc(info.Settings, func(s debug.BuildSetting) bool {
+			return s.Key == "vcs.revision"
+		}); i != -1 {
+			revision = info.Settings[i].Value[:len(revision)]
+		}
+	}
 }
 
 func main() {
 	ctx := context.Background()
-	if err := mainRun(context.Background()); err != nil {
-		alog.Error(ctx, "failed to execute mainRun", err)
-		os.Exit(1)
+	if err := mainRun(ctx); err != nil {
+		alog.Fatal(ctx, "Failed to execute mainRun", err)
 	}
 }
 
 func mainRun(ctx context.Context) error {
-	var exporter trace.SpanExporter
-	var err error
-	switch exporterStr := os.Getenv("TRACE_EXPORTER"); exporterStr {
-	case "otlp":
-		exporter, err = atel.NewOTLPExporter(ctx)
-		if err != nil {
-			return errtrace.Wrap(err)
-		}
-	case "stdout":
-		exporter, err = atel.NewStdoutExporter()
-		if err != nil {
-			return errtrace.Wrap(err)
-		}
-	}
-	shutdown, err := atel.SetupTracerProvider(ctx, exporter)
-	if err != nil {
-		return errtrace.Wrap(err)
-	}
-	defer alog.Capture(ctx, "Failed to shutdown tracer provider")(shutdown)
-
 	conf, err := env.Load[api.Config]()
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
 
-	f, err := api.NewFactory(ctx, &conf)
+	factory, err := api.NewFactory(ctx, conf)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	defer alog.Capture(ctx, "Failed to close factory")(f.Close)
+	defer alog.Capture(ctx, "Failed to close factory")(factory.Close)
 
-	h, err := api.NewHandler(f, conf.AllowedOrigins)
+	handler, err := api.NewHandler(factory, revision, conf.AllowedOrigins)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	s := &http.Server{
+	server := &http.Server{
 		Addr:         net.JoinHostPort(conf.Host, strconv.Itoa(conf.Port)),
-		Handler:      h,
+		Handler:      handler,
 		ReadTimeout:  conf.ReadTimeout,
 		WriteTimeout: conf.WriteTimeout,
 	}
@@ -81,7 +65,7 @@ func mainRun(ctx context.Context) error {
 	serveErr := make(chan error)
 	go func() {
 		alog.Event(ctx, "Start accepting requests")
-		serveErr <- s.ListenAndServe()
+		serveErr <- server.ListenAndServe()
 	}()
 
 	sigterm := make(chan os.Signal, 1)
@@ -96,7 +80,7 @@ func mainRun(ctx context.Context) error {
 	defer cancel()
 
 	alog.Event(ctx, "Stop accepting requests")
-	if err := s.Shutdown(ctx); err != nil {
+	if err := server.Shutdown(ctx); err != nil {
 		return errtrace.Wrap(err)
 	}
 	alog.Event(ctx, "Server shutdown completed")

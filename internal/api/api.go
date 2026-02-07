@@ -18,11 +18,11 @@ import (
 
 //go:generate go tool ogen -clean -config ../../.ogen.yaml -package openapi -target ./openapi ../../doc/openapi.yaml
 
-func NewHandler(f *Factory, allowedOrigins []string) (http.Handler, error) {
+func NewHandler(f *Factory, revision string, allowedOrigins []string) (http.Handler, error) {
 	h := &handler.Handler{
 		UnimplementedHandler: openapi.UnimplementedHandler{},
 		Authentication:       usecase.Authentication{Auth: f.Auth, DB: f.DB},
-		Monitoring:           usecase.Monitoring{},
+		Monitoring:           usecase.Monitoring{Revision: revision, DB: f.DB},
 		Project:              usecase.Project{DB: f.DB},
 		Step:                 usecase.Step{DB: f.DB},
 		Tag:                  usecase.Tag{DB: f.DB},

@@ -12,18 +12,16 @@ import (
 	"time"
 )
 
-func Load[T any]() (T, error) {
-	var zero T
-
+func Load[T any]() (*T, error) {
 	var v T
 	rv := reflect.ValueOf(&v).Elem()
 	if rv.Kind() != reflect.Struct {
-		return zero, errors.New("type T must be a struct")
+		return nil, errors.New("type T must be a struct")
 	}
 
 	infos, err := gatherFieldInfos(rv)
 	if err != nil {
-		return zero, err
+		return nil, err
 	}
 	for _, info := range infos {
 		value, ok := os.LookupEnv(info.Key)
@@ -32,17 +30,17 @@ func Load[T any]() (T, error) {
 			case info.Default != "":
 				value = info.Default
 			case info.Required:
-				return zero, fmt.Errorf("environment variable %s is required", info.Key)
+				return nil, fmt.Errorf("environment variable %s is required", info.Key)
 			default:
 				continue
 			}
 		}
 
 		if err := processField(info.Field, value); err != nil {
-			return zero, err
+			return nil, err
 		}
 	}
-	return v, nil
+	return &v, nil
 }
 
 type fieldInfo struct {

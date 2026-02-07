@@ -7,10 +7,34 @@ import (
 	"os"
 )
 
-var defaultLogger = New(os.Stdout, LevelInfo, false)
+type Level string
 
-func SetDefaultLogger(l *Logger) {
-	defaultLogger = l
+const (
+	LevelDebug Level = "debug"
+	LevelInfo  Level = "info"
+	LevelWarn  Level = "warn"
+	LevelError Level = "error"
+)
+
+func (l Level) Level() slog.Level {
+	switch l {
+	case LevelDebug:
+		return slog.LevelDebug
+	case LevelInfo:
+		return slog.LevelInfo
+	case LevelWarn:
+		return slog.LevelWarn
+	case LevelError:
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
+}
+
+var globalLogger = New(os.Stdout, LevelInfo, false)
+
+func SetLogger(l *Logger) {
+	globalLogger = l
 }
 
 type Logger struct {
@@ -21,7 +45,7 @@ type Logger struct {
 
 func New(w io.Writer, level Level, prettyPrint bool) *Logger {
 	opts := &slog.HandlerOptions{
-		Level: level,
+		Level: level.Level(),
 		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.MessageKey {
 				a.Key = "message"
@@ -40,7 +64,7 @@ func logger(ctx context.Context) *Logger {
 	if l, ok := ctx.Value(loggerKey{}).(*Logger); ok {
 		return l
 	}
-	return defaultLogger
+	return globalLogger
 }
 
 func ContextWithRequestID(ctx context.Context, requestID string) context.Context {

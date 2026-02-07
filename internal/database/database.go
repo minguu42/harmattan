@@ -74,6 +74,14 @@ func (c *Client) Close() error {
 	return errtrace.Wrap(db.Close())
 }
 
+func (c *Client) Ping(ctx context.Context) error {
+	db, err := c.gormDB.DB()
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
+	return errtrace.Wrap(db.PingContext(ctx))
+}
+
 func (c *Client) db(ctx context.Context) *gorm.DB {
 	return c.gormDB.WithContext(ctx)
 }
