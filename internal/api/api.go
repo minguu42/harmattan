@@ -6,11 +6,11 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/middleware"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/rs/cors"
@@ -31,7 +31,7 @@ func NewHandler(f *Factory, revision string, allowedOrigins []string) (http.Hand
 
 	sh := securityHandler{auth: f.Auth, db: f.DB}
 	middlewares := []openapi.Middleware{
-		middleware.AttachRequestIDToLogger(),
+		middleware.AttachTraceIDToLogger(),
 		middleware.AccessLog(),
 		middleware.Recover(),
 	}
@@ -88,7 +88,7 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 		operationID = paramsErr.OperationID()
 	}
 	if operationID != "" {
-		alog.Access(ctx, &alog.AccessFields{
+		atel.AccessLog(ctx, &atel.AccessFields{
 			Status:      appErr.Status(),
 			Err:         err,
 			OperationID: operationID,

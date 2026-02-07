@@ -1,4 +1,4 @@
-package alog
+package atel
 
 import (
 	"context"
@@ -19,11 +19,11 @@ const (
 	cyan  = "\033[36m"
 )
 
-func Event(ctx context.Context, message string) {
+func LogEvent(ctx context.Context, message string) {
 	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
-func Fatal(ctx context.Context, message string, err error) {
+func LogFatal(ctx context.Context, message string, err error) {
 	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", err))
 	os.Exit(1)
 }
@@ -40,7 +40,7 @@ type AccessFields struct {
 	IPAddress   string
 }
 
-func Access(ctx context.Context, fields *AccessFields) {
+func AccessLog(ctx context.Context, fields *AccessFields) {
 	level := slog.LevelInfo
 	if 500 <= fields.Status && fields.Status < 600 {
 		level = slog.LevelError
@@ -75,29 +75,7 @@ func Access(ctx context.Context, fields *AccessFields) {
 	logger(ctx).base.LogAttrs(ctx, level, "Request processed", attrs...)
 }
 
-func Capture(ctx context.Context, message string) func(func() error) {
-	pc := make([]uintptr, errtrace.MaxStackDepth)
-	n := runtime.Callers(2, pc)
-
-	return func(f func() error) {
-		if f == nil {
-			return
-		}
-		err := f()
-		if err == nil {
-			return
-		}
-
-		// os.ErrClosedは2重にクローズ処理を行った場合に返され、処理的には問題がないため無視する。
-		if errors.Is(err, os.ErrClosed) {
-			return
-		}
-
-		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, slog.Any("error", errtrace.FromStack(err, pc[:n:n])))
-	}
-}
-
-func GORMTrace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
+func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
 	if logger(ctx).level.Level() > slog.LevelDebug {
 		return
 	}
@@ -121,5 +99,27 @@ func GORMTrace(ctx context.Context, begin time.Time, fc func() (sql string, rows
 			slog.String("location", loc),
 			slog.String("query", query),
 		)
+	}
+}
+
+func Capture(ctx context.Context, message string) func(func() error) {
+	pc := make([]uintptr, errtrace.MaxStackDepth)
+	n := runtime.Callers(2, pc)
+
+	return func(f func() error) {
+		if f == nil {
+			return
+		}
+		err := f()
+		if err == nil {
+			return
+		}
+
+		// os.ErrClosedは2重にクローズ処理を行った場合に返され、処理的には問題がないため無視する。
+		if errors.Is(err, os.ErrClosed) {
+			return
+		}
+
+		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, slog.Any("error", errtrace.FromStack(err, pc[:n:n])))
 	}
 }

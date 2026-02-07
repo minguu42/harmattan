@@ -3,8 +3,8 @@ package middleware
 import (
 	"time"
 
-	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/ogen-go/ogen/middleware"
 )
@@ -24,7 +24,7 @@ func AccessLog() middleware.Middleware {
 			status = appErr.Status()
 		}
 
-		alog.Access(req.Context, &alog.AccessFields{
+		atel.AccessLog(req.Context, &atel.AccessFields{
 			Status:        status,
 			Err:           err,
 			ExecutionTime: time.Since(start),

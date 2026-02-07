@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/api"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/lib/env"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
@@ -35,7 +35,7 @@ func init() {
 func main() {
 	ctx := context.Background()
 	if err := mainRun(ctx); err != nil {
-		alog.Fatal(ctx, "Failed to execute mainRun", err)
+		atel.LogFatal(ctx, "Failed to execute mainRun", err)
 	}
 }
 
@@ -49,7 +49,7 @@ func mainRun(ctx context.Context) error {
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	defer alog.Capture(ctx, "Failed to close factory")(factory.Close)
+	defer atel.Capture(ctx, "Failed to close factory")(factory.Close)
 
 	handler, err := api.NewHandler(factory, revision, conf.AllowedOrigins)
 	if err != nil {
@@ -64,7 +64,7 @@ func mainRun(ctx context.Context) error {
 
 	serveErr := make(chan error)
 	go func() {
-		alog.Event(ctx, "Start accepting requests")
+		atel.LogEvent(ctx, "Start accepting requests")
 		serveErr <- server.ListenAndServe()
 	}()
 
@@ -79,10 +79,10 @@ func mainRun(ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, conf.StopTimeout)
 	defer cancel()
 
-	alog.Event(ctx, "Stop accepting requests")
+	atel.LogEvent(ctx, "Stop accepting requests")
 	if err := server.Shutdown(ctx); err != nil {
 		return errtrace.Wrap(err)
 	}
-	alog.Event(ctx, "Server shutdown completed")
+	atel.LogEvent(ctx, "Server shutdown completed")
 	return nil
 }

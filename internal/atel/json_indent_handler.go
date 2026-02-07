@@ -1,4 +1,4 @@
-package alog
+package atel
 
 import (
 	"bytes"

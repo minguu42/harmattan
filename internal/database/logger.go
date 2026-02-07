@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/minguu42/harmattan/internal/alog"
+	"github.com/minguu42/harmattan/internal/atel"
 	"gorm.io/gorm/logger"
 )
 
@@ -21,5 +21,5 @@ func (l customLogger) Warn(_ context.Context, _ string, _ ...any) {}
 func (l customLogger) Error(_ context.Context, _ string, _ ...any) {}
 
 func (l customLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), _ error) {
-	alog.GORMTrace(ctx, begin, fc)
+	atel.SQLLog(ctx, begin, fc)
 }

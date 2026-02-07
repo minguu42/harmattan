@@ -24,7 +24,7 @@ Harmattanはタスク管理アプリである。
   - `internal/domain`: Harmattanのメンタルモデルを素直に表現するドメインモデル
 - **OpenAPI駆動**: `doc/openapi.yaml`から`ogen`により`internal/api/openapi`配下のコードを生成
 - **認証**: JWT (internal/auth)
-- **ログ**: 構造化ログ (internal/alog)
+- **ログ**: 構造化ログ (internal/atel)
 
 ### コマンド
 
