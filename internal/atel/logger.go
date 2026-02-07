@@ -77,7 +77,7 @@ func ContextWithTracedLogger(ctx context.Context) context.Context {
 
 	l := logger(ctx)
 	return context.WithValue(ctx, loggerKey{}, &Logger{
-		base:        l.base.With(slog.String("request_id", spanContext.TraceID().String())),
+		base:        l.base.With(slog.String("trace_id", spanContext.TraceID().String())),
 		level:       l.level,
 		prettyPrint: l.prettyPrint,
 	})
