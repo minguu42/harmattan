@@ -7,9 +7,9 @@ import (
 )
 
 func TraceIDFromContext(ctx context.Context) string {
-	spanCtx := trace.SpanContextFromContext(ctx)
-	if !spanCtx.IsValid() {
+	spanContext := trace.SpanContextFromContext(ctx)
+	if !spanContext.IsValid() {
 		return ""
 	}
-	return spanCtx.TraceID().String()
+	return spanContext.TraceID().String()
 }

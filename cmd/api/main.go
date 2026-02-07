@@ -41,14 +41,20 @@ func mainRun(ctx context.Context) error {
 	switch exporterStr := os.Getenv("TRACE_EXPORTER"); exporterStr {
 	case "otlp":
 		exporter, err = atel.NewOTLPExporter(ctx)
+		if err != nil {
+			return errtrace.Wrap(err)
+		}
 	case "stdout":
 		exporter, err = atel.NewStdoutExporter()
+		if err != nil {
+			return errtrace.Wrap(err)
+		}
 	}
+	shutdown, err := atel.SetupTracerProvider(ctx, exporter)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
-	shutdown, err := atel.SetupTracerProvider(ctx, exporter)
-	defer alog.Capture(ctx, "Failed to shutdown tracer provider")(func() error { return shutdown(ctx) })
+	defer alog.Capture(ctx, "Failed to shutdown tracer provider")(shutdown)
 
 	conf, err := env.Load[api.Config]()
 	if err != nil {

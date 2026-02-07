@@ -15,26 +15,24 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
-func SetupTracerProvider(ctx context.Context, exporter trace.SpanExporter) (func(context.Context) error, error) {
+func SetupTracerProvider(ctx context.Context, exporter trace.SpanExporter) (func() error, error) {
 	res, err := newResource(ctx)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
-	provider := trace.NewTracerProvider(
+	opts := []trace.TracerProviderOption{
 		trace.WithIDGenerator(xray.NewIDGenerator()),
 		trace.WithResource(res),
-	)
-	if exporter != nil {
-		provider = trace.NewTracerProvider(
-			trace.WithBatcher(exporter, trace.WithBatchTimeout(time.Second)),
-			trace.WithIDGenerator(xray.NewIDGenerator()),
-			trace.WithResource(res),
-		)
 	}
+	if exporter != nil {
+		opts = append(opts, trace.WithBatcher(exporter, trace.WithBatchTimeout(time.Second)))
+	}
+	provider := trace.NewTracerProvider(opts...)
+
 	otel.SetTracerProvider(provider)
 	otel.SetTextMapPropagator(xray.Propagator{})
-	return provider.Shutdown, nil
+	return func() error { return provider.Shutdown(context.Background()) }, nil
 }
 
 func NewOTLPExporter(ctx context.Context) (trace.SpanExporter, error) {
