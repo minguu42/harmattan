@@ -13,8 +13,10 @@ import (
 
 	"github.com/minguu42/harmattan/internal/alog"
 	"github.com/minguu42/harmattan/internal/api"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/lib/env"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 func init() {
@@ -34,6 +36,26 @@ func main() {
 }
 
 func mainRun(ctx context.Context) error {
+	var exporter trace.SpanExporter
+	var err error
+	switch exporterStr := os.Getenv("TRACE_EXPORTER"); exporterStr {
+	case "otlp":
+		exporter, err = atel.NewOTLPExporter(ctx)
+		if err != nil {
+			return errtrace.Wrap(err)
+		}
+	case "stdout":
+		exporter, err = atel.NewStdoutExporter()
+		if err != nil {
+			return errtrace.Wrap(err)
+		}
+	}
+	shutdown, err := atel.SetupTracerProvider(ctx, exporter)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
+	defer alog.Capture(ctx, "Failed to shutdown tracer provider")(shutdown)
+
 	conf, err := env.Load[api.Config]()
 	if err != nil {
 		return errtrace.Wrap(err)

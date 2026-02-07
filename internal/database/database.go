@@ -13,6 +13,7 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 var ErrModelNotFound = errors.New("model not found in database")
@@ -57,6 +58,9 @@ func NewClient(ctx context.Context, conf Config) (*Client, error) {
 		TranslateError: true,
 	})
 	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	if err := gormDB.Use(tracing.NewPlugin(tracing.WithoutMetrics(), tracing.WithoutQueryVariables())); err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 	return &Client{gormDB: gormDB}, nil

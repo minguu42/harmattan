@@ -2,6 +2,7 @@ generator:
   features:
     enable:
       - "paths/server"
+      - "ogen/otel"
       - "ogen/unimplemented"
     disable_all: true
   convenient_errors: "off"
