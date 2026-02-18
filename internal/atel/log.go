@@ -23,37 +23,30 @@ func LogEvent(ctx context.Context, message string) {
 	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
-func LogFatal(ctx context.Context, message string, err error) {
-	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", err))
-	os.Exit(1)
+func ErrorLog(ctx context.Context, message string, err error) {
+	if serr := new(errtrace.StackError); errors.As(err, &serr) {
+		logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", serr))
+	} else {
+		logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.GroupAttrs("error", slog.String("message", err.Error())))
+	}
 }
 
 type AccessFields struct {
 	Status        int
-	Err           error
+	UserMessage   string
 	ExecutionTime time.Duration
-
-	OperationID string
-	Method      string
-	URL         string
-	Body        any
-	IPAddress   string
+	OperationID   string
+	Method        string
+	URL           string
+	Body          any
+	IPAddress     string
 }
 
 func AccessLog(ctx context.Context, fields *AccessFields) {
-	level := slog.LevelInfo
-	if 500 <= fields.Status && fields.Status < 600 {
-		level = slog.LevelError
-	}
-
-	attrs := make([]slog.Attr, 0, 5)
+	attrs := make([]slog.Attr, 0, 4)
 	attrs = append(attrs, slog.Int("status_code", fields.Status))
-	if fields.Err != nil {
-		if serr := new(errtrace.StackError); errors.As(fields.Err, &serr) {
-			attrs = append(attrs, slog.Any("error", serr))
-		} else {
-			attrs = append(attrs, slog.Group("error", slog.String("message", fields.Err.Error())))
-		}
+	if fields.UserMessage != "" {
+		attrs = append(attrs, slog.String("user_message", fields.UserMessage))
 	}
 	attrs = append(attrs, slog.Int64("execution_time", fields.ExecutionTime.Milliseconds()))
 
@@ -72,7 +65,7 @@ func AccessLog(ctx context.Context, fields *AccessFields) {
 	requestAttrs = append(requestAttrs, slog.String("ip_address", fields.IPAddress))
 	attrs = append(attrs, slog.GroupAttrs("request", requestAttrs...))
 
-	logger(ctx).base.LogAttrs(ctx, level, "Request processed", attrs...)
+	logger(ctx).base.LogAttrs(ctx, slog.LevelInfo, "Request processed", attrs...)
 }
 
 func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {

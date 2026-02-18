@@ -79,8 +79,19 @@ type ErrorResponse struct {
 func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
 	appErr := usecase.ToError(err)
 
-	// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、ここでアクセスログを出力する
-	// 上記以外の場合のアクセスログは middleware.AccessLog で出力される
+	w.WriteHeader(appErr.Status())
+	bs, _ := json.Marshal(ErrorResponse{
+		Code:    appErr.Status(),
+		Message: appErr.Message(),
+	})
+	_, _ = w.Write(bs)
+
+	if appErr.Status() >= 500 {
+		atel.ErrorLog(ctx, "Unexpected error occurred", err)
+	}
+
+	// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、本関数でアクセスログを出力する
+	// 上記以外の場合は middleware.AccessLog でアクセスログを出力する
 	var operationID string
 	if requestErr := new(ogenerrors.DecodeRequestError); errors.As(err, &requestErr) {
 		operationID = requestErr.OperationID()
@@ -90,18 +101,11 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 	if operationID != "" {
 		atel.AccessLog(ctx, &atel.AccessFields{
 			Status:      appErr.Status(),
-			Err:         err,
+			UserMessage: appErr.Message(),
 			OperationID: operationID,
 			Method:      r.Method,
 			URL:         r.URL.String(),
 			IPAddress:   r.RemoteAddr,
 		})
 	}
-
-	w.WriteHeader(appErr.Status())
-	bs, _ := json.Marshal(ErrorResponse{
-		Code:    appErr.Status(),
-		Message: appErr.Message(),
-	})
-	_, _ = w.Write(bs)
 }

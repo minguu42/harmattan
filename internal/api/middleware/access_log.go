@@ -15,8 +15,11 @@ func AccessLog() middleware.Middleware {
 		resp, err := next(req)
 
 		status := 200
+		var userMessage string
 		if err != nil {
-			status = usecase.ToError(err).Status()
+			appErr := usecase.ToError(err)
+			status = appErr.Status()
+			userMessage = appErr.Message()
 		}
 
 		// CheckHealthオペレーションの正常系のアクセスログは出さない
@@ -26,7 +29,7 @@ func AccessLog() middleware.Middleware {
 
 		atel.AccessLog(req.Context, &atel.AccessFields{
 			Status:        status,
-			Err:           err,
+			UserMessage:   userMessage,
 			ExecutionTime: time.Since(start),
 			OperationID:   req.OperationID,
 			Method:        req.Raw.Method,
