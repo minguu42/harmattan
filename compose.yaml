@@ -14,6 +14,7 @@ services:
       - .:/myapp
     depends_on:
       - db
+      - otelcol
   db:
     image: mysql:8.0.30
     pull_policy: missing
@@ -26,11 +27,11 @@ services:
     volumes:
       - ./infra/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
       - db_data:/var/lib/mysql
-  otel-collector:
+  otelcol:
     image: otel/opentelemetry-collector-contrib:latest
-    container_name: harmattan-otel-collector
+    container_name: harmattan-otelcol
     volumes:
-      - ./infra/otel/otel-collector-config.local.yaml:/etc/otelcol-contrib/config.yaml
+      - ./infra/otelcol/config.local.yaml:/etc/otelcol-contrib/config.yaml
 networks:
   default:
     name: harmattan

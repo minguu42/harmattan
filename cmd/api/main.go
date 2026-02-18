@@ -18,16 +18,14 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-var revision = "xxxxxxx"
+var revision = "unknown"
 
 func init() {
 	time.Local = time.FixedZone("JST", 9*60*60)
 
 	if info, ok := debug.ReadBuildInfo(); ok {
-		if i := slices.IndexFunc(info.Settings, func(s debug.BuildSetting) bool {
-			return s.Key == "vcs.revision"
-		}); i != -1 {
-			revision = info.Settings[i].Value[:len(revision)]
+		if i := slices.IndexFunc(info.Settings, func(s debug.BuildSetting) bool { return s.Key == "vcs.revision" }); i != -1 {
+			revision = info.Settings[i].Value[:7]
 		}
 	}
 }

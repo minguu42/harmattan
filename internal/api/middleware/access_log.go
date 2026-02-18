@@ -11,17 +11,17 @@ import (
 
 func AccessLog() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
-		if req.OperationID == "CheckHealth" {
-			return next(req)
-		}
+		start := clock.Now(req.Context)
+		resp, err := next(req)
 
 		status := 200
-		start := clock.Now(req.Context)
-
-		resp, err := next(req)
 		if err != nil {
-			appErr := usecase.ToError(err)
-			status = appErr.Status()
+			status = usecase.ToError(err).Status()
+		}
+
+		// CheckHealthオペレーションの正常系のアクセスログは出さない
+		if req.OperationID == "CheckHealth" && status < 500 {
+			return resp, err
 		}
 
 		atel.AccessLog(req.Context, &atel.AccessFields{
