@@ -40,7 +40,7 @@ func TestClient_GetUserByID(t *testing.T) {
 		{
 			name:    "returns_error_when_not_found",
 			input:   "nonexistent",
-			wantErr: database.ErrModelNotFound,
+			wantErr: database.ErrNotFound,
 		},
 		{
 			name:  "returns_correct_user_among_multiple_users",
@@ -95,7 +95,7 @@ func TestClient_GetUserByEmail(t *testing.T) {
 		{
 			name:    "returns_error_when_email_not_found",
 			input:   "nonexistent@dummy.invalid",
-			wantErr: database.ErrModelNotFound,
+			wantErr: database.ErrNotFound,
 		},
 	}
 

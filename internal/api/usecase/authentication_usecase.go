@@ -40,7 +40,7 @@ type SignUpOutput struct {
 
 func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpOutput, error) {
 	u, err := uc.DB.GetUserByEmail(ctx, in.Email)
-	if err != nil && !errors.Is(err, database.ErrModelNotFound) {
+	if err != nil && !errors.Is(err, database.ErrNotFound) {
 		return nil, errtrace.Wrap(err)
 	}
 	if u != nil {
@@ -75,7 +75,7 @@ type SignInOutput struct {
 func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInOutput, error) {
 	user, err := uc.DB.GetUserByEmail(ctx, in.Email)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return nil, errtrace.Wrap(InvalidEmailOrPasswordError())
 		}
 		return nil, errtrace.Wrap(err)

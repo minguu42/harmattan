@@ -577,7 +577,7 @@ func TestClient_GetTaskByID(t *testing.T) {
 		{
 			name:    "returns_error_when_not_found",
 			input:   "nonexistent",
-			wantErr: database.ErrModelNotFound,
+			wantErr: database.ErrNotFound,
 		},
 	}
 
