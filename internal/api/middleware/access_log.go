@@ -9,6 +9,8 @@ import (
 	"github.com/ogen-go/ogen/middleware"
 )
 
+const slowRequestThreshold = 1 * time.Second
+
 func AccessLog() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
 		// CheckHealthオペレーションのログは出さない
@@ -18,6 +20,7 @@ func AccessLog() middleware.Middleware {
 
 		start := clock.Now(req.Context)
 		resp, err := next(req)
+		duration := time.Since(start)
 
 		status := 200
 		if err != nil {
@@ -26,7 +29,7 @@ func AccessLog() middleware.Middleware {
 
 		atel.AccessLog(req.Context, &atel.AccessFields{
 			Status:      status,
-			Duration:    time.Since(start),
+			Duration:    duration,
 			OperationID: req.OperationID,
 			Method:      req.Raw.Method,
 			URL:         req.Raw.URL.String(),
@@ -36,6 +39,9 @@ func AccessLog() middleware.Middleware {
 		})
 		if status >= 500 {
 			atel.AccessErrorLog(req.Context, req.OperationID, err)
+		}
+		if duration >= slowRequestThreshold {
+			atel.AccessSlowLog(req.Context, req.OperationID, status, duration)
 		}
 		return resp, err
 	}
