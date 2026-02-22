@@ -82,9 +82,9 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 	// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、ここでアクセスログを出力する
 	// 上記以外の場合のアクセスログは middleware.AccessLog で出力される
 	var operationID string
-	if requestErr := new(ogenerrors.DecodeRequestError); errors.As(err, &requestErr) {
+	if requestErr, ok := errors.AsType[*ogenerrors.DecodeRequestError](err); ok {
 		operationID = requestErr.OperationID()
-	} else if paramsErr := new(ogenerrors.DecodeParamsError); errors.As(err, &paramsErr) {
+	} else if paramsErr, ok := errors.AsType[*ogenerrors.DecodeParamsError](err); ok {
 		operationID = paramsErr.OperationID()
 	}
 	if operationID != "" {

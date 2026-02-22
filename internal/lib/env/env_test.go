@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/lib/env"
-	"github.com/minguu42/harmattan/internal/lib/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -73,7 +72,7 @@ func TestLoad(t *testing.T) {
 			Float64Field:     3.1415,
 			StringField:      "Hello, World!",
 			StringSliceField: []string{"a", "b", "c"},
-			PointerField:     ptr.Ref("こんにちは、世界！"),
+			PointerField:     new("こんにちは、世界！"),
 			Foo:              Foo{FooField: "foo"},
 			Bar:              Bar{BarField: "bar"},
 			TimeField:        time.Date(2024, 2, 29, 12, 34, 56, 0, time.UTC),

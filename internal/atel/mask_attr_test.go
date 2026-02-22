@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/minguu42/harmattan/internal/atel"
-	"github.com/minguu42/harmattan/internal/lib/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -58,7 +57,7 @@ func TestMaskAttr(t *testing.T) {
 				Map:     map[string]string{"one": "1", "two": "2"},
 				Slice:   []string{"1", "2"},
 				String:  "bar",
-				Pointer: ptr.Ref("baz"),
+				Pointer: new("baz"),
 			},
 			want: map[string]any{
 				"f1": "foo",
@@ -83,7 +82,7 @@ func TestMaskAttr(t *testing.T) {
 				Map:     map[string]string{"one": "1"},
 				Slice:   []string{"1", "2"},
 				String:  "bar",
-				Pointer: ptr.Ref("baz"),
+				Pointer: new("baz"),
 			},
 			want: map[string]any{
 				"f1": "foo",
@@ -108,7 +107,7 @@ func TestMaskAttr(t *testing.T) {
 				Map:     map[string]string{"one": "1", "two": "2"},
 				Slice:   []string{"1", "2"},
 				String:  "bar",
-				Pointer: ptr.Ref("baz"),
+				Pointer: new("baz"),
 			}},
 			want: map[string]any{"f": map[string]any{
 				"f1": "foo",
@@ -133,7 +132,7 @@ func TestMaskAttr(t *testing.T) {
 				Map:     map[string]string{"one": "1", "two": "2"},
 				Slice:   []string{"1", "2"},
 				String:  "bar",
-				Pointer: ptr.Ref("baz"),
+				Pointer: new("baz"),
 			}},
 			want: map[string]any{"f": map[string]any{
 				"f1": "foo",
