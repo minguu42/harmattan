@@ -1,6 +1,6 @@
 module github.com/minguu42/harmattan
 
-go 1.25.0
+go 1.26.0
 
 tool (
 	github.com/ogen-go/ogen/cmd/ogen
