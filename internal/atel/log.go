@@ -29,50 +29,37 @@ func LogFatal(ctx context.Context, message string, err error) {
 }
 
 type AccessFields struct {
-	Status        int
-	Err           error
-	ExecutionTime time.Duration
-
+	Status      int
+	Duration    time.Duration
 	OperationID string
 	Method      string
 	URL         string
 	Body        any
 	IPAddress   string
+	UserAgent   string
 }
 
 func AccessLog(ctx context.Context, fields *AccessFields) {
-	level := slog.LevelInfo
-	if 500 <= fields.Status && fields.Status < 600 {
-		level = slog.LevelError
-	}
-
-	attrs := make([]slog.Attr, 0, 5)
-	attrs = append(attrs, slog.Int("status_code", fields.Status))
-	if fields.Err != nil {
-		if serr := new(errtrace.StackError); errors.As(fields.Err, &serr) {
-			attrs = append(attrs, slog.Any("error", serr))
-		} else {
-			attrs = append(attrs, slog.Group("error", slog.String("message", fields.Err.Error())))
-		}
-	}
-	attrs = append(attrs, slog.Int64("execution_time", fields.ExecutionTime.Milliseconds()))
-
-	requestAttrs := make([]slog.Attr, 0, 6)
-	if user, ok := auth.UserFromContext(ctx); ok {
-		requestAttrs = append(requestAttrs, slog.String("user_id", string(user.ID)))
-	}
-	requestAttrs = append(requestAttrs,
-		slog.String("operation_id", fields.OperationID),
-		slog.String("method", fields.Method),
-		slog.String("url", fields.URL),
+	attrs := make([]slog.Attr, 0, 9)
+	attrs = append(attrs,
+		slog.Int("response.status_code", fields.Status),
+		slog.Int64("response.duration", fields.Duration.Milliseconds()),
+		slog.String("request.operation", fields.OperationID),
+		slog.String("request.method", fields.Method),
+		slog.String("request.url", fields.URL),
 	)
 	if fields.Body != nil {
-		requestAttrs = append(requestAttrs, slog.Any("body", fields.Body))
+		attrs = append(attrs, slog.Any("request.body", fields.Body))
 	}
-	requestAttrs = append(requestAttrs, slog.String("ip_address", fields.IPAddress))
-	attrs = append(attrs, slog.GroupAttrs("request", requestAttrs...))
+	if user, ok := auth.UserFromContext(ctx); ok {
+		attrs = append(attrs, slog.String("request.user_id", string(user.ID)))
+	}
+	attrs = append(attrs,
+		slog.String("request.ip_address", fields.IPAddress),
+		slog.String("request.user_agent", fields.UserAgent),
+	)
 
-	logger(ctx).base.LogAttrs(ctx, level, "Request processed", attrs...)
+	logger(ctx).base.LogAttrs(ctx, slog.LevelInfo, "Request processed", attrs...)
 }
 
 func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {

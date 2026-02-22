@@ -11,6 +11,11 @@ import (
 
 func AccessLog() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
+		// CheckHealthオペレーションのアクセスログは出さない
+		if req.OperationID == "CheckHealth" {
+			return next(req)
+		}
+
 		start := clock.Now(req.Context)
 		resp, err := next(req)
 
@@ -19,20 +24,15 @@ func AccessLog() middleware.Middleware {
 			status = usecase.ToError(err).Status()
 		}
 
-		// CheckHealthオペレーションの正常系のアクセスログは出さない
-		if req.OperationID == "CheckHealth" && status < 500 {
-			return resp, err
-		}
-
 		atel.AccessLog(req.Context, &atel.AccessFields{
-			Status:        status,
-			Err:           err,
-			ExecutionTime: time.Since(start),
-			OperationID:   req.OperationID,
-			Method:        req.Raw.Method,
-			URL:           req.Raw.URL.String(),
-			Body:          req.Body,
-			IPAddress:     req.Raw.RemoteAddr,
+			Status:      status,
+			Duration:    time.Since(start),
+			OperationID: req.OperationID,
+			Method:      req.Raw.Method,
+			URL:         req.Raw.URL.String(),
+			Body:        req.Body,
+			IPAddress:   req.Raw.RemoteAddr,
+			UserAgent:   req.Raw.UserAgent(),
 		})
 		return resp, err
 	}
