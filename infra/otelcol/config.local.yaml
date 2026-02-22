@@ -26,6 +26,7 @@ processors:
     send_batch_max_size: 1024
 exporters:
   debug:
+    verbosity: normal
 service:
   pipelines:
     traces:
