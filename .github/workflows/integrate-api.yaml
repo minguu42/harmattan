@@ -31,6 +31,7 @@ jobs:
         run: |
           gofmt -l -s -w ./cmd/api ./internal
           go tool goimports -l -w ./cmd/api ./internal
+          go fix ./cmd/api/... ./internal/...
       - name: Check for changes
         run: git diff --exit-code
   check-generated-code:
