@@ -90,11 +90,11 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 	if operationID != "" {
 		atel.AccessLog(ctx, &atel.AccessFields{
 			Status:      appErr.Status(),
-			Err:         err,
 			OperationID: operationID,
 			Method:      r.Method,
 			URL:         r.URL.String(),
 			IPAddress:   r.RemoteAddr,
+			UserAgent:   r.UserAgent(),
 		})
 	}
 
