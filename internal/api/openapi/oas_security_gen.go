@@ -32,25 +32,47 @@ func findAuthorization(h http.Header, prefix string) (string, bool) {
 	return "", false
 }
 
+// operationRolesBearerAuth is a private map storing roles per operation.
 var operationRolesBearerAuth = map[string][]string{
-	CreateProjectOperation: {},
-	CreateStepOperation:    {},
-	CreateTagOperation:     {},
-	CreateTaskOperation:    {},
-	DeleteProjectOperation: {},
-	DeleteStepOperation:    {},
-	DeleteTagOperation:     {},
-	DeleteTaskOperation:    {},
-	GetProjectOperation:    {},
-	GetTagOperation:        {},
-	GetTaskOperation:       {},
-	ListProjectsOperation:  {},
-	ListTagsOperation:      {},
-	ListTasksOperation:     {},
-	UpdateProjectOperation: {},
-	UpdateStepOperation:    {},
-	UpdateTagOperation:     {},
-	UpdateTaskOperation:    {},
+	CreateProjectOperation: []string{},
+	CreateStepOperation:    []string{},
+	CreateTagOperation:     []string{},
+	CreateTaskOperation:    []string{},
+	DeleteProjectOperation: []string{},
+	DeleteStepOperation:    []string{},
+	DeleteTagOperation:     []string{},
+	DeleteTaskOperation:    []string{},
+	GetProjectOperation:    []string{},
+	GetTagOperation:        []string{},
+	GetTaskOperation:       []string{},
+	ListProjectsOperation:  []string{},
+	ListTagsOperation:      []string{},
+	ListTasksOperation:     []string{},
+	UpdateProjectOperation: []string{},
+	UpdateStepOperation:    []string{},
+	UpdateTagOperation:     []string{},
+	UpdateTaskOperation:    []string{},
+}
+
+// GetRolesForBearerAuth returns the required roles for the given operation.
+//
+// This is useful for authorization scenarios where you need to know which roles
+// are required for an operation.
+//
+// Example:
+//
+//	requiredRoles := GetRolesForBearerAuth(AddPetOperation)
+//
+// Returns nil if the operation has no role requirements or if the operation is unknown.
+func GetRolesForBearerAuth(operation string) []string {
+	roles, ok := operationRolesBearerAuth[operation]
+	if !ok {
+		return nil
+	}
+	// Return a copy to prevent external modification
+	result := make([]string, len(roles))
+	copy(result, roles)
+	return result
 }
 
 func (s *Server) securityBearerAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
