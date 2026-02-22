@@ -19,7 +19,7 @@ const (
 	cyan  = "\033[36m"
 )
 
-func LogEvent(ctx context.Context, message string) {
+func EventLog(ctx context.Context, message string) {
 	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
@@ -80,6 +80,14 @@ func AccessErrorLog(ctx context.Context, operationID string, err error) {
 	attrs = append(attrs, slog.String("request.operation", operationID))
 	attrs = append(attrs, errorToAttrs(err)...)
 	logger(ctx).base.LogAttrs(ctx, slog.LevelError, "Unexpected error occurred", attrs...)
+}
+
+func AccessSlowLog(ctx context.Context, operationID string, status int, duration time.Duration) {
+	logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, "Slow request detected",
+		slog.String("request.operation", operationID),
+		slog.Int("response.status_code", status),
+		slog.Int64("response.duration", duration.Milliseconds()),
+	)
 }
 
 func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {

@@ -63,7 +63,7 @@ func mainRun(ctx context.Context) error {
 
 	serveErr := make(chan error)
 	go func() {
-		atel.LogEvent(ctx, "Start accepting requests")
+		atel.EventLog(ctx, "Start accepting requests")
 		serveErr <- server.ListenAndServe()
 	}()
 
@@ -78,10 +78,10 @@ func mainRun(ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, conf.StopTimeout)
 	defer cancel()
 
-	atel.LogEvent(ctx, "Stop accepting requests")
+	atel.EventLog(ctx, "Stop accepting requests")
 	if err := server.Shutdown(ctx); err != nil {
 		return errtrace.Wrap(err)
 	}
-	atel.LogEvent(ctx, "Server shutdown completed")
+	atel.EventLog(ctx, "Server shutdown completed")
 	return nil
 }
