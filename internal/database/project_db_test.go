@@ -140,7 +140,7 @@ func TestClient_GetProjectByID(t *testing.T) {
 		{
 			name:    "returns_error_when_not_found",
 			input:   "nonexistent",
-			wantErr: database.ErrModelNotFound,
+			wantErr: database.ErrNotFound,
 		},
 	}
 

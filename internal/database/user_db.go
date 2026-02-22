@@ -48,7 +48,7 @@ func (c *Client) GetUserByID(ctx context.Context, id domain.UserID) (*domain.Use
 	var u User
 	if err := c.db(ctx).Where("id = ?", string(id)).Take(&u).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrModelNotFound
+			return nil, errtrace.Wrap(ErrNotFound)
 		}
 		return nil, errtrace.Wrap(err)
 	}
@@ -59,7 +59,7 @@ func (c *Client) GetUserByEmail(ctx context.Context, email string) (*domain.User
 	var u User
 	if err := c.db(ctx).Where("email = ?", email).Take(&u).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrModelNotFound
+			return nil, errtrace.Wrap(ErrNotFound)
 		}
 		return nil, errtrace.Wrap(err)
 	}

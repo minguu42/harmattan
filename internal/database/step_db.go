@@ -62,7 +62,7 @@ func (c *Client) GetStepByID(ctx context.Context, id domain.StepID) (*domain.Ste
 	var s Step
 	if err := c.db(ctx).Where("id = ?", id).Take(&s).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrModelNotFound
+			return nil, errtrace.Wrap(ErrNotFound)
 		}
 		return nil, errtrace.Wrap(err)
 	}

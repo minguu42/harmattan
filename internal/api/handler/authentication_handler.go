@@ -13,7 +13,7 @@ func (h *Handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Authentication.SignUp(ctx, &usecase.SignUpInput{
@@ -31,7 +31,7 @@ func (h *Handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Authentication.SignIn(ctx, &usecase.SignInInput{

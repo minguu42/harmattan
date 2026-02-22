@@ -78,7 +78,7 @@ func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*Projec
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return nil, errtrace.Wrap(ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
@@ -102,7 +102,7 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return nil, errtrace.Wrap(ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
@@ -136,7 +136,7 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return errtrace.Wrap(ProjectNotFoundError())
 		}
 		return errtrace.Wrap(err)

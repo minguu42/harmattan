@@ -13,7 +13,7 @@ func (h *Handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*op
 	var errs []error
 	errs = append(errs, validateTagName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Tag.CreateTag(ctx, &usecase.CreateTagInput{Name: req.Name})
@@ -43,7 +43,7 @@ func (h *Handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 		errs = validateTagName(name)
 	}
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Tag.UpdateTag(ctx, &usecase.UpdateTagInput{

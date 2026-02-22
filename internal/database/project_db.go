@@ -70,7 +70,7 @@ func (c *Client) GetProjectByID(ctx context.Context, id domain.ProjectID) (*doma
 	var p Project
 	if err := c.db(ctx).Where("id = ?", id).Take(&p).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrModelNotFound
+			return nil, errtrace.Wrap(ErrNotFound)
 		}
 		return nil, errtrace.Wrap(err)
 	}

@@ -13,7 +13,7 @@ func (h *Handler) CreateProject(ctx context.Context, req *openapi.CreateProjectR
 	var errs []error
 	errs = append(errs, validateProjectName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Project.CreateProject(ctx, &usecase.CreateProjectInput{
@@ -56,7 +56,7 @@ func (h *Handler) UpdateProject(ctx context.Context, req *openapi.UpdateProjectR
 		errs = append(errs, validateProjectName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Project.UpdateProject(ctx, &usecase.UpdateProjectInput{

@@ -16,7 +16,7 @@ import (
 	"gorm.io/plugin/opentelemetry/tracing"
 )
 
-var ErrModelNotFound = errors.New("model not found in database")
+var ErrNotFound = errors.New("model not found")
 
 type Client struct {
 	gormDB *gorm.DB

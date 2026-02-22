@@ -35,6 +35,19 @@ Harmattanはタスク管理アプリである。
 - `go test -shuffle=on ./internal/api/handler`: 特定のパッケージのテストを実行する
 - `go test -shuffle=on ./internal/api/handler -run TestHandlerName`: 特定のテストを実行する
 
+### エラー処理規約
+
+- エラー処理は`errors`、`fmt`、`internal/lib/errtrace`、`internal/atel`パッケージで行う。
+- 固定メッセージのエラーを生成する場合は`errors.New`関数を使う。
+- 動的な値を含むメッセージのエラーを生成する場合は`fmt.Errorf`関数を使う。
+  - `fmt.Errorf`関数の`%w`動詞は使用しない。
+- 関数が`error`を返す場合は`errtrace.Wrap`関数でラップする（例：`errtrace.Wrap(err)`、`errtrace.Wrap(errors.New("some error"))`）。
+  - `errtrace.Wrap`はエラーを2重でラップしないため、呼び出し元で常に`Wrap`関数を呼び出しても問題ない。
+- `defer`で遅延された関数の失敗時に警告ログを出す場合は`atel.Capture`関数を使用する（例：`defer atel.Capture(ctx, "Failed to close file")(f.Close)`）。
+- アプリケーション固有のエラーは`usecase`パッケージに`Error`型の値を返す関数として定義する。
+- アプリケーション固有のエラーを生成する関数を呼び出すのは`handler`、`usecase`、`middleware`パッケージのみとする。
+  - `domain`や`database`などの他のパッケージで必要な場合はそのパッケージ独自のエラー（`database.ErrNotFound`など）を返す。
+
 ### 開発ノート
 
 #### Code Generation

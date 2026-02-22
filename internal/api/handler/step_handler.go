@@ -14,7 +14,7 @@ func (h *Handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, pa
 	var errs []error
 	errs = append(errs, validateStepName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Step.CreateStep(ctx, &usecase.CreateStepInput{
@@ -33,7 +33,7 @@ func (h *Handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, pa
 		errs = append(errs, validateStepName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, usecase.DomainValidationError(errs)
+		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
 	}
 
 	out, err := h.Step.UpdateStep(ctx, &usecase.UpdateStepInput{

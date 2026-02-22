@@ -33,7 +33,7 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return nil, errtrace.Wrap(ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
@@ -76,7 +76,7 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return nil, errtrace.Wrap(ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
@@ -112,7 +112,7 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return nil, errtrace.Wrap(TaskNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
@@ -143,7 +143,7 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return nil, errtrace.Wrap(TaskNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
@@ -203,7 +203,7 @@ func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, database.ErrModelNotFound) {
+		if errors.Is(err, database.ErrNotFound) {
 			return errtrace.Wrap(TaskNotFoundError())
 		}
 		return errtrace.Wrap(err)
