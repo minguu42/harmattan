@@ -101,7 +101,7 @@ func (c *Client) GetTaskByID(ctx context.Context, id domain.TaskID) (*domain.Tas
 	var t Task
 	if err := c.db(ctx).Preload("Steps").Where("id = ?", id).Take(&t).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
+			return nil, errtrace.Wrap(ErrNotFound)
 		}
 		return nil, errtrace.Wrap(err)
 	}

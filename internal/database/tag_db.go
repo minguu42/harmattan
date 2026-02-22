@@ -64,7 +64,7 @@ func (c *Client) GetTagByID(ctx context.Context, id domain.TagID) (*domain.Tag, 
 	var t Tag
 	if err := c.db(ctx).Where("id = ?", id).Take(&t).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
+			return nil, errtrace.Wrap(ErrNotFound)
 		}
 		return nil, errtrace.Wrap(err)
 	}
