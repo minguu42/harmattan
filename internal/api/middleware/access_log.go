@@ -20,7 +20,7 @@ func AccessLog() middleware.Middleware {
 
 		start := clock.Now(req.Context)
 		resp, err := next(req)
-		duration := time.Since(start)
+		duration := clock.Now(req.Context).Sub(start)
 
 		status := 200
 		if err != nil {
