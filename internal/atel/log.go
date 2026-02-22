@@ -19,7 +19,7 @@ const (
 	cyan  = "\033[36m"
 )
 
-func LogEvent(ctx context.Context, message string) {
+func EventLog(ctx context.Context, message string) {
 	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
