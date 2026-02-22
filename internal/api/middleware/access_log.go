@@ -35,7 +35,7 @@ func AccessLog() middleware.Middleware {
 			UserAgent:   req.Raw.UserAgent(),
 		})
 		if status >= 500 {
-			atel.ErrorLog(req.Context, "Unexpected error occurred", err)
+			atel.AccessErrorLog(req.Context, req.OperationID, err)
 		}
 		return resp, err
 	}

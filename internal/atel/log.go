@@ -75,6 +75,13 @@ func AccessLog(ctx context.Context, fields *AccessFields) {
 	logger(ctx).base.LogAttrs(ctx, slog.LevelInfo, "Request processed", attrs...)
 }
 
+func AccessErrorLog(ctx context.Context, operationID string, err error) {
+	attrs := make([]slog.Attr, 0, 3)
+	attrs = append(attrs, slog.String("request.operation", operationID))
+	attrs = append(attrs, errorToAttrs(err)...)
+	logger(ctx).base.LogAttrs(ctx, slog.LevelError, "Unexpected error occurred", attrs...)
+}
+
 func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
 	if logger(ctx).level.Level() > slog.LevelDebug {
 		return
