@@ -31,8 +31,7 @@ func MaskAttr(a slog.Attr) slog.Attr {
 }
 
 func allFieldsExported(t reflect.Type) bool {
-	for i := range t.NumField() {
-		f := t.Field(i)
+	for f := range t.Fields() {
 		if !f.IsExported() {
 			return false
 		}

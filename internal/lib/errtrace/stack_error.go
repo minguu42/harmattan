@@ -29,7 +29,7 @@ func (e *StackError) Format(s fmt.State, verb rune) {
 		for _, f := range generateFrames(e.stack) {
 			buf.WriteString(fmt.Sprintf("%s\n\t%s\n", f.Function, f.Location))
 		}
-		_, _ = s.Write([]byte(fmt.Sprintf("%s\n%s", e.Error(), buf.String())))
+		_, _ = s.Write(fmt.Appendf(nil, "%s\n%s", e.Error(), buf.String()))
 		return
 	}
 	_, _ = s.Write([]byte(e.Error()))
@@ -53,8 +53,8 @@ func generateFrames(stack []uintptr) []Frame {
 
 		// コンテナイメージ内でビルドするのでそのままだとロケーションが/myapp/から始まることになる
 		// そのため、/myapp/を./で置き換えて開発者がロケーションを参照しやすいようにする
-		if strings.HasPrefix(file, "/myapp/") {
-			file = "./" + strings.TrimPrefix(file, "/myapp/")
+		if after, ok := strings.CutPrefix(file, "/myapp/"); ok {
+			file = "./" + after
 		}
 
 		frames = append(frames, Frame{
