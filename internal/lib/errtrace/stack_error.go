@@ -1,7 +1,6 @@
 package errtrace
 
 import (
-	"encoding/json"
 	"fmt"
 	"runtime"
 	"strings"
@@ -14,6 +13,10 @@ type StackError struct {
 
 func (e *StackError) Error() string {
 	return e.err.Error()
+}
+
+func (e *StackError) Frames() []Frame {
+	return generateFrames(e.stack)
 }
 
 func (e *StackError) Unwrap() error {
@@ -32,24 +35,13 @@ func (e *StackError) Format(s fmt.State, verb rune) {
 	_, _ = s.Write([]byte(e.Error()))
 }
 
-func (e *StackError) MarshalJSON() ([]byte, error) {
-	v := struct {
-		Message string  `json:"message"`
-		Frames  []frame `json:"frames"`
-	}{
-		Message: e.Error(),
-		Frames:  generateFrames(e.stack),
-	}
-	return json.Marshal(v)
-}
-
-type frame struct {
+type Frame struct {
 	Function string `json:"function"`
 	Location string `json:"location"`
 }
 
-func generateFrames(stack []uintptr) []frame {
-	frames := make([]frame, 0, len(stack))
+func generateFrames(stack []uintptr) []Frame {
+	frames := make([]Frame, 0, len(stack))
 	for _, pc := range stack {
 		fn := runtime.FuncForPC(pc - 1)
 		file, line := fn.FileLine(pc - 1)
@@ -65,7 +57,7 @@ func generateFrames(stack []uintptr) []frame {
 			file = "./" + strings.TrimPrefix(file, "/myapp/")
 		}
 
-		frames = append(frames, frame{
+		frames = append(frames, Frame{
 			Function: fn.Name(),
 			Location: fmt.Sprintf("%s:%d", file, line),
 		})
