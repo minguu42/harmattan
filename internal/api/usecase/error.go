@@ -30,8 +30,7 @@ func (e Error) Message() string {
 }
 
 func ToError(err error) Error {
-	var appErr Error
-	if errors.As(err, &appErr) {
+	if appErr, ok := errors.AsType[Error](err); ok {
 		return appErr
 	}
 

@@ -15,7 +15,7 @@ func FromStack(err error, stack []uintptr) error {
 		return nil
 	}
 
-	if serr := new(StackError); errors.As(err, &serr) {
+	if _, ok := errors.AsType[*StackError](err); ok {
 		return err
 	}
 
@@ -30,7 +30,7 @@ func Wrap(err error) error {
 		return nil
 	}
 
-	if serr := new(StackError); errors.As(err, &serr) {
+	if _, ok := errors.AsType[*StackError](err); ok {
 		return err
 	}
 
