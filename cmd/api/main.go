@@ -33,7 +33,8 @@ func init() {
 func main() {
 	ctx := context.Background()
 	if err := mainRun(ctx); err != nil {
-		atel.LogFatal(ctx, "Failed to execute mainRun", err)
+		atel.ErrorLog(ctx, "Failed to execute mainRun", err)
+		os.Exit(1)
 	}
 }
 

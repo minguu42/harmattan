@@ -11,7 +11,7 @@ import (
 
 func AccessLog() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
-		// CheckHealthオペレーションのアクセスログは出さない
+		// CheckHealthオペレーションのログは出さない
 		if req.OperationID == "CheckHealth" {
 			return next(req)
 		}
@@ -34,6 +34,9 @@ func AccessLog() middleware.Middleware {
 			IPAddress:   req.Raw.RemoteAddr,
 			UserAgent:   req.Raw.UserAgent(),
 		})
+		if status >= 500 {
+			atel.ErrorLog(req.Context, "Unexpected error occurred", err)
+		}
 		return resp, err
 	}
 }

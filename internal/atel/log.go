@@ -23,9 +23,22 @@ func LogEvent(ctx context.Context, message string) {
 	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
-func LogFatal(ctx context.Context, message string, err error) {
-	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", err))
-	os.Exit(1)
+func ErrorLog(ctx context.Context, message string, err error) {
+	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, errorToAttrs(err)...)
+}
+
+func errorToAttrs(err error) []slog.Attr {
+	if err == nil {
+		return nil
+	}
+
+	if serr := new(errtrace.StackError); errors.As(err, &serr) {
+		return []slog.Attr{
+			slog.String("error.message", serr.Error()),
+			slog.Any("error.frames", serr.Frames()),
+		}
+	}
+	return []slog.Attr{slog.String("error.message", err.Error())}
 }
 
 type AccessFields struct {
@@ -107,6 +120,6 @@ func Capture(ctx context.Context, message string) func(func() error) {
 			return
 		}
 
-		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, slog.Any("error", errtrace.FromStack(err, pc[:n:n])))
+		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, errorToAttrs(errtrace.FromStack(err, pc[:n:n]))...)
 	}
 }
