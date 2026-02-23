@@ -2,6 +2,7 @@ package errtrace
 
 import (
 	"fmt"
+	"log/slog"
 	"runtime"
 	"strings"
 )
@@ -9,6 +10,7 @@ import (
 type StackError struct {
 	err   error
 	stack []uintptr
+	attrs []slog.Attr
 }
 
 func (e *StackError) Error() string {
@@ -19,6 +21,10 @@ func (e *StackError) Frames() []Frame {
 	return generateFrames(e.stack)
 }
 
+func (e *StackError) Attrs() []slog.Attr {
+	return e.attrs
+}
+
 func (e *StackError) Unwrap() error {
 	return e.err
 }
@@ -26,10 +32,25 @@ func (e *StackError) Unwrap() error {
 func (e *StackError) Format(s fmt.State, verb rune) {
 	if verb == 'v' && s.Flag('+') {
 		var buf strings.Builder
-		for _, f := range generateFrames(e.stack) {
-			buf.WriteString(fmt.Sprintf("%s\n\t%s\n", f.Function, f.Location))
+		buf.WriteString(e.Error())
+		if len(e.attrs) > 0 {
+			buf.WriteString(" [")
+			for i, a := range e.attrs {
+				if i > 0 {
+					buf.WriteByte(' ')
+				}
+				buf.WriteString(fmt.Sprintf("%s=%v", a.Key, a.Value))
+			}
+			buf.WriteByte(']')
 		}
-		_, _ = s.Write(fmt.Appendf(nil, "%s\n%s", e.Error(), buf.String()))
+		buf.WriteByte('\n')
+		for i, f := range generateFrames(e.stack) {
+			if i > 0 {
+				buf.WriteByte('\n')
+			}
+			buf.WriteString(fmt.Sprintf("%s\n\t%s", f.Function, f.Location))
+		}
+		_, _ = s.Write([]byte(buf.String()))
 		return
 	}
 	_, _ = s.Write([]byte(e.Error()))
