@@ -33,10 +33,14 @@ func errorToAttrs(err error) []slog.Attr {
 	}
 
 	if serr, ok := errors.AsType[*errtrace.StackError](err); ok {
-		return []slog.Attr{
+		attrs := []slog.Attr{
 			slog.String("error.message", serr.Error()),
 			slog.Any("error.frames", serr.Frames()),
 		}
+		if errAttrs := serr.Attrs(); len(errAttrs) > 0 {
+			attrs = append(attrs, slog.GroupAttrs("error.attrs", errAttrs...))
+		}
+		return attrs
 	}
 	return []slog.Attr{slog.String("error.message", err.Error())}
 }
