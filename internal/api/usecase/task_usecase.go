@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -34,12 +35,12 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutpu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(ProjectNotFoundError())
+			return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasProject(p) {
-		return nil, errtrace.Wrap(ProjectNotFoundError())
+		return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 	}
 
 	now := clock.Now(ctx)
@@ -77,12 +78,12 @@ func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOu
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(ProjectNotFoundError())
+			return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasProject(p) {
-		return nil, errtrace.Wrap(ProjectNotFoundError())
+		return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 	}
 
 	ts, err := uc.DB.ListTasks(ctx, in.ProjectID, in.Limit+1, in.Offset, in.ShowCompleted)
@@ -113,12 +114,12 @@ func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, err
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(TaskNotFoundError())
+			return nil, errtrace.Wrap(apierror.TaskNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasTask(task) {
-		return nil, errtrace.Wrap(TaskNotFoundError())
+		return nil, errtrace.Wrap(apierror.TaskNotFoundError())
 	}
 
 	tags, err := uc.DB.GetTagsByIDs(ctx, task.TagIDs)
@@ -144,12 +145,12 @@ func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(TaskNotFoundError())
+			return nil, errtrace.Wrap(apierror.TaskNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasTask(task) {
-		return nil, errtrace.Wrap(TaskNotFoundError())
+		return nil, errtrace.Wrap(apierror.TaskNotFoundError())
 	}
 
 	if in.Name.Valid {
@@ -204,12 +205,12 @@ func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return errtrace.Wrap(TaskNotFoundError())
+			return errtrace.Wrap(apierror.TaskNotFoundError())
 		}
 		return errtrace.Wrap(err)
 	}
 	if !user.HasTask(task) {
-		return errtrace.Wrap(TaskNotFoundError())
+		return errtrace.Wrap(apierror.TaskNotFoundError())
 	}
 
 	if err := uc.DB.DeleteTaskByID(ctx, task.ID); err != nil {

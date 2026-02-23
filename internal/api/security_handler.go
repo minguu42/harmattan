@@ -3,8 +3,8 @@ package api
 import (
 	"context"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
-	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
@@ -18,7 +18,7 @@ type securityHandler struct {
 func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ openapi.OperationName, t openapi.BearerAuth) (context.Context, error) {
 	userID, err := h.auth.ParseIDToken(ctx, t.Token)
 	if err != nil {
-		return nil, usecase.AuthorizationError()
+		return nil, errtrace.Wrap(apierror.AuthorizationError())
 	}
 
 	u, err := h.db.GetUserByID(ctx, userID)

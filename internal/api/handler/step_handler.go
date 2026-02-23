@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -14,7 +15,7 @@ func (h *Handler) CreateStep(ctx context.Context, req *openapi.CreateStepReq, pa
 	var errs []error
 	errs = append(errs, validateStepName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Step.CreateStep(ctx, &usecase.CreateStepInput{
@@ -33,7 +34,7 @@ func (h *Handler) UpdateStep(ctx context.Context, req *openapi.UpdateStepReq, pa
 		errs = append(errs, validateStepName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Step.UpdateStep(ctx, &usecase.UpdateStepInput{
