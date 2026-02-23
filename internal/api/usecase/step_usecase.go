@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -32,12 +33,12 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutpu
 	task, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(TaskNotFoundError())
+			return nil, errtrace.Wrap(apierror.TaskNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasTask(task) {
-		return nil, errtrace.Wrap(TaskNotFoundError())
+		return nil, errtrace.Wrap(apierror.TaskNotFoundError())
 	}
 
 	now := clock.Now(ctx)
@@ -68,12 +69,12 @@ func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutpu
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(StepNotFoundError())
+			return nil, errtrace.Wrap(apierror.StepNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasStep(s) {
-		return nil, errtrace.Wrap(StepNotFoundError())
+		return nil, errtrace.Wrap(apierror.StepNotFoundError())
 	}
 
 	if in.Name.Valid {
@@ -100,12 +101,12 @@ func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return errtrace.Wrap(StepNotFoundError())
+			return errtrace.Wrap(apierror.StepNotFoundError())
 		}
 		return errtrace.Wrap(err)
 	}
 	if !user.HasStep(s) {
-		return errtrace.Wrap(StepNotFoundError())
+		return errtrace.Wrap(apierror.StepNotFoundError())
 	}
 
 	if err := uc.DB.DeleteStepByID(ctx, s.ID); err != nil {

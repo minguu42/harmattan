@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -78,12 +79,12 @@ func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, e
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(TagNotFoundError())
+			return nil, errtrace.Wrap(apierror.TagNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasTag(t) {
-		return nil, errtrace.Wrap(TagNotFoundError())
+		return nil, errtrace.Wrap(apierror.TagNotFoundError())
 	}
 
 	if in.Name.Valid {
@@ -106,12 +107,12 @@ func (uc *Tag) GetTag(ctx context.Context, in *GetTagInput) (*TagOutput, error) 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(TagNotFoundError())
+			return nil, errtrace.Wrap(apierror.TagNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasTag(t) {
-		return nil, errtrace.Wrap(TagNotFoundError())
+		return nil, errtrace.Wrap(apierror.TagNotFoundError())
 	}
 
 	return &TagOutput{Tag: t}, nil
@@ -127,12 +128,12 @@ func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return errtrace.Wrap(TagNotFoundError())
+			return errtrace.Wrap(apierror.TagNotFoundError())
 		}
 		return errtrace.Wrap(err)
 	}
 	if !user.HasTag(t) {
-		return errtrace.Wrap(TagNotFoundError())
+		return errtrace.Wrap(apierror.TagNotFoundError())
 	}
 
 	if err := uc.DB.DeleteTagByID(ctx, t.ID); err != nil {

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/middleware"
 	"github.com/minguu42/harmattan/internal/api/openapi"
@@ -77,7 +78,7 @@ type ErrorResponse struct {
 }
 
 func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
-	appErr := usecase.ToError(err)
+	apiError := apierror.ToError(err)
 
 	// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、ここでアクセスログを出力する
 	// 上記以外の場合のアクセスログは middleware.AccessLog で出力される
@@ -89,7 +90,7 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 	}
 	if operationID != "" {
 		atel.AccessLog(ctx, &atel.AccessFields{
-			Status:      appErr.Status(),
+			Status:      apiError.Status(),
 			OperationID: operationID,
 			Method:      r.Method,
 			URL:         r.URL.String(),
@@ -98,10 +99,10 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 		})
 	}
 
-	w.WriteHeader(appErr.Status())
+	w.WriteHeader(apiError.Status())
 	bs, _ := json.Marshal(ErrorResponse{
-		Code:    appErr.Status(),
-		Message: appErr.Message(),
+		Code:    apiError.Status(),
+		Message: apiError.Message(),
 	})
 	_, _ = w.Write(bs)
 }

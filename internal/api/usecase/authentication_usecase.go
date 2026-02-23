@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -44,7 +45,7 @@ func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpO
 		return nil, errtrace.Wrap(err)
 	}
 	if u != nil {
-		return nil, errtrace.Wrap(DuplicateUserEmailError())
+		return nil, errtrace.Wrap(apierror.DuplicateUserEmailError())
 	}
 
 	user, err := in.User(ctx)
@@ -76,13 +77,13 @@ func (uc *Authentication) SignIn(ctx context.Context, in *SignInInput) (*SignInO
 	user, err := uc.DB.GetUserByEmail(ctx, in.Email)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(InvalidEmailOrPasswordError())
+			return nil, errtrace.Wrap(apierror.InvalidEmailOrPasswordError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(in.Password)); err != nil {
-		return nil, errtrace.Wrap(InvalidEmailOrPasswordError())
+		return nil, errtrace.Wrap(apierror.InvalidEmailOrPasswordError())
 	}
 
 	token, err := uc.Auth.CreateIDToken(ctx, user.ID)

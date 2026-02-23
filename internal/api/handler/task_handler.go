@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -14,7 +15,7 @@ func (h *Handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, pa
 	var errs []error
 	errs = append(errs, validateTaskName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Task.CreateTask(ctx, &usecase.CreateTaskInput{
@@ -58,7 +59,7 @@ func (h *Handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 		errs = append(errs, validateTaskName(name)...)
 	}
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Task.UpdateTask(ctx, &usecase.UpdateTaskInput{

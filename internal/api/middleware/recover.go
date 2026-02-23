@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/ogen-go/ogen/middleware"
 )
@@ -29,7 +29,7 @@ func Recover() middleware.Middleware {
 				pc := make([]uintptr, errtrace.MaxStackDepth)
 				n := runtime.Callers(2, pc)
 
-				err = errtrace.FromStack(usecase.UnknownError(errors.New(message)), pc[:n:n])
+				err = errtrace.FromStack(apierror.UnknownError(errors.New(message)), pc[:n:n])
 			}
 		}()
 

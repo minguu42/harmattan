@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
@@ -13,7 +14,7 @@ func (h *Handler) SignUp(ctx context.Context, req *openapi.SignUpReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Authentication.SignUp(ctx, &usecase.SignUpInput{
@@ -31,7 +32,7 @@ func (h *Handler) SignIn(ctx context.Context, req *openapi.SignInReq) (*openapi.
 	errs = append(errs, validateEmail(req.Email)...)
 	errs = append(errs, validatePassword(req.Password)...)
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Authentication.SignIn(ctx, &usecase.SignInInput{

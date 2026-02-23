@@ -1,4 +1,4 @@
-package usecase
+package apierror
 
 func ValidationError(err error) Error {
 	return Error{err: err, status: 400, message: "リクエストに何らかの間違いがあります"}

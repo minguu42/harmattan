@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -13,7 +14,7 @@ func (h *Handler) CreateTag(ctx context.Context, req *openapi.CreateTagReq) (*op
 	var errs []error
 	errs = append(errs, validateTagName(req.Name)...)
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Tag.CreateTag(ctx, &usecase.CreateTagInput{Name: req.Name})
@@ -43,7 +44,7 @@ func (h *Handler) UpdateTag(ctx context.Context, req *openapi.UpdateTagReq, para
 		errs = validateTagName(name)
 	}
 	if len(errs) > 0 {
-		return nil, errtrace.Wrap(usecase.DomainValidationError(errs))
+		return nil, errtrace.Wrap(apierror.DomainValidationError(errs))
 	}
 
 	out, err := h.Tag.UpdateTag(ctx, &usecase.UpdateTagInput{

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -79,12 +80,12 @@ func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*Projec
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(ProjectNotFoundError())
+			return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasProject(p) {
-		return nil, errtrace.Wrap(ProjectNotFoundError())
+		return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 	}
 
 	return &ProjectOutput{Project: p}, nil
@@ -103,12 +104,12 @@ func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return nil, errtrace.Wrap(ProjectNotFoundError())
+			return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 		}
 		return nil, errtrace.Wrap(err)
 	}
 	if !user.HasProject(p) {
-		return nil, errtrace.Wrap(ProjectNotFoundError())
+		return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 	}
 
 	if in.Name.Valid {
@@ -137,12 +138,12 @@ func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) er
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, database.ErrNotFound) {
-			return errtrace.Wrap(ProjectNotFoundError())
+			return errtrace.Wrap(apierror.ProjectNotFoundError())
 		}
 		return errtrace.Wrap(err)
 	}
 	if !user.HasProject(p) {
-		return errtrace.Wrap(ProjectNotFoundError())
+		return errtrace.Wrap(apierror.ProjectNotFoundError())
 	}
 
 	if err := uc.DB.DeleteProjectByID(ctx, p.ID); err != nil {
