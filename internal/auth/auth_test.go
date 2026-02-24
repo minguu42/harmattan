@@ -15,14 +15,11 @@ import (
 func TestAuthenticator_CreateIDToken(t *testing.T) {
 	t.Parallel()
 
-	a, err := auth.NewAuthenticator(auth.Config{
-		IDTokenExpiration: 1 * time.Hour,
-		IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
-	})
+	authn, err := auth.NewAuthenticator("cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G", 1*time.Hour)
 	require.NoError(t, err)
 	ctx := clock.WithFixedNow(t.Context(), time.Date(2025, 10, 1, 15, 40, 50, 0, time.UTC))
 
-	got, err := a.CreateIDToken(ctx, "u1")
+	got, err := authn.CreateIDToken(ctx, "u1")
 	require.NoError(t, err)
 
 	want := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MSIsImV4cCI6MTc1OTMzNjg1MCwiaWF0IjoxNzU5MzMzMjUwfQ.vV6tn3H29xdhA67JvtvJSJ-YnNKFJoC2GTYP28ibFDQ"
@@ -74,13 +71,10 @@ func TestAuthenticator_ParseIDToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			a, err := auth.NewAuthenticator(auth.Config{
-				IDTokenExpiration: 1 * time.Hour,
-				IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
-			})
+			authn, err := auth.NewAuthenticator("cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G", 1*time.Hour)
 			require.NoError(t, err)
 
-			got, err := a.ParseIDToken(tt.ctx, tt.token)
+			got, err := authn.ParseIDToken(tt.ctx, tt.token)
 			if tt.wantErr {
 				assert.Error(t, err)
 				return
