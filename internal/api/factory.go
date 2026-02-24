@@ -19,7 +19,7 @@ type Factory struct {
 }
 
 func NewFactory(ctx context.Context, conf *Config) (*Factory, error) {
-	authn, err := auth.NewAuthenticator(conf.Auth)
+	authn, err := auth.NewAuthenticator(conf.IDTokenSecret, conf.IDTokenExpiration)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}

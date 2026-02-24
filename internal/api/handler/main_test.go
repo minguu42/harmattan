@@ -68,10 +68,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("%+v", err)
 	}
 
-	authn, err := auth.NewAuthenticator(auth.Config{
-		IDTokenExpiration: 1 * time.Hour,
-		IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
-	})
+	authn, err := auth.NewAuthenticator("cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G", 1*time.Hour)
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

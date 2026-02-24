@@ -11,24 +11,22 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-type Config struct {
-	IDTokenExpiration time.Duration `env:"ID_TOKEN_EXPIRATION" default:"1h"`
-	IDTokenSecret     string        `env:"ID_TOKEN_SECRET,required"`
-}
-
-func NewAuthenticator(conf Config) (*Authenticator, error) {
-	if conf.IDTokenSecret == "" {
+func NewAuthenticator(idTokenSecret string, idTokenExpiration time.Duration) (*Authenticator, error) {
+	if idTokenSecret == "" {
 		return nil, errtrace.Wrap(errors.New("id token secret is required"))
 	}
+	if idTokenExpiration == 0 {
+		return nil, errtrace.Wrap(errors.New("id token expiration is required"))
+	}
 	return &Authenticator{
-		idTokenExpiration: conf.IDTokenExpiration,
-		idTokenSecret:     conf.IDTokenSecret,
+		idTokenSecret:     idTokenSecret,
+		idTokenExpiration: idTokenExpiration,
 	}, nil
 }
 
 type Authenticator struct {
-	idTokenExpiration time.Duration
 	idTokenSecret     string
+	idTokenExpiration time.Duration
 }
 
 func (a *Authenticator) CreateIDToken(ctx context.Context, id domain.UserID) (string, error) {
