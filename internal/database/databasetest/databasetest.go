@@ -39,7 +39,7 @@ type ClientWithContainer struct {
 func NewClientWithContainer(ctx context.Context, database string) (*ClientWithContainer, error) {
 	mysqlC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: testcontainers.ContainerRequest{
-			Image: "mysql:8.0.30",
+			Image: "mysql:8.0.42",
 			Env: map[string]string{
 				"MYSQL_DATABASE":             database,
 				"MYSQL_ALLOW_EMPTY_PASSWORD": "yes",
