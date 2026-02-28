@@ -16,7 +16,7 @@ services:
       - db
       - otelcol
   db:
-    image: mysql:8.0.30
+    image: mysql:8.0.42
     container_name: harmattan-db
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
