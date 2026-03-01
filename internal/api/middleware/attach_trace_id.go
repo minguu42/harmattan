@@ -5,7 +5,7 @@ import (
 	"github.com/ogen-go/ogen/middleware"
 )
 
-func AttachTraceIDToLogger() middleware.Middleware {
+func AttachTraceID() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
 		req.SetContext(atel.ContextWithTracedLogger(req.Context))
 		return next(req)
