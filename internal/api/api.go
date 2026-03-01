@@ -32,7 +32,7 @@ func NewHandler(f *Factory, revision string, allowedOrigins []string) (http.Hand
 
 	sh := securityHandler{auth: f.Auth, db: f.DB}
 	middlewares := []openapi.Middleware{
-		middleware.AttachTraceIDToLogger(),
+		middleware.AttachTraceID(),
 		middleware.AccessLog(),
 		middleware.Recover(),
 	}
