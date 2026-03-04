@@ -1,7 +1,6 @@
 package database_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -11,40 +10,65 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestClient_ListTasks(t *testing.T) {
-	ctx := context.Background()
+func TestClient_CreateTask(t *testing.T) {
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Users{
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Projects{
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Tasks{},
+	}))
 
+	err := c.CreateTask(t.Context(), &domain.Task{
+		ID:        "task01",
+		UserID:    "user01",
+		ProjectID: "project01",
+		Name:      "タスク1",
+		Content:   "Content 1",
+		Priority:  1,
+		CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+		UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+	})
+	require.NoError(t, err)
+
+	tdb.Assert(t, []any{
+		database.Tasks{
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", Content: "Content 1", Priority: 1, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+	})
+}
+
+func TestClient_ListTasks(t *testing.T) {
 	completedAt := time.Date(2025, 1, 10, 0, 0, 0, 0, jst)
 	dueOn := time.Date(2025, 2, 1, 0, 0, 0, 0, jst)
 
-	require.NoError(t, tdb.TruncateAndInsert(ctx, []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Users{
-			{ID: "user1", Email: "user1@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Projects{
-			{ID: "project1", UserID: "user1", Name: "プロジェクト1", Color: "blue", IsArchived: false, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "project2", UserID: "user1", Name: "プロジェクト2", Color: "red", IsArchived: false, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Tags{
-			{ID: "tag1", UserID: "user1", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "tag2", UserID: "user1", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "tag3", UserID: "user1", Name: "タグ3", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
+			{ID: "tag01", UserID: "user01", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "tag02", UserID: "user01", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 		},
 		database.Tasks{
-			{ID: "task1", UserID: "user1", ProjectID: "project1", Name: "タスク1", Content: "Content 1", Priority: 1, DueOn: nil, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "task2", UserID: "user1", ProjectID: "project1", Name: "タスク2", Content: "Content 2", Priority: 2, DueOn: &dueOn, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-			{ID: "task3", UserID: "user1", ProjectID: "project1", Name: "タスク3", Content: "", Priority: 0, DueOn: nil, CompletedAt: &completedAt, CreatedAt: time.Date(2025, 1, 3, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 3, 0, 0, 0, 0, jst)},
-			{ID: "task4", UserID: "user1", ProjectID: "project2", Name: "タスク4", Content: "", Priority: 0, DueOn: nil, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 4, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 4, 0, 0, 0, 0, jst)},
-			{ID: "task5", UserID: "user1", ProjectID: "project1", Name: "タスク5", Content: "", Priority: 0, DueOn: nil, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 5, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 5, 0, 0, 0, 0, jst)},
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", Content: "Content 1", Priority: 1, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "task02", UserID: "user01", ProjectID: "project01", Name: "タスク2", Content: "Content 2", Priority: 2, DueOn: &dueOn, CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+			{ID: "task03", UserID: "user01", ProjectID: "project01", Name: "タスク3", CompletedAt: &completedAt, CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
+			{ID: "task04", UserID: "user01", ProjectID: "project01", Name: "タスク4", CreatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst)},
 		},
 		database.Steps{
-			{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "step2", UserID: "user1", TaskID: "task1", Name: "ステップ1-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
-			{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
+			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1-1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "step02", UserID: "user01", TaskID: "task01", Name: "ステップ1-2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+			{ID: "step03", UserID: "user01", TaskID: "task02", Name: "ステップ2-1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
 		},
 		database.TaskTags{
-			{TaskID: "task2", TagID: "tag1", CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-			{TaskID: "task2", TagID: "tag2", CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
+			{TaskID: "task02", TagID: "tag01", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+			{TaskID: "task02", TagID: "tag02", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 		},
 	}))
 
@@ -57,393 +81,133 @@ func TestClient_ListTasks(t *testing.T) {
 		want          domain.Tasks
 	}{
 		{
-			name:          "preloads_tasks_with_steps",
-			projectID:     "project1",
-			limit:         10,
-			offset:        0,
-			showCompleted: false,
+			name:      "multiple",
+			projectID: "project01",
+			limit:     10,
+			offset:    0,
 			want: domain.Tasks{
 				{
-					ID:          "task1",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク1",
-					TagIDs:      []domain.TagID{},
-					Content:     "Content 1",
-					Priority:    1,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+					ID: "task01", UserID: "user01", ProjectID: "project01",
+					Name: "タスク1", TagIDs: []domain.TagID{}, Content: "Content 1",
+					Priority:  1,
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 					Steps: domain.Steps{
-						{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-						{ID: "step2", UserID: "user1", TaskID: "task1", Name: "ステップ1-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+						{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1-1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+						{ID: "step02", UserID: "user01", TaskID: "task01", Name: "ステップ1-2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 					},
 				},
 				{
-					ID:          "task2",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク2",
-					TagIDs:      []domain.TagID{"tag1", "tag2"},
-					Content:     "Content 2",
-					Priority:    2,
-					DueOn:       &dueOn,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
+					ID: "task02", UserID: "user01", ProjectID: "project01",
+					Name: "タスク2", TagIDs: []domain.TagID{"tag01", "tag02"}, Content: "Content 2",
+					Priority: 2, DueOn: &dueOn,
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 					Steps: domain.Steps{
-						{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
+						{ID: "step03", UserID: "user01", TaskID: "task02", Name: "ステップ2-1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
 					},
 				},
 				{
-					ID:          "task5",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク5",
-					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
+					ID: "task04", UserID: "user01", ProjectID: "project01",
+					Name: "タスク4", TagIDs: []domain.TagID{},
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst),
+					Steps: domain.Steps{},
 				},
 			},
 		},
 		{
-			name:          "includes_tag_ids_from_task_tags",
-			projectID:     "project1",
-			limit:         10,
-			offset:        0,
-			showCompleted: false,
-			want: domain.Tasks{
-				{
-					ID:          "task1",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク1",
-					TagIDs:      []domain.TagID{},
-					Content:     "Content 1",
-					Priority:    1,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					Steps: domain.Steps{
-						{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-						{ID: "step2", UserID: "user1", TaskID: "task1", Name: "ステップ1-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
-					},
-				},
-				{
-					ID:          "task2",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク2",
-					TagIDs:      []domain.TagID{"tag1", "tag2"},
-					Content:     "Content 2",
-					Priority:    2,
-					DueOn:       &dueOn,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					Steps: domain.Steps{
-						{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-					},
-				},
-				{
-					ID:          "task5",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク5",
-					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
-				},
-			},
-		},
-		{
-			name:          "excludes_completed_when_show_completed_is_false",
-			projectID:     "project1",
-			limit:         10,
-			offset:        0,
-			showCompleted: false,
-			want: domain.Tasks{
-				{
-					ID:          "task1",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク1",
-					TagIDs:      []domain.TagID{},
-					Content:     "Content 1",
-					Priority:    1,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					Steps: domain.Steps{
-						{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-						{ID: "step2", UserID: "user1", TaskID: "task1", Name: "ステップ1-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
-					},
-				},
-				{
-					ID:          "task2",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク2",
-					TagIDs:      []domain.TagID{"tag1", "tag2"},
-					Content:     "Content 2",
-					Priority:    2,
-					DueOn:       &dueOn,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					Steps: domain.Steps{
-						{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-					},
-				},
-				{
-					ID:          "task5",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク5",
-					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
-				},
-			},
-		},
-		{
-			name:          "includes_completed_when_show_completed_is_true",
-			projectID:     "project1",
+			name:          "show_completed",
+			projectID:     "project01",
 			limit:         10,
 			offset:        0,
 			showCompleted: true,
 			want: domain.Tasks{
 				{
-					ID:          "task1",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク1",
-					TagIDs:      []domain.TagID{},
-					Content:     "Content 1",
-					Priority:    1,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+					ID:        "task01",
+					UserID:    "user01",
+					ProjectID: "project01",
+					Name:      "タスク1",
+					TagIDs:    []domain.TagID{},
+					Content:   "Content 1",
+					Priority:  1,
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 					Steps: domain.Steps{
-						{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-						{ID: "step2", UserID: "user1", TaskID: "task1", Name: "ステップ1-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+						{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1-1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+						{ID: "step02", UserID: "user01", TaskID: "task01", Name: "ステップ1-2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 					},
 				},
 				{
-					ID:          "task2",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク2",
-					TagIDs:      []domain.TagID{"tag1", "tag2"},
-					Content:     "Content 2",
-					Priority:    2,
-					DueOn:       &dueOn,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
+					ID:        "task02",
+					UserID:    "user01",
+					ProjectID: "project01",
+					Name:      "タスク2",
+					TagIDs:    []domain.TagID{"tag01", "tag02"}, Content: "Content 2",
+					Priority:  2,
+					DueOn:     &dueOn,
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 					Steps: domain.Steps{
-						{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
+						{ID: "step03", UserID: "user01", TaskID: "task02", Name: "ステップ2-1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
 					},
 				},
 				{
-					ID:          "task3",
-					UserID:      "user1",
-					ProjectID:   "project1",
+					ID:          "task03",
+					UserID:      "user01",
+					ProjectID:   "project01",
 					Name:        "タスク3",
 					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
 					CompletedAt: &completedAt,
-					CreatedAt:   time.Date(2025, 1, 3, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 3, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
+					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst),
+					Steps: domain.Steps{},
 				},
 				{
-					ID:          "task5",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク5",
-					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
+					ID:        "task04",
+					UserID:    "user01",
+					ProjectID: "project01",
+					Name:      "タスク4",
+					TagIDs:    []domain.TagID{},
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst),
+					Steps:     domain.Steps{},
 				},
 			},
 		},
 		{
-			name:          "returns_task_with_empty_steps",
-			projectID:     "project1",
-			limit:         1,
-			offset:        2,
-			showCompleted: false,
+			name:      "pagination",
+			projectID: "project01",
+			limit:     2,
+			offset:    1,
 			want: domain.Tasks{
 				{
-					ID:          "task5",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク5",
-					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
-				},
-			},
-		},
-		{
-			name:          "returns_task_with_empty_tag_ids",
-			projectID:     "project1",
-			limit:         1,
-			offset:        0,
-			showCompleted: false,
-			want: domain.Tasks{
-				{
-					ID:          "task1",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク1",
-					TagIDs:      []domain.TagID{},
-					Content:     "Content 1",
-					Priority:    1,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+					ID:        "task02",
+					UserID:    "user01",
+					ProjectID: "project01",
+					Name:      "タスク2",
+					TagIDs:    []domain.TagID{"tag01", "tag02"},
+					Content:   "Content 2",
+					Priority:  2,
+					DueOn:     &dueOn,
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 					Steps: domain.Steps{
-						{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-						{ID: "step2", UserID: "user1", TaskID: "task1", Name: "ステップ1-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
-					},
-				},
-			},
-		},
-		{
-			name:          "pagination_with_limit_and_offset",
-			projectID:     "project1",
-			limit:         2,
-			offset:        1,
-			showCompleted: false,
-			want: domain.Tasks{
-				{
-					ID:          "task2",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク2",
-					TagIDs:      []domain.TagID{"tag1", "tag2"},
-					Content:     "Content 2",
-					Priority:    2,
-					DueOn:       &dueOn,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					Steps: domain.Steps{
-						{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
+						{ID: "step03", UserID: "user01", TaskID: "task02", Name: "ステップ2-1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
 					},
 				},
 				{
-					ID:          "task5",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク5",
-					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
-				},
-			},
-		},
-		{
-			name:          "excludes_other_projects_tasks",
-			projectID:     "project1",
-			limit:         10,
-			offset:        0,
-			showCompleted: false,
-			want: domain.Tasks{
-				{
-					ID:          "task1",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク1",
-					TagIDs:      []domain.TagID{},
-					Content:     "Content 1",
-					Priority:    1,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					Steps: domain.Steps{
-						{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-						{ID: "step2", UserID: "user1", TaskID: "task1", Name: "ステップ1-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
-					},
-				},
-				{
-					ID:          "task2",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク2",
-					TagIDs:      []domain.TagID{"tag1", "tag2"},
-					Content:     "Content 2",
-					Priority:    2,
-					DueOn:       &dueOn,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-					Steps: domain.Steps{
-						{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-					},
-				},
-				{
-					ID:          "task5",
-					UserID:      "user1",
-					ProjectID:   "project1",
-					Name:        "タスク5",
-					TagIDs:      []domain.TagID{},
-					Content:     "",
-					Priority:    0,
-					DueOn:       nil,
-					CompletedAt: nil,
-					CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-					Steps:       domain.Steps{},
+					ID:        "task04",
+					UserID:    "user01",
+					ProjectID: "project01",
+					Name:      "タスク4",
+					TagIDs:    []domain.TagID{},
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 4, 0, jst),
+					Steps:     domain.Steps{},
 				},
 			},
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := c.ListTasks(ctx, tt.projectID, tt.limit, tt.offset, tt.showCompleted)
-
+			got, err := c.ListTasks(t.Context(), tt.projectID, tt.limit, tt.offset, tt.showCompleted)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
@@ -451,140 +215,60 @@ func TestClient_ListTasks(t *testing.T) {
 }
 
 func TestClient_GetTaskByID(t *testing.T) {
-	ctx := context.Background()
-
-	completedAt := time.Date(2025, 1, 10, 0, 0, 0, 0, jst)
-	dueOn := time.Date(2025, 2, 1, 0, 0, 0, 0, jst)
-
-	require.NoError(t, tdb.TruncateAndInsert(ctx, []any{
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Users{
-			{ID: "user1", Email: "user1@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Projects{
-			{ID: "project1", UserID: "user1", Name: "プロジェクト1", Color: "blue", IsArchived: false, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "project2", UserID: "user1", Name: "プロジェクト2", Color: "red", IsArchived: false, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Tags{
-			{ID: "tag1", UserID: "user1", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "tag2", UserID: "user1", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "tag3", UserID: "user1", Name: "タグ3", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
+			{ID: "tag01", UserID: "user01", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Tasks{
-			{ID: "task1", UserID: "user1", ProjectID: "project1", Name: "タスク1", Content: "Content 1", Priority: 1, DueOn: nil, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "task2", UserID: "user1", ProjectID: "project1", Name: "タスク2", Content: "Content 2", Priority: 2, DueOn: &dueOn, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-			{ID: "task3", UserID: "user1", ProjectID: "project1", Name: "タスク3", Content: "", Priority: 0, DueOn: nil, CompletedAt: &completedAt, CreatedAt: time.Date(2025, 1, 3, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 3, 0, 0, 0, 0, jst)},
-			{ID: "task4", UserID: "user1", ProjectID: "project2", Name: "タスク4", Content: "", Priority: 0, DueOn: nil, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 4, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 4, 0, 0, 0, 0, jst)},
-			{ID: "task5", UserID: "user1", ProjectID: "project1", Name: "タスク5", Content: "", Priority: 0, DueOn: nil, CompletedAt: nil, CreatedAt: time.Date(2025, 1, 5, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 5, 0, 0, 0, 0, jst)},
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", Content: "Content 1", Priority: 1, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Steps{
-			{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{ID: "step2", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-			{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 1, 0, jst)},
-			{ID: "step4", UserID: "user1", TaskID: "task2", Name: "ステップ2-3", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 2, 0, jst)},
+			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.TaskTags{
-			{TaskID: "task1", TagID: "tag1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
-			{TaskID: "task3", TagID: "tag1", CreatedAt: time.Date(2025, 1, 3, 0, 0, 0, 0, jst)},
-			{TaskID: "task3", TagID: "tag2", CreatedAt: time.Date(2025, 1, 3, 0, 0, 0, 0, jst)},
-			{TaskID: "task3", TagID: "tag3", CreatedAt: time.Date(2025, 1, 3, 0, 0, 0, 0, jst)},
+			{TaskID: "task01", TagID: "tag01", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 	}))
 
 	tests := []struct {
 		name    string
-		input   domain.TaskID
+		id      domain.TaskID
 		want    *domain.Task
 		wantErr error
 	}{
 		{
-			name:  "returns_task_with_steps_and_tag_ids",
-			input: "task1",
+			name: "found",
+			id:   "task01",
 			want: &domain.Task{
-				ID:          "task1",
-				UserID:      "user1",
-				ProjectID:   "project1",
-				Name:        "タスク1",
-				TagIDs:      []domain.TagID{"tag1"},
-				Content:     "Content 1",
-				Priority:    1,
-				DueOn:       nil,
-				CompletedAt: nil,
-				CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				ID:        "task01",
+				UserID:    "user01",
+				ProjectID: "project01",
+				Name:      "タスク1",
+				TagIDs:    []domain.TagID{"tag01"},
+				Content:   "Content 1",
+				Priority:  1,
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 				Steps: domain.Steps{
-					{ID: "step1", UserID: "user1", TaskID: "task1", Name: "ステップ1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst)},
+					{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 				},
 			},
 		},
 		{
-			name:  "returns_task_with_multiple_steps",
-			input: "task2",
-			want: &domain.Task{
-				ID:          "task2",
-				UserID:      "user1",
-				ProjectID:   "project1",
-				Name:        "タスク2",
-				TagIDs:      []domain.TagID{},
-				Content:     "Content 2",
-				Priority:    2,
-				DueOn:       &dueOn,
-				CompletedAt: nil,
-				CreatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-				UpdatedAt:   time.Date(2025, 1, 2, 0, 0, 0, 0, jst),
-				Steps: domain.Steps{
-					{ID: "step2", UserID: "user1", TaskID: "task2", Name: "ステップ2-1", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 0, 0, jst)},
-					{ID: "step3", UserID: "user1", TaskID: "task2", Name: "ステップ2-2", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 1, 0, jst)},
-					{ID: "step4", UserID: "user1", TaskID: "task2", Name: "ステップ2-3", CompletedAt: nil, CreatedAt: time.Date(2025, 1, 2, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 2, 0, 0, 2, 0, jst)},
-				},
-			},
-		},
-		{
-			name:  "returns_task_with_multiple_tag_ids",
-			input: "task3",
-			want: &domain.Task{
-				ID:          "task3",
-				UserID:      "user1",
-				ProjectID:   "project1",
-				Name:        "タスク3",
-				TagIDs:      []domain.TagID{"tag1", "tag2", "tag3"},
-				Content:     "",
-				Priority:    0,
-				DueOn:       nil,
-				CompletedAt: &completedAt,
-				CreatedAt:   time.Date(2025, 1, 3, 0, 0, 0, 0, jst),
-				UpdatedAt:   time.Date(2025, 1, 3, 0, 0, 0, 0, jst),
-				Steps:       domain.Steps{},
-			},
-		},
-		{
-			name:  "returns_task_with_empty_steps_and_tag_ids",
-			input: "task5",
-			want: &domain.Task{
-				ID:          "task5",
-				UserID:      "user1",
-				ProjectID:   "project1",
-				Name:        "タスク5",
-				TagIDs:      []domain.TagID{},
-				Content:     "",
-				Priority:    0,
-				DueOn:       nil,
-				CompletedAt: nil,
-				CreatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-				UpdatedAt:   time.Date(2025, 1, 5, 0, 0, 0, 0, jst),
-				Steps:       domain.Steps{},
-			},
-		},
-		{
-			name:    "returns_error_when_not_found",
-			input:   "nonexistent",
+			name:    "not_found",
+			id:      "task99",
 			wantErr: database.ErrNotFound,
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := c.GetTaskByID(ctx, tt.input)
-
+			got, err := c.GetTaskByID(t.Context(), tt.id)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
 				assert.Nil(t, got)
@@ -594,4 +278,68 @@ func TestClient_GetTaskByID(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestClient_UpdateTask(t *testing.T) {
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Users{
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Projects{
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Tags{
+			{ID: "tag01", UserID: "user01", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "tag02", UserID: "user01", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+		},
+		database.Tasks{
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.TaskTags{
+			{TaskID: "task01", TagID: "tag01", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+	}))
+
+	err := c.UpdateTask(t.Context(), &domain.Task{
+		ID:        "task01",
+		Name:      "更新後タスク",
+		Content:   "Updated content",
+		Priority:  2,
+		TagIDs:    []domain.TagID{"tag02"},
+		UpdatedAt: time.Date(2025, 2, 1, 0, 0, 0, 0, jst),
+	})
+	require.NoError(t, err)
+
+	tdb.Assert(t, []any{
+		database.Tasks{
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "更新後タスク", Content: "Updated content", Priority: 2, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 2, 1, 0, 0, 0, 0, jst)},
+		},
+		database.TaskTags{
+			{TaskID: "task01", TagID: "tag02", CreatedAt: time.Date(2025, 2, 1, 0, 0, 0, 0, jst)},
+		},
+	})
+}
+
+func TestClient_DeleteTaskByID(t *testing.T) {
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Users{
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Projects{
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Tasks{
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "task02", UserID: "user01", ProjectID: "project01", Name: "タスク2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+		},
+	}))
+
+	err := c.DeleteTaskByID(t.Context(), "task01")
+	require.NoError(t, err)
+
+	tdb.Assert(t, []any{
+		database.Tasks{
+			{ID: "task02", UserID: "user01", ProjectID: "project01", Name: "タスク2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+		},
+	})
 }

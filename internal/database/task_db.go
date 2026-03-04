@@ -62,7 +62,7 @@ func (ts Tasks) IDs() []domain.TaskID {
 }
 
 func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
-	task := Task{
+	if err := c.db(ctx).Create(&Task{
 		ID:          t.ID,
 		UserID:      t.UserID,
 		ProjectID:   t.ProjectID,
@@ -73,8 +73,7 @@ func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
 		CompletedAt: t.CompletedAt,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
-	}
-	if err := c.db(ctx).Create(&task).Error; err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil
@@ -114,15 +113,14 @@ func (c *Client) GetTaskByID(ctx context.Context, id domain.TaskID) (*domain.Tas
 }
 
 func (c *Client) UpdateTask(ctx context.Context, t *domain.Task) error {
-	err := c.db(ctx).Model(Task{}).Where("id = ?", t.ID).Updates(map[string]any{
+	if err := c.db(ctx).Model(Task{}).Where("id = ?", t.ID).Updates(map[string]any{
 		"name":         t.Name,
 		"content":      t.Content,
 		"priority":     t.Priority,
 		"due_on":       t.DueOn,
 		"completed_at": t.CompletedAt,
 		"updated_at":   t.UpdatedAt,
-	}).Error
-	if err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 

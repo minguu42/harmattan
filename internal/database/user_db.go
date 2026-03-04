@@ -31,14 +31,13 @@ type Users []User
 
 func (c *Client) CreateUser(ctx context.Context, u *domain.User) error {
 	now := clock.Now(ctx)
-	user := User{
+	if err := c.db(ctx).Create(&User{
 		ID:             string(u.ID),
 		Email:          u.Email,
 		HashedPassword: u.HashedPassword,
 		CreatedAt:      now,
 		UpdatedAt:      now,
-	}
-	if err := c.db(ctx).Create(&user).Error; err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil

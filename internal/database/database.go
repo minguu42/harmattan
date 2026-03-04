@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"github.com/avast/retry-go/v4"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/plugin/opentelemetry/tracing"
 )
 
@@ -64,6 +66,16 @@ func NewClient(ctx context.Context, conf Config) (*Client, error) {
 		return nil, errtrace.Wrap(err)
 	}
 	return &Client{gormDB: gormDB}, nil
+}
+
+type customLogger struct{}
+
+func (l customLogger) LogMode(_ logger.LogLevel) logger.Interface  { return l }
+func (l customLogger) Info(_ context.Context, _ string, _ ...any)  {}
+func (l customLogger) Warn(_ context.Context, _ string, _ ...any)  {}
+func (l customLogger) Error(_ context.Context, _ string, _ ...any) {}
+func (l customLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), _ error) {
+	atel.SQLLog(ctx, begin, fc)
 }
 
 func (c *Client) Close() error {

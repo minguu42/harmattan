@@ -39,14 +39,13 @@ func (ts Tags) ToDomain() domain.Tags {
 }
 
 func (c *Client) CreateTag(ctx context.Context, t *domain.Tag) error {
-	tag := Tag{
+	if err := c.db(ctx).Create(&Tag{
 		ID:        t.ID,
 		UserID:    t.UserID,
 		Name:      t.Name,
 		CreatedAt: t.CreatedAt,
 		UpdatedAt: t.UpdatedAt,
-	}
-	if err := c.db(ctx).Create(&tag).Error; err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil
@@ -84,11 +83,10 @@ func (c *Client) GetTagsByIDs(ctx context.Context, ids []domain.TagID) (domain.T
 }
 
 func (c *Client) UpdateTag(ctx context.Context, t *domain.Tag) error {
-	err := c.db(ctx).Model(Tag{}).Where("id = ?", t.ID).Updates(map[string]any{
+	if err := c.db(ctx).Model(Tag{}).Where("id = ?", t.ID).Updates(map[string]any{
 		"name":       t.Name,
 		"updated_at": t.UpdatedAt,
-	}).Error
-	if err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil
