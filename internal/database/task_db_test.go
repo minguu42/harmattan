@@ -246,10 +246,15 @@ func TestClient_GetTaskByID(t *testing.T) {
 			name: "found",
 			id:   "task01",
 			want: &domain.Task{
-				ID: "task01", UserID: "user01", ProjectID: "project01",
-				Name: "タスク1", TagIDs: []domain.TagID{"tag01"}, Content: "Content 1",
+				ID:        "task01",
+				UserID:    "user01",
+				ProjectID: "project01",
+				Name:      "タスク1",
+				TagIDs:    []domain.TagID{"tag01"},
+				Content:   "Content 1",
 				Priority:  1,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 				Steps: domain.Steps{
 					{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 				},
