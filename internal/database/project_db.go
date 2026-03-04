@@ -43,7 +43,7 @@ func (ps Projects) ToDomain() domain.Projects {
 }
 
 func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
-	project := Project{
+	if err := c.db(ctx).Create(&Project{
 		ID:         p.ID,
 		UserID:     p.UserID,
 		Name:       p.Name,
@@ -51,8 +51,7 @@ func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
 		IsArchived: p.IsArchived,
 		CreatedAt:  p.CreatedAt,
 		UpdatedAt:  p.UpdatedAt,
-	}
-	if err := c.db(ctx).Create(&project).Error; err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil
@@ -78,13 +77,12 @@ func (c *Client) GetProjectByID(ctx context.Context, id domain.ProjectID) (*doma
 }
 
 func (c *Client) UpdateProject(ctx context.Context, p *domain.Project) error {
-	err := c.db(ctx).Model(Project{}).Where("id = ?", p.ID).Updates(map[string]any{
+	if err := c.db(ctx).Model(Project{}).Where("id = ?", p.ID).Updates(map[string]any{
 		"name":        p.Name,
 		"color":       p.Color,
 		"is_archived": p.IsArchived,
 		"updated_at":  p.UpdatedAt,
-	}).Error
-	if err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil

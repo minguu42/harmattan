@@ -43,7 +43,7 @@ func (ss Steps) ToDomain() domain.Steps {
 }
 
 func (c *Client) CreateStep(ctx context.Context, s *domain.Step) error {
-	step := Step{
+	if err := c.db(ctx).Create(&Step{
 		ID:          s.ID,
 		UserID:      s.UserID,
 		TaskID:      s.TaskID,
@@ -51,8 +51,7 @@ func (c *Client) CreateStep(ctx context.Context, s *domain.Step) error {
 		CompletedAt: s.CompletedAt,
 		CreatedAt:   s.CreatedAt,
 		UpdatedAt:   s.UpdatedAt,
-	}
-	if err := c.db(ctx).Create(&step).Error; err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil
@@ -70,12 +69,11 @@ func (c *Client) GetStepByID(ctx context.Context, id domain.StepID) (*domain.Ste
 }
 
 func (c *Client) UpdateStep(ctx context.Context, s *domain.Step) error {
-	err := c.db(ctx).Model(Step{}).Where("id = ?", s.ID).Updates(map[string]any{
+	if err := c.db(ctx).Model(Step{}).Where("id = ?", s.ID).Updates(map[string]any{
 		"name":         s.Name,
 		"completed_at": s.CompletedAt,
 		"updated_at":   s.UpdatedAt,
-	}).Error
-	if err != nil {
+	}).Error; err != nil {
 		return errtrace.Wrap(err)
 	}
 	return nil
