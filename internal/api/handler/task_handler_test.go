@@ -32,7 +32,7 @@ func TestHandler_CreateTask(t *testing.T) {
 		database.Tags{},
 	}))
 
-	t.Run("project not found", func(t *testing.T) {
+	t.Run("project_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
 		httpcheck.New(th).Test(t, "POST", "/projects/PROJECT-000000000000000099/tasks").
 			WithHeader("Authorization", "Bearer "+token).
@@ -40,7 +40,7 @@ func TestHandler_CreateTask(t *testing.T) {
 			WithBody([]byte(`{"name": "タスク", "priority": 1}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("project access denied", func(t *testing.T) {
+	t.Run("project_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
 		httpcheck.New(th).Test(t, "POST", "/projects/PROJECT-000000000000000002/tasks").
 			WithHeader("Authorization", "Bearer "+token).
@@ -123,7 +123,7 @@ func TestHandler_ListTasks(t *testing.T) {
 		database.TaskTags{},
 	}))
 
-	t.Run("showCompleted=false (default)", func(t *testing.T) {
+	t.Run("show_completed_false_default", func(t *testing.T) {
 		want := &openapi.ListTasksOK{
 			Tasks: []openapi.Task{
 				{
@@ -227,13 +227,13 @@ func TestHandler_ListTasks(t *testing.T) {
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(200).HasJSON(want)
 	})
-	t.Run("project not found", func(t *testing.T) {
+	t.Run("project_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000099/tasks").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("project access denied", func(t *testing.T) {
+	t.Run("project_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したプロジェクトは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/projects/PROJECT-000000000000000002/tasks").
 			WithHeader("Authorization", "Bearer "+token).
@@ -249,16 +249,16 @@ func TestHandler_GetTask(t *testing.T) {
 				UserID:    testUserID,
 				Name:      "プロジェクト1",
 				Color:     "blue",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:        "PROJECT-000000000000000002",
 				UserID:    "USER-000000000000000000002",
 				Name:      "プロジェクト2",
 				Color:     "gray",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
 		},
 		database.Tasks{
@@ -269,8 +269,8 @@ func TestHandler_GetTask(t *testing.T) {
 				Name:      "タスク1",
 				Content:   "内容",
 				Priority:  1,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:        "TASK-000000000000000000002",
@@ -279,21 +279,21 @@ func TestHandler_GetTask(t *testing.T) {
 				Name:      "タスク2",
 				Content:   "内容",
 				Priority:  2,
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
 		},
 		database.Steps{},
 		database.TaskTags{},
 	}))
 
-	t.Run("task not found", func(t *testing.T) {
+	t.Run("task_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/tasks/TASK-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("task access denied", func(t *testing.T) {
+	t.Run("task_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/tasks/TASK-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
@@ -306,8 +306,8 @@ func TestHandler_GetTask(t *testing.T) {
 			Name:      "タスク1",
 			Content:   "内容",
 			Priority:  1,
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 		}
 		httpcheck.New(th).Test(t, "GET", "/tasks/TASK-000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
@@ -337,8 +337,8 @@ func TestHandler_UpdateTask(t *testing.T) {
 				UserID:    testUserID,
 				ProjectID: "PROJECT-000000000000000001",
 				Name:      "タスク1",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:        "TASK-000000000000000000002",
@@ -352,8 +352,8 @@ func TestHandler_UpdateTask(t *testing.T) {
 				ID:        "TAG-0000000000000000000001",
 				UserID:    testUserID,
 				Name:      "タグ1",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:     "TAG-0000000000000000000002",
@@ -365,7 +365,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 		database.TaskTags{},
 	}))
 
-	t.Run("task not found", func(t *testing.T) {
+	t.Run("task_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
@@ -373,7 +373,7 @@ func TestHandler_UpdateTask(t *testing.T) {
 			WithBody([]byte(`{"name": "更新後タスク", "content": "更新後内容", "priority": 3}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("task access denied", func(t *testing.T) {
+	t.Run("task_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "PATCH", "/tasks/TASK-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
@@ -390,14 +390,14 @@ func TestHandler_UpdateTask(t *testing.T) {
 			Priority:    3,
 			DueOn:       openapi.OptDate{Value: time.Date(2025, 1, 2, 0, 0, 0, 0, jst), Set: true},
 			CompletedAt: openapi.OptDateTime{Value: time.Date(2025, 1, 1, 12, 0, 0, 0, jst), Set: true},
-			CreatedAt:   time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			CreatedAt:   time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			UpdatedAt:   fixedNow,
 			Tags: []openapi.Tag{
 				{
 					ID:        "TAG-0000000000000000000001",
 					Name:      "タグ1",
-					CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 				},
 			},
 		}
@@ -431,8 +431,8 @@ func TestHandler_DeleteTask(t *testing.T) {
 				UserID:    testUserID,
 				ProjectID: "PROJECT-000000000000000001",
 				Name:      "タスク1",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:        "TASK-000000000000000000002",
@@ -443,13 +443,13 @@ func TestHandler_DeleteTask(t *testing.T) {
 		},
 	}))
 
-	t.Run("task not found", func(t *testing.T) {
+	t.Run("task_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("task access denied", func(t *testing.T) {
+	t.Run("task_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/tasks/TASK-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).

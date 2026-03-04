@@ -10,7 +10,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	t.Run("supported types", func(t *testing.T) {
+	t.Run("supported_types", func(t *testing.T) {
 		type Foo struct{ FooField string }
 		type Bar struct{ BarField string }
 		type Config struct {
@@ -82,7 +82,7 @@ func TestLoad(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, *got)
 	})
-	t.Run("env tag", func(t *testing.T) {
+	t.Run("env_tag", func(t *testing.T) {
 		type Foo struct {
 			Field1 string `env:"FIELD_1"`
 			Field2 string `env:"FIELD_2"`
@@ -100,7 +100,7 @@ func TestLoad(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, *got)
 	})
-	t.Run("required option", func(t *testing.T) {
+	t.Run("required_option", func(t *testing.T) {
 		type Foo struct {
 			Field1 string `env:",required"`
 		}
@@ -109,7 +109,7 @@ func TestLoad(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, got)
 	})
-	t.Run("default tag", func(t *testing.T) {
+	t.Run("default_tag", func(t *testing.T) {
 		type Foo struct {
 			Field1 string `default:"dv1"`
 			Field2 string `default:"dv2"`
@@ -123,12 +123,12 @@ func TestLoad(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, want, *got)
 	})
-	t.Run("non-struct type", func(t *testing.T) {
+	t.Run("non_struct_type", func(t *testing.T) {
 		got, err := env.Load[string]()
 		assert.Error(t, err)
 		assert.Nil(t, got)
 	})
-	t.Run("int slice type not supported", func(t *testing.T) {
+	t.Run("int_slice_type_not_supported", func(t *testing.T) {
 		type Foo struct{ Field []int }
 		t.Setenv("Field", "1,2,3")
 
@@ -136,7 +136,7 @@ func TestLoad(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, got)
 	})
-	t.Run("map type not supported", func(t *testing.T) {
+	t.Run("map_type_not_supported", func(t *testing.T) {
 		type Foo struct{ Field map[string]string }
 		t.Setenv("Field", "value")
 
@@ -144,7 +144,7 @@ func TestLoad(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, got)
 	})
-	t.Run("unexported field", func(t *testing.T) {
+	t.Run("unexported_field", func(t *testing.T) {
 		type Foo struct {
 			ExportedField string
 			//lint:ignore U1000 This field is intentionally unexported to test that unexported fields are not loaded from environment variables.

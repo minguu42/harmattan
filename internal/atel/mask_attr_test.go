@@ -72,7 +72,7 @@ func TestMaskAttr(t *testing.T) {
 			},
 		},
 		{
-			name: "mask-pointer",
+			name: "mask_pointer",
 			value: &AllFieldsExported{
 				Unmask:  "foo",
 				Bool:    true,
@@ -97,7 +97,7 @@ func TestMaskAttr(t *testing.T) {
 			},
 		},
 		{
-			name: "mask-deep",
+			name: "mask_deep",
 			value: StructWrapper{F: AllFieldsExported{
 				Unmask:  "foo",
 				Bool:    true,
@@ -122,7 +122,7 @@ func TestMaskAttr(t *testing.T) {
 			}},
 		},
 		{
-			name: "mask-deep-pointer",
+			name: "mask_deep_pointer",
 			value: StructPointerWrapper{F: &AllFieldsExported{
 				Unmask:  "foo",
 				Bool:    true,
@@ -147,22 +147,22 @@ func TestMaskAttr(t *testing.T) {
 			}},
 		},
 		{
-			name:  "contains-unexported-field",
+			name:  "contains_unexported_field",
 			value: WithUnexported{Public: "secret", private: "ignore"},
 			want:  map[string]any{"public": "secret"},
 		},
 		{
-			name:  "contains-unexported-field-pointer",
+			name:  "contains_unexported_field_pointer",
 			value: &WithUnexported{Public: "secret", private: "ignore"},
 			want:  map[string]any{"public": "secret"},
 		},
 		{
-			name:  "contains-unexported-field-deep",
+			name:  "contains_unexported_field_deep",
 			value: StructWrapperWithUnexported{F: WithUnexported{Public: "secret", private: "ignore"}},
 			want:  map[string]any{"f": map[string]any{"public": "secret"}},
 		},
 		{
-			name:  "contains-unexported-field-deep-pointer",
+			name:  "contains_unexported_field_deep_pointer",
 			value: StructPointerWrapperWithUnexported{F: &WithUnexported{Public: "secret", private: "ignore"}},
 			want:  map[string]any{"f": map[string]any{"public": "secret"}},
 		},

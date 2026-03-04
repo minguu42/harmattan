@@ -47,7 +47,7 @@ func TestHandler_ListTags(t *testing.T) {
 		},
 	}))
 
-	t.Run("no limit and offset", func(t *testing.T) {
+	t.Run("no_limit_and_offset", func(t *testing.T) {
 		want := &openapi.ListTagsOK{
 			Tags: []openapi.Tag{
 				{ID: "TAG-0000000000000000000001", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
@@ -86,15 +86,15 @@ func TestHandler_GetTag(t *testing.T) {
 				ID:        "TAG-0000000000000000000001",
 				UserID:    testUserID,
 				Name:      "タグ1",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:        "TAG-0000000000000000000002",
 				UserID:    "USER-000000000000000000002",
 				Name:      "タグ2",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
 		},
 	}))
@@ -103,20 +103,20 @@ func TestHandler_GetTag(t *testing.T) {
 		want := &openapi.Tag{
 			ID:        "TAG-0000000000000000000001",
 			Name:      "タグ1",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+			UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 		}
 		httpcheck.New(th).Test(t, "GET", "/tags/TAG-0000000000000000000001").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(200).HasJSON(want)
 	})
-	t.Run("tag not found", func(t *testing.T) {
+	t.Run("tag_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/tags/TAG-0000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("tag access denied", func(t *testing.T) {
+	t.Run("tag_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "GET", "/tags/TAG-0000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
@@ -131,20 +131,20 @@ func TestHandler_UpdateTag(t *testing.T) {
 				ID:        "TAG-0000000000000000000001",
 				UserID:    testUserID,
 				Name:      "タグ1",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:        "TAG-0000000000000000000002",
 				UserID:    "USER-000000000000000000002",
 				Name:      "タグ2",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
 		},
 	}))
 
-	t.Run("tag not found", func(t *testing.T) {
+	t.Run("tag_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
@@ -152,7 +152,7 @@ func TestHandler_UpdateTag(t *testing.T) {
 			WithBody([]byte(`{"name": "更新後タグ"}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("tag access denied", func(t *testing.T) {
+	t.Run("tag_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
@@ -164,7 +164,7 @@ func TestHandler_UpdateTag(t *testing.T) {
 		want := &openapi.Tag{
 			ID:        "TAG-0000000000000000000001",
 			Name:      "更新後タグ",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			UpdatedAt: fixedNow,
 		}
 		httpcheck.New(th).Test(t, "PATCH", "/tags/TAG-0000000000000000000001").
@@ -182,26 +182,26 @@ func TestHandler_DeleteTag(t *testing.T) {
 				ID:        "TAG-0000000000000000000001",
 				UserID:    testUserID,
 				Name:      "タグ1",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:        "TAG-0000000000000000000002",
 				UserID:    "USER-000000000000000000002",
 				Name:      "タグ2",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
-				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			},
 		},
 	}))
 
-	t.Run("tag not found", func(t *testing.T) {
+	t.Run("tag_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/tags/TAG-0000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("tag access denied", func(t *testing.T) {
+	t.Run("tag_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタグは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/tags/TAG-0000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).

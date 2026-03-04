@@ -37,31 +37,31 @@ func TestAuthenticator_ParseIDToken(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:  "valid token",
+			name:  "valid_token",
 			ctx:   clock.WithFixedNow(context.Background(), time.Date(2025, 10, 1, 16, 20, 50, 0, time.UTC)),
 			token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MSIsImV4cCI6MTc1OTMzNjg1MCwiaWF0IjoxNzU5MzMzMjUwfQ.vV6tn3H29xdhA67JvtvJSJ-YnNKFJoC2GTYP28ibFDQ",
 			want:  domain.UserID("u1"),
 		},
 		{
-			name:    "invalid token format",
+			name:    "invalid_token_format",
 			ctx:     clock.WithFixedNow(context.Background(), time.Date(2025, 10, 1, 16, 20, 50, 0, time.UTC)),
 			token:   "invalid-token",
 			wantErr: true,
 		},
 		{
-			name:    "expired token",
+			name:    "expired_token",
 			ctx:     clock.WithFixedNow(context.Background(), time.Date(2025, 10, 1, 17, 0, 0, 0, time.UTC)),
 			token:   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1MSIsImV4cCI6MTc1OTMzNjg1MCwiaWF0IjoxNzU5MzMzMjUwfQ.vV6tn3H29xdhA67JvtvJSJ-YnNKFJoC2GTYP28ibFDQ",
 			wantErr: true,
 		},
 		{
-			name:    "invalid signature",
+			name:    "invalid_signature",
 			ctx:     clock.WithFixedNow(context.Background(), time.Date(2025, 10, 1, 16, 20, 50, 0, time.UTC)),
 			token:   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTkzMzY4NTAsImlhdCI6MTc1OTMzMzI1MCwic3ViIjoidTEifQ._yo4Qd7YkZygDRrcEq6g400isF7rBNp2b0Rj9_KeWwY",
 			wantErr: true,
 		},
 		{
-			name:    "empty sub claim",
+			name:    "empty_sub_claim",
 			ctx:     clock.WithFixedNow(context.Background(), time.Date(2025, 10, 1, 16, 20, 50, 0, time.UTC)),
 			token:   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIiLCJleHAiOjE3NTkzMzY4NTAsImlhdCI6MTc1OTMzMzI1MH0.KpZrhJmdPOBwK2xOTj-0quFWKPuqjDqc1rcQ66t3Y-M",
 			wantErr: true,

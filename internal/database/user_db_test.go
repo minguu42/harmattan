@@ -16,7 +16,7 @@ func TestClient_CreateUser(t *testing.T) {
 		database.Users{},
 	}))
 
-	now := time.Date(2025, 1, 1, 0, 0, 0, 0, jst)
+	now := time.Date(2025, 1, 1, 0, 0, 1, 0, jst)
 	err := c.CreateUser(clock.WithFixedNow(t.Context(), now), &domain.User{
 		ID:             "user01",
 		Email:          "user01@dummy.invalid",

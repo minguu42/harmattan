@@ -15,7 +15,7 @@ func TestHandler_NotFound(t *testing.T) {
 }
 
 func TestHandler_MethodNotFound(t *testing.T) {
-	t.Run("method not allowed", func(t *testing.T) {
+	t.Run("method_not_allowed", func(t *testing.T) {
 		httpcheck.New(th).Test(t, "POST", "/health").
 			Check().
 			HasStatus(405).
