@@ -44,7 +44,7 @@ func TestHandler_CreateStep(t *testing.T) {
 		database.Steps{},
 	}))
 
-	t.Run("task not found", func(t *testing.T) {
+	t.Run("task_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "POST", "/tasks/TASK-000000000000000000099/steps").
 			WithHeader("Authorization", "Bearer "+token).
@@ -52,7 +52,7 @@ func TestHandler_CreateStep(t *testing.T) {
 			WithBody([]byte(`{"name": "ステップ"}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("task access denied", func(t *testing.T) {
+	t.Run("task_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したタスクは見つかりません"}
 		httpcheck.New(th).Test(t, "POST", "/tasks/TASK-000000000000000000002/steps").
 			WithHeader("Authorization", "Bearer "+token).
@@ -112,7 +112,7 @@ func TestHandler_UpdateStep(t *testing.T) {
 				UserID:    testUserID,
 				TaskID:    "TASK-000000000000000000001",
 				Name:      "ステップ1",
-				CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			},
 			{
 				ID:     "STEP-000000000000000000002",
@@ -123,7 +123,7 @@ func TestHandler_UpdateStep(t *testing.T) {
 		},
 	}))
 
-	t.Run("step not found", func(t *testing.T) {
+	t.Run("step_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
 		httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
@@ -131,7 +131,7 @@ func TestHandler_UpdateStep(t *testing.T) {
 			WithBody([]byte(`{"name": "更新後ステップ"}`)).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("step access denied", func(t *testing.T) {
+	t.Run("step_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
 		httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).
@@ -144,7 +144,7 @@ func TestHandler_UpdateStep(t *testing.T) {
 			ID:        "STEP-000000000000000000001",
 			TaskID:    "TASK-000000000000000000001",
 			Name:      "更新後ステップ",
-			CreatedAt: time.Date(2025, 1, 1, 0, 0, 0, 0, jst),
+			CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
 			UpdatedAt: fixedNow,
 		}
 		httpcheck.New(th).Test(t, "PATCH", "/steps/STEP-000000000000000000001").
@@ -201,13 +201,13 @@ func TestHandler_DeleteStep(t *testing.T) {
 		},
 	}))
 
-	t.Run("step not found", func(t *testing.T) {
+	t.Run("step_not_found", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/steps/STEP-000000000000000000099").
 			WithHeader("Authorization", "Bearer "+token).
 			Check().HasStatus(404).HasJSON(want)
 	})
-	t.Run("step access denied", func(t *testing.T) {
+	t.Run("step_access_denied", func(t *testing.T) {
 		want := handler.ErrorResponse{Code: 404, Message: "指定したステップは見つかりません"}
 		httpcheck.New(th).Test(t, "DELETE", "/steps/STEP-000000000000000000002").
 			WithHeader("Authorization", "Bearer "+token).

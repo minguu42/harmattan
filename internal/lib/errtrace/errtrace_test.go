@@ -18,7 +18,7 @@ func TestFromStack(t *testing.T) {
 		got := errtrace.FromStack(nil, []uintptr{1, 2, 3})
 		assert.Nil(t, got)
 	})
-	t.Run("create from stack", func(t *testing.T) {
+	t.Run("create_from_stack", func(t *testing.T) {
 		t.Parallel()
 
 		stack := []uintptr{1, 2, 3}
@@ -27,14 +27,14 @@ func TestFromStack(t *testing.T) {
 		assert.ErrorAs(t, got, &serr)
 		assert.Equal(t, "test error", got.Error())
 	})
-	t.Run("no double wrap", func(t *testing.T) {
+	t.Run("no_double_wrap", func(t *testing.T) {
 		t.Parallel()
 
 		wrapped1 := errtrace.FromStack(errors.New("test error"), []uintptr{1, 2, 3})
 		wrapped2 := errtrace.FromStack(wrapped1, []uintptr{4, 5, 6})
 		assert.Same(t, wrapped1, wrapped2)
 	})
-	t.Run("with attrs", func(t *testing.T) {
+	t.Run("with_attrs", func(t *testing.T) {
 		t.Parallel()
 
 		stack := []uintptr{1, 2, 3}
@@ -45,7 +45,7 @@ func TestFromStack(t *testing.T) {
 		assert.Equal(t, "k1", serr.Attrs()[0].Key)
 		assert.Equal(t, "v1", serr.Attrs()[0].Value.String())
 	})
-	t.Run("add attrs to existing stack error", func(t *testing.T) {
+	t.Run("add_attrs_to_existing_stack_error", func(t *testing.T) {
 		t.Parallel()
 
 		wrapped := errtrace.FromStack(errors.New("test error"), []uintptr{1, 2, 3}, slog.String("k1", "v1"))
@@ -76,14 +76,14 @@ func TestWrap(t *testing.T) {
 		assert.ErrorAs(t, got, &serr)
 		assert.Equal(t, "test error", got.Error())
 	})
-	t.Run("no double wrap", func(t *testing.T) {
+	t.Run("no_double_wrap", func(t *testing.T) {
 		t.Parallel()
 
 		wrapped1 := errtrace.Wrap(errors.New("test error"))
 		wrapped2 := errtrace.Wrap(wrapped1)
 		assert.Same(t, wrapped1, wrapped2)
 	})
-	t.Run("with attrs", func(t *testing.T) {
+	t.Run("with_attrs", func(t *testing.T) {
 		t.Parallel()
 
 		got := errtrace.Wrap(errors.New("test error"), slog.String("k1", "v1"))
@@ -93,7 +93,7 @@ func TestWrap(t *testing.T) {
 		assert.Equal(t, "k1", serr.Attrs()[0].Key)
 		assert.Equal(t, "v1", serr.Attrs()[0].Value.String())
 	})
-	t.Run("add attrs to existing stack error", func(t *testing.T) {
+	t.Run("add_attrs_to_existing_stack_error", func(t *testing.T) {
 		t.Parallel()
 
 		wrapped := errtrace.Wrap(errors.New("test error"), slog.String("k1", "v1"))

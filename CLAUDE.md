@@ -48,18 +48,20 @@ Harmattanはタスク管理アプリである。
 - アプリケーション固有のエラーを生成する関数を呼び出すのは`handler`、`usecase`、`middleware`パッケージのみとする。
   - `domain`や`database`などの他のパッケージで必要な場合はそのパッケージ独自のエラー（`database.ErrNotFound`など）を返す。
 
+### テスト規約
+
+- テストでの列挙型の扱い
+  - 値が意味を持つ列挙型は値のリテラルを使用する（例: `Color: "blue"` not `Color: domain.ProjectColorBlue`）。
+  - `iota`など値が意味を持たない列挙型は定数を使用する。
+- テストデータの作成時刻や更新時刻はIDの末尾数字に合わせて秒をずらす（例: `user01`→1秒、`project03`→3秒）。
+- テストデータのIDは`"project01"`のように2桁連番、存在しないIDは`"project99"`のように`99`を使う。
+- テストケース名は簡潔にし、単語は`_`で繋ぐ。
+
 ### 開発ノート
 
 #### Code Generation
 - `internal/api/openapi`のコードは自動生成のため直接編集不可
 - OpenAPI仕様を変更した場合は`go generate ./internal/api/...`を実行
-
-#### Testing
-- データベース関連のテストは`testcontainers-go`を使用したコンテナベーステストを実行
-- テストヘルパーは`internal/database/databasetest`にある
-- テストでの列挙型の扱い:
-  - 値が意味を持つ列挙型は文字列リテラルで代入（例: `Color: "blue"` not `Color: domain.ProjectColorBlue`）
-  - iotaなど値が意味を持たない列挙型は定数を使用
 
 #### Environment Variables
 - APIサーバーの環境変数は`internal/api/config.go`で`env.Load[api.Config]()`により読み込み
