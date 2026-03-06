@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"unicode/utf8"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
@@ -77,4 +79,33 @@ func (h *Handler) DeleteProject(ctx context.Context, params openapi.DeleteProjec
 		return errtrace.Wrap(err)
 	}
 	return nil
+}
+
+var ErrProjectNameLength = errors.New("プロジェクト名は1文字以上80文字以下で指定できます")
+
+func validateProjectName(name string) []error {
+	var errs []error
+	if utf8.RuneCountInString(name) < 1 || 80 < utf8.RuneCountInString(name) {
+		errs = append(errs, ErrProjectNameLength)
+	}
+	return errs
+}
+
+func convertProject(project *domain.Project) *openapi.Project {
+	return &openapi.Project{
+		ID:         string(project.ID),
+		Name:       project.Name,
+		Color:      openapi.ProjectColor(project.Color),
+		IsArchived: project.IsArchived,
+		CreatedAt:  project.CreatedAt,
+		UpdatedAt:  project.UpdatedAt,
+	}
+}
+
+func convertProjects(projects domain.Projects) []openapi.Project {
+	ps := make([]openapi.Project, 0, len(projects))
+	for _, p := range projects {
+		ps = append(ps, *convertProject(&p))
+	}
+	return ps
 }

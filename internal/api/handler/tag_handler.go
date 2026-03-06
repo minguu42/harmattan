@@ -2,6 +2,8 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"unicode/utf8"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
@@ -72,4 +74,31 @@ func (h *Handler) DeleteTag(ctx context.Context, params openapi.DeleteTagParams)
 		return errtrace.Wrap(err)
 	}
 	return nil
+}
+
+var ErrTagNameLength = errors.New("タグ名は1文字以上20文字以下で指定できます")
+
+func validateTagName(name string) []error {
+	var errs []error
+	if utf8.RuneCountInString(name) < 1 || 20 < utf8.RuneCountInString(name) {
+		errs = append(errs, ErrTagNameLength)
+	}
+	return errs
+}
+
+func convertTag(t *domain.Tag) *openapi.Tag {
+	return &openapi.Tag{
+		ID:        string(t.ID),
+		Name:      t.Name,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
+	}
+}
+
+func convertTags(tags domain.Tags) []openapi.Tag {
+	ts := make([]openapi.Tag, 0, len(tags))
+	for _, t := range tags {
+		ts = append(ts, *convertTag(&t))
+	}
+	return ts
 }
