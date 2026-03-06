@@ -2,7 +2,9 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"time"
+	"unicode/utf8"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
@@ -53,4 +55,33 @@ func (h *Handler) DeleteStep(ctx context.Context, params openapi.DeleteStepParam
 		return errtrace.Wrap(err)
 	}
 	return nil
+}
+
+var ErrStepNameLength = errors.New("ステップ名は1文字以上100文字以下で指定できます")
+
+func validateStepName(name string) []error {
+	var errs []error
+	if utf8.RuneCountInString(name) < 1 || 100 < utf8.RuneCountInString(name) {
+		errs = append(errs, ErrStepNameLength)
+	}
+	return errs
+}
+
+func convertStep(s *domain.Step) *openapi.Step {
+	return &openapi.Step{
+		ID:          string(s.ID),
+		TaskID:      string(s.TaskID),
+		Name:        s.Name,
+		CompletedAt: convertOptDateTime(s.CompletedAt),
+		CreatedAt:   s.CreatedAt,
+		UpdatedAt:   s.UpdatedAt,
+	}
+}
+
+func convertSteps(steps domain.Steps) []openapi.Step {
+	s := make([]openapi.Step, 0, len(steps))
+	for _, step := range steps {
+		s = append(s, *convertStep(&step))
+	}
+	return s
 }

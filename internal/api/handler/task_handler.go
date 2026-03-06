@@ -2,7 +2,9 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"time"
+	"unicode/utf8"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
@@ -82,4 +84,44 @@ func (h *Handler) DeleteTask(ctx context.Context, params openapi.DeleteTaskParam
 		return errtrace.Wrap(err)
 	}
 	return nil
+}
+
+var ErrTaskNameLength = errors.New("タスク名は1文字以上100文字以下で指定できます")
+
+func validateTaskName(name string) []error {
+	var errs []error
+	if utf8.RuneCountInString(name) < 1 || 100 < utf8.RuneCountInString(name) {
+		errs = append(errs, ErrTaskNameLength)
+	}
+	return errs
+}
+
+func convertTask(task *domain.Task, tags domain.Tags) *openapi.Task {
+	return &openapi.Task{
+		ID:          string(task.ID),
+		ProjectID:   string(task.ProjectID),
+		Name:        task.Name,
+		Content:     task.Content,
+		Priority:    task.Priority,
+		DueOn:       convertOptDate(task.DueOn),
+		CompletedAt: convertOptDateTime(task.CompletedAt),
+		CreatedAt:   task.CreatedAt,
+		UpdatedAt:   task.UpdatedAt,
+		Steps:       convertSteps(task.Steps),
+		Tags:        convertTags(tags),
+	}
+}
+
+func convertTasks(tasks domain.Tasks, tags domain.Tags) []openapi.Task {
+	tagByID := tags.TagByID()
+
+	ts := make([]openapi.Task, 0, len(tasks))
+	for _, t := range tasks {
+		taskTags := make(domain.Tags, 0, len(t.TagIDs))
+		for _, id := range t.TagIDs {
+			taskTags = append(taskTags, tagByID[id])
+		}
+		ts = append(ts, *convertTask(&t, taskTags))
+	}
+	return ts
 }
