@@ -91,7 +91,7 @@ func validatePassword(password string) []error {
 	if !strings.ContainsFunc(password, unicode.IsUpper) {
 		errs = append(errs, ErrPasswordMissingUppercase)
 	}
-	if !strings.ContainsFunc(password, unicode.IsLetter) {
+	if !strings.ContainsFunc(password, unicode.IsLower) {
 		errs = append(errs, ErrPasswordMissingLowercase)
 	}
 	if !strings.ContainsFunc(password, func(r rune) bool { return r >= '0' && r <= '9' }) {
