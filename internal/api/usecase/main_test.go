@@ -1,16 +1,16 @@
-package handler_test
+package usecase_test
 
 import (
 	"context"
 	"log"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/api"
 	"github.com/minguu42/harmattan/internal/atel"
-	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
 	"github.com/minguu42/harmattan/internal/lib/clock"
@@ -19,17 +19,18 @@ import (
 
 const (
 	testUserID = "USER-000000000000000000001"
+	fixedID    = "GENERATED-ID-0000000000001"
+
 	// token はクレームが以下の値のテスト用IDトークン
 	// sub = "USER-000000000000000000001", exp = "2025-01-01 01:00:00 JST", iat = "2025-01-01 00:00:00 JST"
-	token   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVU0VSLTAwMDAwMDAwMDAwMDAwMDAwMDAwMSIsImV4cCI6MTczNTY2MDgwMCwiaWF0IjoxNzM1NjU3MjAwfQ.Y2TZhCwHr6OosG7YM3nKObz6mDD0k6EpVrxELF7eFi8"
-	fixedID = "GENERATED-ID-0000000000001"
+	token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVU0VSLTAwMDAwMDAwMDAwMDAwMDAwMDAwMSIsImV4cCI6MTczNTY2MDgwMCwiaWF0IjoxNzM1NjU3MjAwfQ.Y2TZhCwHr6OosG7YM3nKObz6mDD0k6EpVrxELF7eFi8"
 )
 
 var (
 	jst      = time.FixedZone("JST", 9*60*60)
 	fixedNow = time.Date(2025, 1, 1, 0, 10, 0, 0, jst)
 
-	th  http.Handler // 現在時刻と生成されるIDは固定化されている
+	ts  *httptest.Server
 	tdb *databasetest.ClientWithContainer
 )
 
@@ -48,7 +49,7 @@ func TestMain(m *testing.M) {
 	}
 	defer atel.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
-	err = tdb.TruncateAndInsert(ctx, []any{database.Users{
+	if err = tdb.TruncateAndInsert(ctx, []any{database.Users{
 		{
 			ID:             testUserID,
 			Email:          "user1@dummy.invalid",
@@ -63,39 +64,37 @@ func TestMain(m *testing.M) {
 			CreatedAt:      time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 			UpdatedAt:      time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
 		},
-	}})
-	if err != nil {
+	}}); err != nil {
 		log.Fatalf("%+v", err)
 	}
 
-	authn, err := auth.NewAuthenticator("cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G", 1*time.Hour)
-	if err != nil {
-		log.Fatalf("%+v", err)
-	}
-
-	db, err := database.NewClient(ctx, database.Config{
-		Host:            tdb.Host,
-		Port:            tdb.Port,
-		Database:        tdb.Database,
-		User:            tdb.User,
-		Password:        tdb.Password,
-		MaxOpenConns:    25,
-		MaxIdleConns:    25,
-		ConnMaxLifetime: 5 * time.Minute,
+	f, err := api.NewFactory(ctx, &api.Config{
+		IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
+		IDTokenExpiration: 1 * time.Hour,
+		DB: database.Config{
+			Host:            tdb.Host,
+			Port:            tdb.Port,
+			Database:        tdb.Database,
+			User:            tdb.User,
+			Password:        tdb.Password,
+			MaxOpenConns:    25,
+			MaxIdleConns:    25,
+			ConnMaxLifetime: 5 * time.Minute,
+		},
+		LogLevel: "error",
 	})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer atel.Capture(ctx, "Failed to close database client")(db.Close)
+	defer atel.Capture(ctx, "Failed to close factory")(f.Close)
 
-	h, err := api.NewHandler(&api.Factory{
-		Auth: authn,
-		DB:   db,
-	}, "xxxxxxx", []string{"*"})
+	h, err := api.NewHandler(f, "540d011", []string{"*"})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	th = fixNow(fixID(h, fixedID), fixedNow)
+
+	ts = httptest.NewServer(fixNow(fixID(h, fixedID), fixedNow))
+	defer ts.Close()
 
 	m.Run()
 }
