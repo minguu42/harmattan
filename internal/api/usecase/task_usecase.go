@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
-	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
@@ -30,7 +29,10 @@ type CreateTaskInput struct {
 }
 
 func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
@@ -73,7 +75,10 @@ type ListTasksOutput struct {
 }
 
 func (uc *Task) ListTasks(ctx context.Context, in *ListTasksInput) (*ListTasksOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
@@ -109,7 +114,10 @@ type GetTaskInput struct {
 }
 
 func (uc *Task) GetTask(ctx context.Context, in *GetTaskInput) (*TaskOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
@@ -140,7 +148,10 @@ type UpdateTaskInput struct {
 }
 
 func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
@@ -200,7 +211,10 @@ type DeleteTaskInput struct {
 }
 
 func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {

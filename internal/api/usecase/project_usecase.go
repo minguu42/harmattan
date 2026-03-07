@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
-	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
@@ -27,7 +26,10 @@ type CreateProjectInput struct {
 }
 
 func (uc *Project) CreateProject(ctx context.Context, in *CreateProjectInput) (*ProjectOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	now := clock.Now(ctx)
 	p := domain.Project{
@@ -55,7 +57,10 @@ type ListProjectsOutput struct {
 }
 
 func (uc *Project) ListProjects(ctx context.Context, in *ListProjectsInput) (*ListProjectsOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	ps, err := uc.DB.ListProjects(ctx, user.ID, in.Limit+1, in.Offset)
 	if err != nil {
@@ -75,7 +80,10 @@ type GetProjectInput struct {
 }
 
 func (uc *Project) GetProject(ctx context.Context, in *GetProjectInput) (*ProjectOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
@@ -99,7 +107,10 @@ type UpdateProjectInput struct {
 }
 
 func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*ProjectOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
@@ -133,7 +144,10 @@ type DeleteProjectInput struct {
 }
 
 func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) error {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
