@@ -24,6 +24,7 @@ const slowRequestThreshold = 1 * time.Second
 
 func accessLog() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
+		// CheckHealthオペレーションのログは出さない
 		if req.OperationID == "CheckHealth" {
 			return next(req)
 		}
