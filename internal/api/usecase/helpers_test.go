@@ -3,6 +3,7 @@ package usecase_test
 import (
 	"encoding/json"
 	"io"
+	"maps"
 	"net/http"
 	"strings"
 	"testing"
@@ -31,9 +32,7 @@ func runTest(t *testing.T, tt test) {
 	if err != nil {
 		t.Fatalf("Failed to create request: %v", err)
 	}
-	for k, v := range tt.Headers {
-		req.Header[k] = v
-	}
+	maps.Copy(req.Header, tt.Headers)
 	if tt.Body != "" {
 		req.Header.Set("Content-Type", "application/json")
 	}
