@@ -259,6 +259,8 @@ func TestTask_ListTasks(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			runTest(t, tt)
 		})
 	}
@@ -343,6 +345,8 @@ func TestTask_GetTask(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			runTest(t, tt)
 		})
 	}

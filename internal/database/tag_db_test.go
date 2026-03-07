@@ -84,6 +84,8 @@ func TestClient_ListTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.ListTags(t.Context(), tt.userID, tt.limit, tt.offset)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
@@ -126,6 +128,8 @@ func TestClient_GetTagByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetTagByID(t.Context(), tt.id)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
@@ -179,6 +183,8 @@ func TestClient_GetTagsByIDs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetTagsByIDs(t.Context(), tt.ids)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)

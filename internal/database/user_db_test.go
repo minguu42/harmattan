@@ -61,6 +61,8 @@ func TestClient_GetUserByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetUserByID(t.Context(), tt.id)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
@@ -103,6 +105,8 @@ func TestClient_GetUserByEmail(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetUserByEmail(t.Context(), tt.email)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)

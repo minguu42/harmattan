@@ -120,6 +120,8 @@ func TestProject_ListProjects(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			runTest(t, tt)
 		})
 	}
@@ -178,6 +180,8 @@ func TestProject_GetProject(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			runTest(t, tt)
 		})
 	}

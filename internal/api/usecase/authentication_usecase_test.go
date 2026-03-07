@@ -56,6 +56,8 @@ func TestAuthentication_SignIn(t *testing.T) {
 	}))
 
 	t.Run("ok", func(t *testing.T) {
+		t.Parallel()
+
 		resp := doRequest(t, "POST", "/sign-in", `{"email": "user1@dummy.invalid", "password": "Password123!"}`)
 		defer resp.Body.Close()
 
@@ -66,6 +68,8 @@ func TestAuthentication_SignIn(t *testing.T) {
 		assert.NotEmpty(t, body["id_token"])
 	})
 	t.Run("invalid_email", func(t *testing.T) {
+		t.Parallel()
+
 		resp := doRequest(t, "POST", "/sign-in", `{"email": "unknown@dummy.invalid", "password": "Password123!"}`)
 		defer resp.Body.Close()
 
@@ -73,6 +77,8 @@ func TestAuthentication_SignIn(t *testing.T) {
 		assertJSONEqual(t, resp, handler.ErrorResponse{Code: 400, Message: "メールアドレスかパスワードに誤りがあります"})
 	})
 	t.Run("invalid_password", func(t *testing.T) {
+		t.Parallel()
+
 		resp := doRequest(t, "POST", "/sign-in", `{"email": "user1@dummy.invalid", "password": "WrongPassword1!"}`)
 		defer resp.Body.Close()
 

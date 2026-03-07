@@ -89,6 +89,8 @@ func TestTag_ListTags(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			runTest(t, tt)
 		})
 	}
@@ -144,6 +146,8 @@ func TestTag_GetTag(t *testing.T) {
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
 			runTest(t, tt)
 		})
 	}

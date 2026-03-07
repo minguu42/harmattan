@@ -86,6 +86,8 @@ func TestClient_ListProjects(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.ListProjects(t.Context(), tt.userID, tt.limit, tt.offset)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
@@ -130,6 +132,8 @@ func TestClient_GetProjectByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetProjectByID(t.Context(), tt.id)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)

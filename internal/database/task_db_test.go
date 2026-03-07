@@ -207,6 +207,8 @@ func TestClient_ListTasks(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.ListTasks(t.Context(), tt.projectID, tt.limit, tt.offset, tt.showCompleted)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
@@ -268,6 +270,8 @@ func TestClient_GetTaskByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetTaskByID(t.Context(), tt.id)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
