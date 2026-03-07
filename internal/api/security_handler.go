@@ -7,6 +7,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
@@ -21,9 +22,9 @@ func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ openapi.Operat
 		return nil, errtrace.Wrap(apierror.AuthorizationError())
 	}
 
-	u, err := h.db.GetUserByID(ctx, userID)
+	user, err := h.db.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
-	return auth.ContextWithUser(ctx, u), nil
+	return domain.ContextWithUser(ctx, user), nil
 }

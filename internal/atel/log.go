@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/minguu42/harmattan/internal/auth"
+	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
@@ -68,7 +68,7 @@ func AccessLog(ctx context.Context, fields *AccessFields) {
 	if fields.Body != nil {
 		attrs = append(attrs, slog.Any("request.body", fields.Body))
 	}
-	if user, ok := auth.UserFromContext(ctx); ok {
+	if user, err := domain.UserFromContext(ctx); err == nil {
 		attrs = append(attrs, slog.String("request.user_id", string(user.ID)))
 	}
 	attrs = append(attrs,

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
-	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
@@ -26,7 +25,10 @@ type CreateTagInput struct {
 }
 
 func (uc *Tag) CreateTag(ctx context.Context, in *CreateTagInput) (*TagOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	now := clock.Now(ctx)
 	t := domain.Tag{
@@ -53,7 +55,10 @@ type ListTagsOutput struct {
 }
 
 func (uc *Tag) ListTags(ctx context.Context, in *ListTagsInput) (*ListTagsOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	ts, err := uc.DB.ListTags(ctx, user.ID, in.Limit+1, in.Offset)
 	if err != nil {
@@ -74,7 +79,10 @@ type UpdateTagInput struct {
 }
 
 func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
@@ -102,7 +110,10 @@ type GetTagInput struct {
 }
 
 func (uc *Tag) GetTag(ctx context.Context, in *GetTagInput) (*TagOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
@@ -123,7 +134,10 @@ type DeleteTagInput struct {
 }
 
 func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {

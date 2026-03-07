@@ -64,21 +64,3 @@ func (a *Authenticator) ParseIDToken(ctx context.Context, tokenString string) (d
 	}
 	return "", errtrace.Wrap(errors.New("missing or empty sub claim"))
 }
-
-type userKey struct{}
-
-func ContextWithUser(ctx context.Context, u *domain.User) context.Context {
-	return context.WithValue(ctx, userKey{}, u)
-}
-
-func UserFromContext(ctx context.Context) (*domain.User, bool) {
-	u, ok := ctx.Value(userKey{}).(*domain.User)
-	return u, ok
-}
-
-func MustUserFromContext(ctx context.Context) *domain.User {
-	if u, ok := ctx.Value(userKey{}).(*domain.User); ok {
-		return u
-	}
-	panic("user not found in context")
-}

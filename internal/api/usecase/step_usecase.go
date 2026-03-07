@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
-	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/clock"
@@ -28,7 +27,10 @@ type CreateStepInput struct {
 }
 
 func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	task, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
@@ -64,7 +66,10 @@ type UpdateStepInput struct {
 }
 
 func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
@@ -96,7 +101,10 @@ type DeleteStepInput struct {
 }
 
 func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
-	user := auth.MustUserFromContext(ctx)
+	user, err := domain.UserFromContext(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
