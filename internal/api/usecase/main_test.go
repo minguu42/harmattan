@@ -18,8 +18,9 @@ import (
 )
 
 const (
-	testUserID = "USER-000000000000000000001"
-	fixedID    = "GENERATED-ID-0000000000001"
+	testRevision = "5d85976"
+	testUserID   = "USER-000000000000000000001"
+	fixedID      = "GENERATED-ID-0000000000001"
 
 	// token はクレームが以下の値のテスト用IDトークン
 	// sub = "USER-000000000000000000001", exp = "2025-01-01 01:00:00 JST", iat = "2025-01-01 00:00:00 JST"
@@ -88,7 +89,7 @@ func TestMain(m *testing.M) {
 	}
 	defer atel.Capture(ctx, "Failed to close factory")(f.Close)
 
-	h, err := api.NewHandler(f, "540d011", []string{"*"})
+	h, err := api.NewHandler(f, testRevision, []string{"*"})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

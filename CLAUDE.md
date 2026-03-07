@@ -50,7 +50,7 @@ Harmattanはタスク管理アプリである。
 
 ### テスト規約
 
-- HTTPのテストは`net/http/httptest`と`assert`で直接書く。`httpcheck`パッケージは将来削除予定のため、新規テストでは使用しない。
+- HTTPのテストは`net/http/httptest`と`assert`で直接書く。
 - テストでの列挙型の扱い
   - 値が意味を持つ列挙型は値のリテラルを使用する（例: `Color: "blue"` not `Color: domain.ProjectColorBlue`）。
   - `iota`など値が意味を持たない列挙型は定数を使用する。

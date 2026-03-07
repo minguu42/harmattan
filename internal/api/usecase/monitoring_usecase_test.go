@@ -11,6 +11,6 @@ func TestMonitoring_CheckHealth(t *testing.T) {
 		Method:     "GET",
 		Path:       "/health",
 		WantStatus: 200,
-		WantJSON:   openapi.CheckHealthOK{Revision: "540d011"},
+		WantJSON:   openapi.CheckHealthOK{Revision: testRevision},
 	})
 }
