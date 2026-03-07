@@ -8,7 +8,6 @@ import (
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/handler"
-	"github.com/minguu42/harmattan/internal/api/middleware"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/atel"
@@ -32,9 +31,9 @@ func NewHandler(f *Factory, revision string, allowedOrigins []string) (http.Hand
 
 	sh := securityHandler{auth: f.Auth, db: f.DB}
 	middlewares := []openapi.Middleware{
-		middleware.AttachTraceID(),
-		middleware.AccessLog(),
-		middleware.Recover(),
+		attachTraceID(),
+		accessLog(),
+		recovery(),
 	}
 	ogenServer, err := openapi.NewServer(h, &sh,
 		openapi.WithNotFound(notFound),
@@ -81,7 +80,7 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 	apiError := apierror.ToError(err)
 
 	// パラメータとリクエストの解析に失敗した場合にミドルウェアは実行されないので、ここでアクセスログを出力する
-	// 上記以外の場合のアクセスログは middleware.AccessLog で出力される
+	// 上記以外の場合のアクセスログは accessLog で出力される
 	var operationID string
 	if requestErr, ok := errors.AsType[*ogenerrors.DecodeRequestError](err); ok {
 		operationID = requestErr.OperationID()

@@ -45,11 +45,12 @@ Harmattanはタスク管理アプリである。
   - `errtrace.Wrap`はエラーを2重でラップしないため、呼び出し元で常に`Wrap`関数を呼び出しても問題ない。
 - `defer`で遅延された関数の失敗時に警告ログを出す場合は`atel.Capture`関数を使用する（例：`defer atel.Capture(ctx, "Failed to close file")(f.Close)`）。
 - アプリケーション固有のエラーは`apierror`パッケージに`Error`型の値を返す関数として定義する。
-- アプリケーション固有のエラーを生成する関数を呼び出すのは`handler`、`usecase`、`middleware`パッケージのみとする。
+- アプリケーション固有のエラーを生成する関数を呼び出すのは`api`、`handler`、`usecase`パッケージのみとする。
   - `domain`や`database`などの他のパッケージで必要な場合はそのパッケージ独自のエラー（`database.ErrNotFound`など）を返す。
 
 ### テスト規約
 
+- HTTPのテストは`net/http/httptest`と`assert`で直接書く。`httpcheck`パッケージは将来削除予定のため、新規テストでは使用しない。
 - テストでの列挙型の扱い
   - 値が意味を持つ列挙型は値のリテラルを使用する（例: `Color: "blue"` not `Color: domain.ProjectColorBlue`）。
   - `iota`など値が意味を持たない列挙型は定数を使用する。
