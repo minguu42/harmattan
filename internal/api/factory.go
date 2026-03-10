@@ -24,7 +24,18 @@ func NewFactory(ctx context.Context, conf *Config) (*Factory, error) {
 		return nil, errtrace.Wrap(err)
 	}
 
-	db, err := database.NewClient(ctx, conf.DB)
+	db, err := database.NewClient(ctx, &database.Config{
+		DSN: database.DSN{
+			Host:     conf.DBHost,
+			Port:     conf.DBPort,
+			Database: conf.DBDatabase,
+			User:     conf.DBUser,
+			Password: conf.DBPassword,
+		},
+		MaxOpenConns:    conf.DBMaxOpenConns,
+		MaxIdleConns:    conf.DBMaxIdleConns,
+		ConnMaxLifetime: conf.DBConnMaxLifetime,
+	})
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}

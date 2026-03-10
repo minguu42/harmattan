@@ -72,17 +72,15 @@ func TestMain(m *testing.M) {
 	f, err := api.NewFactory(ctx, &api.Config{
 		IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
 		IDTokenExpiration: 1 * time.Hour,
-		DB: database.Config{
-			Host:            tdb.Host,
-			Port:            tdb.Port,
-			Database:        tdb.Database,
-			User:            tdb.User,
-			Password:        tdb.Password,
-			MaxOpenConns:    25,
-			MaxIdleConns:    25,
-			ConnMaxLifetime: 5 * time.Minute,
-		},
-		LogLevel: "error",
+		DBHost:            tdb.Host,
+		DBPort:            tdb.Port,
+		DBDatabase:        tdb.Database,
+		DBUser:            tdb.User,
+		DBPassword:        tdb.Password,
+		DBMaxOpenConns:    25,
+		DBMaxIdleConns:    25,
+		DBConnMaxLifetime: 5 * time.Minute,
+		LogLevel:          "error",
 	})
 	if err != nil {
 		log.Fatalf("%+v", err)

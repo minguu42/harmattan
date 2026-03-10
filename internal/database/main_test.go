@@ -34,12 +34,14 @@ func TestMain(m *testing.M) {
 	}
 	defer atel.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
-	c, err = database.NewClient(ctx, database.Config{
-		Host:            tdb.Host,
-		Port:            tdb.Port,
-		Database:        tdb.Database,
-		User:            tdb.User,
-		Password:        tdb.Password,
+	c, err = database.NewClient(ctx, &database.Config{
+		DSN: database.DSN{
+			Host:     tdb.Host,
+			Port:     tdb.Port,
+			Database: tdb.Database,
+			User:     tdb.User,
+			Password: tdb.Password,
+		},
 		MaxOpenConns:    25,
 		MaxIdleConns:    25,
 		ConnMaxLifetime: 5 * time.Minute,

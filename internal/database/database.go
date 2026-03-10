@@ -24,25 +24,28 @@ type Client struct {
 	gormDB *gorm.DB
 }
 
-type Config struct {
-	Host            string        `env:"DB_HOST,required"`
-	Port            int           `env:"DB_PORT,required"`
-	Database        string        `env:"DB_DATABASE,required"`
-	User            string        `env:"DB_USER,required"`
-	Password        string        `env:"DB_PASSWORD,required"`
-	MaxOpenConns    int           `env:"DB_MAX_OPEN_CONNS" default:"25"`
-	MaxIdleConns    int           `env:"DB_MAX_IDLE_CONNS" default:"25"`
-	ConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME" default:"5m"`
+type DSN struct {
+	Host     string
+	Port     int
+	Database string
+	User     string
+	Password string
 }
 
-func NewClient(ctx context.Context, conf Config) (*Client, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&loc=Local&parseTime=True",
-		conf.User,
-		conf.Password,
-		net.JoinHostPort(conf.Host, strconv.Itoa(conf.Port)),
-		conf.Database,
-	)
-	db, err := sql.Open("mysql", dsn)
+func (d DSN) String() string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&loc=Local&parseTime=True",
+		d.User, d.Password, net.JoinHostPort(d.Host, strconv.Itoa(d.Port)), d.Database)
+}
+
+type Config struct {
+	DSN             DSN
+	MaxOpenConns    int
+	MaxIdleConns    int
+	ConnMaxLifetime time.Duration
+}
+
+func NewClient(ctx context.Context, conf *Config) (*Client, error) {
+	db, err := sql.Open("mysql", conf.DSN.String())
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
