@@ -10,7 +10,6 @@ import (
 
 	"github.com/minguu42/harmattan/internal/api"
 	"github.com/minguu42/harmattan/internal/atel"
-	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
 	"github.com/minguu42/harmattan/internal/lib/clock"
@@ -66,32 +65,25 @@ func TestMain(m *testing.M) {
 		log.Fatalf("%+v", err)
 	}
 
-	authn, err := auth.NewAuthenticator("cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G", 1*time.Hour)
-	if err != nil {
-		log.Fatalf("%+v", err)
-	}
-
-	db, err := database.NewClient(ctx, &database.Config{
-		DSN: database.DSN{
-			Host:     tdb.Host,
-			Port:     tdb.Port,
-			Database: tdb.Database,
-			User:     tdb.User,
-			Password: tdb.Password,
-		},
-		MaxOpenConns:    25,
-		MaxIdleConns:    25,
-		ConnMaxLifetime: 5 * time.Minute,
+	f, err := api.NewFactory(ctx, &api.Config{
+		IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
+		IDTokenExpiration: 1 * time.Hour,
+		DBHost:            tdb.Host,
+		DBPort:            tdb.Port,
+		DBDatabase:        tdb.Database,
+		DBUser:            tdb.User,
+		DBPassword:        tdb.Password,
+		DBMaxOpenConns:    25,
+		DBMaxIdleConns:    25,
+		DBConnMaxLifetime: 5 * time.Minute,
+		LogLevel:          "error",
 	})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
-	defer atel.Capture(ctx, "Failed to close database client")(db.Close)
+	defer atel.Capture(ctx, "Failed to close factory")(f.Close)
 
-	h, err := api.NewHandler(&api.Factory{
-		Auth: authn,
-		DB:   db,
-	}, "xxxxxxx", []string{"*"})
+	h, err := api.NewHandler(f, "xxxxxxx", []string{"*"})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
