@@ -49,9 +49,15 @@ func NewClient(ctx context.Context, conf *Config) (*Client, error) {
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
-	db.SetMaxOpenConns(conf.MaxOpenConns)
-	db.SetMaxIdleConns(conf.MaxIdleConns)
-	db.SetConnMaxLifetime(conf.ConnMaxLifetime)
+	if conf.MaxOpenConns != 0 {
+		db.SetMaxOpenConns(conf.MaxOpenConns)
+	}
+	if conf.MaxIdleConns != 0 {
+		db.SetMaxIdleConns(conf.MaxIdleConns)
+	}
+	if conf.ConnMaxLifetime != 0 {
+		db.SetConnMaxLifetime(conf.ConnMaxLifetime)
+	}
 
 	ping := func() error { return db.PingContext(ctx) }
 	if err := retry.Do(ping, retry.Attempts(10), retry.Context(ctx)); err != nil {

@@ -73,9 +73,6 @@ func TestMain(m *testing.M) {
 		DBDatabase:        tdb.Database,
 		DBUser:            tdb.User,
 		DBPassword:        tdb.Password,
-		DBMaxOpenConns:    25,
-		DBMaxIdleConns:    25,
-		DBConnMaxLifetime: 5 * time.Minute,
 		LogLevel:          "error",
 	})
 	if err != nil {

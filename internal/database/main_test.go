@@ -42,9 +42,6 @@ func TestMain(m *testing.M) {
 			User:     tdb.User,
 			Password: tdb.Password,
 		},
-		MaxOpenConns:    25,
-		MaxIdleConns:    25,
-		ConnMaxLifetime: 5 * time.Minute,
 	})
 	if err != nil {
 		log.Fatalf("%+v", err)
