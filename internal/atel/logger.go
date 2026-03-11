@@ -9,31 +9,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-type Level string
-
-const (
-	LevelDebug Level = "debug"
-	LevelInfo  Level = "info"
-	LevelWarn  Level = "warn"
-	LevelError Level = "error"
-)
-
-func (l Level) Level() slog.Level {
-	switch l {
-	case LevelDebug:
-		return slog.LevelDebug
-	case LevelInfo:
-		return slog.LevelInfo
-	case LevelWarn:
-		return slog.LevelWarn
-	case LevelError:
-		return slog.LevelError
-	default:
-		return slog.LevelInfo
-	}
-}
-
-var globalLogger = New(os.Stdout, LevelInfo, false)
+var globalLogger = New(os.Stdout, slog.LevelInfo, false)
 
 func SetLogger(l *Logger) {
 	globalLogger = l
@@ -41,13 +17,13 @@ func SetLogger(l *Logger) {
 
 type Logger struct {
 	base        *slog.Logger
-	level       Level
+	level       slog.Level
 	prettyPrint bool
 }
 
-func New(w io.Writer, level Level, prettyPrint bool) *Logger {
+func New(w io.Writer, level slog.Level, prettyPrint bool) *Logger {
 	opts := &slog.HandlerOptions{
-		Level: level.Level(),
+		Level: level,
 		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.MessageKey {
 				a.Key = "message"

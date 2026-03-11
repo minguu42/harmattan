@@ -1,10 +1,6 @@
 package api
 
-import (
-	"time"
-
-	"github.com/minguu42/harmattan/internal/atel"
-)
+import "time"
 
 // Config はAPIサーバの設定値を保持する構造体である
 // フィールドのデフォルト値はそのまま本番環境で適用される値であり、変更は注意してください
@@ -28,8 +24,8 @@ type Config struct {
 	DBMaxIdleConns    int           `env:"DB_MAX_IDLE_CONNS" default:"25"`
 	DBConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME" default:"5m"`
 
-	LogLevel       atel.Level `env:"LOG_LEVEL" default:"info"` // "debug" | "info" | "warn" | "error"
-	LogPrettyPrint bool       `env:"LOG_PRETTY_PRINT" default:"false"`
+	LogLevel       string `env:"LOG_LEVEL" default:"info"` // "debug" | "info" | "warn" | "error"
+	LogPrettyPrint bool   `env:"LOG_PRETTY_PRINT" default:"false"`
 
 	TraceExporter      string `env:"TRACE_EXPORTER" default:"otlp"` // "otlp" | "stdout" | ""
 	TraceCollectorHost string `env:"TRACE_COLLECTOR_HOST"`

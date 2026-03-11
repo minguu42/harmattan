@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/minguu42/harmattan/internal/atel"
@@ -40,7 +42,20 @@ func NewFactory(ctx context.Context, conf *Config) (*Factory, error) {
 		return nil, errtrace.Wrap(err)
 	}
 
-	atel.SetLogger(atel.New(os.Stdout, conf.LogLevel, conf.LogPrettyPrint))
+	var level slog.Level
+	switch conf.LogLevel {
+	case "debug":
+		level = slog.LevelDebug
+	case "info":
+		level = slog.LevelInfo
+	case "warn":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	default:
+		return nil, errtrace.Wrap(fmt.Errorf("invalid log level: %s", conf.LogLevel))
+	}
+	atel.SetLogger(atel.New(os.Stdout, level, conf.LogPrettyPrint))
 
 	var exporter trace.SpanExporter
 	switch conf.TraceExporter {

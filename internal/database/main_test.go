@@ -3,6 +3,7 @@ package database_test
 import (
 	"context"
 	"log"
+	"log/slog"
 	"os"
 	"testing"
 	"time"
@@ -21,7 +22,7 @@ var (
 
 func init() {
 	time.Local = jst
-	atel.SetLogger(atel.New(os.Stdout, atel.LevelError, false))
+	atel.SetLogger(atel.New(os.Stdout, slog.LevelError, false))
 }
 
 func TestMain(m *testing.M) {
