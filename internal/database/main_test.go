@@ -3,6 +3,7 @@ package database_test
 import (
 	"context"
 	"log"
+	"log/slog"
 	"os"
 	"testing"
 	"time"
@@ -21,7 +22,7 @@ var (
 
 func init() {
 	time.Local = jst
-	atel.SetLogger(atel.New(os.Stdout, atel.LevelError, false))
+	atel.SetLogger(atel.New(os.Stdout, slog.LevelError, false))
 }
 
 func TestMain(m *testing.M) {
@@ -34,15 +35,14 @@ func TestMain(m *testing.M) {
 	}
 	defer atel.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
-	c, err = database.NewClient(ctx, database.Config{
-		Host:            tdb.Host,
-		Port:            tdb.Port,
-		Database:        tdb.Database,
-		User:            tdb.User,
-		Password:        tdb.Password,
-		MaxOpenConns:    25,
-		MaxIdleConns:    25,
-		ConnMaxLifetime: 5 * time.Minute,
+	c, err = database.NewClient(ctx, &database.Config{
+		DSN: database.DSN{
+			Host:     tdb.Host,
+			Port:     tdb.Port,
+			Database: tdb.Database,
+			User:     tdb.User,
+			Password: tdb.Password,
+		},
 	})
 	if err != nil {
 		log.Fatalf("%+v", err)
