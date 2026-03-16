@@ -21,11 +21,7 @@ func Load[T any]() (*T, error) {
 		return nil, errtrace.Wrap(errors.New("type T must be a struct"))
 	}
 
-	infos, err := gatherFieldInfos(rv)
-	if err != nil {
-		return nil, errtrace.Wrap(err)
-	}
-	for _, info := range infos {
+	for _, info := range gatherFieldInfos(rv) {
 		value, ok := os.LookupEnv(info.Key)
 		if !ok {
 			switch {
@@ -52,27 +48,22 @@ type fieldInfo struct {
 	Default  string
 }
 
-func gatherFieldInfos(v reflect.Value) ([]fieldInfo, error) {
-	t := v.Type()
-
+func gatherFieldInfos(v reflect.Value) []fieldInfo {
 	infos := make([]fieldInfo, 0, v.NumField())
-	for i := range v.NumField() {
-		f := v.Field(i)
-		if !f.CanSet() {
+	for structField, field := range v.Fields() {
+		if !field.CanSet() {
 			continue
 		}
 
-		for f.Kind() == reflect.Pointer {
-			if f.IsNil() {
-				f.Set(reflect.New(f.Type().Elem()))
+		for field.Kind() == reflect.Pointer {
+			if field.IsNil() {
+				field.Set(reflect.New(field.Type().Elem()))
 			}
-			f = f.Elem()
+			field = field.Elem()
 		}
 
-		fieldMeta := t.Field(i)
-		info := fieldInfo{Field: f, Key: fieldMeta.Name}
-
-		if tag := fieldMeta.Tag.Get("env"); tag != "" {
+		info := fieldInfo{Field: field, Key: structField.Name}
+		if tag := structField.Tag.Get("env"); tag != "" {
 			if tag == "-" {
 				continue
 			}
@@ -87,20 +78,16 @@ func gatherFieldInfos(v reflect.Value) ([]fieldInfo, error) {
 				info.Required = true
 			}
 		}
-		if tag := fieldMeta.Tag.Get("default"); tag != "" {
+		if tag := structField.Tag.Get("default"); tag != "" {
 			info.Default = tag
 		}
 		infos = append(infos, info)
 
-		if f.Kind() == reflect.Struct && textUnmarshaler(f) == nil {
-			innerInfos, err := gatherFieldInfos(f)
-			if err != nil {
-				return nil, errtrace.Wrap(err)
-			}
-			infos = append(infos[:len(infos)-1], innerInfos...)
+		if field.Kind() == reflect.Struct && textUnmarshaler(field) == nil {
+			infos = append(infos[:len(infos)-1], gatherFieldInfos(field)...)
 		}
 	}
-	return infos, nil
+	return infos
 }
 
 func processField(field reflect.Value, value string) error {
@@ -165,9 +152,6 @@ func processField(field reflect.Value, value string) error {
 }
 
 func textUnmarshaler(v reflect.Value) encoding.TextUnmarshaler {
-	if !v.CanInterface() {
-		return nil
-	}
 	t, ok := v.Interface().(encoding.TextUnmarshaler)
 	if !ok && v.CanAddr() {
 		t, _ = v.Addr().Interface().(encoding.TextUnmarshaler)

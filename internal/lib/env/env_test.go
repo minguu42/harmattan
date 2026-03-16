@@ -29,6 +29,7 @@ func TestLoad(t *testing.T) {
 			Float64Field     float64
 			StringField      string
 			StringSliceField []string
+			EmptySliceField  []string
 			PointerField     *string
 			Foo              Foo
 			Bar
@@ -50,6 +51,7 @@ func TestLoad(t *testing.T) {
 		t.Setenv("Float64Field", "3.1415")
 		t.Setenv("StringField", "Hello, World!")
 		t.Setenv("StringSliceField", "a,b,c")
+		t.Setenv("EmptySliceField", "")
 		t.Setenv("PointerField", "こんにちは、世界！")
 		t.Setenv("FooField", "foo")
 		t.Setenv("BarField", "bar")
@@ -72,6 +74,7 @@ func TestLoad(t *testing.T) {
 			Float64Field:     3.1415,
 			StringField:      "Hello, World!",
 			StringSliceField: []string{"a", "b", "c"},
+			EmptySliceField:  []string{},
 			PointerField:     new("こんにちは、世界！"),
 			Foo:              Foo{FooField: "foo"},
 			Bar:              Bar{BarField: "bar"},
@@ -128,22 +131,6 @@ func TestLoad(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, got)
 	})
-	t.Run("int_slice_type_not_supported", func(t *testing.T) {
-		type Foo struct{ Field []int }
-		t.Setenv("Field", "1,2,3")
-
-		got, err := env.Load[Foo]()
-		assert.Error(t, err)
-		assert.Nil(t, got)
-	})
-	t.Run("map_type_not_supported", func(t *testing.T) {
-		type Foo struct{ Field map[string]string }
-		t.Setenv("Field", "value")
-
-		got, err := env.Load[Foo]()
-		assert.Error(t, err)
-		assert.Nil(t, got)
-	})
 	t.Run("unexported_field", func(t *testing.T) {
 		type Foo struct {
 			ExportedField string
@@ -157,5 +144,53 @@ func TestLoad(t *testing.T) {
 		got, err := env.Load[Foo]()
 		require.NoError(t, err)
 		assert.Equal(t, want, *got)
+	})
+	t.Run("invalid_bool", func(t *testing.T) {
+		type Foo struct{ Field bool }
+		t.Setenv("Field", "notbool")
+
+		got, err := env.Load[Foo]()
+		assert.Error(t, err)
+		assert.Nil(t, got)
+	})
+	t.Run("invalid_int", func(t *testing.T) {
+		type Foo struct{ Field int }
+		t.Setenv("Field", "notint")
+
+		got, err := env.Load[Foo]()
+		assert.Error(t, err)
+		assert.Nil(t, got)
+	})
+	t.Run("invalid_uint", func(t *testing.T) {
+		type Foo struct{ Field uint }
+		t.Setenv("Field", "-1")
+
+		got, err := env.Load[Foo]()
+		assert.Error(t, err)
+		assert.Nil(t, got)
+	})
+	t.Run("invalid_float", func(t *testing.T) {
+		type Foo struct{ Field float64 }
+		t.Setenv("Field", "notfloat")
+
+		got, err := env.Load[Foo]()
+		assert.Error(t, err)
+		assert.Nil(t, got)
+	})
+	t.Run("int_slice_not_supported", func(t *testing.T) {
+		type Foo struct{ Field []int }
+		t.Setenv("Field", "1,2,3")
+
+		got, err := env.Load[Foo]()
+		assert.Error(t, err)
+		assert.Nil(t, got)
+	})
+	t.Run("map_not_supported", func(t *testing.T) {
+		type Foo struct{ Field map[string]string }
+		t.Setenv("Field", "value")
+
+		got, err := env.Load[Foo]()
+		assert.Error(t, err)
+		assert.Nil(t, got)
 	})
 }

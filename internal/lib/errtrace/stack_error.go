@@ -13,20 +13,12 @@ type StackError struct {
 	attrs []slog.Attr
 }
 
-func (e *StackError) Error() string {
-	return e.err.Error()
-}
-
-func (e *StackError) Frames() []Frame {
-	return generateFrames(e.stack)
-}
-
 func (e *StackError) Attrs() []slog.Attr {
 	return e.attrs
 }
 
-func (e *StackError) Unwrap() error {
-	return e.err
+func (e *StackError) Error() string {
+	return e.err.Error()
 }
 
 func (e *StackError) Format(s fmt.State, verb rune) {
@@ -56,6 +48,14 @@ func (e *StackError) Format(s fmt.State, verb rune) {
 	_, _ = s.Write([]byte(e.Error()))
 }
 
+func (e *StackError) Frames() []Frame {
+	return generateFrames(e.stack)
+}
+
+func (e *StackError) Unwrap() error {
+	return e.err
+}
+
 type Frame struct {
 	Function string `json:"function"`
 	Location string `json:"location"`
@@ -70,12 +70,6 @@ func generateFrames(stack []uintptr) []Frame {
 		// 不要なフレームを出力しないためにフレームワーク部分のフレームは出力しない
 		if name := file[strings.LastIndex(file, "/")+1:]; name == "oas_handlers_gen.go" {
 			break
-		}
-
-		// コンテナイメージ内でビルドするのでそのままだとロケーションが/myapp/から始まることになる
-		// そのため、/myapp/を./で置き換えて開発者がロケーションを参照しやすいようにする
-		if after, ok := strings.CutPrefix(file, "/myapp/"); ok {
-			file = "./" + after
 		}
 
 		frames = append(frames, Frame{
