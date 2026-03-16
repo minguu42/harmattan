@@ -45,7 +45,7 @@ func TestFromStack(t *testing.T) {
 		assert.Equal(t, "k1", serr.Attrs()[0].Key)
 		assert.Equal(t, "v1", serr.Attrs()[0].Value.String())
 	})
-	t.Run("add_attrs_to_existing_stack_error", func(t *testing.T) {
+	t.Run("add_attrs_to_existing", func(t *testing.T) {
 		t.Parallel()
 
 		wrapped := errtrace.FromStack(errors.New("test error"), []uintptr{1, 2, 3}, slog.String("k1", "v1"))
@@ -93,7 +93,7 @@ func TestWrap(t *testing.T) {
 		assert.Equal(t, "k1", serr.Attrs()[0].Key)
 		assert.Equal(t, "v1", serr.Attrs()[0].Value.String())
 	})
-	t.Run("add_attrs_to_existing_stack_error", func(t *testing.T) {
+	t.Run("add_attrs_to_existing", func(t *testing.T) {
 		t.Parallel()
 
 		wrapped := errtrace.Wrap(errors.New("test error"), slog.String("k1", "v1"))
