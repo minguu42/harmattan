@@ -103,6 +103,40 @@ func (c *Client) Ping(ctx context.Context) error {
 	return errtrace.Wrap(db.PingContext(ctx))
 }
 
+type txKey struct{}
+
 func (c *Client) db(ctx context.Context) *gorm.DB {
+	if tx, ok := ctx.Value(txKey{}).(*gorm.DB); ok {
+		return tx.WithContext(ctx)
+	}
 	return c.gormDB.WithContext(ctx)
+}
+
+// Begin はトランザクションを開始する
+// 戻り値の関数は *error を受け取り *error の値が nil の場合はコミット、そうでない場合はロールバックを行う
+// すでにトランザクションが開始されている場合は外側のトランザクションを再利用し、部分ロールバックは行わない
+func (c *Client) Begin(ctx context.Context) (context.Context, func(*error), error) {
+	if _, ok := ctx.Value(txKey{}).(*gorm.DB); ok {
+		return ctx, func(_ *error) { return }, nil
+	}
+
+	tx := c.db(ctx).Begin()
+	if err := tx.Error; err != nil {
+		return ctx, nil, errtrace.Wrap(err)
+	}
+
+	return context.WithValue(ctx, txKey{}, tx), func(errp *error) {
+		if errp == nil {
+			panic("database: commitOrRollback called with nil error pointer")
+		}
+
+		if *errp != nil {
+			// ロールバックが失敗するのは接続が切断された場合であり、その場合はDB側でロールバックされるためエラーは無視する
+			tx.Rollback()
+			return
+		}
+		if err := tx.Commit().Error; err != nil {
+			*errp = errtrace.Wrap(err)
+		}
+	}, nil
 }

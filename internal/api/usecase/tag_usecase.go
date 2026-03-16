@@ -78,11 +78,17 @@ type UpdateTagInput struct {
 	Name Option[string]
 }
 
-func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (*TagOutput, error) {
+func (uc *Tag) UpdateTag(ctx context.Context, in *UpdateTagInput) (_ *TagOutput, err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {
@@ -133,11 +139,17 @@ type DeleteTagInput struct {
 	ID domain.TagID
 }
 
-func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) error {
+func (uc *Tag) DeleteTag(ctx context.Context, in *DeleteTagInput) (err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	t, err := uc.DB.GetTagByID(ctx, in.ID)
 	if err != nil {

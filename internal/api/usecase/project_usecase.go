@@ -106,11 +106,17 @@ type UpdateProjectInput struct {
 	IsArchived Option[bool]
 }
 
-func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (*ProjectOutput, error) {
+func (uc *Project) UpdateProject(ctx context.Context, in *UpdateProjectInput) (_ *ProjectOutput, err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {
@@ -143,11 +149,17 @@ type DeleteProjectInput struct {
 	ID domain.ProjectID
 }
 
-func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) error {
+func (uc *Project) DeleteProject(ctx context.Context, in *DeleteProjectInput) (err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ID)
 	if err != nil {

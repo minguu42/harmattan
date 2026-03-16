@@ -39,7 +39,13 @@ type SignUpOutput struct {
 	IDToken string
 }
 
-func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (*SignUpOutput, error) {
+func (uc *Authentication) SignUp(ctx context.Context, in *SignUpInput) (_ *SignUpOutput, err error) {
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
+
 	u, err := uc.DB.GetUserByEmail(ctx, in.Email)
 	if err != nil && !errors.Is(err, database.ErrNotFound) {
 		return nil, errtrace.Wrap(err)
