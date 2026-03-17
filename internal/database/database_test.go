@@ -128,6 +128,56 @@ func TestClient_Begin(t *testing.T) {
 			},
 		})
 	})
+	t.Run("nested_begin_rollback", func(t *testing.T) {
+		require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+			database.Users{
+				{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			},
+			database.Projects{},
+		}))
+
+		err := func(ctx context.Context) (err error) {
+			ctx, commitOrRollback, err := c.Begin(ctx)
+			if err != nil {
+				return err
+			}
+			defer commitOrRollback(&err)
+
+			if err := c.CreateProject(ctx, &domain.Project{
+				ID:        "project01",
+				UserID:    "user01",
+				Name:      "プロジェクト1",
+				Color:     "blue",
+				CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+				UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst),
+			}); err != nil {
+				return err
+			}
+
+			return func(ctx context.Context) (err error) {
+				ctx, commitOrRollback, err := c.Begin(ctx)
+				if err != nil {
+					return err
+				}
+				defer commitOrRollback(&err)
+
+				if err := c.CreateProject(ctx, &domain.Project{
+					ID:        "project02",
+					UserID:    "user01",
+					Name:      "プロジェクト2",
+					Color:     "green",
+					CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+					UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst),
+				}); err != nil {
+					return err
+				}
+				return errors.New("some error")
+			}(ctx)
+		}(t.Context())
+
+		assert.Error(t, err)
+		tdb.Assert(t, []any{database.Projects{}})
+	})
 	t.Run("nil_error_pointer", func(t *testing.T) {
 		_, commitOrRollback, err := c.Begin(t.Context())
 		require.NoError(t, err)
