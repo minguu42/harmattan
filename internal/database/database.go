@@ -117,7 +117,7 @@ func (c *Client) db(ctx context.Context) *gorm.DB {
 // すでにトランザクションが開始されている場合は外側のトランザクションを再利用し、部分ロールバックは行わない
 func (c *Client) Begin(ctx context.Context) (context.Context, func(*error), error) {
 	if _, ok := ctx.Value(txKey{}).(*gorm.DB); ok {
-		return ctx, func(_ *error) { return }, nil
+		return ctx, func(_ *error) {}, nil
 	}
 
 	tx := c.db(ctx).Begin()
