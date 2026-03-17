@@ -28,11 +28,17 @@ type CreateTaskInput struct {
 	Priority  int
 }
 
-func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (*TaskOutput, error) {
+func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (_ *TaskOutput, err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	p, err := uc.DB.GetProjectByID(ctx, in.ProjectID)
 	if err != nil {
@@ -147,11 +153,17 @@ type UpdateTaskInput struct {
 	CompletedAt Option[*time.Time]
 }
 
-func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (*TaskOutput, error) {
+func (uc *Task) UpdateTask(ctx context.Context, in *UpdateTaskInput) (_ *TaskOutput, err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {
@@ -210,11 +222,17 @@ type DeleteTaskInput struct {
 	ID domain.TaskID
 }
 
-func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) error {
+func (uc *Task) DeleteTask(ctx context.Context, in *DeleteTaskInput) (err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	task, err := uc.DB.GetTaskByID(ctx, in.ID)
 	if err != nil {

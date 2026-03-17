@@ -26,11 +26,17 @@ type CreateStepInput struct {
 	Name   string
 }
 
-func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (*StepOutput, error) {
+func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (_ *StepOutput, err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	task, err := uc.DB.GetTaskByID(ctx, in.TaskID)
 	if err != nil {
@@ -65,11 +71,17 @@ type UpdateStepInput struct {
 	CompletedAt Option[*time.Time]
 }
 
-func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (*StepOutput, error) {
+func (uc *Step) UpdateStep(ctx context.Context, in *UpdateStepInput) (_ *StepOutput, err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
@@ -100,11 +112,17 @@ type DeleteStepInput struct {
 	ID domain.StepID
 }
 
-func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) error {
+func (uc *Step) DeleteStep(ctx context.Context, in *DeleteStepInput) (err error) {
 	user, err := domain.UserFromContext(ctx)
 	if err != nil {
 		return errtrace.Wrap(err)
 	}
+
+	ctx, commitOrRollback, err := uc.DB.Begin(ctx)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
+	defer commitOrRollback(&err)
 
 	s, err := uc.DB.GetStepByID(ctx, in.ID)
 	if err != nil {
