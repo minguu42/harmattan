@@ -1,10 +1,9 @@
 root = "."
-testdata_dir = "testdata"
 tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./tmp/api"
+  entrypoint = ["./tmp/api"]
   cmd = "go build -o ./tmp/api ./cmd/api"
   delay = 1000
   exclude_dir = ["testdata"]
@@ -16,7 +15,7 @@ tmp_dir = "tmp"
   include_dir = ["cmd", "internal"]
   include_ext = ["go"]
   include_file = []
-  kill_delay = "0s"
+  kill_delay = 0
   log = "build-errors.log"
   poll = false
   poll_interval = 0
