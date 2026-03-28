@@ -136,7 +136,7 @@ func AccessSlowLog(ctx context.Context, operationID string, status int, duration
 
 func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
 	level := slog.LevelDebug
-	if logger(ctx).base.Enabled(ctx, level) {
+	if !logger(ctx).base.Enabled(ctx, level) {
 		return
 	}
 
