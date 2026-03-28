@@ -135,6 +135,11 @@ func AccessSlowLog(ctx context.Context, operationID string, status int, duration
 }
 
 func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
+	level := slog.LevelDebug
+	if logger(ctx).base.Enabled(ctx, level) {
+		return
+	}
+
 	query, _ := fc()
 	duration := time.Since(begin)
 	var loc string
@@ -142,8 +147,7 @@ func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAff
 		loc = fmt.Sprintf("%s:%d", file, line)
 	}
 
-	level := slog.LevelDebug
-	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
+	if logger(ctx).prettyPrint {
 		fmt.Printf("%s %s %s%s%s %s\n%s\n", prettyTimestamp(), prettyLevel(level), blue, loc, reset, prettyDuration(duration), query)
 		return
 	}
