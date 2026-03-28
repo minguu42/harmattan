@@ -14,17 +14,32 @@ import (
 )
 
 const (
-	reset = "\033[0m"
-	green = "\033[32m"
-	cyan  = "\033[36m"
+	reset   = "\033[0m"
+	gray    = "\033[90m"
+	red     = "\033[31m"
+	green   = "\033[32m"
+	yellow  = "\033[33m"
+	blue    = "\033[34m"
+	magenta = "\033[35m"
+	cyan    = "\033[36m"
 )
 
 func EventLog(ctx context.Context, message string) {
-	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
+	level := slog.LevelInfo
+	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
+		fmt.Printf("%s %s %s\n", prettyTimestamp(), prettyLevel(level), message)
+		return
+	}
+	logger(ctx).base.Log(ctx, level, message)
 }
 
 func ErrorLog(ctx context.Context, message string, err error) {
-	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, errorToAttrs(err)...)
+	level := slog.LevelError
+	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
+		fmt.Printf("%s %s %s\n%+v\n", prettyTimestamp(), prettyLevel(level), message, err)
+		return
+	}
+	logger(ctx).base.LogAttrs(ctx, level, message, errorToAttrs(err)...)
 }
 
 func errorToAttrs(err error) []slog.Attr {
@@ -32,12 +47,12 @@ func errorToAttrs(err error) []slog.Attr {
 		return nil
 	}
 
-	if serr, ok := errors.AsType[*errtrace.StackError](err); ok {
+	if stackErr, ok := errors.AsType[*errtrace.StackError](err); ok {
 		attrs := []slog.Attr{
-			slog.String("error.message", serr.Error()),
-			slog.Any("error.frames", serr.Frames()),
+			slog.String("error.message", stackErr.Error()),
+			slog.Any("error.frames", stackErr.Frames()),
 		}
-		if errAttrs := serr.Attrs(); len(errAttrs) > 0 {
+		if errAttrs := stackErr.Attrs(); len(errAttrs) > 0 {
 			attrs = append(attrs, slog.GroupAttrs("error.attrs", errAttrs...))
 		}
 		return attrs
@@ -57,6 +72,21 @@ type AccessFields struct {
 }
 
 func AccessLog(ctx context.Context, fields *AccessFields) {
+	level := slog.LevelInfo
+	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
+		status := fmt.Sprintf("%d", fields.Status)
+		switch {
+		case fields.Status >= 200 && fields.Status < 300:
+			status = fmt.Sprintf("%s%d%s", green, fields.Status, reset)
+		case fields.Status >= 400 && fields.Status < 500:
+			status = fmt.Sprintf("%s%d%s", yellow, fields.Status, reset)
+		case fields.Status >= 500:
+			status = fmt.Sprintf("%s%d%s", red, fields.Status, reset)
+		}
+		fmt.Printf("%s %s %s %s %s\n", prettyTimestamp(), prettyLevel(level), fields.OperationID, status, prettyDuration(fields.Duration))
+		return
+	}
+
 	attrs := make([]slog.Attr, 0, 9)
 	attrs = append(attrs,
 		slog.Int("response.status_code", fields.Status),
@@ -75,19 +105,29 @@ func AccessLog(ctx context.Context, fields *AccessFields) {
 		slog.String("request.ip_address", fields.IPAddress),
 		slog.String("request.user_agent", fields.UserAgent),
 	)
-
-	logger(ctx).base.LogAttrs(ctx, slog.LevelInfo, "Request processed", attrs...)
+	logger(ctx).base.LogAttrs(ctx, level, "Request processed", attrs...)
 }
 
 func AccessErrorLog(ctx context.Context, operationID string, err error) {
+	level := slog.LevelError
+	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
+		fmt.Printf("%s %s %s\n%+v\n", prettyTimestamp(), prettyLevel(level), operationID, err)
+		return
+	}
+
 	attrs := make([]slog.Attr, 0, 3)
 	attrs = append(attrs, slog.String("request.operation", operationID))
 	attrs = append(attrs, errorToAttrs(err)...)
-	logger(ctx).base.LogAttrs(ctx, slog.LevelError, "Unexpected error occurred", attrs...)
+	logger(ctx).base.LogAttrs(ctx, level, "Unexpected error occurred", attrs...)
 }
 
 func AccessSlowLog(ctx context.Context, operationID string, status int, duration time.Duration) {
-	logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, "Slow request detected",
+	level := slog.LevelWarn
+	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
+		fmt.Printf("%s %s %s %s (slow)\n", prettyTimestamp(), prettyLevel(level), operationID, prettyDuration(duration))
+		return
+	}
+	logger(ctx).base.LogAttrs(ctx, level, "Slow request detected",
 		slog.String("request.operation", operationID),
 		slog.Int("response.status_code", status),
 		slog.Int64("response.duration", duration.Milliseconds()),
@@ -95,30 +135,27 @@ func AccessSlowLog(ctx context.Context, operationID string, status int, duration
 }
 
 func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
-	if logger(ctx).level.Level() > slog.LevelDebug {
+	level := slog.LevelDebug
+	if !logger(ctx).base.Enabled(ctx, level) {
 		return
 	}
 
 	query, _ := fc()
-	ms := float64(time.Since(begin)) / float64(time.Millisecond)
+	duration := time.Since(begin)
 	var loc string
 	if _, file, line, ok := runtime.Caller(4); ok {
 		loc = fmt.Sprintf("%s:%d", file, line)
 	}
 
 	if logger(ctx).prettyPrint {
-		fmt.Printf("\n-- %s[%.3fms]%s %s%s%s\n%s\n",
-			green, ms, reset,
-			cyan, loc, reset,
-			query,
-		)
-	} else {
-		logger(ctx).base.LogAttrs(ctx, slog.LevelDebug, "",
-			slog.String("elapsed(ms)", fmt.Sprintf("%.3f", ms)),
-			slog.String("location", loc),
-			slog.String("query", query),
-		)
+		fmt.Printf("%s %s %s%s%s %s\n%s\n", prettyTimestamp(), prettyLevel(level), blue, loc, reset, prettyDuration(duration), query)
+		return
 	}
+	logger(ctx).base.LogAttrs(ctx, level, "",
+		slog.Int64("duration", duration.Milliseconds()),
+		slog.String("location", loc),
+		slog.String("query", query),
+	)
 }
 
 func Capture(ctx context.Context, message string) func(func() error) {
@@ -141,4 +178,28 @@ func Capture(ctx context.Context, message string) func(func() error) {
 
 		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, errorToAttrs(errtrace.FromStack(err, pc[:n:n]))...)
 	}
+}
+
+func prettyTimestamp() string {
+	return fmt.Sprintf("%s%s%s", gray, time.Now().Format("2006/01/02 15:04:05"), reset)
+}
+
+func prettyLevel(level slog.Level) string {
+	switch level {
+	case slog.LevelDebug:
+		return fmt.Sprintf("%s%s%s", cyan, level.String(), reset)
+	case slog.LevelInfo:
+		return fmt.Sprintf("%s%s%s", green, level.String(), reset)
+	case slog.LevelWarn:
+		return fmt.Sprintf("%s%s%s", yellow, level.String(), reset)
+	case slog.LevelError:
+		return fmt.Sprintf("%s%s%s", red, level.String(), reset)
+	default:
+		return level.String()
+	}
+}
+
+func prettyDuration(duration time.Duration) string {
+	ms := float64(duration) / float64(time.Millisecond)
+	return fmt.Sprintf("%s%.2fms%s", magenta, ms, reset)
 }
