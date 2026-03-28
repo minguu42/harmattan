@@ -14,13 +14,14 @@ import (
 )
 
 const (
-	reset  = "\033[0m"
-	gray   = "\033[90m"
-	red    = "\033[31m"
-	green  = "\033[32m"
-	yellow = "\033[33m"
-	blue   = "\033[34m"
-	cyan   = "\033[36m"
+	reset   = "\033[0m"
+	gray    = "\033[90m"
+	red     = "\033[31m"
+	green   = "\033[32m"
+	yellow  = "\033[33m"
+	blue    = "\033[34m"
+	magenta = "\033[35m"
+	cyan    = "\033[36m"
 )
 
 func EventLog(ctx context.Context, message string) {
@@ -82,7 +83,7 @@ func AccessLog(ctx context.Context, fields *AccessFields) {
 		case fields.Status >= 500:
 			status = fmt.Sprintf("%s%d%s", red, fields.Status, reset)
 		}
-		fmt.Printf("%s %s %s %s\n", prettyTimestamp(), prettyLevel(level), fields.OperationID, status)
+		fmt.Printf("%s %s %s %s %s\n", prettyTimestamp(), prettyLevel(level), fields.OperationID, status, prettyDuration(fields.Duration))
 		return
 	}
 
@@ -195,5 +196,6 @@ func prettyLevel(level slog.Level) string {
 }
 
 func prettyDuration(duration time.Duration) string {
-	return fmt.Sprintf("%s%s%s", cyan, duration.String(), reset)
+	ms := float64(duration) / float64(time.Millisecond)
+	return fmt.Sprintf("%s%.2fms%s", magenta, ms, reset)
 }
