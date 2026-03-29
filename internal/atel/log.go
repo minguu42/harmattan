@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
+	"slices"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
@@ -114,11 +115,10 @@ func AccessErrorLog(ctx context.Context, operationID string, err error) {
 		fmt.Printf("%s %s %s\n%+v\n", prettyTimestamp(), prettyLevel(level), operationID, err)
 		return
 	}
-
-	attrs := make([]slog.Attr, 0, 3)
-	attrs = append(attrs, slog.String("request.operation", operationID))
-	attrs = append(attrs, errorToAttrs(err)...)
-	logger(ctx).base.LogAttrs(ctx, level, "Unexpected error occurred", attrs...)
+	logger(ctx).base.LogAttrs(ctx, level, "Unexpected error occurred", slices.Concat(
+		[]slog.Attr{slog.String("request.operation", operationID)},
+		errorToAttrs(err),
+	)...)
 }
 
 func AccessSlowLog(ctx context.Context, operationID string, status int, duration time.Duration) {
