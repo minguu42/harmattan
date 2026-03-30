@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/avast/retry-go/v4"
@@ -23,6 +24,8 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
+
+var dbCounter atomic.Int64
 
 type ClientWithContainer struct {
 	container testcontainers.Container
@@ -166,6 +169,85 @@ func (c *ClientWithContainer) Assert(t *testing.T, data []any) {
 
 		gotPointer := reflect.New(reflect.SliceOf(rv.Type().Elem())).Interface()
 		err := c.gormDB.Find(gotPointer).Error
+		require.NoError(t, err)
+
+		got := reflect.ValueOf(gotPointer).Elem().Interface()
+		assert.ElementsMatch(t, want, got)
+	}
+}
+
+type TestDB struct {
+	db     *sql.DB
+	gormDB *gorm.DB
+
+	Host     string
+	Port     int
+	Database string
+	User     string
+	Password string
+}
+
+func (c *ClientWithContainer) NewTestDB(t *testing.T, tableRows []any) *TestDB {
+	t.Helper()
+	ctx := t.Context()
+
+	dbName := fmt.Sprintf("test_%d", dbCounter.Add(1))
+
+	_, err := c.db.ExecContext(ctx, "CREATE DATABASE "+dbName)
+	require.NoError(t, err)
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&charset=utf8mb4&loc=Local",
+		c.User,
+		c.Password,
+		net.JoinHostPort(c.Host, strconv.Itoa(c.Port)),
+		dbName,
+	)
+	db, err := sql.Open("mysql", dsn)
+	require.NoError(t, err)
+
+	require.NoError(t, applySchema(ctx, db))
+	_, err = db.ExecContext(ctx, "set FOREIGN_KEY_CHECKS = 0")
+	require.NoError(t, err)
+
+	gormDB, err := gorm.Open(mysql.New(mysql.Config{Conn: db}), &gorm.Config{})
+	require.NoError(t, err)
+
+	for _, rows := range tableRows {
+		if rv := reflect.ValueOf(rows); rv.Len() == 0 {
+			continue
+		}
+		stmt := &gorm.Statement{DB: gormDB}
+		require.NoError(t, stmt.Parse(rows))
+		require.NoError(t, gormDB.WithContext(ctx).Table(stmt.Schema.Table).Create(rows).Error)
+	}
+
+	t.Cleanup(func() {
+		db.Close()
+		c.db.ExecContext(context.Background(), "DROP DATABASE IF EXISTS "+dbName)
+	})
+
+	return &TestDB{
+		db:       db,
+		gormDB:   gormDB,
+		Host:     c.Host,
+		Port:     c.Port,
+		Database: dbName,
+		User:     c.User,
+		Password: c.Password,
+	}
+}
+
+func (tdb *TestDB) Assert(t *testing.T, data []any) {
+	t.Helper()
+
+	for _, want := range data {
+		rv := reflect.ValueOf(want)
+		if rv.Kind() != reflect.Slice {
+			t.Fatalf("want slice type, got: %T", want)
+		}
+
+		gotPointer := reflect.New(reflect.SliceOf(rv.Type().Elem())).Interface()
+		err := tdb.gormDB.Find(gotPointer).Error
 		require.NoError(t, err)
 
 		got := reflect.ValueOf(gotPointer).Elem().Interface()

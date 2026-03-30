@@ -11,7 +11,8 @@ import (
 )
 
 func TestClient_CreateStep(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, testDB := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -22,7 +23,7 @@ func TestClient_CreateStep(t *testing.T) {
 			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Steps{},
-	}))
+	})
 
 	err := c.CreateStep(t.Context(), &domain.Step{
 		ID:        "step01",
@@ -34,7 +35,7 @@ func TestClient_CreateStep(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	tdb.Assert(t, []any{
+	testDB.Assert(t, []any{
 		database.Steps{
 			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -42,7 +43,8 @@ func TestClient_CreateStep(t *testing.T) {
 }
 
 func TestClient_GetStepByID(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, _ := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -55,7 +57,7 @@ func TestClient_GetStepByID(t *testing.T) {
 		database.Steps{
 			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
-	}))
+	})
 
 	tests := []struct {
 		name    string
@@ -83,6 +85,8 @@ func TestClient_GetStepByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetStepByID(t.Context(), tt.id)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
@@ -96,7 +100,8 @@ func TestClient_GetStepByID(t *testing.T) {
 }
 
 func TestClient_UpdateStep(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, testDB := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -109,7 +114,7 @@ func TestClient_UpdateStep(t *testing.T) {
 		database.Steps{
 			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
-	}))
+	})
 
 	completedAt := time.Date(2025, 1, 10, 0, 0, 0, 0, jst)
 	err := c.UpdateStep(t.Context(), &domain.Step{
@@ -120,7 +125,7 @@ func TestClient_UpdateStep(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	tdb.Assert(t, []any{
+	testDB.Assert(t, []any{
 		database.Steps{
 			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "更新後ステップ", CompletedAt: &completedAt, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 2, 1, 0, 0, 0, 0, jst)},
 		},
@@ -128,7 +133,8 @@ func TestClient_UpdateStep(t *testing.T) {
 }
 
 func TestClient_DeleteStepByID(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, testDB := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -142,12 +148,12 @@ func TestClient_DeleteStepByID(t *testing.T) {
 			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 			{ID: "step02", UserID: "user01", TaskID: "task01", Name: "ステップ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 		},
-	}))
+	})
 
 	err := c.DeleteStepByID(t.Context(), "step01")
 	require.NoError(t, err)
 
-	tdb.Assert(t, []any{
+	testDB.Assert(t, []any{
 		database.Steps{
 			{ID: "step02", UserID: "user01", TaskID: "task01", Name: "ステップ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 		},

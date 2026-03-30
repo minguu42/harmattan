@@ -11,7 +11,8 @@ import (
 )
 
 func TestClient_CreateTask(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, testDB := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -19,7 +20,7 @@ func TestClient_CreateTask(t *testing.T) {
 			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
 		database.Tasks{},
-	}))
+	})
 
 	err := c.CreateTask(t.Context(), &domain.Task{
 		ID:        "task01",
@@ -33,7 +34,7 @@ func TestClient_CreateTask(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	tdb.Assert(t, []any{
+	testDB.Assert(t, []any{
 		database.Tasks{
 			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", Content: "Content 1", Priority: 1, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -41,10 +42,11 @@ func TestClient_CreateTask(t *testing.T) {
 }
 
 func TestClient_ListTasks(t *testing.T) {
+	t.Parallel()
 	completedAt := time.Date(2025, 1, 10, 0, 0, 0, 0, jst)
 	dueOn := time.Date(2025, 2, 1, 0, 0, 0, 0, jst)
 
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	c, _ := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -70,7 +72,7 @@ func TestClient_ListTasks(t *testing.T) {
 			{TaskID: "task02", TagID: "tag01", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 			{TaskID: "task02", TagID: "tag02", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 		},
-	}))
+	})
 
 	tests := []struct {
 		name          string
@@ -207,6 +209,8 @@ func TestClient_ListTasks(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.ListTasks(t.Context(), tt.projectID, tt.limit, tt.offset, tt.showCompleted)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
@@ -215,7 +219,8 @@ func TestClient_ListTasks(t *testing.T) {
 }
 
 func TestClient_GetTaskByID(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, _ := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -234,7 +239,7 @@ func TestClient_GetTaskByID(t *testing.T) {
 		database.TaskTags{
 			{TaskID: "task01", TagID: "tag01", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
-	}))
+	})
 
 	tests := []struct {
 		name    string
@@ -268,6 +273,8 @@ func TestClient_GetTaskByID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.GetTaskByID(t.Context(), tt.id)
 			if tt.wantErr != nil {
 				assert.ErrorIs(t, err, tt.wantErr)
@@ -281,7 +288,8 @@ func TestClient_GetTaskByID(t *testing.T) {
 }
 
 func TestClient_UpdateTask(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, testDB := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -298,7 +306,7 @@ func TestClient_UpdateTask(t *testing.T) {
 		database.TaskTags{
 			{TaskID: "task01", TagID: "tag01", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
-	}))
+	})
 
 	err := c.UpdateTask(t.Context(), &domain.Task{
 		ID:        "task01",
@@ -310,7 +318,7 @@ func TestClient_UpdateTask(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	tdb.Assert(t, []any{
+	testDB.Assert(t, []any{
 		database.Tasks{
 			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "更新後タスク", Content: "Updated content", Priority: 2, CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 2, 1, 0, 0, 0, 0, jst)},
 		},
@@ -321,7 +329,8 @@ func TestClient_UpdateTask(t *testing.T) {
 }
 
 func TestClient_DeleteTaskByID(t *testing.T) {
-	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+	t.Parallel()
+	c, testDB := setupTest(t, []any{
 		database.Users{
 			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 		},
@@ -332,12 +341,12 @@ func TestClient_DeleteTaskByID(t *testing.T) {
 			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
 			{ID: "task02", UserID: "user01", ProjectID: "project01", Name: "タスク2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 		},
-	}))
+	})
 
 	err := c.DeleteTaskByID(t.Context(), "task01")
 	require.NoError(t, err)
 
-	tdb.Assert(t, []any{
+	testDB.Assert(t, []any{
 		database.Tasks{
 			{ID: "task02", UserID: "user01", ProjectID: "project01", Name: "タスク2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
 		},

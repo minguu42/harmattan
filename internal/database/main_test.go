@@ -11,12 +11,11 @@ import (
 	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/database/databasetest"
+	"github.com/stretchr/testify/require"
 )
 
 var (
 	jst = time.FixedZone("JST", 9*60*60)
-
-	c   *database.Client
 	tdb *databasetest.ClientWithContainer
 )
 
@@ -35,7 +34,13 @@ func TestMain(m *testing.M) {
 	}
 	defer atel.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
-	c, err = database.NewClient(ctx, &database.Config{
+	m.Run()
+}
+
+func setupTest(t *testing.T, tableRows []any) (*database.Client, *databasetest.TestDB) {
+	t.Helper()
+	testDB := tdb.NewTestDB(t, tableRows)
+	c, err := database.NewClient(t.Context(), database.Config{
 		DSN: database.DSN{
 			Host:     tdb.Host,
 			Port:     tdb.Port,
@@ -43,11 +48,11 @@ func TestMain(m *testing.M) {
 			User:     tdb.User,
 			Password: tdb.Password,
 		},
+		MaxOpenConns:    25,
+		MaxIdleConns:    25,
+		ConnMaxLifetime: 5 * time.Minute,
 	})
-	if err != nil {
-		log.Fatalf("%+v", err)
-	}
-	defer atel.Capture(ctx, "Failed to close database client")(c.Close)
-
-	m.Run()
+	require.NoError(t, err)
+	t.Cleanup(func() { c.Close() })
+	return c, testDB
 }
