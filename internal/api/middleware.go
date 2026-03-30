@@ -21,7 +21,8 @@ type requestStartKey struct{}
 // ogenミドルウェアではセキュリティハンドラの後にしか実行されず正確な開始時刻が分からないためhttpミドルウェアを利用している
 func setRequestStart(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), requestStartKey{}, clock.Now(r.Context()))))
+		ctx := context.WithValue(r.Context(), requestStartKey{}, clock.Now(r.Context()))
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
