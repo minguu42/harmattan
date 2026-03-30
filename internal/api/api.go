@@ -50,7 +50,7 @@ func NewHandler(f *Factory, revision string, allowedOrigins []string) (http.Hand
 		AllowedMethods: []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Authorization", "Content-Type"},
 	})
-	return corsSetting.Handler(ogenServer), nil
+	return setRequestStart(corsSetting.Handler(ogenServer)), nil
 }
 
 func notFound(w http.ResponseWriter, _ *http.Request) {
