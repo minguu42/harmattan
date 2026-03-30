@@ -18,6 +18,7 @@ func SetLogger(l *Logger) {
 type Logger struct {
 	base        *slog.Logger
 	prettyPrint bool
+	traced      bool
 }
 
 func New(w io.Writer, level slog.Level, prettyPrint bool) *Logger {
@@ -45,6 +46,10 @@ func logger(ctx context.Context) *Logger {
 }
 
 func ContextWithTracedLogger(ctx context.Context) context.Context {
+	if l, ok := ctx.Value(loggerKey{}).(*Logger); ok && l.traced {
+		return ctx
+	}
+
 	spanContext := trace.SpanContextFromContext(ctx)
 	if !spanContext.IsValid() {
 		return ctx
@@ -54,5 +59,6 @@ func ContextWithTracedLogger(ctx context.Context) context.Context {
 	return context.WithValue(ctx, loggerKey{}, &Logger{
 		base:        l.base.With(slog.String("trace_id", spanContext.TraceID().String())),
 		prettyPrint: l.prettyPrint,
+		traced:      true,
 	})
 }

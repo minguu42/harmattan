@@ -5,6 +5,7 @@ import (
 
 	"github.com/minguu42/harmattan/internal/api/apierror"
 	"github.com/minguu42/harmattan/internal/api/openapi"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/auth"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
@@ -17,6 +18,9 @@ type securityHandler struct {
 }
 
 func (h *securityHandler) HandleBearerAuth(ctx context.Context, _ openapi.OperationName, t openapi.BearerAuth) (context.Context, error) {
+	// セキュリティハンドラはogenミドルウェアより先に実行されるため、ここでトレースIDをロガーに付与する
+	ctx = atel.ContextWithTracedLogger(ctx)
+
 	userID, err := h.auth.ParseIDToken(ctx, t.Token)
 	if err != nil {
 		return nil, errtrace.Wrap(apierror.AuthorizationError())
