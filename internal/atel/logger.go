@@ -45,6 +45,10 @@ func logger(ctx context.Context) *Logger {
 }
 
 func ContextWithTracedLogger(ctx context.Context) context.Context {
+	if _, ok := ctx.Value(loggerKey{}).(*Logger); ok {
+		return ctx
+	}
+
 	spanContext := trace.SpanContextFromContext(ctx)
 	if !spanContext.IsValid() {
 		return ctx

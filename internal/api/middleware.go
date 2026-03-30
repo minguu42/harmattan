@@ -13,6 +13,8 @@ import (
 	"github.com/ogen-go/ogen/middleware"
 )
 
+// attachTraceID は認証不要のエンドポイント用にトレースIDをロガーに付与する
+// 認証が必要なエンドポイントではセキュリティハンドラで先に付与しているが、重複しても影響はない
 func attachTraceID() middleware.Middleware {
 	return func(req middleware.Request, next middleware.Next) (middleware.Response, error) {
 		req.SetContext(atel.ContextWithTracedLogger(req.Context))
