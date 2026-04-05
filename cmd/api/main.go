@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -21,7 +22,11 @@ import (
 var revision = "unknown"
 
 func init() {
-	time.Local = time.FixedZone("JST", 9*60*60)
+	loc, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		log.Fatalf("failed to load location: %v", err)
+	}
+	time.Local = loc
 
 	if info, ok := debug.ReadBuildInfo(); ok {
 		if i := slices.IndexFunc(info.Settings, func(s debug.BuildSetting) bool { return s.Key == "vcs.revision" }); i != -1 {

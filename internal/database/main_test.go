@@ -14,13 +14,18 @@ import (
 )
 
 var (
-	jst = time.FixedZone("JST", 9*60*60)
+	jst *time.Location
 
 	c   *database.Client
 	tdb *databasetest.ClientWithContainer
 )
 
 func init() {
+	var err error
+	jst, err = time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		log.Fatalf("failed to load location: %v", err)
+	}
 	time.Local = jst
 	atel.SetLogger(atel.New(os.Stdout, slog.LevelError, false))
 }

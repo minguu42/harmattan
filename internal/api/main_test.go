@@ -24,14 +24,20 @@ const (
 )
 
 var (
-	jst      = time.FixedZone("JST", 9*60*60)
-	fixedNow = time.Date(2025, 1, 1, 0, 10, 0, 0, jst)
+	jst      *time.Location
+	fixedNow time.Time
 
 	th  http.Handler
 	tdb *databasetest.ClientWithContainer
 )
 
 func init() {
+	var err error
+	jst, err = time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		log.Fatalf("failed to load location: %v", err)
+	}
+	fixedNow = time.Date(2025, 1, 1, 0, 10, 0, 0, jst)
 	time.Local = jst
 	atel.SetLogger(atel.New(os.Stdout, slog.LevelError, false))
 }
