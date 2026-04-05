@@ -25,6 +25,6 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
       -o /go/bin/myapp \
       ./cmd/api
 
-FROM gcr.io/distroless/static-debian12:nonroot AS prod
+FROM gcr.io/distroless/static-debian13:nonroot AS prod
 COPY --chown=nonroot:nonroot --from=build /go/bin/myapp /
 ENTRYPOINT ["/myapp"]
