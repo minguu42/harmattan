@@ -30,7 +30,9 @@ Harmattanはタスク管理アプリである。
 
 - `go generate ./...`: OpenAPIやstringerでコードを生成する
 - `gofmt -s -w . && go tool goimports -w .`: コードを整形する
-- `go build ./... && go vet ./... && go tool staticcheck ./...`: 静的解析を実行する
+- `go build ./...`: ビルドできるか確認する
+- `go build -o /dev/null ./cmd/api`: 特定のパッケージがビルドできるか確認する（`-o /dev/null`でバイナリは生成しない）
+- `go vet ./... && go tool staticcheck ./...`: 静的解析を実行する
 - `go test -shuffle=on ./...`: テストを実行する
 - `go test -shuffle=on ./internal/api/handler`: 特定のパッケージのテストを実行する
 - `go test -shuffle=on ./internal/api/handler -run TestHandlerName`: 特定のテストを実行する
