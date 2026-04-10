@@ -159,7 +159,7 @@ func (h *ColoredTextHandler) appendAttr(b *strings.Builder, attr slog.Attr, grou
 	if attr.Equal(slog.Attr{}) {
 		return
 	}
-	if _, ok := h.ignoreKeys[attr.Key]; ok {
+	if _, ok := h.ignoreKeys[groupPrefix+attr.Key]; ok {
 		return
 	}
 
