@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"os"
 	"runtime"
-	"slices"
 	"time"
 
 	"github.com/minguu42/harmattan/internal/domain"
@@ -19,25 +18,7 @@ func EventLog(ctx context.Context, message string) {
 }
 
 func ErrorLog(ctx context.Context, message string, err error) {
-	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, errorToAttrs(err)...)
-}
-
-func errorToAttrs(err error) []slog.Attr {
-	if err == nil {
-		return nil
-	}
-
-	if stackErr, ok := errors.AsType[*errtrace.StackError](err); ok {
-		attrs := []slog.Attr{
-			slog.String("error.message", stackErr.Error()),
-			slog.Any("error.frames", stackErr.Frames()),
-		}
-		if errAttrs := stackErr.Attrs(); len(errAttrs) > 0 {
-			attrs = append(attrs, slog.GroupAttrs("error.attrs", errAttrs...))
-		}
-		return attrs
-	}
-	return []slog.Attr{slog.String("error.message", err.Error())}
+	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, slog.Any("error", err))
 }
 
 type AccessFields struct {
@@ -74,8 +55,10 @@ func AccessLog(ctx context.Context, fields *AccessFields) {
 }
 
 func AccessErrorLog(ctx context.Context, operationID string, err error) {
-	attrs := slices.Concat([]slog.Attr{slog.String("request.operation", operationID)}, errorToAttrs(err))
-	logger(ctx).base.LogAttrs(ctx, slog.LevelError, "Unexpected error occurred", attrs...)
+	logger(ctx).base.LogAttrs(ctx, slog.LevelError, "Unexpected error occurred",
+		slog.String("request.operation", operationID),
+		slog.Any("error", err),
+	)
 }
 
 func AccessSlowLog(ctx context.Context, operationID string, status int, duration time.Duration) {
@@ -86,24 +69,18 @@ func AccessSlowLog(ctx context.Context, operationID string, status int, duration
 	)
 }
 
-func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64)) {
+func SQLLog(ctx context.Context, fc func() (sql string, rowsAffected int64)) {
 	level := slog.LevelDebug
 	if !logger(ctx).base.Enabled(ctx, level) {
 		return
 	}
 
 	query, _ := fc()
-	duration := time.Since(begin)
 	var loc string
 	if _, file, line, ok := runtime.Caller(4); ok {
 		loc = fmt.Sprintf("%s:%d", file, line)
 	}
-
-	logger(ctx).base.LogAttrs(ctx, level, "",
-		slog.Int64("duration", duration.Milliseconds()),
-		slog.String("location", loc),
-		slog.String("query", query),
-	)
+	logger(ctx).base.LogAttrs(ctx, level, query, slog.String("location", loc))
 }
 
 func Capture(ctx context.Context, message string) func(func() error) {
@@ -124,6 +101,6 @@ func Capture(ctx context.Context, message string) func(func() error) {
 			return
 		}
 
-		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, errorToAttrs(errtrace.FromStack(err, pc[:n:n]))...)
+		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, slog.Any("error", errtrace.FromStack(err, pc[:n:n])))
 	}
 }
