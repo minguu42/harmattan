@@ -16,9 +16,8 @@ func SetLogger(l *Logger) {
 }
 
 type Logger struct {
-	base        *slog.Logger
-	prettyPrint bool
-	traced      bool
+	base   *slog.Logger
+	traced bool
 }
 
 func New(w io.Writer, level slog.Level, prettyPrint bool) *Logger {
@@ -31,9 +30,9 @@ func New(w io.Writer, level slog.Level, prettyPrint bool) *Logger {
 			return MaskAttr(a)
 		}}
 	if prettyPrint {
-		return &Logger{base: slog.New(NewJSONIndentHandler(w, opts)), prettyPrint: prettyPrint}
+		return &Logger{base: slog.New(NewJSONIndentHandler(w, opts))}
 	}
-	return &Logger{base: slog.New(slog.NewJSONHandler(w, opts)), prettyPrint: prettyPrint}
+	return &Logger{base: slog.New(slog.NewJSONHandler(w, opts))}
 }
 
 type loggerKey struct{}
@@ -57,8 +56,7 @@ func ContextWithTracedLogger(ctx context.Context) context.Context {
 
 	l := logger(ctx)
 	return context.WithValue(ctx, loggerKey{}, &Logger{
-		base:        l.base.With(slog.String("trace_id", spanContext.TraceID().String())),
-		prettyPrint: l.prettyPrint,
-		traced:      true,
+		base:   l.base.With(slog.String("trace_id", spanContext.TraceID().String())),
+		traced: true,
 	})
 }
