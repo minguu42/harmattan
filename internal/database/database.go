@@ -83,8 +83,8 @@ func (l customLogger) LogMode(_ logger.LogLevel) logger.Interface  { return l }
 func (l customLogger) Info(_ context.Context, _ string, _ ...any)  {}
 func (l customLogger) Warn(_ context.Context, _ string, _ ...any)  {}
 func (l customLogger) Error(_ context.Context, _ string, _ ...any) {}
-func (l customLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), _ error) {
-	atel.SQLLog(ctx, begin, fc)
+func (l customLogger) Trace(ctx context.Context, _ time.Time, fc func() (sql string, rowsAffected int64), _ error) {
+	atel.SQLLog(ctx, fc)
 }
 
 func (c *Client) Close() error {
