@@ -14,33 +14,12 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 )
 
-const (
-	reset   = "\033[0m"
-	gray    = "\033[90m"
-	red     = "\033[31m"
-	green   = "\033[32m"
-	yellow  = "\033[33m"
-	blue    = "\033[34m"
-	magenta = "\033[35m"
-	cyan    = "\033[36m"
-)
-
 func EventLog(ctx context.Context, message string) {
-	level := slog.LevelInfo
-	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
-		fmt.Printf("%s %s %s\n", prettyTimestamp(), prettyLevel(level), message)
-		return
-	}
-	logger(ctx).base.Log(ctx, level, message)
+	logger(ctx).base.Log(ctx, slog.LevelInfo, message)
 }
 
 func ErrorLog(ctx context.Context, message string, err error) {
-	level := slog.LevelError
-	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
-		fmt.Printf("%s %s %s\n%+v\n", prettyTimestamp(), prettyLevel(level), message, err)
-		return
-	}
-	logger(ctx).base.LogAttrs(ctx, level, message, errorToAttrs(err)...)
+	logger(ctx).base.LogAttrs(ctx, slog.LevelError, message, errorToAttrs(err)...)
 }
 
 func errorToAttrs(err error) []slog.Attr {
@@ -73,21 +52,6 @@ type AccessFields struct {
 }
 
 func AccessLog(ctx context.Context, fields *AccessFields) {
-	level := slog.LevelInfo
-	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
-		status := fmt.Sprintf("%d", fields.Status)
-		switch {
-		case fields.Status >= 200 && fields.Status < 300:
-			status = fmt.Sprintf("%s%d%s", green, fields.Status, reset)
-		case fields.Status >= 400 && fields.Status < 500:
-			status = fmt.Sprintf("%s%d%s", yellow, fields.Status, reset)
-		case fields.Status >= 500:
-			status = fmt.Sprintf("%s%d%s", red, fields.Status, reset)
-		}
-		fmt.Printf("%s %s %s %s %s\n", prettyTimestamp(), prettyLevel(level), fields.OperationID, status, prettyDuration(fields.Duration))
-		return
-	}
-
 	attrs := make([]slog.Attr, 0, 9)
 	attrs = append(attrs,
 		slog.Int("response.status_code", fields.Status),
@@ -106,28 +70,16 @@ func AccessLog(ctx context.Context, fields *AccessFields) {
 		slog.String("request.ip_address", fields.IPAddress),
 		slog.String("request.user_agent", fields.UserAgent),
 	)
-	logger(ctx).base.LogAttrs(ctx, level, "Request processed", attrs...)
+	logger(ctx).base.LogAttrs(ctx, slog.LevelInfo, "Request processed", attrs...)
 }
 
 func AccessErrorLog(ctx context.Context, operationID string, err error) {
-	level := slog.LevelError
-	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
-		fmt.Printf("%s %s %s\n%+v\n", prettyTimestamp(), prettyLevel(level), operationID, err)
-		return
-	}
-	logger(ctx).base.LogAttrs(ctx, level, "Unexpected error occurred", slices.Concat(
-		[]slog.Attr{slog.String("request.operation", operationID)},
-		errorToAttrs(err),
-	)...)
+	attrs := slices.Concat([]slog.Attr{slog.String("request.operation", operationID)}, errorToAttrs(err))
+	logger(ctx).base.LogAttrs(ctx, slog.LevelError, "Unexpected error occurred", attrs...)
 }
 
 func AccessSlowLog(ctx context.Context, operationID string, status int, duration time.Duration) {
-	level := slog.LevelWarn
-	if logger(ctx).prettyPrint && logger(ctx).base.Enabled(ctx, level) {
-		fmt.Printf("%s %s %s %s (slow)\n", prettyTimestamp(), prettyLevel(level), operationID, prettyDuration(duration))
-		return
-	}
-	logger(ctx).base.LogAttrs(ctx, level, "Slow request detected",
+	logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, "Slow request detected",
 		slog.String("request.operation", operationID),
 		slog.Int("response.status_code", status),
 		slog.Int64("response.duration", duration.Milliseconds()),
@@ -147,10 +99,6 @@ func SQLLog(ctx context.Context, begin time.Time, fc func() (sql string, rowsAff
 		loc = fmt.Sprintf("%s:%d", file, line)
 	}
 
-	if logger(ctx).prettyPrint {
-		fmt.Printf("%s %s %s%s%s %s\n%s\n", prettyTimestamp(), prettyLevel(level), blue, loc, reset, prettyDuration(duration), query)
-		return
-	}
 	logger(ctx).base.LogAttrs(ctx, level, "",
 		slog.Int64("duration", duration.Milliseconds()),
 		slog.String("location", loc),
@@ -178,28 +126,4 @@ func Capture(ctx context.Context, message string) func(func() error) {
 
 		logger(ctx).base.LogAttrs(ctx, slog.LevelWarn, message, errorToAttrs(errtrace.FromStack(err, pc[:n:n]))...)
 	}
-}
-
-func prettyTimestamp() string {
-	return fmt.Sprintf("%s%s%s", gray, time.Now().Format("2006/01/02 15:04:05"), reset)
-}
-
-func prettyLevel(level slog.Level) string {
-	switch level {
-	case slog.LevelDebug:
-		return fmt.Sprintf("%s%s%s", cyan, level.String(), reset)
-	case slog.LevelInfo:
-		return fmt.Sprintf("%s%s%s", green, level.String(), reset)
-	case slog.LevelWarn:
-		return fmt.Sprintf("%s%s%s", yellow, level.String(), reset)
-	case slog.LevelError:
-		return fmt.Sprintf("%s%s%s", red, level.String(), reset)
-	default:
-		return level.String()
-	}
-}
-
-func prettyDuration(duration time.Duration) string {
-	ms := float64(duration) / float64(time.Millisecond)
-	return fmt.Sprintf("%s%.2fms%s", magenta, ms, reset)
 }
