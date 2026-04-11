@@ -5,51 +5,27 @@ import (
 	"reflect"
 )
 
-// MaskAttr は以下の条件を満たす場合にlogタグの値がmaskに設定された構造体フィールドの値をマスクする
+// maskAttr はlogタグの値がallowに設定されていない構造体フィールドの値をマスクする
+// 非公開フィールドの値はゼロ値とする
+// 本関数は以下の条件を満たす場合に実行される
 // - 属性の値の種別が slog.KindAny である
 // - 属性の値は構造体もしくは構造体のポインタである
-// - 構造体のすべてのフィールドがエクスポートされている
-func MaskAttr(a slog.Attr) slog.Attr {
+func maskAttr(a slog.Attr) slog.Attr {
 	if a.Value.Kind() != slog.KindAny {
 		return a
 	}
 
 	switch rv := reflect.ValueOf(a.Value.Any()); rv.Kind() {
 	case reflect.Pointer:
-		if rv.IsNil() || rv.Elem().Kind() != reflect.Struct || !allFieldsExported(rv.Elem().Type()) {
+		if rv.IsNil() || rv.Elem().Kind() != reflect.Struct {
 			return a
 		}
 		return slog.Any(a.Key, maskStructValue(rv.Elem()).Addr().Interface())
 	case reflect.Struct:
-		if !allFieldsExported(rv.Type()) {
-			return a
-		}
 		return slog.Any(a.Key, maskStructValue(rv).Interface())
 	default:
 		return a
 	}
-}
-
-func allFieldsExported(t reflect.Type) bool {
-	for f := range t.Fields() {
-		if !f.IsExported() {
-			return false
-		}
-
-		ft := f.Type
-		switch ft.Kind() {
-		case reflect.Pointer:
-			if ft.Elem().Kind() == reflect.Struct && !allFieldsExported(ft.Elem()) {
-				return false
-			}
-		case reflect.Struct:
-			if !allFieldsExported(ft) {
-				return false
-			}
-		default:
-		}
-	}
-	return true
 }
 
 func maskStructValue(v reflect.Value) reflect.Value {
@@ -62,20 +38,19 @@ func maskStructValue(v reflect.Value) reflect.Value {
 			continue
 		}
 
-		if tag := structField.Tag.Get("log"); tag == "mask" {
-			setMaskedValue(newField)
+		field := v.Field(i)
+		if tag := structField.Tag.Get("log"); tag == "allow" {
+			switch {
+			case field.Kind() == reflect.Struct:
+				newField.Set(maskStructValue(field))
+			case field.Kind() == reflect.Pointer && !field.IsNil() && field.Elem().Kind() == reflect.Struct:
+				newField.Set(maskStructValue(field.Elem()).Addr())
+			default:
+				newField.Set(field)
+			}
 			continue
 		}
-
-		field := v.Field(i)
-		switch {
-		case field.Kind() == reflect.Struct:
-			newField.Set(maskStructValue(field))
-		case field.Kind() == reflect.Pointer && !field.IsNil() && field.Elem().Kind() == reflect.Struct:
-			newField.Set(maskStructValue(field.Elem()).Addr())
-		default:
-			newField.Set(field)
-		}
+		setMaskedValue(newField)
 	}
 	return newStruct
 }
@@ -97,6 +72,14 @@ func setMaskedValue(newField reflect.Value) {
 		newField.Set(reflect.MakeSlice(t, 0, 0))
 	case reflect.String:
 		newField.SetString("<hidden>")
+	case reflect.Struct:
+		structValue := reflect.New(t).Elem()
+		for _, f := range structValue.Fields() {
+			if f.CanSet() {
+				setMaskedValue(f)
+			}
+		}
+		newField.Set(structValue)
 	default:
 		newField.Set(reflect.Zero(t))
 	}

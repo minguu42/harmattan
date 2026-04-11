@@ -33,8 +33,6 @@ paths:
                   type: string
                 password:
                   type: string
-                  x-oapi-codegen-extra-tags:
-                    log: mask
               required: [email, password]
         required: true
       responses:
@@ -63,8 +61,6 @@ paths:
                   type: string
                 password:
                   type: string
-                  x-oapi-codegen-extra-tags:
-                    log: mask
               required: [email, password]
         required: true
       responses:
@@ -91,10 +87,14 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 color:
                   type: string
                   enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
                   default: default
+                  x-oapi-codegen-extra-tags:
+                    log: allow
               required: [name]
         required: true
       responses:
@@ -149,11 +149,17 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 color:
                   type: string
                   enum: [blue, brown, default, gray, green, orange, pink, purple, red, yellow]
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 is_archived:
                   type: boolean
+                  x-oapi-codegen-extra-tags:
+                    log: allow
         required: true
       responses:
         200:
@@ -182,10 +188,14 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 priority:
                   type: integer
                   default: 0
                   maximum: 3
+                  x-oapi-codegen-extra-tags:
+                    log: allow
               required: [name]
         required: true
       responses:
@@ -245,23 +255,35 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 tag_ids:
                   type: array
                   items:
                     type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 content:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 priority:
                   type: integer
                   maximum: 3
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 due_on:
                   type: string
                   format: date
                   nullable: true
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 completed_at:
                   type: string
                   format: date-time
                   nullable: true
+                  x-oapi-codegen-extra-tags:
+                    log: allow
         required: true
       responses:
         200:
@@ -290,6 +312,8 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
               required: [name]
         required: true
       responses:
@@ -313,10 +337,14 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
                 completed_at:
                   type: string
                   format: date-time
                   nullable: true
+                  x-oapi-codegen-extra-tags:
+                    log: allow
         required: true
       responses:
         200:
@@ -343,6 +371,8 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
               required: [name]
         required: true
       responses:
@@ -397,6 +427,8 @@ paths:
               properties:
                 name:
                   type: string
+                  x-oapi-codegen-extra-tags:
+                    log: allow
         required: true
       responses:
         200:
