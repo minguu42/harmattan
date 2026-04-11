@@ -1,4 +1,4 @@
-package atel_test
+package atel
 
 import (
 	"bytes"
@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -14,32 +13,38 @@ import (
 func TestMaskAttr(t *testing.T) {
 	t.Parallel()
 
-	type AllFieldsExported struct {
-		Unmask  string            `json:"f1"`
-		Bool    bool              `json:"f2" log:"mask"`
-		Int     int               `json:"f3" log:"mask"`
-		Uint    uint              `json:"f4" log:"mask"`
-		Float   float64           `json:"f5" log:"mask"`
-		Map     map[string]string `json:"f6" log:"mask"`
-		Slice   []string          `json:"f7" log:"mask"`
-		String  string            `json:"f8" log:"mask"`
-		Pointer *string           `json:"f9" log:"mask"`
+	type Unmasked struct {
+		Bool    bool              `json:"bool" log:"allow"`
+		Int     int               `json:"int" log:"allow"`
+		Uint    uint              `json:"uint" log:"allow"`
+		Float   float64           `json:"float" log:"allow"`
+		Map     map[string]string `json:"map" log:"allow"`
+		Slice   []string          `json:"slice" log:"allow"`
+		String  string            `json:"string" log:"allow"`
+		Pointer *string           `json:"pointer" log:"allow"`
 	}
-	type StructWrapper struct {
-		F AllFieldsExported `json:"f"`
-	}
-	type StructPointerWrapper struct {
-		F *AllFieldsExported `json:"f"`
+	type Masked struct {
+		Bool    bool              `json:"bool"`
+		Int     int               `json:"int"`
+		Uint    uint              `json:"uint"`
+		Float   float64           `json:"float"`
+		Map     map[string]string `json:"map"`
+		Slice   []string          `json:"slice"`
+		String  string            `json:"string"`
+		Pointer *string           `json:"pointer"`
 	}
 	type WithUnexported struct {
-		Public  string `json:"public" log:"mask"`
+		Public  string `json:"public"`
 		private string
 	}
-	type StructWrapperWithUnexported struct {
-		F WithUnexported `json:"f"`
+	type UnmaskedWrapper[T any] struct {
+		Struct T `json:"struct" log:"allow"`
 	}
-	type StructPointerWrapperWithUnexported struct {
-		F *WithUnexported `json:"f"`
+	type UnmaskedPointerWrapper[T any] struct {
+		Struct *T `json:"struct" log:"allow"`
+	}
+	type MaskedWrapper[T any] struct {
+		Struct T `json:"struct"`
 	}
 	tests := []struct {
 		name  string
@@ -47,124 +52,221 @@ func TestMaskAttr(t *testing.T) {
 		want  map[string]any
 	}{
 		{
-			name: "mask",
-			value: AllFieldsExported{
-				Unmask:  "foo",
+			name: "allow_all_fields",
+			value: Unmasked{
 				Bool:    true,
 				Int:     1,
 				Uint:    10,
 				Float:   3.14,
 				Map:     map[string]string{"one": "1", "two": "2"},
 				Slice:   []string{"1", "2"},
-				String:  "bar",
-				Pointer: new("baz"),
+				String:  "foo",
+				Pointer: new("bar"),
 			},
 			want: map[string]any{
-				"f1": "foo",
-				"f2": false,
-				"f3": 0.0,
-				"f4": 0.0,
-				"f5": 0.0,
-				"f6": map[string]any{},
-				"f7": []any{},
-				"f8": "<hidden>",
-				"f9": nil,
+				"bool":    true,
+				"int":     1.0,
+				"uint":    10.0,
+				"float":   3.14,
+				"map":     map[string]any{"one": "1", "two": "2"},
+				"slice":   []any{"1", "2"},
+				"string":  "foo",
+				"pointer": "bar",
 			},
 		},
 		{
-			name: "mask_pointer",
-			value: &AllFieldsExported{
-				Unmask:  "foo",
+			name: "allow_all_fields_pointer",
+			value: &Unmasked{
 				Bool:    true,
 				Int:     1,
 				Uint:    10,
 				Float:   3.14,
-				Map:     map[string]string{"one": "1"},
+				Map:     map[string]string{"one": "1", "two": "2"},
 				Slice:   []string{"1", "2"},
-				String:  "bar",
-				Pointer: new("baz"),
+				String:  "foo",
+				Pointer: new("bar"),
 			},
 			want: map[string]any{
-				"f1": "foo",
-				"f2": false,
-				"f3": 0.0,
-				"f4": 0.0,
-				"f5": 0.0,
-				"f6": map[string]any{},
-				"f7": []any{},
-				"f8": "<hidden>",
-				"f9": nil,
+				"bool":    true,
+				"int":     1.0,
+				"uint":    10.0,
+				"float":   3.14,
+				"map":     map[string]any{"one": "1", "two": "2"},
+				"slice":   []any{"1", "2"},
+				"string":  "foo",
+				"pointer": "bar",
 			},
 		},
 		{
-			name: "mask_deep",
-			value: StructWrapper{F: AllFieldsExported{
-				Unmask:  "foo",
+			name: "allow_nested_struct",
+			value: UnmaskedWrapper[Unmasked]{Struct: Unmasked{
 				Bool:    true,
 				Int:     1,
 				Uint:    10,
 				Float:   3.14,
 				Map:     map[string]string{"one": "1", "two": "2"},
 				Slice:   []string{"1", "2"},
-				String:  "bar",
-				Pointer: new("baz"),
+				String:  "foo",
+				Pointer: new("bar"),
 			}},
-			want: map[string]any{"f": map[string]any{
-				"f1": "foo",
-				"f2": false,
-				"f3": 0.0,
-				"f4": 0.0,
-				"f5": 0.0,
-				"f6": map[string]any{},
-				"f7": []any{},
-				"f8": "<hidden>",
-				"f9": nil,
+			want: map[string]any{"struct": map[string]any{
+				"bool":    true,
+				"int":     1.0,
+				"uint":    10.0,
+				"float":   3.14,
+				"map":     map[string]any{"one": "1", "two": "2"},
+				"slice":   []any{"1", "2"},
+				"string":  "foo",
+				"pointer": "bar",
 			}},
 		},
 		{
-			name: "mask_deep_pointer",
-			value: StructPointerWrapper{F: &AllFieldsExported{
-				Unmask:  "foo",
+			name: "allow_nested_struct_pointer",
+			value: UnmaskedPointerWrapper[Unmasked]{Struct: &Unmasked{
 				Bool:    true,
 				Int:     1,
 				Uint:    10,
 				Float:   3.14,
 				Map:     map[string]string{"one": "1", "two": "2"},
 				Slice:   []string{"1", "2"},
-				String:  "bar",
-				Pointer: new("baz"),
+				String:  "foo",
+				Pointer: new("bar"),
 			}},
-			want: map[string]any{"f": map[string]any{
-				"f1": "foo",
-				"f2": false,
-				"f3": 0.0,
-				"f4": 0.0,
-				"f5": 0.0,
-				"f6": map[string]any{},
-				"f7": []any{},
-				"f8": "<hidden>",
-				"f9": nil,
+			want: map[string]any{"struct": map[string]any{
+				"bool":    true,
+				"int":     1.0,
+				"uint":    10.0,
+				"float":   3.14,
+				"map":     map[string]any{"one": "1", "two": "2"},
+				"slice":   []any{"1", "2"},
+				"string":  "foo",
+				"pointer": "bar",
 			}},
 		},
 		{
-			name:  "contains_unexported_field",
+			name:  "allow_nil_nested_struct_pointer",
+			value: UnmaskedPointerWrapper[Unmasked]{Struct: nil},
+			want:  map[string]any{"struct": nil},
+		},
+		{
+			name: "mask_struct",
+			value: Masked{
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "foo",
+				Pointer: new("bar"),
+			},
+			want: map[string]any{
+				"bool":    false,
+				"int":     0.0,
+				"uint":    0.0,
+				"float":   0.0,
+				"map":     map[string]any{},
+				"slice":   []any{},
+				"string":  "<hidden>",
+				"pointer": nil,
+			},
+		},
+		{
+			name: "mask_struct_pointer",
+			value: &Masked{
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "foo",
+				Pointer: new("bar"),
+			},
+			want: map[string]any{
+				"bool":    false,
+				"int":     0.0,
+				"uint":    0.0,
+				"float":   0.0,
+				"map":     map[string]any{},
+				"slice":   []any{},
+				"string":  "<hidden>",
+				"pointer": nil,
+			},
+		},
+		{
+			name: "mask_deep_struct",
+			value: UnmaskedWrapper[Masked]{Struct: Masked{
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "foo",
+				Pointer: new("bar"),
+			}},
+			want: map[string]any{"struct": map[string]any{
+				"bool":    false,
+				"int":     0.0,
+				"uint":    0.0,
+				"float":   0.0,
+				"map":     map[string]any{},
+				"slice":   []any{},
+				"string":  "<hidden>",
+				"pointer": nil,
+			}},
+		},
+		{
+			name: "mask_deep_struct_pointer",
+			value: UnmaskedPointerWrapper[Masked]{Struct: &Masked{
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "foo",
+				Pointer: new("bar"),
+			}},
+			want: map[string]any{"struct": map[string]any{
+				"bool":    false,
+				"int":     0.0,
+				"uint":    0.0,
+				"float":   0.0,
+				"map":     map[string]any{},
+				"slice":   []any{},
+				"string":  "<hidden>",
+				"pointer": nil,
+			}},
+		},
+		{
+			name: "mask_nested_without_parent_allow",
+			value: MaskedWrapper[Unmasked]{Struct: Unmasked{
+				Bool:    true,
+				Int:     1,
+				Uint:    10,
+				Float:   3.14,
+				Map:     map[string]string{"one": "1", "two": "2"},
+				Slice:   []string{"1", "2"},
+				String:  "foo",
+				Pointer: new("bar"),
+			}},
+			want: map[string]any{"struct": map[string]any{
+				"bool":    false,
+				"int":     0.0,
+				"uint":    0.0,
+				"float":   0.0,
+				"map":     map[string]any{},
+				"slice":   []any{},
+				"string":  "<hidden>",
+				"pointer": nil,
+			}},
+		},
+		{
+			name:  "skip_unexported_field",
 			value: WithUnexported{Public: "secret", private: "ignore"},
-			want:  map[string]any{"public": "secret"},
-		},
-		{
-			name:  "contains_unexported_field_pointer",
-			value: &WithUnexported{Public: "secret", private: "ignore"},
-			want:  map[string]any{"public": "secret"},
-		},
-		{
-			name:  "contains_unexported_field_deep",
-			value: StructWrapperWithUnexported{F: WithUnexported{Public: "secret", private: "ignore"}},
-			want:  map[string]any{"f": map[string]any{"public": "secret"}},
-		},
-		{
-			name:  "contains_unexported_field_deep_pointer",
-			value: StructPointerWrapperWithUnexported{F: &WithUnexported{Public: "secret", private: "ignore"}},
-			want:  map[string]any{"f": map[string]any{"public": "secret"}},
+			want:  map[string]any{"public": "<hidden>"},
 		},
 	}
 	for _, tt := range tests {
@@ -173,7 +275,7 @@ func TestMaskAttr(t *testing.T) {
 
 			var buf bytes.Buffer
 			l := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-				return atel.MaskAttr(a)
+				return maskAttr(a)
 			}}))
 			l.Info("", slog.Any("test", tt.value))
 
@@ -183,6 +285,43 @@ func TestMaskAttr(t *testing.T) {
 			require.True(t, ok)
 
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestMaskAttr_passthrough(t *testing.T) {
+	t.Parallel()
+
+	type Foo struct {
+		Foo string
+	}
+	tests := []struct {
+		name string
+		attr slog.Attr
+	}{
+		{
+			name: "not_kind_any",
+			attr: slog.String("foo", "bar"),
+		},
+		{
+			name: "nil_struct_pointer",
+			attr: slog.Any("foo", (*Foo)(nil)),
+		},
+		{
+			name: "non_struct_pointer",
+			attr: slog.Any("foo", new(42)),
+		},
+		{
+			name: "non_struct_value",
+			attr: slog.Any("foo", "bar"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := maskAttr(tt.attr)
+			assert.Equal(t, tt.attr, got)
 		})
 	}
 }

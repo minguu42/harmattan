@@ -41,7 +41,7 @@ func New(w io.Writer, level slog.Level, prettyPrint bool) *Logger {
 			if a.Key == "error" {
 				return expandErrorAttr(a)
 			}
-			return MaskAttr(a)
+			return maskAttr(a)
 		},
 	}
 	return &Logger{base: slog.New(slog.NewJSONHandler(w, opts))}

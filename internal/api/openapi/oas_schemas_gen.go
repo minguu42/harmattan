@@ -48,8 +48,8 @@ func (s *CheckHealthOK) SetRevision(val string) {
 }
 
 type CreateProjectReq struct {
-	Name  string                   `json:"name"`
-	Color OptCreateProjectReqColor `json:"color"`
+	Name  string                   `json:"name" log:"allow"`
+	Color OptCreateProjectReqColor `json:"color" log:"allow"`
 }
 
 // GetName returns the value of Name.
@@ -170,7 +170,7 @@ func (s *CreateProjectReqColor) UnmarshalText(data []byte) error {
 }
 
 type CreateStepReq struct {
-	Name string `json:"name"`
+	Name string `json:"name" log:"allow"`
 }
 
 // GetName returns the value of Name.
@@ -184,7 +184,7 @@ func (s *CreateStepReq) SetName(val string) {
 }
 
 type CreateTagReq struct {
-	Name string `json:"name"`
+	Name string `json:"name" log:"allow"`
 }
 
 // GetName returns the value of Name.
@@ -198,8 +198,8 @@ func (s *CreateTagReq) SetName(val string) {
 }
 
 type CreateTaskReq struct {
-	Name     string `json:"name"`
-	Priority OptInt `json:"priority"`
+	Name     string `json:"name" log:"allow"`
+	Priority OptInt `json:"priority" log:"allow"`
 }
 
 // GetName returns the value of Name.
@@ -940,7 +940,7 @@ func (s *SignInOK) SetIDToken(val string) {
 
 type SignInReq struct {
 	Email    string `json:"email"`
-	Password string `json:"password" log:"mask"`
+	Password string `json:"password"`
 }
 
 // GetEmail returns the value of Email.
@@ -979,7 +979,7 @@ func (s *SignUpOK) SetIDToken(val string) {
 
 type SignUpReq struct {
 	Email    string `json:"email"`
-	Password string `json:"password" log:"mask"`
+	Password string `json:"password"`
 }
 
 // GetEmail returns the value of Email.
@@ -1246,9 +1246,9 @@ func (s *Task) SetTags(val []Tag) {
 }
 
 type UpdateProjectReq struct {
-	Name       OptString                `json:"name"`
-	Color      OptUpdateProjectReqColor `json:"color"`
-	IsArchived OptBool                  `json:"is_archived"`
+	Name       OptString                `json:"name" log:"allow"`
+	Color      OptUpdateProjectReqColor `json:"color" log:"allow"`
+	IsArchived OptBool                  `json:"is_archived" log:"allow"`
 }
 
 // GetName returns the value of Name.
@@ -1379,8 +1379,8 @@ func (s *UpdateProjectReqColor) UnmarshalText(data []byte) error {
 }
 
 type UpdateStepReq struct {
-	Name        OptString      `json:"name"`
-	CompletedAt OptNilDateTime `json:"completed_at"`
+	Name        OptString      `json:"name" log:"allow"`
+	CompletedAt OptNilDateTime `json:"completed_at" log:"allow"`
 }
 
 // GetName returns the value of Name.
@@ -1404,7 +1404,7 @@ func (s *UpdateStepReq) SetCompletedAt(val OptNilDateTime) {
 }
 
 type UpdateTagReq struct {
-	Name OptString `json:"name"`
+	Name OptString `json:"name" log:"allow"`
 }
 
 // GetName returns the value of Name.
@@ -1418,12 +1418,12 @@ func (s *UpdateTagReq) SetName(val OptString) {
 }
 
 type UpdateTaskReq struct {
-	Name        OptString      `json:"name"`
-	TagIds      []string       `json:"tag_ids"`
-	Content     OptString      `json:"content"`
-	Priority    OptInt         `json:"priority"`
-	DueOn       OptNilDate     `json:"due_on"`
-	CompletedAt OptNilDateTime `json:"completed_at"`
+	Name        OptString      `json:"name" log:"allow"`
+	TagIds      []string       `json:"tag_ids" log:"allow"`
+	Content     OptString      `json:"content" log:"allow"`
+	Priority    OptInt         `json:"priority" log:"allow"`
+	DueOn       OptNilDate     `json:"due_on" log:"allow"`
+	CompletedAt OptNilDateTime `json:"completed_at" log:"allow"`
 }
 
 // GetName returns the value of Name.
