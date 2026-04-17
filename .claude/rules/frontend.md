@@ -1,4 +1,14 @@
-# フロントエンド
+---
+paths:
+  - "web/**/*.{ts,tsx,css,html}"
+  - "*.config.{ts,js}"
+  - "tsconfig*.json"
+  - "package.json"
+  - "pnpm-*.yaml"
+  - "eslint.config.js"
+---
+
+# フロントエンド規約
 
 ## 技術スタック
 
@@ -17,16 +27,7 @@
 
 ## コマンド
 
-```bash
-# 開発サーバー起動
-pnpm dev
-
-# ビルド
-pnpm build
-
-# Lint
-pnpm lint
-
-# プレビュー
-pnpm preview
-```
+- `pnpm dev`: 開発サーバー起動
+- `pnpm build`: ビルド
+- `pnpm lint`: Lint
+- `pnpm preview`: プレビュー
