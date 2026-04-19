@@ -19,7 +19,7 @@ paths:
 ## コマンド
 
 - `go generate ./...`: OpenAPIやstringerでコードを生成する
-- `gofmt -s -w . && go tool goimports -w .`: コードを整形する
+- `go tool goimports -w . && go fix ./...`: コードを整形する
 - `go build ./...`: ビルドできるか確認する
 - `go build -o /dev/null ./cmd/api`: 特定のパッケージがビルドできるか確認する（`-o /dev/null`でバイナリは生成しない）
 - `go vet ./... && go tool staticcheck ./...`: 静的解析を実行する
