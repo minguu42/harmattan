@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -22,9 +22,21 @@ import (
 var revision = "unknown"
 
 func init() {
+	level := slog.LevelInfo
+	switch os.Getenv("LOG_LEVEL") {
+	case "debug":
+		level = slog.LevelDebug
+	case "warn":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	}
+	prettyPrint := os.Getenv("LOG_PRETTY_PRINT") == "true"
+	atel.SetLogger(atel.New(os.Stdout, level, prettyPrint))
+
 	loc, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
-		log.Fatalf("failed to load location: %v", err)
+		atel.FatalLog(context.Background(), "Failed to load location", err)
 	}
 	time.Local = loc
 
@@ -38,8 +50,7 @@ func init() {
 func main() {
 	ctx := context.Background()
 	if err := mainRun(ctx); err != nil {
-		atel.ErrorLog(ctx, "Failed to execute mainRun", err)
-		os.Exit(1)
+		atel.FatalLog(ctx, "Failed to run", err)
 	}
 }
 

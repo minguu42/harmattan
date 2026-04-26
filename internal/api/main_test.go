@@ -80,7 +80,6 @@ func TestMain(m *testing.M) {
 		DBDatabase:        tdb.Database,
 		DBUser:            tdb.User,
 		DBPassword:        tdb.Password,
-		LogLevel:          "error",
 	})
 	if err != nil {
 		log.Fatalf("%+v", err)
