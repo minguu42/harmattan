@@ -15,6 +15,7 @@ paths:
 
 ## コマンド
 
-- `cd infra/terraform && terraform init -backend-config=stg.tfbackend`: Terraform初期化
-- `cd infra/terraform && terraform plan`: プラン確認
-- `cd infra/terraform && terraform apply`: 適用
+- `terraform -chdir=./infra/terraform init -backend-config=stg.tfbackend -reconfigure`: モジュールを初期化する
+- `terraform fmt -recursive ./infra/terraform`: コードを整形する
+- `terraform -chdir=./infra/terraform plan -var "env=stg"`: プランを確認する
+- `terraform -chdir=./infra/terraform apply -var "env=stg"`: プランを適用する
