@@ -59,7 +59,7 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 	}
 
 	host := "127.0.0.1"
-	port := portNet.Int()
+	port := int(portNet.Num())
 	user := "root"
 	password := ""
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&charset=utf8mb4&loc=Local",
