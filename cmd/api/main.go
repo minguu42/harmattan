@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -22,6 +23,18 @@ import (
 var revision = "unknown"
 
 func init() {
+	level := slog.LevelInfo
+	switch os.Getenv("LOG_LEVEL") {
+	case "debug":
+		level = slog.LevelDebug
+	case "warn":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	}
+	prettyPrint := os.Getenv("LOG_PRETTY_PRINT") == "true"
+	atel.SetLogger(atel.New(os.Stdout, level, prettyPrint))
+
 	loc, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
 		log.Fatalf("failed to load location: %v", err)

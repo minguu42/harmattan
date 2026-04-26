@@ -24,9 +24,6 @@ type Config struct {
 	DBMaxIdleConns    int           `env:"DB_MAX_IDLE_CONNS" default:"25"`
 	DBConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME" default:"5m"`
 
-	LogLevel       string `env:"LOG_LEVEL" default:"info"` // "debug" | "info" | "warn" | "error"
-	LogPrettyPrint bool   `env:"LOG_PRETTY_PRINT" default:"false"`
-
 	TraceExporter      string `env:"TRACE_EXPORTER" default:"otlp"` // "otlp" | "stdout" | ""
 	TraceCollectorHost string `env:"TRACE_COLLECTOR_HOST"`
 	TraceCollectorPort int    `env:"TRACE_COLLECTOR_PORT"`
