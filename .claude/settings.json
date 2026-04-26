@@ -11,6 +11,10 @@
           {
             "type": "command",
             "command": "jq -r '.tool_input.file_path | select(endswith(\".go\"))' | xargs -r dirname | xargs -r go fix"
+          },
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path | select(endswith(\".tf\"))' | xargs -r terraform fmt"
           }
         ]
       }
