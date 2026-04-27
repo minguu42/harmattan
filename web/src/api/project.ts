@@ -1,4 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
+import {env} from "../env.ts"
 
 export type Project = {
 	id: string
@@ -19,15 +20,13 @@ function isProjects(arg: unknown): arg is Projects {
 	return Array.isArray(ps?.projects) && ps?.projects.every(isProject)
 }
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUtBM01QSk1URzRTNVlTTTNXME5TRlk3OSIsImV4cCI6MTc3MDk4MzE0MCwiaWF0IjoxNzYzMjA3MTQwfQ.tJ8WOl0vp3ccLTXdO6bzW5V7CAIkfkw5WU1mKNihIQY"
-
 export function useProject(projectID: string) {
 	return useQuery({
 		queryKey: ["projects", projectID],
 		queryFn: async () => {
-			const response = await fetch(`http://127.0.0.1:8080/projects/${projectID}`, {
+			const response = await fetch(`${env.apiBaseURL}/projects/${projectID}`, {
 				method: "GET",
-				headers: {"Authorization": `Bearer ${token}`},
+				headers: {"Authorization": `Bearer ${env.apiToken}`},
 			});
 			if (!response.ok) {
 				throw new Error(`HTTP error status: ${response.status}`);
@@ -45,9 +44,9 @@ export function useProjects() {
 	return useQuery({
 		queryKey: ["projects"],
 		queryFn: async () => {
-			const response = await fetch("http://127.0.0.1:8080/projects?limit=10&offset=0", {
+			const response = await fetch(`${env.apiBaseURL}/projects?limit=10&offset=0`, {
 				method: "GET",
-				headers: {"Authorization": `Bearer ${token}`},
+				headers: {"Authorization": `Bearer ${env.apiToken}`},
 			})
 			if (!response.ok) {
 				throw new Error(`HTTP error status: ${response.status}`)
@@ -65,10 +64,10 @@ export function useCreateProject() {
 	const c = useQueryClient()
 	return useMutation({
 		mutationFn: async (name: string) => {
-			const response = await fetch("http://127.0.0.1:8080/projects", {
+			const response = await fetch(`${env.apiBaseURL}/projects`, {
 				method: "POST",
 				headers: {
-					"Authorization": `Bearer ${token}`,
+					"Authorization": `Bearer ${env.apiToken}`,
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({name, color: "default"}),
@@ -88,9 +87,9 @@ export function useDeleteProject() {
 	const client = useQueryClient()
 	return useMutation({
 		mutationFn: async (projectID: string) => {
-			const response = await fetch(`http://127.0.0.1:8080/projects/${projectID}`, {
+			const response = await fetch(`${env.apiBaseURL}/projects/${projectID}`, {
 				method: "DELETE",
-				headers: {"Authorization": `Bearer ${token}`},
+				headers: {"Authorization": `Bearer ${env.apiToken}`},
 			})
 			if (!response.ok) {
 				throw new Error(`HTTP error status: ${response.status}`)
