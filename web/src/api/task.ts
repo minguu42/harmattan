@@ -1,4 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
+import {env} from "../env.ts"
 
 type Task = {
 	id: string
@@ -19,15 +20,13 @@ function isTasks(arg: unknown): arg is Tasks {
 	return Array.isArray(ts?.tasks) && ts?.tasks.every(isTask)
 }
 
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMUtBM01QSk1URzRTNVlTTTNXME5TRlk3OSIsImV4cCI6MTc3MDk4MzE0MCwiaWF0IjoxNzYzMjA3MTQwfQ.tJ8WOl0vp3ccLTXdO6bzW5V7CAIkfkw5WU1mKNihIQY"
-
 export function useTasks(projectID: string) {
 	return useQuery({
 		queryKey: ["projects", projectID, "tasks"],
 		queryFn: async () => {
-			const response = await fetch(`http://127.0.0.1:8080/projects/${projectID}/tasks?limit=10&offset=0`, {
+			const response = await fetch(`${env.apiBaseURL}/projects/${projectID}/tasks?limit=10&offset=0`, {
 				method: "GET",
-				headers: {"Authorization": `Bearer ${token}`},
+				headers: {"Authorization": `Bearer ${env.apiToken}`},
 			})
 			if (!response.ok) {
 				throw new Error(`HTTP error status: ${response.status}`)
@@ -45,10 +44,10 @@ export function useCreateTask(projectID: string) {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: async (name: string) => {
-			const response = await fetch(`http://127.0.0.1:8080/projects/${projectID}/tasks`, {
+			const response = await fetch(`${env.apiBaseURL}/projects/${projectID}/tasks`, {
 				method: "POST",
 				headers: {
-					"Authorization": `Bearer ${token}`,
+					"Authorization": `Bearer ${env.apiToken}`,
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({name}),
@@ -68,10 +67,10 @@ export function useCompleteTask(projectID: string) {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: async (taskID: string) => {
-			const response = await fetch(`http://127.0.0.1:8080/tasks/${taskID}`, {
+			const response = await fetch(`${env.apiBaseURL}/tasks/${taskID}`, {
 				method: "PATCH",
 				headers: {
-					"Authorization": `Bearer ${token}`,
+					"Authorization": `Bearer ${env.apiToken}`,
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({completed_at: new Date().toISOString()}),
@@ -90,9 +89,9 @@ export function useDeleteTask(projectID: string) {
 	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: async (taskID: string) => {
-			const response = await fetch(`http://127.0.0.1:8080/tasks/${taskID}`, {
+			const response = await fetch(`${env.apiBaseURL}/tasks/${taskID}`, {
 				method: "DELETE",
-				headers: {"Authorization": `Bearer ${token}`},
+				headers: {"Authorization": `Bearer ${env.apiToken}`},
 			})
 			if (!response.ok) {
 				throw new Error(`HTTP error status: ${response.status}`)
