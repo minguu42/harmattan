@@ -1,33 +1,50 @@
-import type {LucideIcon} from "lucide-react"
-import {Button} from "@base-ui/react"
+import { Button } from "@base-ui/react";
+import type { LucideIcon } from "lucide-react";
+import { tv, type VariantProps } from "tailwind-variants";
 
-type Props = {
-	icon: LucideIcon
-	hoverIcon?: LucideIcon
-	size?: "xs" | "sm"
-	onClick?: () => void
+const iconButton = tv({
+  slots: {
+    button: "group/ib state-layer grid place-items-center text-on-surface",
+    icon: "",
+    hoverIcon: "",
+  },
+  variants: {
+    size: {
+      xs: {
+        button: "size-32 rounded-xl",
+        icon: "size-20",
+      },
+      sm: {
+        button: "size-40 rounded-xl",
+        icon: "size-24",
+      },
+    },
+    useHoverIcon: {
+      true: {
+        icon: "group-hover/ib:hidden group-focus-visible/ib:hidden",
+        hoverIcon: "hidden group-hover/ib:block group-focus-visible/ib:block",
+      },
+    },
+  },
+  defaultVariants: {
+    size: "sm",
+  },
+});
+
+type Props = Omit<Button.Props, "className" | "children"> & {
+  icon: LucideIcon;
+  hoverIcon?: LucideIcon;
+} & VariantProps<typeof iconButton>;
+
+export function IconButton({ icon: Icon, hoverIcon: HoverIcon, size, ...props }: Props) {
+  const { button, icon, hoverIcon } = iconButton({
+    size: size,
+    useHoverIcon: HoverIcon !== undefined,
+  });
+  return (
+    <Button className={button()} {...props}>
+      <Icon className={icon()} />
+      {HoverIcon && <HoverIcon className={hoverIcon()} />}
+    </Button>
+  );
 }
-
-const containerSizes = {
-	"xs": "size-8",
-	"sm": "size-10",
-}
-
-const iconSizes = {
-	"xs": "size-5",
-	"sm": "size-6",
-}
-
-export function IconButton({icon: Icon, hoverIcon: HoverIcon, size = "sm", onClick}: Props) {
-	return (
-		<Button className="group/ib relative size-12 grid place-items-center rounded-xl focus-visible:outline-none" onClick={onClick}>
-			<div className={`absolute inset-0 m-auto rounded-[inherit] opacity-0 bg-on-surface-variant group-hover/ib:opacity-10 group-focus-visible/ib:opacity-10 group-active/ib:opacity-12 ${containerSizes[size]}`} />
-			<div className={`absolute inset-0 m-auto rounded-[inherit] group-focus-visible/ib:outline-2 group-focus-visible/ib:outline-focus-ring ${containerSizes[size]}`} />
-			<Icon className={`${iconSizes[size]} text-on-surface-variant ${HoverIcon ? "group-hover/ib:hidden group-focus-visible/ib:hidden" : ""}`} />
-			{HoverIcon && (
-				<HoverIcon className={`${iconSizes[size]} text-on-surface-variant hidden group-hover/ib:block group-focus-visible/ib:block`} />
-			)}
-		</Button>
-	)
-}
-

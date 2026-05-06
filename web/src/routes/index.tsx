@@ -1,18 +1,21 @@
-import {createFileRoute} from "@tanstack/react-router"
-import {PencilIcon, Trash2Icon} from "lucide-react"
-import {Menu, MenuItem} from "../components/Menu.tsx"
+import { createFileRoute } from "@tanstack/react-router";
+import { PencilIcon, Trash2Icon } from "lucide-react";
+
+import { Button } from "../components/Button.tsx";
+import { IconButton } from "../components/IconButton.tsx";
 
 export const Route = createFileRoute("/")({
-	component: RouteComponent,
-})
+  component: Index,
+});
 
-function RouteComponent() {
-	return (
-		<div className="grid place-items-center">
-			<Menu>
-				<MenuItem icon={PencilIcon} label="変更" />
-				<MenuItem icon={Trash2Icon} label="削除" />
-			</Menu>
-		</div>
-	)
+function Index() {
+  return (
+    <div className="mx-auto flex w-600 items-center justify-center gap-4">
+      <IconButton icon={PencilIcon} size="xs" />
+      <IconButton icon={PencilIcon} size="sm" />
+      <IconButton icon={PencilIcon} hoverIcon={Trash2Icon} size="sm" />
+      <Button label="キャンセル" size="sm" color="text" />
+      <Button label="送信" size="sm" color="filled" />
+    </div>
+  );
 }
