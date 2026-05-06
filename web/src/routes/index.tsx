@@ -10,12 +10,19 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="mx-auto flex w-600 items-center justify-center gap-4">
-      <IconButton icon={PencilIcon} size="xs" />
-      <IconButton icon={PencilIcon} size="sm" />
-      <IconButton icon={PencilIcon} hoverIcon={Trash2Icon} size="sm" />
-      <Button label="キャンセル" size="sm" color="text" />
-      <Button label="送信" size="sm" color="filled" />
+    <div className="mx-auto flex max-w-720 flex-col items-center">
+      <div className="flex items-center gap-12 p-12">
+        <IconButton icon={PencilIcon} size="xs" />
+        <IconButton icon={PencilIcon} size="sm" />
+        <IconButton icon={PencilIcon} hoverIcon={Trash2Icon} size="sm" />
+      </div>
+      <div className="flex items-center gap-12 p-12">
+        <Button label="作成" color="primary" />
+        <Button label="有効" color="secondary" />
+        <Button label="リセット" color="outlined" />
+        <Button label="キャンセル" color="text" />
+        <Button label="削除" color="destructive" />
+      </div>
     </div>
   );
 }
