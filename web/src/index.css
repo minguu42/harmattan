@@ -15,12 +15,20 @@
 }
 
 @theme {
-  --color-background: #faf9f6;
+  --color-background: oklch(1 0 0);
+  --color-on-background: oklch(0.145 0 0);
+  --color-primary: oklch(0.511 0.096 186.391);
+  --color-on-primary: oklch(0.984 0.014 180.72);
+  --color-secondary: oklch(0.967 0.001 286.375);
+  --color-on-secondary: oklch(0.21 0.006 285.885);
+  --color-destructive: oklch(0.577 0.245 27.325);
+  --color-destructive-container: oklch(0.577 0.245 27.325 / 0.1);
+  --color-border: oklch(0.922 0 0);
+
   --color-surface: #f4f2ec;
-  --color-on-surface: #1f1b16;
-  --color-on-surface-variant: #6b655b;
-  --color-primary: #00786f;
-  --color-border: #d4d0c2;
+  --color-on-surface: #1c1b1a;
+  --color-on-surface-variant: #1c1b1a;
+  --color-outline: #d4d0c2;
   --color-scrim: rgba(0, 0, 0, 0.32);
 
   --spacing: 1px;
