@@ -1,40 +1,43 @@
-import {Menu as BMenu} from "@base-ui/react"
-import {EllipsisIcon, type LucideIcon} from "lucide-react"
-import type {ReactNode} from "react"
-import {IconButton} from "./IconButton.tsx"
+import { Menu as MenuPremitive } from "@base-ui/react";
+import { EllipsisIcon, type LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
+
+import { IconButton } from "./IconButton.tsx";
 
 type MenuProps = {
-	children: ReactNode
+  children: ReactNode;
+};
+
+export function Menu({ children }: MenuProps) {
+  return (
+    <MenuPremitive.Root>
+      <MenuPremitive.Trigger render={<IconButton icon={EllipsisIcon} size="xs" />} />
+      <MenuPremitive.Portal>
+        <MenuPremitive.Positioner side="bottom" align="end">
+          <MenuPremitive.Popup className="flex min-h-200 w-220 flex-col gap-1 rounded-xl bg-background px-4 py-2 shadow">
+            {children}
+          </MenuPremitive.Popup>
+        </MenuPremitive.Positioner>
+      </MenuPremitive.Portal>
+    </MenuPremitive.Root>
+  );
 }
 
-export function Menu({children}: MenuProps) {
-	return (
-		<BMenu.Root>
-			<BMenu.Trigger render={<IconButton icon={EllipsisIcon} />} />
-			<BMenu.Portal>
-				<BMenu.Positioner side="bottom" align="end">
-					<BMenu.Popup className="w-54 p-1 rounded-2xl bg-surface-container-low shadow-custom">
-						{children}
-					</BMenu.Popup>
-				</BMenu.Positioner>
-			</BMenu.Portal>
-		</BMenu.Root>
-	)
-}
+type MenuItemProps = Omit<MenuPremitive.Item.Props, "className"> & {
+  icon: LucideIcon;
+  label: string;
+};
 
-type MenuItemProps = {
-	icon: LucideIcon
-	label: string
-	onClick?: () => void
-}
-
-export function MenuItem({icon: Icon, label, onClick}: MenuItemProps) {
-	return (
-		<BMenu.Item className="h-12 flex items-center pl-3 rounded-xl state-layer-parent" onClick={onClick}>
-			<div className="state-layer bg-on-surface-variant" />
-			<Icon className="size-5 text-on-surface-variant" />
-			<div className="w-2" />
-			<span className="text-on-surface font-medium">{label}</span>
-		</BMenu.Item>
-	)
+export function MenuItem({ icon: Icon, label, ...props }: MenuItemProps) {
+  return (
+    <MenuPremitive.Item
+      render={<button type="button" />}
+      nativeButton
+      className="state-layer flex h-40 items-center gap-8 rounded-lg px-12"
+      {...props}
+    >
+      <Icon className="size-20" />
+      {label}
+    </MenuPremitive.Item>
+  );
 }
