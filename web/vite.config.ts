@@ -6,7 +6,7 @@ import { defineConfig } from "vite-plus";
 // https://vite.dev/config/
 export default defineConfig({
   fmt: {
-    ignorePatterns: [],
+    ignorePatterns: ["src/routeTree.gen.ts"],
     sortImports: true,
     sortTailwindcss: {
       functions: ["tv"],
