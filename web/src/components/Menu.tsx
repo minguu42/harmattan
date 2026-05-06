@@ -11,7 +11,7 @@ type MenuProps = {
 export function Menu({ children }: MenuProps) {
   return (
     <MenuPremitive.Root>
-      <MenuPremitive.Trigger render={<IconButton icon={EllipsisIcon} size="xs" />} />
+      <MenuPremitive.Trigger render={<IconButton icon={EllipsisIcon} size="sm" />} />
       <MenuPremitive.Portal>
         <MenuPremitive.Positioner side="bottom" align="end">
           <MenuPremitive.Popup className="flex min-h-200 w-220 flex-col gap-1 rounded-xl bg-background px-4 py-2 shadow">

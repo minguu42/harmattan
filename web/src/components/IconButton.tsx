@@ -10,11 +10,11 @@ const iconButton = tv({
   },
   variants: {
     size: {
-      xs: {
+      sm: {
         button: "size-32 rounded-xl",
         icon: "size-20",
       },
-      sm: {
+      md: {
         button: "size-40 rounded-xl",
         icon: "size-24",
       },
@@ -27,7 +27,8 @@ const iconButton = tv({
     },
   },
   defaultVariants: {
-    size: "sm",
+    size: "md",
+    useHoverIcon: false,
   },
 });
 
