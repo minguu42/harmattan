@@ -39,7 +39,7 @@ export function NavigationDrawer() {
       <ProjectIndicatorList />
       <div className="mt-16 flex h-32 items-center justify-between pr-16 pl-12">
         <div className="text-sm font-semibold">タグ</div>
-        <IconButton icon={PlusIcon} size="xs" />
+        <IconButton icon={PlusIcon} size="sm" />
       </div>
       <ul>
         <li className="flex h-36 items-center gap-8 px-16">
@@ -94,7 +94,7 @@ function ProjectCreateDialog() {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <IconButton icon={PlusIcon} size="xs" onClick={() => setOpen(true)} />
+      <IconButton icon={PlusIcon} size="sm" onClick={() => setOpen(true)} />
       <Dialog.Portal>
         <Dialog.Backdrop forceRender className="fixed inset-0 bg-scrim" />
         <ProjectCreatePopup closePopup={() => setOpen(false)} />
