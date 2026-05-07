@@ -1,4 +1,4 @@
-import { Avatar, Dialog, Form } from "@base-ui/react";
+import { Avatar, Dialog } from "@base-ui/react";
 import { Link } from "@tanstack/react-router";
 import {
   SunIcon,
@@ -18,6 +18,7 @@ import { useState } from "react";
 import { type Project } from "../api/projects.ts";
 import { useCreateProject, useDeleteProject, useProjects } from "../api/projects.ts";
 import { Button } from "./Button.tsx";
+import { Form } from "./Form.tsx";
 import { IconButton } from "./IconButton.tsx";
 import { Input } from "./Input.tsx";
 import { Menu, MenuItem } from "./Menu.tsx";
@@ -127,8 +128,7 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
         プロジェクト作成
       </Dialog.Title>
       <Form
-        onSubmit={(e) => {
-          e.preventDefault();
+        onFormSubmit={() => {
           addProject();
         }}
       >

@@ -1,9 +1,9 @@
-import { Form } from "@base-ui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PencilIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "../components/Button.tsx";
+import { Form } from "../components/Form.tsx";
 import { IconButton } from "../components/IconButton.tsx";
 import { Input } from "../components/Input.tsx";
 import { Select } from "../components/Select.tsx";
