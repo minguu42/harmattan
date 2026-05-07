@@ -17,9 +17,10 @@ const button = tv({
   },
 });
 
-type Props = Omit<ButtonBase.Props, "className" | "children"> & {
+type Props = {
   label: string;
-} & VariantProps<typeof button>;
+} & Omit<ButtonBase.Props, "children" | "className"> &
+  VariantProps<typeof button>;
 
 export function Button({ label, color, ...props }: Props) {
   return (

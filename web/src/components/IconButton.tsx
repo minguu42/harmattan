@@ -34,10 +34,11 @@ const iconButton = tv({
   },
 });
 
-type Props = Omit<Button.Props, "className" | "children"> & {
+type Props = {
   icon: LucideIcon;
   hoverIcon?: LucideIcon;
-} & VariantProps<typeof iconButton>;
+} & Omit<Button.Props, "children" | "className"> &
+  VariantProps<typeof iconButton>;
 
 export function IconButton({ icon: Icon, hoverIcon: HoverIcon, size, ...props }: Props) {
   const { button, icon, hoverIcon } = iconButton({

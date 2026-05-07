@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Button } from "../components/Button.tsx";
 import { IconButton } from "../components/IconButton.tsx";
-import { InputNew } from "../components/Input.tsx";
+import { Input } from "../components/Input.tsx";
 import { Select } from "../components/Select.tsx";
 
 export const Route = createFileRoute("/")({
@@ -37,7 +37,7 @@ function Index() {
       </div>
       <Select />
       <Form onFormSubmit={alertName}>
-        <InputNew
+        <Input
           required
           label="プロジェクト名"
           placeholder="プロジェクト名"

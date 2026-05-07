@@ -3,7 +3,7 @@ import { Field, Input as InputBase } from "@base-ui/react";
 type Props = {
   label: string;
   valueMissingMessage?: string;
-} & Omit<InputBase.Props, "className">;
+} & Omit<InputBase.Props, "children" | "className">;
 
 export function Input({ label, valueMissingMessage, ...props }: Props) {
   return (
