@@ -1,4 +1,4 @@
-import { Menu as MenuPremitive } from "@base-ui/react";
+import { Menu as MenuBase } from "@base-ui/react";
 import { EllipsisIcon, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -10,34 +10,34 @@ type MenuProps = {
 
 export function Menu({ children }: MenuProps) {
   return (
-    <MenuPremitive.Root>
-      <MenuPremitive.Trigger render={<IconButton icon={EllipsisIcon} size="sm" />} />
-      <MenuPremitive.Portal>
-        <MenuPremitive.Positioner side="bottom" align="end">
-          <MenuPremitive.Popup className="flex min-h-200 w-220 flex-col gap-1 rounded-xl bg-background px-4 py-2 shadow">
+    <MenuBase.Root>
+      <MenuBase.Trigger render={<IconButton icon={EllipsisIcon} size="sm" />} />
+      <MenuBase.Portal>
+        <MenuBase.Positioner side="bottom" align="end">
+          <MenuBase.Popup className="flex w-full min-w-0 flex-col gap-1 rounded-xl bg-background p-4 shadow">
             {children}
-          </MenuPremitive.Popup>
-        </MenuPremitive.Positioner>
-      </MenuPremitive.Portal>
-    </MenuPremitive.Root>
+          </MenuBase.Popup>
+        </MenuBase.Positioner>
+      </MenuBase.Portal>
+    </MenuBase.Root>
   );
 }
 
-type MenuItemProps = Omit<MenuPremitive.Item.Props, "className"> & {
+type MenuItemProps = Omit<MenuBase.Item.Props, "className"> & {
   icon: LucideIcon;
   label: string;
 };
 
 export function MenuItem({ icon: Icon, label, ...props }: MenuItemProps) {
   return (
-    <MenuPremitive.Item
+    <MenuBase.Item
       render={<button type="button" />}
       nativeButton
-      className="state-layer flex h-40 items-center gap-8 rounded-lg px-12"
+      className="state-layer flex min-w-160 h-32 items-center gap-8 rounded-lg px-8 py-4 text-sm"
       {...props}
     >
       <Icon className="size-20" />
       {label}
-    </MenuPremitive.Item>
+    </MenuBase.Item>
   );
 }
