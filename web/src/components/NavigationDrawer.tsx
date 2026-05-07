@@ -1,4 +1,4 @@
-import { Avatar, Dialog, Field, Form } from "@base-ui/react";
+import { Avatar, Dialog, Form } from "@base-ui/react";
 import { Link } from "@tanstack/react-router";
 import {
   SunIcon,
@@ -132,18 +132,14 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
           addProject();
         }}
       >
-        <Field.Root className="my-16 flex flex-col gap-4">
-          <Field.Label className="text-sm font-medium text-on-background">
-            プロジェクト名
-          </Field.Label>
-          <Input
-            type="text"
-            required
-            placeholder="プロジェクト名"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Field.Root>
+        <Input
+          required
+          label="プロジェクト名"
+          placeholder="プロジェクト名"
+          value={name}
+          onValueChange={(v) => setName(v)}
+          valueMissingMessage="プロジェクト名を入力してください"
+        />
         <div className="flex">
           <div className="flex-1" />
           <Button type="submit" label="作成" />
