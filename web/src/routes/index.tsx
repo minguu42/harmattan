@@ -14,6 +14,7 @@ function Index() {
       <div className="flex items-center gap-12 p-12">
         <IconButton icon={PencilIcon} size="sm" />
         <IconButton icon={PencilIcon} size="md" />
+        <IconButton icon={PencilIcon} hoverIcon={Trash2Icon} size="sm" />
         <IconButton icon={PencilIcon} hoverIcon={Trash2Icon} size="md" />
       </div>
       <div className="flex items-center gap-12 p-12">

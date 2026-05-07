@@ -11,12 +11,14 @@ const iconButton = tv({
   variants: {
     size: {
       sm: {
-        button: "size-32 rounded-xl",
+        button: "size-32 rounded-lg",
         icon: "size-20",
+        hoverIcon: "size-20",
       },
       md: {
         button: "size-40 rounded-xl",
         icon: "size-24",
+        hoverIcon: "size-24",
       },
     },
     useHoverIcon: {
