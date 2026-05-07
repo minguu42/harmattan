@@ -34,7 +34,7 @@ function TaskListHeader({ projectID }: { projectID: string }) {
     return <span>Error: {error.message}</span>;
   }
   return (
-    <div className="flex items-center text-on-surface">
+    <div className="text-on-surface flex items-center">
       <FolderOpenDotIcon size={36} />
       <h1 className="ml-4 text-[32px]">{project.name}</h1>
     </div>
@@ -64,7 +64,7 @@ function TaskAddField({ projectID }: { projectID: string }) {
       >
         <Field.Root>
           <Field.Control
-            className="w-full p-4 text-on-surface placeholder:text-[#8e8a90]"
+            className="text-on-surface w-full p-4 placeholder:text-[#8e8a90]"
             required
             placeholder="タスク名"
             value={name}
@@ -96,7 +96,7 @@ function TaskList({ projectID }: { projectID: string }) {
             hoverIcon={CheckIcon}
             onClick={() => completeTask.mutate(t.id)}
           />
-          <p className="text-base text-on-surface">{t.name}</p>
+          <p className="text-on-surface text-base">{t.name}</p>
           <div className="flex-1" />
           <IconButton icon={Trash2Icon} onClick={() => deleteTask.mutate(t.id)} />
         </li>

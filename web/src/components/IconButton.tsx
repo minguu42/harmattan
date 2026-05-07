@@ -4,7 +4,7 @@ import { tv, type VariantProps } from "tailwind-variants";
 
 const iconButton = tv({
   slots: {
-    button: "group/ib state-layer grid place-items-center text-on-surface",
+    button: "group/ib text-on-surface state-layer grid place-items-center",
     icon: "",
     hoverIcon: "",
   },

@@ -33,7 +33,7 @@ export function MenuItem({ icon: Icon, label, ...props }: MenuItemProps) {
     <MenuBase.Item
       render={<button type="button" />}
       nativeButton
-      className="state-layer flex min-w-160 h-32 items-center gap-8 rounded-lg px-8 py-4 text-sm"
+      className="state-layer flex h-32 min-w-160 items-center gap-8 rounded-lg px-8 py-4 text-sm text-on-background"
       {...props}
     >
       <Icon className="size-20" />

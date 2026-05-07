@@ -123,7 +123,7 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
 
   return (
     <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-32 w-400 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-background p-16">
-      <Dialog.Title className="text-base font-medium text-on-surface">
+      <Dialog.Title className="text-on-surface text-base font-medium">
         プロジェクト作成
       </Dialog.Title>
       <Form
@@ -133,7 +133,9 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
         }}
       >
         <Field.Root className="my-16 flex flex-col gap-4">
-          <Field.Label className="text-sm font-medium text-on-background">プロジェクト名</Field.Label>
+          <Field.Label className="text-sm font-medium text-on-background">
+            プロジェクト名
+          </Field.Label>
           <Input
             type="text"
             required
@@ -159,7 +161,7 @@ function ProjectIndicator({ project }: { project: Project }) {
       <Link
         to="/projects/$projectID/tasks"
         params={{ projectID: project.id }}
-        className="state-layer-with-sibling mx-8 flex h-36 items-center gap-8 rounded-lg px-8 text-sm text-on-surface"
+        className="text-on-surface state-layer-with-sibling mx-8 flex h-36 items-center gap-8 rounded-lg px-8 text-sm"
       >
         <FolderOpenDotIcon />
         {project.name}
