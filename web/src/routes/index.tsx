@@ -35,8 +35,7 @@ function Index() {
         <Button label="キャンセル" color="text" />
         <Button label="削除" color="destructive" />
       </div>
-      <Select />
-      <Form onFormSubmit={alertName}>
+      <Form className="flex flex-col gap-16" onFormSubmit={alertName}>
         <Input
           required
           label="プロジェクト名"
@@ -45,7 +44,7 @@ function Index() {
           value={name}
           onValueChange={(v) => setName(v)}
         />
-        <div className="h-16" />
+        <Select label="プロジェクトカラー" />
         <Button label="あいうえお" type="submit" />
       </Form>
     </div>

@@ -27,8 +27,10 @@ export function NavigationDrawer() {
   return (
     <div className="min-h-svh w-280 border-r border-border bg-sidebar">
       <div className="flex h-56 items-center gap-8 px-12">
-        <Avatar.Root className="inline-flex size-32 items-center justify-center overflow-hidden rounded-full bg-red-600 align-middle text-base text-white select-none">
-          YF
+        <Avatar.Root className="inline-grid size-32 place-items-center overflow-hidden rounded-full">
+          <Avatar.Fallback className="grid size-full place-items-center bg-red-600 text-base text-white select-none">
+            YF
+          </Avatar.Fallback>
         </Avatar.Root>
         <div className="text-sm font-semibold text-on-sidebar">ボッスン</div>
       </div>

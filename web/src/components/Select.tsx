@@ -14,14 +14,18 @@ const colors = [
   { label: "黄色", value: "yellow" },
 ];
 
-export function Select({}) {
+type props = {
+  label: string;
+};
+
+export function Select({ label }: props) {
   return (
-    <div className="flex flex-col gap-1">
-      <SelectBase.Root items={colors}>
-        <SelectBase.Label className="text-sm text-on-background">
-          プロジェクトカラー
+    <SelectBase.Root items={colors}>
+      <div>
+        <SelectBase.Label className="text-sm font-medium text-on-background">
+          {label}
         </SelectBase.Label>
-        <SelectBase.Trigger className="flex h-36 min-w-160 items-center gap-3 border border-input px-8 text-base">
+        <SelectBase.Trigger className="flex h-36 w-full items-center gap-4 rounded-md border border-input px-8 text-base">
           <SelectBase.Value
             className="data-placeholder:text-placeholder"
             placeholder="プロジェクトカラー"
@@ -30,24 +34,27 @@ export function Select({}) {
             <ChevronsUpDownIcon />
           </SelectBase.Icon>
         </SelectBase.Trigger>
-        <SelectBase.Portal>
-          <SelectBase.Positioner>
-            <SelectBase.Popup>
-              <SelectBase.ScrollUpArrow />
-              <SelectBase.List>
-                {colors.map(({ label, value }) => (
-                  <SelectBase.Item key={label} value={value}>
-                    <SelectBase.ItemIndicator>
-                      <CheckIcon />
-                    </SelectBase.ItemIndicator>
-                    <SelectBase.ItemText>{label}</SelectBase.ItemText>
-                  </SelectBase.Item>
-                ))}
-              </SelectBase.List>
-            </SelectBase.Popup>
-          </SelectBase.Positioner>
-        </SelectBase.Portal>
-      </SelectBase.Root>
-    </div>
+      </div>
+      <SelectBase.Portal>
+        <SelectBase.Positioner>
+          <SelectBase.Popup className="min-w-(--anchor-width) bg-background p-4 shadow">
+            <SelectBase.List>
+              {colors.map(({ label, value }) => (
+                <SelectBase.Item
+                  key={label}
+                  value={value}
+                  className="state-layer flex h-32 items-center gap-4 rounded-lg px-4"
+                >
+                  <SelectBase.ItemIndicator>
+                    <CheckIcon />
+                  </SelectBase.ItemIndicator>
+                  <SelectBase.ItemText>{label}</SelectBase.ItemText>
+                </SelectBase.Item>
+              ))}
+            </SelectBase.List>
+          </SelectBase.Popup>
+        </SelectBase.Positioner>
+      </SelectBase.Portal>
+    </SelectBase.Root>
   );
 }
