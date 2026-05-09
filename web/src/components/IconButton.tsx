@@ -4,7 +4,7 @@ import { tv, type VariantProps } from "tailwind-variants";
 
 const iconButton = tv({
   slots: {
-    button: "group/ib text-on-surface state-layer grid place-items-center",
+    button: "group/ib state-layer grid place-items-center bg-transparent text-on-background",
     icon: "",
     hoverIcon: "",
   },
@@ -30,7 +30,6 @@ const iconButton = tv({
   },
   defaultVariants: {
     size: "md",
-    useHoverIcon: false,
   },
 });
 
@@ -38,7 +37,7 @@ type Props = {
   icon: LucideIcon;
   hoverIcon?: LucideIcon;
 } & Omit<Button.Props, "children" | "className"> &
-  VariantProps<typeof iconButton>;
+  Omit<VariantProps<typeof iconButton>, "useHoverIcon">;
 
 export function IconButton({ icon: Icon, hoverIcon: HoverIcon, size, ...props }: Props) {
   const { button, icon, hoverIcon } = iconButton({

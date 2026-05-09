@@ -7,8 +7,8 @@ const button = tv({
     color: {
       primary: "bg-primary text-on-primary",
       secondary: "bg-secondary text-on-secondary",
-      outlined: "text-on-backgroud border border-border",
-      text: "text-on-background",
+      outlined: "border border-border bg-transparent text-on-background",
+      text: "bg-transparent text-on-background",
       destructive: "bg-destructive-container text-destructive",
     },
   },
