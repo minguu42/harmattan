@@ -63,17 +63,22 @@ export function useProjects() {
   });
 }
 
+type CreateProjectRequest = {
+  name: string;
+  color: string;
+};
+
 export function useCreateProject() {
   const c = useQueryClient();
   return useMutation({
-    mutationFn: async (name: string) => {
+    mutationFn: async (req: CreateProjectRequest) => {
       const response = await fetch(`${env.apiBaseURL}/projects`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${env.apiToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, color: "default" }),
+        body: JSON.stringify({ name: req.name, color: req.color }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error status: ${response.status}`);

@@ -42,16 +42,17 @@ function Index() {
           required
           label="プロジェクト名"
           placeholder="プロジェクト名"
-          valueMissingMessage="プロジェクト名を入力してください"
+          valueMissingMessage="プロジェクト名は必須です"
           value={name}
           onValueChange={(v) => setName(v)}
         />
         <Select
           required
-					items={colors}
+          items={colors}
           value={color}
           onValueChange={(v) => setColor(v)}
           label="プロジェクトカラー"
+          valueMissingMessage="プロジェクトカラーは必須です"
         />
         <Button label="あいうえお" type="submit" />
       </Form>
@@ -60,14 +61,14 @@ function Index() {
 }
 
 const colors = [
-	{ label: "青色", value: "blue" },
-	{ label: "茶色", value: "brown" },
-	{ label: "白色", value: "default" },
-	{ label: "灰色", value: "gray" },
-	{ label: "緑色", value: "green" },
-	{ label: "橙色", value: "orange" },
-	{ label: "桃色", value: "pink" },
-	{ label: "紫色", value: "purple" },
-	{ label: "赤色", value: "red" },
-	{ label: "黄色", value: "yellow" },
+  { label: "青色", value: "blue" },
+  { label: "茶色", value: "brown" },
+  { label: "白色", value: "default" },
+  { label: "灰色", value: "gray" },
+  { label: "緑色", value: "green" },
+  { label: "橙色", value: "orange" },
+  { label: "桃色", value: "pink" },
+  { label: "紫色", value: "purple" },
+  { label: "赤色", value: "red" },
+  { label: "黄色", value: "yellow" },
 ];

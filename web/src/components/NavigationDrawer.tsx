@@ -22,6 +22,7 @@ import { Form } from "./Form.tsx";
 import { IconButton } from "./IconButton.tsx";
 import { Input } from "./Input.tsx";
 import { Menu, MenuItem } from "./Menu.tsx";
+import { Select } from "./Select.tsx";
 
 export function NavigationDrawer() {
   return (
@@ -107,29 +108,47 @@ function ProjectCreateButtonWithDialog() {
   );
 }
 
+const colors = [
+  { label: "青色", value: "blue" },
+  { label: "茶色", value: "brown" },
+  { label: "白色", value: "default" },
+  { label: "灰色", value: "gray" },
+  { label: "緑色", value: "green" },
+  { label: "橙色", value: "orange" },
+  { label: "桃色", value: "pink" },
+  { label: "紫色", value: "purple" },
+  { label: "赤色", value: "red" },
+  { label: "黄色", value: "yellow" },
+];
+
 function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
   const [name, setName] = useState("");
+  const [color, setColor] = useState<string | null>(null);
   const createProject = useCreateProject();
 
   function addProject() {
-    if (name.trim() === "") {
+    if (name.trim() === "" || color == null) {
       return;
     }
 
-    createProject.mutate(name.trim(), {
-      onSuccess: () => {
-        setName("");
-        closePopup();
+    createProject.mutate(
+      { name: name.trim(), color: color },
+      {
+        onSuccess: () => {
+          setName("");
+          closePopup();
+        },
       },
-    });
+    );
   }
 
   return (
-    <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-32 w-400 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-background p-16">
+    <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-32 flex w-400 -translate-x-1/2 -translate-y-1/2 flex-col gap-16 rounded-xl border border-border bg-background p-16">
       <Dialog.Title className="text-on-surface text-base font-medium">
         プロジェクト作成
       </Dialog.Title>
       <Form
+        className="flex flex-col gap-16"
         onFormSubmit={() => {
           addProject();
         }}
@@ -140,7 +159,15 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
           placeholder="プロジェクト名"
           value={name}
           onValueChange={(v) => setName(v)}
-          valueMissingMessage="プロジェクト名を入力してください"
+          valueMissingMessage="プロジェクト名は必須です"
+        />
+        <Select
+          label="プロジェクトカラー"
+          required
+          valueMissingMessage="プロジェクトカラーは必須です"
+          items={colors}
+          value={color}
+          onValueChange={(v) => setColor(v)}
         />
         <div className="flex">
           <div className="flex-1" />
