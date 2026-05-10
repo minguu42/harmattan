@@ -31,8 +31,6 @@ type MenuItemProps = Omit<MenuBase.Item.Props, "className"> & {
 export function MenuItem({ icon: Icon, label, ...props }: MenuItemProps) {
   return (
     <MenuBase.Item
-      render={<button type="button" />}
-      nativeButton
       className="state-layer flex h-32 min-w-160 items-center gap-8 rounded-lg px-8 py-4 text-sm text-on-background"
       {...props}
     >

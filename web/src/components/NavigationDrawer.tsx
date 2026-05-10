@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { type Project } from "../api/projects.ts";
+import { type Project, useUpdateProject } from "../api/projects.ts";
 import { useCreateProject, useDeleteProject, useProjects } from "../api/projects.ts";
 import { Button } from "./Button.tsx";
 import { Form } from "./Form.tsx";
@@ -126,7 +126,7 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
   const [color, setColor] = useState<string | null>(null);
   const createProject = useCreateProject();
 
-  function addProject() {
+  function handleFormSubmit() {
     if (name.trim() === "" || color == null) {
       return;
     }
@@ -145,12 +145,12 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
   return (
     <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-32 flex w-400 -translate-x-1/2 -translate-y-1/2 flex-col gap-16 rounded-xl border border-border bg-background p-16">
       <Dialog.Title className="text-on-surface text-base font-medium">
-        プロジェクト作成
+        プロジェクト変更
       </Dialog.Title>
       <Form
         className="flex flex-col gap-16"
         onFormSubmit={() => {
-          addProject();
+          handleFormSubmit();
         }}
       >
         <Input
@@ -178,7 +178,67 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
   );
 }
 
+function ProjectUpdateDialog({
+  project,
+  closePopup,
+}: {
+  project: Project;
+  closePopup: () => void;
+}) {
+  const [name, setName] = useState(project.name);
+  const [color, setColor] = useState<string | null>(null);
+  const updateProject = useUpdateProject();
+
+  function handleFormSubmit() {
+    if (name.trim() === "" || color == null) {
+      return;
+    }
+
+    updateProject.mutate({ projectID: project.id, name: name.trim(), color }, {
+			onSuccess: () => {
+				setName("");
+				setColor(null);
+				closePopup();
+			}
+		});
+  }
+
+  return (
+    <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-32 flex w-400 -translate-x-1/2 -translate-y-1/2 flex-col gap-16 rounded-xl border border-border bg-background p-16">
+      <Dialog.Title className="text-on-surface text-base font-medium">
+        プロジェクト変更
+      </Dialog.Title>
+      <Form
+        className="flex flex-col gap-16"
+        onFormSubmit={handleFormSubmit}
+      >
+        <Input
+          required
+          label="プロジェクト名"
+          placeholder="プロジェクト名"
+          value={name}
+          onValueChange={(v) => setName(v)}
+          valueMissingMessage="プロジェクト名は必須です"
+        />
+        <Select
+          label="プロジェクトカラー"
+          required
+          valueMissingMessage="プロジェクトカラーは必須です"
+          items={colors}
+          value={color}
+          onValueChange={(v) => setColor(v)}
+        />
+        <div className="flex">
+          <div className="flex-1" />
+          <Button type="submit" label="変更" />
+        </div>
+      </Form>
+    </Dialog.Popup>
+  );
+}
+
 function ProjectIndicator({ project }: { project: Project }) {
+	const [open, setOpen] = useState(false);
   const deleteProject = useDeleteProject();
 
   return (
@@ -193,7 +253,7 @@ function ProjectIndicator({ project }: { project: Project }) {
       </Link>
       <div className="invisible absolute top-1/2 right-16 -translate-y-1/2 group-focus-within:visible group-hover:visible">
         <Menu>
-          <MenuItem icon={PencilIcon} label="変更" />
+					<MenuItem icon={PencilIcon} label="変更" onClick={() => setOpen(true)} />
           <MenuItem icon={ArchiveIcon} label="アーカイブ" />
           <MenuItem
             icon={Trash2Icon}
@@ -201,6 +261,12 @@ function ProjectIndicator({ project }: { project: Project }) {
             onClick={() => deleteProject.mutate(project.id)}
           />
         </Menu>
+				<Dialog.Root open={open} onOpenChange={setOpen}>
+					<Dialog.Portal>
+						<Dialog.Backdrop forceRender className="fixed inset-0 bg-scrim" />
+						<ProjectUpdateDialog project={project} closePopup={() => setOpen(false)} />
+					</Dialog.Portal>
+				</Dialog.Root>
       </div>
     </li>
   );

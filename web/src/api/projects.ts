@@ -91,6 +91,34 @@ export function useCreateProject() {
   });
 }
 
+type UpdateProjectRequest = {
+  projectID: string;
+  name: string;
+  color: string;
+};
+
+export function useUpdateProject() {
+  const c = useQueryClient();
+  return useMutation({
+    mutationFn: async (req: UpdateProjectRequest) => {
+      const response = await fetch(`${env.apiBaseURL}/projects/${req.projectID}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${env.apiToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: req.name, color: req.color }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error status: ${response.status}`);
+      }
+    },
+    onSuccess: () => {
+      void c.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+}
+
 export function useDeleteProject() {
   const client = useQueryClient();
   return useMutation({
