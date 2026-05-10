@@ -1,6 +1,7 @@
 import { Menu as MenuBase } from "@base-ui/react";
 import { EllipsisIcon, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { tv, type VariantProps } from "tailwind-variants";
 
 import { IconButton } from "./IconButton.tsx";
 
@@ -23,17 +24,27 @@ export function Menu({ children }: MenuProps) {
   );
 }
 
+const menuItem = tv({
+  base: "state-layer flex h-32 min-w-160 items-center gap-8 rounded-lg px-8 py-4 text-sm",
+  variants: {
+    color: {
+      text: "text-on-background",
+      destructive: "text-destructive",
+    },
+  },
+  defaultVariants: {
+    color: "text",
+  },
+});
+
 type MenuItemProps = Omit<MenuBase.Item.Props, "className"> & {
   icon: LucideIcon;
   label: string;
-};
+} & VariantProps<typeof menuItem>;
 
-export function MenuItem({ icon: Icon, label, ...props }: MenuItemProps) {
+export function MenuItem({ icon: Icon, label, color, ...props }: MenuItemProps) {
   return (
-    <MenuBase.Item
-      className="state-layer flex h-32 min-w-160 items-center gap-8 rounded-lg px-8 py-4 text-sm text-on-background"
-      {...props}
-    >
+    <MenuBase.Item className={menuItem({ color: color })} {...props}>
       <Icon className="size-20" />
       {label}
     </MenuBase.Item>

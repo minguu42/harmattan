@@ -5,11 +5,12 @@ import { env } from "../env.ts";
 export type Project = {
   id: string;
   name: string;
+  color: string;
 };
 
 function isProject(arg: unknown): arg is Project {
   const p = arg as Project;
-  return typeof p?.id === "string" && typeof p?.name === "string";
+  return typeof p?.id === "string" && typeof p?.name === "string" && typeof p?.color === "string";
 }
 
 type Projects = {

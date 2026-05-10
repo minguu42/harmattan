@@ -1,4 +1,4 @@
-import { Avatar, Dialog } from "@base-ui/react";
+import { Avatar } from "@base-ui/react";
 import { Link } from "@tanstack/react-router";
 import {
   SunIcon,
@@ -13,11 +13,12 @@ import {
   Trash2Icon,
   ArchiveIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 
 import { type Project, useUpdateProject } from "../api/projects.ts";
 import { useCreateProject, useDeleteProject, useProjects } from "../api/projects.ts";
 import { Button } from "./Button.tsx";
+import { Dialog, DialogTitle } from "./Dialog.tsx";
 import { Form } from "./Form.tsx";
 import { IconButton } from "./IconButton.tsx";
 import { Input } from "./Input.tsx";
@@ -71,6 +72,7 @@ function Indicator({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
 }
 
 function ProjectIndicatorList() {
+  const [open, setOpen] = useState(false);
   const { data: projects, error, isPending, isError } = useProjects();
 
   if (isPending) {
@@ -83,7 +85,8 @@ function ProjectIndicatorList() {
     <>
       <div className="mt-16 flex h-32 items-center justify-between pr-16 pl-12">
         <div className="text-sm font-semibold text-on-sidebar">プロジェクト</div>
-        <ProjectCreateButtonWithDialog />
+        <IconButton icon={PlusIcon} size="sm" onClick={() => setOpen(true)} />
+        <ProjectCreateDialog open={open} setOpen={setOpen} />
       </div>
       <ul>
         {projects.map((p) => (
@@ -91,20 +94,6 @@ function ProjectIndicatorList() {
         ))}
       </ul>
     </>
-  );
-}
-
-function ProjectCreateButtonWithDialog() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <IconButton icon={PlusIcon} size="sm" onClick={() => setOpen(true)} />
-      <Dialog.Portal>
-        <Dialog.Backdrop forceRender className="fixed inset-0 bg-scrim" />
-        <ProjectCreateDialog closePopup={() => setOpen(false)} />
-      </Dialog.Portal>
-    </Dialog.Root>
   );
 }
 
@@ -121,7 +110,12 @@ const colors = [
   { label: "黄色", value: "yellow" },
 ];
 
-function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
+type ProjectCreateDialogProps = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+function ProjectCreateDialog({ open, setOpen }: ProjectCreateDialogProps) {
   const [name, setName] = useState("");
   const [color, setColor] = useState<string | null>(null);
   const createProject = useCreateProject();
@@ -136,23 +130,17 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
       {
         onSuccess: () => {
           setName("");
-          closePopup();
+          setColor(null);
+          setOpen(false);
         },
       },
     );
   }
 
   return (
-    <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-32 flex w-400 -translate-x-1/2 -translate-y-1/2 flex-col gap-16 rounded-xl border border-border bg-background p-16">
-      <Dialog.Title className="text-on-surface text-base font-medium">
-        プロジェクト変更
-      </Dialog.Title>
-      <Form
-        className="flex flex-col gap-16"
-        onFormSubmit={() => {
-          handleFormSubmit();
-        }}
-      >
+    <Dialog open={open} setOpen={setOpen}>
+      <DialogTitle>プロジェクト作成</DialogTitle>
+      <Form className="flex flex-col gap-16" onFormSubmit={handleFormSubmit}>
         <Input
           required
           label="プロジェクト名"
@@ -169,24 +157,25 @@ function ProjectCreateDialog({ closePopup }: { closePopup: () => void }) {
           value={color}
           onValueChange={(v) => setColor(v)}
         />
-        <div className="flex">
+        <div className="flex gap-8">
           <div className="flex-1" />
+          <Button label="キャンセル" color="text" onClick={() => setOpen(false)} />
           <Button type="submit" label="作成" />
         </div>
       </Form>
-    </Dialog.Popup>
+    </Dialog>
   );
 }
 
-function ProjectUpdateDialog({
-  project,
-  closePopup,
-}: {
+type ProjectUpdateDialogProps = {
   project: Project;
-  closePopup: () => void;
-}) {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+function ProjectUpdateDialog({ project, open, setOpen }: ProjectUpdateDialogProps) {
   const [name, setName] = useState(project.name);
-  const [color, setColor] = useState<string | null>(null);
+  const [color, setColor] = useState(project.color);
   const updateProject = useUpdateProject();
 
   function handleFormSubmit() {
@@ -194,24 +183,20 @@ function ProjectUpdateDialog({
       return;
     }
 
-    updateProject.mutate({ projectID: project.id, name: name.trim(), color }, {
-			onSuccess: () => {
-				setName("");
-				setColor(null);
-				closePopup();
-			}
-		});
+    updateProject.mutate(
+      { projectID: project.id, name: name.trim(), color },
+      {
+        onSuccess: () => {
+          setOpen(false);
+        },
+      },
+    );
   }
 
   return (
-    <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-32 flex w-400 -translate-x-1/2 -translate-y-1/2 flex-col gap-16 rounded-xl border border-border bg-background p-16">
-      <Dialog.Title className="text-on-surface text-base font-medium">
-        プロジェクト変更
-      </Dialog.Title>
-      <Form
-        className="flex flex-col gap-16"
-        onFormSubmit={handleFormSubmit}
-      >
+    <Dialog open={open} setOpen={setOpen}>
+      <DialogTitle>プロジェクト変更</DialogTitle>
+      <Form className="flex flex-col gap-16" onFormSubmit={handleFormSubmit}>
         <Input
           required
           label="プロジェクト名"
@@ -228,17 +213,18 @@ function ProjectUpdateDialog({
           value={color}
           onValueChange={(v) => setColor(v)}
         />
-        <div className="flex">
+        <div className="flex gap-8">
           <div className="flex-1" />
-          <Button type="submit" label="変更" />
+          <Button label="キャンセル" color="text" onClick={() => setOpen(false)} />
+          <Button type="submit" label="作成" />
         </div>
       </Form>
-    </Dialog.Popup>
+    </Dialog>
   );
 }
 
 function ProjectIndicator({ project }: { project: Project }) {
-	const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const deleteProject = useDeleteProject();
 
   return (
@@ -253,20 +239,16 @@ function ProjectIndicator({ project }: { project: Project }) {
       </Link>
       <div className="invisible absolute top-1/2 right-16 -translate-y-1/2 group-focus-within:visible group-hover:visible">
         <Menu>
-					<MenuItem icon={PencilIcon} label="変更" onClick={() => setOpen(true)} />
+          <MenuItem icon={PencilIcon} label="変更" onClick={() => setOpen(true)} />
           <MenuItem icon={ArchiveIcon} label="アーカイブ" />
           <MenuItem
             icon={Trash2Icon}
             label="削除"
+            color="destructive"
             onClick={() => deleteProject.mutate(project.id)}
           />
         </Menu>
-				<Dialog.Root open={open} onOpenChange={setOpen}>
-					<Dialog.Portal>
-						<Dialog.Backdrop forceRender className="fixed inset-0 bg-scrim" />
-						<ProjectUpdateDialog project={project} closePopup={() => setOpen(false)} />
-					</Dialog.Portal>
-				</Dialog.Root>
+        <ProjectUpdateDialog project={project} open={open} setOpen={setOpen} />
       </div>
     </li>
   );
