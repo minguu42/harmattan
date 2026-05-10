@@ -14,10 +14,12 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [name, setName] = useState("");
+  const [color, setColor] = useState<string | null>(null);
 
   function alertName() {
-    alert(name);
+    alert(`name: ${name}, color: ${color}`);
     setName("");
+    setColor(null);
   }
 
   return (
@@ -44,9 +46,28 @@ function Index() {
           value={name}
           onValueChange={(v) => setName(v)}
         />
-        <Select label="プロジェクトカラー" />
+        <Select
+          required
+					items={colors}
+          value={color}
+          onValueChange={(v) => setColor(v)}
+          label="プロジェクトカラー"
+        />
         <Button label="あいうえお" type="submit" />
       </Form>
     </div>
   );
 }
+
+const colors = [
+	{ label: "青色", value: "blue" },
+	{ label: "茶色", value: "brown" },
+	{ label: "白色", value: "default" },
+	{ label: "灰色", value: "gray" },
+	{ label: "緑色", value: "green" },
+	{ label: "橙色", value: "orange" },
+	{ label: "桃色", value: "pink" },
+	{ label: "紫色", value: "purple" },
+	{ label: "赤色", value: "red" },
+	{ label: "黄色", value: "yellow" },
+];

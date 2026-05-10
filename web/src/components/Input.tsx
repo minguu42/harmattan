@@ -1,11 +1,11 @@
 import { Field, Input as InputBase } from "@base-ui/react";
 
-type Props = {
+type props = {
   label: string;
   valueMissingMessage?: string;
 } & Omit<InputBase.Props, "children" | "className" | "onChange">;
 
-export function Input({ label, valueMissingMessage, ...props }: Props) {
+export function Input({ label, valueMissingMessage, ...props }: props) {
   return (
     <Field.Root>
       <Field.Label className="text-sm font-medium text-on-background">{label}</Field.Label>
