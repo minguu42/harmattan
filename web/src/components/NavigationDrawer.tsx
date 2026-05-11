@@ -1,29 +1,33 @@
 import { Avatar } from "@base-ui/react";
 import { Link } from "@tanstack/react-router";
 import {
+  ArchiveIcon,
+  FolderOpenDotIcon,
+  InboxIcon,
+  type LucideIcon,
+  PencilIcon,
+  PlusIcon,
+  StarIcon,
   SunIcon,
   SunMoonIcon,
-  StarIcon,
-  InboxIcon,
-  PlusIcon,
   TagIcon,
-  type LucideIcon,
-  FolderOpenDotIcon,
-  PencilIcon,
   Trash2Icon,
-  ArchiveIcon,
 } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 
-import { type Project, useUpdateProject } from "../api/projects.ts";
-import { useCreateProject, useDeleteProject, useProjects } from "../api/projects.ts";
+import {
+  type Project,
+  useCreateProject,
+  useDeleteProject,
+  useProjects,
+  useUpdateProject,
+} from "../api/projects.ts";
 import { Button } from "./Button.tsx";
 import { Dialog, DialogTitle } from "./Dialog.tsx";
+import { SelectField, TextField } from "./Field.tsx";
 import { Form } from "./Form.tsx";
 import { IconButton } from "./IconButton.tsx";
-import { Input } from "./Input.tsx";
 import { Menu, MenuItem } from "./Menu.tsx";
-import { Select } from "./Select.tsx";
 
 export function NavigationDrawer() {
   return (
@@ -116,21 +120,19 @@ type ProjectCreateDialogProps = {
 };
 
 function ProjectCreateDialog({ open, setOpen }: ProjectCreateDialogProps) {
-  const [name, setName] = useState("");
-  const [color, setColor] = useState<string | null>(null);
   const createProject = useCreateProject();
 
-  function handleFormSubmit() {
-    if (name.trim() === "" || color == null) {
+  function handleFormSubmit(formValues: Record<string, any>) {
+    const name = formValues["name"].trim();
+    const color = formValues["color"];
+    if (name === "" || color === "") {
       return;
     }
 
     createProject.mutate(
-      { name: name.trim(), color: color },
+      { name: name, color: color },
       {
         onSuccess: () => {
-          setName("");
-          setColor(null);
           setOpen(false);
         },
       },
@@ -141,21 +143,19 @@ function ProjectCreateDialog({ open, setOpen }: ProjectCreateDialogProps) {
     <Dialog open={open} setOpen={setOpen}>
       <DialogTitle>プロジェクト作成</DialogTitle>
       <Form className="flex flex-col gap-16" onFormSubmit={handleFormSubmit}>
-        <Input
-          required
+        <TextField
+          name="name"
           label="プロジェクト名"
           placeholder="プロジェクト名"
-          value={name}
-          onValueChange={(v) => setName(v)}
-          valueMissingMessage="プロジェクト名は必須です"
-        />
-        <Select
-          label="プロジェクトカラー"
           required
-          valueMissingMessage="プロジェクトカラーは必須です"
+          missingMessage="プロジェクト名は必須です"
+        />
+        <SelectField
+          name="color"
+          label="プロジェクトカラー"
           items={colors}
-          value={color}
-          onValueChange={(v) => setColor(v)}
+          required
+          missingMessage="プロジェクトカラーは必須です"
         />
         <div className="flex gap-8">
           <div className="flex-1" />
@@ -174,17 +174,17 @@ type ProjectUpdateDialogProps = {
 };
 
 function ProjectUpdateDialog({ project, open, setOpen }: ProjectUpdateDialogProps) {
-  const [name, setName] = useState(project.name);
-  const [color, setColor] = useState(project.color);
   const updateProject = useUpdateProject();
 
-  function handleFormSubmit() {
-    if (name.trim() === "" || color == null) {
+  function handleFormSubmit(formValues: Record<string, any>) {
+    const name = formValues["name"].trim();
+    const color = formValues["color"];
+    if (name === "" || color === "") {
       return;
     }
 
     updateProject.mutate(
-      { projectID: project.id, name: name.trim(), color },
+      { projectID: project.id, name: name, color },
       {
         onSuccess: () => {
           setOpen(false);
@@ -197,21 +197,20 @@ function ProjectUpdateDialog({ project, open, setOpen }: ProjectUpdateDialogProp
     <Dialog open={open} setOpen={setOpen}>
       <DialogTitle>プロジェクト変更</DialogTitle>
       <Form className="flex flex-col gap-16" onFormSubmit={handleFormSubmit}>
-        <Input
-          required
+        <TextField
+          name="name"
           label="プロジェクト名"
-          placeholder="プロジェクト名"
-          value={name}
-          onValueChange={(v) => setName(v)}
-          valueMissingMessage="プロジェクト名は必須です"
-        />
-        <Select
-          label="プロジェクトカラー"
+          defaultValue={project.name}
           required
-          valueMissingMessage="プロジェクトカラーは必須です"
+          missingMessage="プロジェクト名は必須です"
+        />
+        <SelectField
+          name="color"
+          label="プロジェクトカラー"
           items={colors}
-          value={color}
-          onValueChange={(v) => setColor(v)}
+          defaultValue={project.color}
+          required
+          missingMessage="プロジェクトカラーは必須です"
         />
         <div className="flex gap-8">
           <div className="flex-1" />

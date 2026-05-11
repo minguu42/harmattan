@@ -1,27 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PencilIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
 
 import { Button } from "../components/Button.tsx";
+import { SelectField, TextField } from "../components/Field.tsx";
 import { Form } from "../components/Form.tsx";
 import { IconButton } from "../components/IconButton.tsx";
-import { Input } from "../components/Input.tsx";
-import { Select } from "../components/Select.tsx";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
-  const [name, setName] = useState("");
-  const [color, setColor] = useState<string | null>(null);
-
-  function alertName() {
-    alert(`name: ${name}, color: ${color}`);
-    setName("");
-    setColor(null);
-  }
-
   return (
     <div className="mx-auto flex max-w-720 flex-col items-center">
       <div className="flex items-center gap-12 p-12">
@@ -37,24 +26,31 @@ function Index() {
         <Button label="キャンセル" color="text" />
         <Button label="削除" color="destructive" />
       </div>
-      <Form className="flex flex-col gap-16" onFormSubmit={alertName}>
-        <Input
-          required
+
+      <Form
+        className="flex flex-col gap-16"
+        onFormSubmit={(formValues) => {
+          const name = formValues["name"];
+          const color = formValues["color"];
+          alert(`name: ${name}, color: ${color}`);
+        }}
+      >
+        <TextField
+          name="name"
           label="プロジェクト名"
           placeholder="プロジェクト名"
-          valueMissingMessage="プロジェクト名は必須です"
-          value={name}
-          onValueChange={(v) => setName(v)}
-        />
-        <Select
           required
-          items={colors}
-          value={color}
-          onValueChange={(v) => setColor(v)}
-          label="プロジェクトカラー"
-          valueMissingMessage="プロジェクトカラーは必須です"
+          missingMessage="プロジェクト名は必須です"
         />
-        <Button label="あいうえお" type="submit" />
+        <SelectField
+          name="color"
+          label="プロジェクトカラー"
+          items={colors}
+          placeholder="プロジェクトカラー"
+          required
+          missingMessage="プロジェクトカラーは必須です"
+        />
+        <Button type="submit" label="送信" />
       </Form>
     </div>
   );
