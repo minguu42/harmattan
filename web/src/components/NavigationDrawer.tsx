@@ -22,6 +22,7 @@ import {
   useProjects,
   useUpdateProject,
 } from "../api/projects.ts";
+import {type Tag, useCreateTag, useDeleteTag, useTags, useUpdateTag} from "../api/tags.ts"
 import { Button } from "./Button.tsx";
 import { Dialog, DialogTitle } from "./Dialog.tsx";
 import { SelectField, TextField } from "./Field.tsx";
@@ -47,16 +48,7 @@ export function NavigationDrawer() {
         <Indicator icon={InboxIcon} label="すべてのタスク" />
       </ul>
       <ProjectIndicatorList />
-      <div className="mt-16 flex h-32 items-center justify-between pr-16 pl-12">
-        <div className="text-sm font-semibold text-on-sidebar">タグ</div>
-        <IconButton icon={PlusIcon} size="sm" />
-      </div>
-      <ul>
-        <li className="flex h-36 items-center gap-8 px-16">
-          <TagIcon />
-          <div className="text-sm text-on-sidebar">タグ1</div>
-        </li>
-      </ul>
+      <TagIndicatorList />
     </div>
   );
 }
@@ -184,7 +176,7 @@ function ProjectUpdateDialog({ project, open, setOpen }: ProjectUpdateDialogProp
     }
 
     updateProject.mutate(
-      { projectID: project.id, name: name, color },
+      { projectID: project.id, name, color },
       {
         onSuccess: () => {
           setOpen(false);
@@ -231,7 +223,7 @@ function ProjectIndicator({ project }: { project: Project }) {
       <Link
         to="/projects/$projectID/tasks"
         params={{ projectID: project.id }}
-        className="text-on-surface state-layer-with-sibling mx-8 flex h-36 items-center gap-8 rounded-lg px-8 text-sm"
+        className="state-layer-with-sibling mx-8 flex h-36 items-center gap-8 rounded-lg px-8 text-sm text-on-background"
       >
         <FolderOpenDotIcon />
         {project.name}
@@ -251,4 +243,144 @@ function ProjectIndicator({ project }: { project: Project }) {
       </div>
     </li>
   );
+}
+
+function TagIndicatorList() {
+	const [open, setOpen] = useState(false);
+	const { data: tags, error, isPending, isError } = useTags();
+
+	if (isPending) {
+		return <span>Loading...</span>;
+	}
+	if (isError) {
+		return <span>Error: {error.message}</span>;
+	}
+	return (
+		<>
+			<div className="mt-16 flex h-32 items-center justify-between pr-16 pl-12">
+				<div className="text-sm font-semibold text-on-sidebar">タグ</div>
+				<IconButton icon={PlusIcon} size="sm" onClick={() => setOpen(true)} />
+				<TagCreateDialog open={open} setOpen={setOpen} />
+			</div>
+			<ul>
+				{tags.map((t) => (
+					<TagIndicator key={t.id} tag={t} />
+				))}
+			</ul>
+		</>
+	);
+}
+
+function TagIndicator({ tag }: { tag: Tag }) {
+	const [open, setOpen] = useState(false);
+	const deleteTag = useDeleteTag();
+
+	return (
+		<li className="group relative">
+			<Link
+				to="/"
+				className="state-layer-with-sibling mx-8 flex h-36 items-center gap-8 rounded-lg px-8 text-sm text-on-background"
+			>
+				<TagIcon />
+				{tag.name}
+			</Link>
+			<div className="invisible flex absolute top-1/2 right-16 -translate-y-1/2 group-focus-within:visible group-hover:visible">
+				<IconButton icon={PencilIcon} size="sm" onClick={() => setOpen(true)} />
+				<IconButton icon={Trash2Icon} size="sm" onClick={() => deleteTag.mutate(tag.id)} />
+			</div>
+			<TagUpdateDialog tag={tag} open={open} setOpen={setOpen}/>
+		</li>
+	);
+}
+
+type DialogProps = {
+	open: boolean;
+	setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+function TagCreateDialog({ open, setOpen }: DialogProps) {
+	const createTag = useCreateTag();
+
+	function handleFormSubmit(values: Record<string, any>) {
+		const name = values["name"].trim();
+		if (name === "") {
+			return;
+		}
+
+		createTag.mutate(
+			{ name: name },
+			{
+				onSuccess: () => {
+					setOpen(false);
+				},
+			},
+		);
+	}
+
+	return (
+		<Dialog open={open} setOpen={setOpen}>
+			<DialogTitle>タグ作成</DialogTitle>
+			<Form className="flex flex-col gap-16" onFormSubmit={handleFormSubmit}>
+				<TextField
+					name="name"
+					label="タグ名"
+					placeholder="タグ名"
+					required
+					missingMessage="タグ名は必須です"
+				/>
+				<div className="flex gap-8">
+					<div className="flex-1" />
+					<Button label="キャンセル" color="text" onClick={() => setOpen(false)} />
+					<Button type="submit" label="作成" />
+				</div>
+			</Form>
+		</Dialog>
+	);
+}
+
+type TagUpdateDialogProps = {
+	tag: Tag;
+	open: boolean;
+	setOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+function TagUpdateDialog({ tag, open, setOpen }: TagUpdateDialogProps) {
+	const updateTag = useUpdateTag();
+
+	function handleFormSubmit(values: Record<string, any>) {
+		const name = values["name"].trim();
+		if (name === "") {
+			return;
+		}
+
+		updateTag.mutate(
+			{ tagID: tag.id, name },
+			{
+				onSuccess: () => {
+					setOpen(false);
+				},
+			},
+		);
+	}
+
+	return (
+		<Dialog open={open} setOpen={setOpen}>
+			<DialogTitle>タグ変更</DialogTitle>
+			<Form className="flex flex-col gap-16" onFormSubmit={handleFormSubmit}>
+				<TextField
+					name="name"
+					label="タグ名"
+					defaultValue={tag.name}
+					placeholder="タグ名"
+					required
+					missingMessage="タグ名は必須です"
+				/>
+				<div className="flex gap-8">
+					<div className="flex-1" />
+					<Button label="キャンセル" color="text" onClick={() => setOpen(false)} />
+					<Button type="submit" label="変更" />
+				</div>
+			</Form>
+		</Dialog>
+	);
 }
