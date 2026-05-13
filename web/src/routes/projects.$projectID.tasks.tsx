@@ -1,7 +1,6 @@
-import { Field, Form } from "@base-ui/react";
+import { Field, Form, Input } from "@base-ui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CheckIcon, CircleIcon, FolderOpenDotIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
 
 import { useProject } from "../api/projects.ts";
 import { useCompleteTask, useCreateTask, useDeleteTask, useTasks } from "../api/tasks.ts";
@@ -42,37 +41,35 @@ function TaskListHeader({ projectID }: { projectID: string }) {
 }
 
 function TaskAddField({ projectID }: { projectID: string }) {
-  const [name, setName] = useState("");
   const createTask = useCreateTask(projectID);
 
-  function addTask() {
-    if (name.trim() === "") return;
-    createTask.mutate(name.trim(), {
-      onSuccess: () => setName(""),
-    });
-  }
-
   return (
-    <div className="flex h-40 items-center p-4">
-      <PlusIcon className="text-[#8e8a90]" />
-      <Form
-        className="ml-8 w-full"
-        onSubmit={(e) => {
-          e.preventDefault();
-          addTask();
-        }}
-      >
-        <Field.Root>
-          <Field.Control
-            className="text-on-surface w-full p-4 placeholder:text-[#8e8a90]"
-            required
-            placeholder="タスク名"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Field.Root>
-      </Form>
-    </div>
+    <Form
+      onFormSubmit={(values, details) => {
+        const name = values["name"].trim();
+        if (name === "") {
+          return;
+        }
+        const form = details.event.target as HTMLFormElement;
+        createTask.mutate(name, {
+          onSuccess: () => {
+            form.reset();
+            return;
+          },
+        });
+      }}
+    >
+      <Field.Root name="name" className="flex h-40 items-center p-4">
+        <Field.Label>
+          <PlusIcon className="text-[#8e8a90]" />
+        </Field.Label>
+        <Input
+          className="text-on-surface ml-8 w-full p-4 placeholder:text-[#8e8a90]"
+          required
+          placeholder="タスク名"
+        />
+      </Field.Root>
+    </Form>
   );
 }
 
