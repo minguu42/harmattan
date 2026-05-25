@@ -66,7 +66,7 @@ func NewClient(ctx context.Context, databaseName string) (*Client, error) {
 	}
 
 	ping := func() error { return db.PingContext(ctx) }
-	if err := retry.New(retry.DelayType(retry.FixedDelay), retry.Delay(time.Second)).Do(ping); err != nil {
+	if err := retry.New(retry.Attempts(30), retry.DelayType(retry.FixedDelay), retry.Delay(time.Second)).Do(ping); err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
