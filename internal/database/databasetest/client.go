@@ -11,7 +11,9 @@ import (
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/avast/retry-go/v5"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/stretchr/testify/assert"
@@ -62,7 +64,9 @@ func NewClient(ctx context.Context, databaseName string) (*Client, error) {
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
-	if err := db.PingContext(ctx); err != nil {
+
+	ping := func() error { return db.PingContext(ctx) }
+	if err := retry.New(retry.DelayType(retry.FixedDelay), retry.Delay(time.Second)).Do(ping); err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
