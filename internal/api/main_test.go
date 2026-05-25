@@ -28,7 +28,7 @@ var (
 	fixedNow time.Time
 
 	th  http.Handler
-	tdb *databasetest.ClientWithContainer
+	tdb *databasetest.Client
 )
 
 func init() {
@@ -46,7 +46,7 @@ func TestMain(m *testing.M) {
 	ctx := context.Background()
 
 	var err error
-	tdb, err = databasetest.NewClientWithContainer(ctx, "harmattan_test")
+	tdb, err = databasetest.NewClient(ctx, "harmattan_test")
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
@@ -75,11 +75,11 @@ func TestMain(m *testing.M) {
 	f, err := api.NewFactory(ctx, &api.Config{
 		IDTokenSecret:     "cIZ15duBB4CjZNxD6CH8jBgc5sP5Ch7G",
 		IDTokenExpiration: 1 * time.Hour,
-		DBHost:            tdb.Host,
-		DBPort:            tdb.Port,
-		DBDatabase:        tdb.Database,
-		DBUser:            tdb.User,
-		DBPassword:        tdb.Password,
+		DBHost:            tdb.DSN.Host,
+		DBPort:            tdb.DSN.Port,
+		DBDatabase:        tdb.DSN.Database,
+		DBUser:            tdb.DSN.User,
+		DBPassword:        tdb.DSN.Password,
 	})
 	if err != nil {
 		log.Fatalf("%+v", err)

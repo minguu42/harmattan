@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/avast/retry-go/v4"
 	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"gorm.io/driver/mysql"
@@ -59,8 +58,7 @@ func NewClient(ctx context.Context, conf *Config) (*Client, error) {
 		db.SetConnMaxLifetime(conf.ConnMaxLifetime)
 	}
 
-	ping := func() error { return db.PingContext(ctx) }
-	if err := retry.Do(ping, retry.Attempts(10), retry.Context(ctx)); err != nil {
+	if err := db.PingContext(ctx); err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 

@@ -17,7 +17,7 @@ var (
 	jst *time.Location
 
 	c   *database.Client
-	tdb *databasetest.ClientWithContainer
+	tdb *databasetest.Client
 )
 
 func init() {
@@ -34,21 +34,13 @@ func TestMain(m *testing.M) {
 	ctx := context.Background()
 
 	var err error
-	tdb, err = databasetest.NewClientWithContainer(ctx, "database_test")
+	tdb, err = databasetest.NewClient(ctx, "database_test")
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}
 	defer atel.Capture(ctx, "Failed to close test database client")(tdb.Close)
 
-	c, err = database.NewClient(ctx, &database.Config{
-		DSN: database.DSN{
-			Host:     tdb.Host,
-			Port:     tdb.Port,
-			Database: tdb.Database,
-			User:     tdb.User,
-			Password: tdb.Password,
-		},
-	})
+	c, err = database.NewClient(ctx, &database.Config{DSN: tdb.DSN})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

@@ -5,16 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"net"
 	"os"
 	"path/filepath"
 	"reflect"
 	"runtime"
-	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/avast/retry-go/v4"
+	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,57 +22,47 @@ import (
 	"gorm.io/gorm"
 )
 
-type ClientWithContainer struct {
-	container testcontainers.Container
+type Client struct {
+	container *testcontainers.DockerContainer
 	db        *sql.DB
 	gormDB    *gorm.DB
-
-	Host     string
-	Port     int
-	Database string
-	User     string
-	Password string
+	DSN       database.DSN
 }
 
-func NewClientWithContainer(ctx context.Context, database string) (*ClientWithContainer, error) {
-	mysqlC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: testcontainers.ContainerRequest{
-			Image: "mysql:8.0.42",
-			Env: map[string]string{
-				"MYSQL_DATABASE":             database,
-				"MYSQL_ALLOW_EMPTY_PASSWORD": "yes",
-			},
-			ExposedPorts: []string{"3306/tcp"},
-			WaitingFor:   wait.ForListeningPort("3306/tcp"),
-		},
-		Started: true,
-	})
-	if err != nil {
-		return nil, errtrace.Wrap(err)
-	}
-
-	portNet, err := mysqlC.MappedPort(ctx, "3306/tcp")
-	if err != nil {
-		return nil, errtrace.Wrap(err)
-	}
-
-	host := "127.0.0.1"
-	port := int(portNet.Num())
-	user := "root"
-	password := ""
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&charset=utf8mb4&loc=Local",
-		user,
-		password,
-		net.JoinHostPort(host, strconv.Itoa(port)),
-		database,
+func NewClient(ctx context.Context, databaseName string) (*Client, error) {
+	user := "harmattan"
+	password := "R2b87Yy6owa5Jxo7EkR8"
+	container, err := testcontainers.Run(ctx, "mysql:8.0.42",
+		testcontainers.WithEnv(map[string]string{
+			"MYSQL_DATABASE":      databaseName,
+			"MYSQL_USER":          user,
+			"MYSQL_PASSWORD":      password,
+			"MYSQL_ROOT_PASSWORD": password,
+		}),
+		testcontainers.WithExposedPorts("3306/tcp"),
+		testcontainers.WithWaitStrategy(wait.ForListeningPort("3306/tcp")),
 	)
-	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
-	ping := func() error { return db.PingContext(ctx) }
-	if err := retry.Do(ping, retry.Attempts(10), retry.Context(ctx)); err != nil {
+	portNet, err := container.MappedPort(ctx, "3306/tcp")
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+
+	dsn := database.DSN{
+		Host:     "localhost",
+		Port:     int(portNet.Num()),
+		Database: databaseName,
+		User:     user,
+		Password: password,
+	}
+	db, err := sql.Open("mysql", dsn.String())
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	if err := db.PingContext(ctx); err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
@@ -89,26 +77,12 @@ func NewClientWithContainer(ctx context.Context, database string) (*ClientWithCo
 	if err != nil {
 		return nil, errtrace.Wrap(err)
 	}
-	return &ClientWithContainer{
-		container: mysqlC,
+	return &Client{
+		container: container,
 		db:        db,
 		gormDB:    gormDB,
-		Host:      host,
-		Port:      port,
-		Database:  database,
-		User:      user,
-		Password:  password,
+		DSN:       dsn,
 	}, nil
-}
-
-func (c *ClientWithContainer) Close() error {
-	if err := c.db.Close(); err != nil {
-		return errtrace.Wrap(err)
-	}
-	if err := c.container.Terminate(context.Background()); err != nil {
-		return errtrace.Wrap(err)
-	}
-	return nil
 }
 
 func applySchema(ctx context.Context, db *sql.DB) error {
@@ -133,7 +107,13 @@ func applySchema(ctx context.Context, db *sql.DB) error {
 	return nil
 }
 
-func (c *ClientWithContainer) TruncateAndInsert(ctx context.Context, tableRows []any) error {
+func (c *Client) Close() error {
+	dbErr := c.db.Close()
+	containerErr := testcontainers.TerminateContainer(c.container)
+	return errtrace.Wrap(errors.Join(dbErr, containerErr))
+}
+
+func (c *Client) TruncateAndInsert(ctx context.Context, tableRows []any) error {
 	for _, rows := range tableRows {
 		stmt := &gorm.Statement{DB: c.gormDB}
 		if err := stmt.Parse(rows); err != nil {
@@ -155,7 +135,7 @@ func (c *ClientWithContainer) TruncateAndInsert(ctx context.Context, tableRows [
 	return nil
 }
 
-func (c *ClientWithContainer) Assert(t *testing.T, data []any) {
+func (c *Client) Assert(t *testing.T, data []any) {
 	t.Helper()
 
 	for _, want := range data {
