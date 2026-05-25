@@ -10,7 +10,7 @@ tool (
 )
 
 require (
-	github.com/avast/retry-go/v4 v4.7.0
+	github.com/avast/retry-go/v5 v5.0.0
 	github.com/aws/aws-lambda-go v1.54.0
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.2.0
