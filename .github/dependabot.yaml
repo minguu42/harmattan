@@ -4,8 +4,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
-      day: sunday
-      time: "08:00"
+      day: friday
+      time: "18:00"
       timezone: Asia/Tokyo
     cooldown:
       default-days: 5
@@ -17,8 +17,21 @@ updates:
     directory: /
     schedule:
       interval: weekly
-      day: sunday
-      time: "08:00"
+      day: friday
+      time: "18:00"
+      timezone: Asia/Tokyo
+    cooldown:
+      default-days: 5
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+  - package-ecosystem: terraform
+    directory: /infra/terraform
+    schedule:
+      interval: weekly
+      day: friday
+      time: "18:00"
       timezone: Asia/Tokyo
     cooldown:
       default-days: 5
