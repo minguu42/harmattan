@@ -1,4 +1,4 @@
-package atel
+package atel_test
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"testing"
 
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -275,7 +276,7 @@ func TestMaskAttr(t *testing.T) {
 
 			var buf bytes.Buffer
 			l := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-				return maskAttr(a)
+				return atel.MaskAttr(a)
 			}}))
 			l.Info("", slog.Any("test", tt.value))
 
@@ -320,7 +321,7 @@ func TestMaskAttr_passthrough(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got := maskAttr(tt.attr)
+			got := atel.MaskAttr(tt.attr)
 			assert.Equal(t, tt.attr, got)
 		})
 	}

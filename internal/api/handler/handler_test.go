@@ -1,9 +1,10 @@
-package handler
+package handler_test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +22,7 @@ func TestTernary(t *testing.T) {
 		{condition: false, trueVal: 1, falseVal: -1, want: -1},
 	}
 	for _, tt := range tests {
-		got := ternary(tt.condition, tt.trueVal, tt.falseVal)
+		got := handler.Ternary(tt.condition, tt.trueVal, tt.falseVal)
 		assert.Equal(t, tt.want, got)
 	}
 }
@@ -43,7 +44,7 @@ func TestConvertOptDateTime(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		got := convertOptDateTime(tt.t)
+		got := handler.ConvertOptDateTime(tt.t)
 		assert.Equal(t, tt.want, got)
 	}
 }
@@ -65,7 +66,7 @@ func TestConvertOptDate(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		got := convertOptDate(tt.t)
+		got := handler.ConvertOptDate(tt.t)
 		assert.Equal(t, tt.want, got)
 	}
 }
