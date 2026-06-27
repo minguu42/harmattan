@@ -69,7 +69,7 @@ func (s *Server) handleCheckHealthRequest(args [0]string, argsEscaped bool, w ht
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -191,7 +191,7 @@ func (s *Server) handleCreateProjectRequest(args [0]string, argsEscaped bool, w 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -376,7 +376,7 @@ func (s *Server) handleCreateStepRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -576,7 +576,7 @@ func (s *Server) handleCreateTagRequest(args [0]string, argsEscaped bool, w http
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -761,7 +761,7 @@ func (s *Server) handleCreateTaskRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -961,7 +961,7 @@ func (s *Server) handleDeleteProjectRequest(args [1]string, argsEscaped bool, w 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1146,7 +1146,7 @@ func (s *Server) handleDeleteStepRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1331,7 +1331,7 @@ func (s *Server) handleDeleteTagRequest(args [1]string, argsEscaped bool, w http
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1516,7 +1516,7 @@ func (s *Server) handleDeleteTaskRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1701,7 +1701,7 @@ func (s *Server) handleGetProjectRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -1886,7 +1886,7 @@ func (s *Server) handleGetTagRequest(args [1]string, argsEscaped bool, w http.Re
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2071,7 +2071,7 @@ func (s *Server) handleGetTaskRequest(args [1]string, argsEscaped bool, w http.R
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2256,7 +2256,7 @@ func (s *Server) handleListProjectsRequest(args [0]string, argsEscaped bool, w h
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2445,7 +2445,7 @@ func (s *Server) handleListTagsRequest(args [0]string, argsEscaped bool, w http.
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2634,7 +2634,7 @@ func (s *Server) handleListTasksRequest(args [1]string, argsEscaped bool, w http
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2831,7 +2831,7 @@ func (s *Server) handleSignInRequest(args [0]string, argsEscaped bool, w http.Re
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -2972,7 +2972,7 @@ func (s *Server) handleSignUpRequest(args [0]string, argsEscaped bool, w http.Re
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3113,7 +3113,7 @@ func (s *Server) handleUpdateProjectRequest(args [1]string, argsEscaped bool, w 
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3313,7 +3313,7 @@ func (s *Server) handleUpdateStepRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3513,7 +3513,7 @@ func (s *Server) handleUpdateTagRequest(args [1]string, argsEscaped bool, w http
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
@@ -3713,7 +3713,7 @@ func (s *Server) handleUpdateTaskRequest(args [1]string, argsEscaped bool, w htt
 		if code != 0 {
 			codeAttr := semconv.HTTPResponseStatusCode(code)
 			attrs = append(attrs, codeAttr)
-			span.SetAttributes(codeAttr)
+			span.SetAttributes(attrs...)
 		}
 		attrOpt := metric.WithAttributes(attrs...)
 
