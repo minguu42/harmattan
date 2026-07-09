@@ -18,27 +18,6 @@
           }
         ]
       }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt|elicitation_dialog",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.message' | terminal-notifier -title 'Claude Code' -sound 'Boop'"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh"
-          }
-        ]
-      }
     ]
   }
 }
