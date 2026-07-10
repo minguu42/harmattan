@@ -7,6 +7,7 @@ import (
 
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
+	"github.com/minguu42/harmattan/internal/lib/plain"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +18,7 @@ type Task struct {
 	Name        string
 	Content     string
 	Priority    int
-	DueOn       *time.Time
+	DueOn       *plain.Date
 	CompletedAt *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

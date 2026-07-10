@@ -3,6 +3,8 @@ package domain
 import (
 	"slices"
 	"time"
+
+	"github.com/minguu42/harmattan/internal/lib/plain"
 )
 
 type TaskID string
@@ -15,7 +17,7 @@ type Task struct {
 	TagIDs      []TagID
 	Content     string
 	Priority    int
-	DueOn       *time.Time
+	DueOn       *plain.Date
 	CompletedAt *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

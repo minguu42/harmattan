@@ -6,6 +6,7 @@ import (
 
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/openapi"
+	"github.com/minguu42/harmattan/internal/lib/plain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -53,20 +54,20 @@ func TestConvertOptDate(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		t    *time.Time
+		d    *plain.Date
 		want openapi.OptDate
 	}{
-		{t: nil, want: openapi.OptDate{}},
+		{d: nil, want: openapi.OptDate{}},
 		{
-			t: new(time.Date(2025, 1, 2, 0, 0, 0, 0, time.Local)),
+			d: new(plain.NewDate(2025, 1, 2)),
 			want: openapi.OptDate{
-				Value: time.Date(2025, 1, 2, 0, 0, 0, 0, time.Local),
+				Value: time.Date(2025, 1, 2, 0, 0, 0, 0, time.UTC),
 				Set:   true,
 			},
 		},
 	}
 	for _, tt := range tests {
-		got := handler.ConvertOptDate(tt.t)
+		got := handler.ConvertOptDate(tt.d)
 		assert.Equal(t, tt.want, got)
 	}
 }

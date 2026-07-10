@@ -11,6 +11,7 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/clock"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/minguu42/harmattan/internal/lib/idgen"
+	"github.com/minguu42/harmattan/internal/lib/plain"
 )
 
 type Task struct {
@@ -149,7 +150,7 @@ type UpdateTaskInput struct {
 	TagIDs      Option[[]domain.TagID]
 	Content     Option[string]
 	Priority    Option[int]
-	DueOn       Option[*time.Time]
+	DueOn       Option[*plain.Date]
 	CompletedAt Option[*time.Time]
 }
 
