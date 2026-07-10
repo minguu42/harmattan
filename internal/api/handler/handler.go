@@ -5,6 +5,7 @@ import (
 
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/api/usecase"
+	"github.com/minguu42/harmattan/internal/lib/plain"
 )
 
 type Handler struct {
@@ -29,9 +30,9 @@ func ternary[T any](condition bool, trueVal, falseVal T) T {
 	return falseVal
 }
 
-func convertOptDate(t *time.Time) openapi.OptDate {
-	if t != nil {
-		return openapi.OptDate{Value: *t, Set: true}
+func convertOptDate(d *plain.Date) openapi.OptDate {
+	if d != nil {
+		return openapi.OptDate{Value: d.In(time.UTC), Set: true}
 	}
 	return openapi.OptDate{}
 }

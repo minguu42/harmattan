@@ -6,6 +6,7 @@ import (
 
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/domain"
+	"github.com/minguu42/harmattan/internal/lib/plain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,7 +43,7 @@ func TestClient_CreateTask(t *testing.T) {
 
 func TestClient_ListTasks(t *testing.T) {
 	completedAt := time.Date(2025, 1, 10, 0, 0, 0, 0, jst)
-	dueOn := time.Date(2025, 2, 1, 0, 0, 0, 0, jst)
+	dueOn := plain.NewDate(2025, 2, 1)
 
 	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Users{

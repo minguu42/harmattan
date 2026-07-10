@@ -11,6 +11,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/usecase"
 	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
+	"github.com/minguu42/harmattan/internal/lib/plain"
 )
 
 func (h *Handler) CreateTask(ctx context.Context, req *openapi.CreateTaskReq, params openapi.CreateTaskParams) (*openapi.Task, error) {
@@ -70,7 +71,7 @@ func (h *Handler) UpdateTask(ctx context.Context, req *openapi.UpdateTaskReq, pa
 		TagIDs:      usecase.Option[[]domain.TagID]{V: convertSlice[domain.TagID](req.TagIds), Valid: req.TagIds != nil},
 		Content:     usecase.Option[string]{V: req.Content.Value, Valid: req.Content.Set},
 		Priority:    usecase.Option[int]{V: req.Priority.Value, Valid: req.Priority.Set},
-		DueOn:       usecase.Option[*time.Time]{V: ternary(req.DueOn.Null, nil, &req.DueOn.Value), Valid: req.DueOn.Set},
+		DueOn:       usecase.Option[*plain.Date]{V: ternary(req.DueOn.Null, nil, new(plain.DateOf(req.DueOn.Value))), Valid: req.DueOn.Set},
 		CompletedAt: usecase.Option[*time.Time]{V: ternary(req.CompletedAt.Null, nil, &req.CompletedAt.Value), Valid: req.CompletedAt.Set},
 	})
 	if err != nil {
