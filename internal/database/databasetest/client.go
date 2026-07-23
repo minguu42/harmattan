@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/avast/retry-go/v5"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
+	"github.com/minguu42/harmattan/internal/lib/retry"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -65,9 +65,9 @@ func NewClient(ctx context.Context, databaseName string) (*Client, error) {
 		return nil, errtrace.Wrap(err)
 	}
 
-	// 環境によってはコンテナの立ち上がりに時間を要するため、30秒間はリトライする
+	// 環境によってはコンテナの立ち上がりに時間を要するため、1分間はリトライする
 	ping := func() error { return db.PingContext(ctx) }
-	if err := retry.New(retry.Attempts(30), retry.DelayType(retry.FixedDelay), retry.Delay(time.Second)).Do(ping); err != nil {
+	if err := retry.Fixed(ctx, 61, time.Second, ping); err != nil {
 		return nil, errtrace.Wrap(err)
 	}
 
