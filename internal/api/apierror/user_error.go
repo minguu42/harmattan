@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/minguu42/harmattan/internal/domain"
 )
 
 func DomainValidationError(errs []error) Error {
@@ -34,6 +36,22 @@ func DuplicateUserEmailError() Error {
 
 func ProjectNotFoundError() Error {
 	return Error{status: 404, message: "指定したプロジェクトは見つかりません"}
+}
+
+func TooManyProjectsError() Error {
+	return Error{status: 409, message: fmt.Sprintf("作成できるプロジェクトは%d件までです。不要なプロジェクトを削除してから再度お試しください", domain.MaxProjectsPerUser)}
+}
+
+func TooManyTasksError() Error {
+	return Error{status: 409, message: fmt.Sprintf("1つのプロジェクトに作成できるタスクは%d件までです。不要なタスクを削除してから再度お試しください", domain.MaxTasksPerProject)}
+}
+
+func TooManyStepsError() Error {
+	return Error{status: 409, message: fmt.Sprintf("1つのタスクに作成できるステップは%d件までです。不要なステップを削除してから再度お試しください", domain.MaxStepsPerTask)}
+}
+
+func TooManyTagsError() Error {
+	return Error{status: 409, message: fmt.Sprintf("作成できるタグは%d件までです。不要なタグを削除してから再度お試しください", domain.MaxTagsPerUser)}
 }
 
 func TaskNotFoundError() Error {

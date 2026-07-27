@@ -34,6 +34,43 @@ func TestClient_CreateTag(t *testing.T) {
 	})
 }
 
+func TestClient_CountTags(t *testing.T) {
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Users{
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "user02", Email: "user02@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+		},
+		database.Tags{
+			{ID: "tag01", UserID: "user01", Name: "タグ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "tag02", UserID: "user01", Name: "タグ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+			{ID: "tag03", UserID: "user02", Name: "タグ3", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
+		},
+	}))
+
+	tests := []struct {
+		name   string
+		userID domain.UserID
+		want   int
+	}{
+		{
+			name:   "multiple",
+			userID: "user01",
+			want:   2,
+		},
+		{
+			name:   "no_match",
+			userID: "user99",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := c.CountTags(t.Context(), tt.userID)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestClient_ListTags(t *testing.T) {
 	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Users{

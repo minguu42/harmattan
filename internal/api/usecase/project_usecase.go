@@ -31,6 +31,14 @@ func (uc *Project) CreateProject(ctx context.Context, in *CreateProjectInput) (*
 		return nil, errtrace.Wrap(err)
 	}
 
+	count, err := uc.DB.CountProjects(ctx, user.ID)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	if count >= domain.MaxProjectsPerUser {
+		return nil, errtrace.Wrap(apierror.TooManyProjectsError())
+	}
+
 	now := clock.Now(ctx)
 	p := domain.Project{
 		ID:        domain.ProjectID(idgen.ULID(ctx)),

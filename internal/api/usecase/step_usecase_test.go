@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/stretchr/testify/require"
 )
 
@@ -84,6 +86,46 @@ func TestStep_CreateStep(t *testing.T) {
 			runTest(t, tt)
 		})
 	}
+}
+
+func TestStep_CreateStep_TooManySteps(t *testing.T) {
+	steps := make(database.Steps, 0, domain.MaxStepsPerTask)
+	for i := range domain.MaxStepsPerTask {
+		steps = append(steps, database.Step{
+			ID:     domain.StepID(fmt.Sprintf("STEP-%021d", i+1)),
+			UserID: testUserID,
+			TaskID: "TASK-000000000000000000001",
+			Name:   fmt.Sprintf("ステップ%d", i+1),
+		})
+	}
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Projects{
+			{
+				ID:     "PROJECT-000000000000000001",
+				UserID: testUserID,
+				Name:   "プロジェクト1",
+				Color:  "blue",
+			},
+		},
+		database.Tasks{
+			{
+				ID:        "TASK-000000000000000000001",
+				UserID:    testUserID,
+				ProjectID: "PROJECT-000000000000000001",
+				Name:      "タスク1",
+			},
+		},
+		steps,
+	}))
+
+	runTest(t, test{
+		Method:     "POST",
+		Path:       "/tasks/TASK-000000000000000000001/steps",
+		Headers:    http.Header{"Authorization": []string{"Bearer " + token}},
+		Body:       `{"name": "ステップ"}`,
+		WantStatus: 409,
+		WantJSON:   handler.ErrorResponse{Code: 409, Message: "1つのタスクに作成できるステップは20件までです。不要なステップを削除してから再度お試しください"},
+	})
 }
 
 func TestStep_UpdateStep(t *testing.T) {

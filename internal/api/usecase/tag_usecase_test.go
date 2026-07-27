@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/stretchr/testify/require"
 )
 
@@ -29,6 +31,27 @@ func TestTag_CreateTag(t *testing.T) {
 		WantTables: []any{database.Tags{
 			{ID: fixedID, UserID: testUserID, Name: "タグ", CreatedAt: fixedNow, UpdatedAt: fixedNow},
 		}},
+	})
+}
+
+func TestTag_CreateTag_TooManyTags(t *testing.T) {
+	tags := make(database.Tags, 0, domain.MaxTagsPerUser)
+	for i := range domain.MaxTagsPerUser {
+		tags = append(tags, database.Tag{
+			ID:     domain.TagID(fmt.Sprintf("TAG-%022d", i+1)),
+			UserID: testUserID,
+			Name:   fmt.Sprintf("タグ%d", i+1),
+		})
+	}
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{tags}))
+
+	runTest(t, test{
+		Method:     "POST",
+		Path:       "/tags",
+		Headers:    http.Header{"Authorization": []string{"Bearer " + token}},
+		Body:       `{"name": "タグ"}`,
+		WantStatus: 409,
+		WantJSON:   handler.ErrorResponse{Code: 409, Message: "作成できるタグは100件までです。不要なタグを削除してから再度お試しください"},
 	})
 }
 

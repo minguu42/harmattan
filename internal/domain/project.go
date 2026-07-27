@@ -2,6 +2,9 @@ package domain
 
 import "time"
 
+// MaxProjectsPerUser は1ユーザが作成できるプロジェクト数の上限
+const MaxProjectsPerUser = 100
+
 type ProjectID string
 
 type Project struct {

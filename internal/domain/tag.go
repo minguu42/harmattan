@@ -2,6 +2,9 @@ package domain
 
 import "time"
 
+// MaxTagsPerUser は1ユーザが作成できるタグ数の上限
+const MaxTagsPerUser = 100
+
 type TagID string
 
 type Tag struct {
