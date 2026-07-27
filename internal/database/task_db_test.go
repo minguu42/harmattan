@@ -41,6 +41,48 @@ func TestClient_CreateTask(t *testing.T) {
 	})
 }
 
+func TestClient_CountTasks(t *testing.T) {
+	completedAt := time.Date(2025, 1, 10, 0, 0, 0, 0, jst)
+
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Users{
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Projects{
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "project02", UserID: "user01", Name: "プロジェクト2", Color: "red", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+		},
+		database.Tasks{
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "task02", UserID: "user01", ProjectID: "project01", Name: "タスク2", CompletedAt: &completedAt, CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+			{ID: "task03", UserID: "user01", ProjectID: "project02", Name: "タスク3", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
+		},
+	}))
+
+	tests := []struct {
+		name      string
+		projectID domain.ProjectID
+		want      int
+	}{
+		{
+			name:      "include_completed",
+			projectID: "project01",
+			want:      2,
+		},
+		{
+			name:      "no_match",
+			projectID: "project99",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := c.CountTasks(t.Context(), tt.projectID)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestClient_ListTasks(t *testing.T) {
 	completedAt := time.Date(2025, 1, 10, 0, 0, 0, 0, jst)
 	dueOn := plain.NewDate(2025, 2, 1)

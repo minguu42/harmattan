@@ -49,6 +49,14 @@ func (uc *Step) CreateStep(ctx context.Context, in *CreateStepInput) (_ *StepOut
 		return nil, errtrace.Wrap(apierror.TaskNotFoundError())
 	}
 
+	count, err := uc.DB.CountSteps(ctx, in.TaskID)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	if count >= domain.MaxStepsPerTask {
+		return nil, errtrace.Wrap(apierror.TooManyStepsError())
+	}
+
 	now := clock.Now(ctx)
 	s := domain.Step{
 		ID:        domain.StepID(idgen.ULID(ctx)),

@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/stretchr/testify/require"
 )
 
@@ -30,6 +32,28 @@ func TestProject_CreateProject(t *testing.T) {
 		WantTables: []any{database.Projects{
 			{ID: fixedID, UserID: testUserID, Name: "プロジェクト1", Color: "blue", CreatedAt: fixedNow, UpdatedAt: fixedNow},
 		}},
+	})
+}
+
+func TestProject_CreateProject_TooManyProjects(t *testing.T) {
+	projects := make(database.Projects, 0, domain.MaxProjectsPerUser)
+	for i := range domain.MaxProjectsPerUser {
+		projects = append(projects, database.Project{
+			ID:     domain.ProjectID(fmt.Sprintf("PROJECT-%018d", i+1)),
+			UserID: testUserID,
+			Name:   fmt.Sprintf("プロジェクト%d", i+1),
+			Color:  "blue",
+		})
+	}
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{projects}))
+
+	runTest(t, test{
+		Method:     "POST",
+		Path:       "/projects",
+		Headers:    http.Header{"Authorization": []string{"Bearer " + token}},
+		Body:       `{"name": "プロジェクト", "color": "blue"}`,
+		WantStatus: 409,
+		WantJSON:   handler.ErrorResponse{Code: 409, Message: "作成できるプロジェクトは100件までです。不要なプロジェクトを削除してから再度お試しください"},
 	})
 }
 

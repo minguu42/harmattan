@@ -36,6 +36,43 @@ func TestClient_CreateProject(t *testing.T) {
 	})
 }
 
+func TestClient_CountProjects(t *testing.T) {
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Users{
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "user02", Email: "user02@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+		},
+		database.Projects{
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "project02", UserID: "user01", Name: "プロジェクト2", Color: "red", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+			{ID: "project03", UserID: "user02", Name: "プロジェクト3", Color: "green", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
+		},
+	}))
+
+	tests := []struct {
+		name   string
+		userID domain.UserID
+		want   int
+	}{
+		{
+			name:   "multiple",
+			userID: "user01",
+			want:   2,
+		},
+		{
+			name:   "no_match",
+			userID: "user99",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := c.CountProjects(t.Context(), tt.userID)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestClient_ListProjects(t *testing.T) {
 	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Users{

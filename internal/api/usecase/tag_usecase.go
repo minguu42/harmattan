@@ -30,6 +30,14 @@ func (uc *Tag) CreateTag(ctx context.Context, in *CreateTagInput) (*TagOutput, e
 		return nil, errtrace.Wrap(err)
 	}
 
+	count, err := uc.DB.CountTags(ctx, user.ID)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	if count >= domain.MaxTagsPerUser {
+		return nil, errtrace.Wrap(apierror.TooManyTagsError())
+	}
+
 	now := clock.Now(ctx)
 	t := domain.Tag{
 		ID:        domain.TagID(idgen.ULID(ctx)),

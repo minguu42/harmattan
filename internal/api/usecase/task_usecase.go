@@ -52,6 +52,14 @@ func (uc *Task) CreateTask(ctx context.Context, in *CreateTaskInput) (_ *TaskOut
 		return nil, errtrace.Wrap(apierror.ProjectNotFoundError())
 	}
 
+	count, err := uc.DB.CountTasks(ctx, in.ProjectID)
+	if err != nil {
+		return nil, errtrace.Wrap(err)
+	}
+	if count >= domain.MaxTasksPerProject {
+		return nil, errtrace.Wrap(apierror.TooManyTasksError())
+	}
+
 	now := clock.Now(ctx)
 	t := domain.Task{
 		ID:        domain.TaskID(idgen.ULID(ctx)),

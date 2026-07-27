@@ -57,6 +57,14 @@ func (c *Client) CreateStep(ctx context.Context, s *domain.Step) error {
 	return nil
 }
 
+func (c *Client) CountSteps(ctx context.Context, taskID domain.TaskID) (int, error) {
+	var count int64
+	if err := c.db(ctx).Model(Step{}).Where("task_id = ?", taskID).Count(&count).Error; err != nil {
+		return 0, errtrace.Wrap(err)
+	}
+	return int(count), nil
+}
+
 func (c *Client) GetStepByID(ctx context.Context, id domain.StepID) (*domain.Step, error) {
 	var s Step
 	if err := c.db(ctx).Where("id = ?", id).Take(&s).Error; err != nil {

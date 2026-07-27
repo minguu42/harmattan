@@ -1,6 +1,7 @@
 package usecase_test
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -8,6 +9,7 @@ import (
 	"github.com/minguu42/harmattan/internal/api/handler"
 	"github.com/minguu42/harmattan/internal/api/openapi"
 	"github.com/minguu42/harmattan/internal/database"
+	"github.com/minguu42/harmattan/internal/domain"
 	"github.com/stretchr/testify/require"
 )
 
@@ -73,6 +75,38 @@ func TestTask_CreateTask(t *testing.T) {
 			runTest(t, tt)
 		})
 	}
+}
+
+func TestTask_CreateTask_TooManyTasks(t *testing.T) {
+	tasks := make(database.Tasks, 0, domain.MaxTasksPerProject)
+	for i := range domain.MaxTasksPerProject {
+		tasks = append(tasks, database.Task{
+			ID:        domain.TaskID(fmt.Sprintf("TASK-%021d", i+1)),
+			UserID:    testUserID,
+			ProjectID: "PROJECT-000000000000000001",
+			Name:      fmt.Sprintf("タスク%d", i+1),
+		})
+	}
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Projects{
+			{
+				ID:     "PROJECT-000000000000000001",
+				UserID: testUserID,
+				Name:   "プロジェクト1",
+				Color:  "blue",
+			},
+		},
+		tasks,
+	}))
+
+	runTest(t, test{
+		Method:     "POST",
+		Path:       "/projects/PROJECT-000000000000000001/tasks",
+		Headers:    http.Header{"Authorization": []string{"Bearer " + token}},
+		Body:       `{"name": "タスク", "priority": 1}`,
+		WantStatus: 409,
+		WantJSON:   handler.ErrorResponse{Code: 409, Message: "1つのプロジェクトに作成できるタスクは1000件までです。不要なタスクを削除してから再度お試しください"},
+	})
 }
 
 func TestTask_ListTasks(t *testing.T) {
