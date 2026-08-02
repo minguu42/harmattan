@@ -19,11 +19,11 @@ import (
 
 var update = flag.Bool("update", false, "実際のテスト結果でtxtarファイルのgoldenファイルを更新する")
 
-// TestRegression はtestcaseディレクトリ配下のtxtarファイルをリグレッションテストとして実行する
-// 各テストケースはtestcase/<OperationName>/<testcase_name>.txtarに配置する
+// TestRegression はtestdataディレクトリ配下のtxtarファイルをリグレッションテストとして実行する
+// 各テストケースはtestdata/<OperationName>/<testcase_name>.txtarに配置する
 // `go test ./internal/api -update`コマンドで実際のテスト結果からgoldenファイルを一括で更新できる
 func TestRegression(t *testing.T) {
-	operationDirs, err := os.ReadDir("testcase")
+	operationDirs, err := os.ReadDir("testdata")
 	require.NoError(t, err)
 
 	for _, operationDir := range operationDirs {
@@ -31,7 +31,7 @@ func TestRegression(t *testing.T) {
 			continue
 		}
 
-		files, err := os.ReadDir(filepath.Join("testcase", operationDir.Name()))
+		files, err := os.ReadDir(filepath.Join("testdata", operationDir.Name()))
 		require.NoError(t, err)
 
 		for _, file := range files {
@@ -40,7 +40,7 @@ func TestRegression(t *testing.T) {
 				continue
 			}
 			t.Run(operationDir.Name()+"/"+name, func(t *testing.T) {
-				runTestCase(t, filepath.Join("testcase", operationDir.Name(), file.Name()))
+				runTestCase(t, filepath.Join("testdata", operationDir.Name(), file.Name()))
 			})
 		}
 	}
