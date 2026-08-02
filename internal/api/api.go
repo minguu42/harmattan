@@ -54,6 +54,7 @@ func NewHandler(f *Factory, revision string, allowedOrigins []string) (http.Hand
 }
 
 func notFound(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
 	_, _ = w.Write([]byte(`{"code":404,"message":"指定したパスは見つかりません"}`))
 }
@@ -67,6 +68,7 @@ func methodNotAllowed(w http.ResponseWriter, r *http.Request, allowed string) {
 	}
 
 	w.Header().Set("Allow", allowed)
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	_, _ = w.Write([]byte(`{"code":405,"message":"指定したメソッドは許可されていません"}`))
 }
@@ -98,6 +100,7 @@ func errorHandler(ctx context.Context, w http.ResponseWriter, r *http.Request, e
 		})
 	}
 
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(apiError.Status())
 	bs, _ := json.Marshal(ErrorResponse{
 		Code:    apiError.Status(),

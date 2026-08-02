@@ -1,0 +1,87 @@
+UpdateTaskの正常系。タスクを更新し、自身が所有する存在するタグのみ関連付ける。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('USER-000000000000000000002', 'user2@dummy.invalid', 'password', '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into projects (id, user_id, name, color, is_archived, created_at, updated_at) values
+('PROJECT-000000000000000001', 'USER-000000000000000000001', 'プロジェクト1', 'blue', 0, '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('PROJECT-000000000000000002', 'USER-000000000000000000002', 'プロジェクト2', 'gray', 0, '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into tasks (id, user_id, project_id, name, content, priority, created_at, updated_at) values
+('TASK-000000000000000000001', 'USER-000000000000000000001', 'PROJECT-000000000000000001', 'タスク1', '内容', 1, '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('TASK-000000000000000000002', 'USER-000000000000000000002', 'PROJECT-000000000000000002', 'タスク2', '内容', 2, '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into tags (id, user_id, name, created_at, updated_at) values
+('TAG-0000000000000000000001', 'USER-000000000000000000001', 'タグ1', '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('TAG-0000000000000000000002', 'USER-000000000000000000002', 'タグ2', '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+-- request --
+PATCH /tasks/TASK-000000000000000000001
+Authorization: Bearer ${TOKEN}
+Content-Type: application/json
+
+{"name": "更新後タスク", "content": "更新後内容", "priority": 3, "due_on": "2025-01-02", "completed_at": "2025-01-01T12:00:00+09:00", "tag_ids": ["TAG-0000000000000000000001", "TAG-0000000000000000000002", "TAG-0000000000000000000099"]}
+
+-- response.golden --
+200
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "id": "TASK-000000000000000000001",
+  "project_id": "PROJECT-000000000000000001",
+  "name": "更新後タスク",
+  "content": "更新後内容",
+  "priority": 3,
+  "due_on": "2025-01-02",
+  "completed_at": "2025-01-01T12:00:00+09:00",
+  "created_at": "2025-01-01T00:00:01+09:00",
+  "updated_at": "2025-01-01T00:10:00+09:00",
+  "steps": [],
+  "tags": [
+    {
+      "id": "TAG-0000000000000000000001",
+      "name": "タグ1",
+      "created_at": "2025-01-01T00:00:01+09:00",
+      "updated_at": "2025-01-01T00:00:01+09:00"
+    }
+  ]
+}
+
+-- db.golden --
+> select id, user_id, project_id, name, content, priority, due_on, completed_at, created_at, updated_at from tasks order by id;
+[
+  {
+    "id": "TASK-000000000000000000001",
+    "user_id": "USER-000000000000000000001",
+    "project_id": "PROJECT-000000000000000001",
+    "name": "更新後タスク",
+    "content": "更新後内容",
+    "priority": 3,
+    "due_on": "2025-01-02T00:00:00+09:00",
+    "completed_at": "2025-01-01T12:00:00+09:00",
+    "created_at": "2025-01-01T00:00:01+09:00",
+    "updated_at": "2025-01-01T00:10:00+09:00"
+  },
+  {
+    "id": "TASK-000000000000000000002",
+    "user_id": "USER-000000000000000000002",
+    "project_id": "PROJECT-000000000000000002",
+    "name": "タスク2",
+    "content": "内容",
+    "priority": 2,
+    "due_on": null,
+    "completed_at": null,
+    "created_at": "2025-01-01T00:00:02+09:00",
+    "updated_at": "2025-01-01T00:00:02+09:00"
+  }
+]
+> select task_id, tag_id from task_tags order by task_id, tag_id;
+[
+  {
+    "task_id": "TASK-000000000000000000001",
+    "tag_id": "TAG-0000000000000000000001"
+  }
+]

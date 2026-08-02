@@ -57,6 +57,14 @@ func (c *Client) CreateProject(ctx context.Context, p *domain.Project) error {
 	return nil
 }
 
+func (c *Client) CountProjects(ctx context.Context, id domain.UserID) (int, error) {
+	var count int64
+	if err := c.db(ctx).Model(Project{}).Where("user_id = ?", id).Count(&count).Error; err != nil {
+		return 0, errtrace.Wrap(err)
+	}
+	return int(count), nil
+}
+
 func (c *Client) ListProjects(ctx context.Context, id domain.UserID, limit, offset int) (domain.Projects, error) {
 	var ps Projects
 	if err := c.db(ctx).Where("user_id = ?", id).Limit(limit).Offset(offset).Find(&ps).Error; err != nil {

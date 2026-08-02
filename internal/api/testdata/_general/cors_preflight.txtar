@@ -1,0 +1,12 @@
+プリフライトリクエストには許可されたオリジンとメソッドを示す204を返す。
+
+-- request --
+OPTIONS /projects
+Origin: http://localhost:5173
+Access-Control-Request-Method: POST
+
+-- response.golden --
+204
+Access-Control-Allow-Methods: POST
+Access-Control-Allow-Origin: http://localhost:5173
+Vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers

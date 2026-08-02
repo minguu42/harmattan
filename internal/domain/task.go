@@ -7,6 +7,9 @@ import (
 	"github.com/minguu42/harmattan/internal/lib/plain"
 )
 
+// MaxTasksPerProject は1プロジェクトに作成できるタスク数の上限
+const MaxTasksPerProject = 1000
+
 type TaskID string
 
 type Task struct {

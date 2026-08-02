@@ -51,6 +51,14 @@ func (c *Client) CreateTag(ctx context.Context, t *domain.Tag) error {
 	return nil
 }
 
+func (c *Client) CountTags(ctx context.Context, id domain.UserID) (int, error) {
+	var count int64
+	if err := c.db(ctx).Model(Tag{}).Where("user_id = ?", id).Count(&count).Error; err != nil {
+		return 0, errtrace.Wrap(err)
+	}
+	return int(count), nil
+}
+
 func (c *Client) ListTags(ctx context.Context, id domain.UserID, limit, offset int) (domain.Tags, error) {
 	var ts Tags
 	if err := c.db(ctx).Where("user_id = ?", id).Limit(limit).Offset(offset).Find(&ts).Error; err != nil {

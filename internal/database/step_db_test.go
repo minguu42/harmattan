@@ -41,6 +41,49 @@ func TestClient_CreateStep(t *testing.T) {
 	})
 }
 
+func TestClient_CountSteps(t *testing.T) {
+	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
+		database.Users{
+			{ID: "user01", Email: "user01@dummy.invalid", HashedPassword: "pass", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Projects{
+			{ID: "project01", UserID: "user01", Name: "プロジェクト1", Color: "blue", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+		},
+		database.Tasks{
+			{ID: "task01", UserID: "user01", ProjectID: "project01", Name: "タスク1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "task02", UserID: "user01", ProjectID: "project01", Name: "タスク2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+		},
+		database.Steps{
+			{ID: "step01", UserID: "user01", TaskID: "task01", Name: "ステップ1", CreatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 1, 0, jst)},
+			{ID: "step02", UserID: "user01", TaskID: "task01", Name: "ステップ2", CreatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 2, 0, jst)},
+			{ID: "step03", UserID: "user01", TaskID: "task02", Name: "ステップ3", CreatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst), UpdatedAt: time.Date(2025, 1, 1, 0, 0, 3, 0, jst)},
+		},
+	}))
+
+	tests := []struct {
+		name   string
+		taskID domain.TaskID
+		want   int
+	}{
+		{
+			name:   "multiple",
+			taskID: "task01",
+			want:   2,
+		},
+		{
+			name:   "no_match",
+			taskID: "task99",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := c.CountSteps(t.Context(), tt.taskID)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestClient_GetStepByID(t *testing.T) {
 	require.NoError(t, tdb.TruncateAndInsert(t.Context(), []any{
 		database.Users{

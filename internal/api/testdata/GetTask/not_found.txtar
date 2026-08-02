@@ -1,0 +1,28 @@
+存在しないタスクを指定した場合は404を返す。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('USER-000000000000000000002', 'user2@dummy.invalid', 'password', '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into projects (id, user_id, name, color, is_archived, created_at, updated_at) values
+('PROJECT-000000000000000001', 'USER-000000000000000000001', 'プロジェクト1', 'blue', 0, '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('PROJECT-000000000000000002', 'USER-000000000000000000002', 'プロジェクト2', 'gray', 0, '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into tasks (id, user_id, project_id, name, content, priority, created_at, updated_at) values
+('TASK-000000000000000000001', 'USER-000000000000000000001', 'PROJECT-000000000000000001', 'タスク1', '内容', 1, '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('TASK-000000000000000000002', 'USER-000000000000000000002', 'PROJECT-000000000000000002', 'タスク2', '内容', 2, '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+-- request --
+GET /tasks/TASK-000000000000000000099
+Authorization: Bearer ${TOKEN}
+
+-- response.golden --
+404
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 404,
+  "message": "指定したタスクは見つかりません"
+}

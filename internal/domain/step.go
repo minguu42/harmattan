@@ -2,6 +2,9 @@ package domain
 
 import "time"
 
+// MaxStepsPerTask は1タスクに作成できるステップ数の上限
+const MaxStepsPerTask = 20
+
 type StepID string
 
 type Step struct {

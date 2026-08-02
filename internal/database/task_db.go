@@ -80,6 +80,14 @@ func (c *Client) CreateTask(ctx context.Context, t *domain.Task) error {
 	return nil
 }
 
+func (c *Client) CountTasks(ctx context.Context, projectID domain.ProjectID) (int, error) {
+	var count int64
+	if err := c.db(ctx).Model(Task{}).Where("project_id = ?", projectID).Count(&count).Error; err != nil {
+		return 0, errtrace.Wrap(err)
+	}
+	return int(count), nil
+}
+
 func (c *Client) ListTasks(ctx context.Context, projectID domain.ProjectID, limit, offset int, showCompleted bool) (domain.Tasks, error) {
 	var ts Tasks
 	q := c.db(ctx).Preload("Steps").Where("project_id = ?", projectID)

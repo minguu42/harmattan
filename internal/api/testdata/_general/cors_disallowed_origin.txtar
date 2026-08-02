@@ -1,0 +1,15 @@
+許可されていないオリジンからのリクエストにはAccess-Control-Allow-Originヘッダを返さない。
+
+-- request --
+GET /non-existent-path
+Origin: http://evil.example.invalid
+
+-- response.golden --
+404
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 404,
+  "message": "指定したパスは見つかりません"
+}

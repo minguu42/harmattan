@@ -1,0 +1,21 @@
+SignInの正常系。メールアドレスとパスワードが一致する場合はIDトークンを返す。
+hashed_passwordは"Password123!"のbcryptハッシュ値である。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', '$2a$10$om4pQ6OVk6u0k0pb/o0Jzu1P6HfzshhzgMe0wqYFgHuZrQaUtw7BO', '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+-- request --
+POST /sign-in
+Content-Type: application/json
+
+{"email": "user1@dummy.invalid", "password": "Password123!"}
+
+-- response.golden --
+200
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVU0VSLTAwMDAwMDAwMDAwMDAwMDAwMDAwMSIsImV4cCI6MTczNTY2MTQwMCwiaWF0IjoxNzM1NjU3ODAwfQ.2GW3dXKwuagQoPPLwWkbQssK7hmYGRpsQnG327GxZYc"
+}

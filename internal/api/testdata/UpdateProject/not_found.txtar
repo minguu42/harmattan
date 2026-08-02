@@ -1,0 +1,27 @@
+存在しないプロジェクトを指定した場合は404を返す。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('USER-000000000000000000002', 'user2@dummy.invalid', 'password', '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into projects (id, user_id, name, color, is_archived, created_at, updated_at) values
+('PROJECT-000000000000000001', 'USER-000000000000000000001', 'プロジェクト1', 'blue', 0, '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('PROJECT-000000000000000002', 'USER-000000000000000000002', 'プロジェクト2', 'gray', 0, '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+-- request --
+PATCH /projects/PROJECT-000000000000000099
+Authorization: Bearer ${TOKEN}
+Content-Type: application/json
+
+{"name": "更新後プロジェクト", "color": "gray", "is_archived": true}
+
+-- response.golden --
+404
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 404,
+  "message": "指定したプロジェクトは見つかりません"
+}
