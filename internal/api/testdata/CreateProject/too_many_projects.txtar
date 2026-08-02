@@ -1,0 +1,27 @@
+プロジェクト数が上限の100件に達している場合はプロジェクトを作成できない。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+insert into projects (id, user_id, name, color, is_archived, created_at, updated_at)
+with recursive seq (n) as (select 1 union all select n + 1 from seq where n < 100)
+select concat('PROJECT-', lpad(n, 18, '0')), 'USER-000000000000000000001', concat('プロジェクト', n), 'blue', 0, '2025-01-01 00:00:00', '2025-01-01 00:00:00'
+from seq;
+
+-- request --
+POST /projects
+Authorization: Bearer ${TOKEN}
+Content-Type: application/json
+
+{"name": "プロジェクト", "color": "blue"}
+
+-- response.golden --
+409
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 409,
+  "message": "作成できるプロジェクトは100件までです。不要なプロジェクトを削除してから再度お試しください"
+}

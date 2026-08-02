@@ -1,0 +1,32 @@
+limit=1を指定した場合は1件のみ返し、次のページがあることを示す。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+insert into projects (id, user_id, name, color, is_archived, created_at, updated_at) values
+('PROJECT-000000000000000001', 'USER-000000000000000000001', 'プロジェクト1', 'blue', 0, '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('PROJECT-000000000000000002', 'USER-000000000000000000001', 'プロジェクト2', 'gray', 0, '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+-- request --
+GET /projects?limit=1&offset=0
+Authorization: Bearer ${TOKEN}
+
+-- response.golden --
+200
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "projects": [
+    {
+      "id": "PROJECT-000000000000000001",
+      "name": "プロジェクト1",
+      "color": "blue",
+      "is_archived": false,
+      "created_at": "2025-01-01T00:00:01+09:00",
+      "updated_at": "2025-01-01T00:00:01+09:00"
+    }
+  ],
+  "has_next": true
+}

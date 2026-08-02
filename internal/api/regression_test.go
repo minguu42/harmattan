@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"flag"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -70,7 +72,7 @@ func runTestCase(t *testing.T, path string) {
 	require.NoError(t, err)
 	require.NoError(t, resp.Body.Close())
 
-	gotResponse := generateResponseGolden(t, resp.StatusCode, body)
+	gotResponse := generateResponseGolden(t, resp, body)
 	var gotDB string
 	if file, ok := files["db.golden"]; ok {
 		gotDB = generateDBGolden(t, file)
@@ -131,16 +133,28 @@ func generateDBGolden(t *testing.T, dbGolden string) string {
 	return b.String()
 }
 
-func generateResponseGolden(t *testing.T, status int, body []byte) string {
+// generateResponseGolden はレスポンスの実測値からresponse.goldenの内容を生成する
+// ヘッダはすべてダンプして検証する
+// ただし、実行ごとに値が変わるDateとボディの検証と重複するContent-Lengthは除外する
+func generateResponseGolden(t *testing.T, resp *http.Response, body []byte) string {
 	t.Helper()
 
-	text := strconv.Itoa(status) + "\n"
+	var b strings.Builder
+	b.WriteString(strconv.Itoa(resp.StatusCode) + "\n")
+	for _, name := range slices.Sorted(maps.Keys(resp.Header)) {
+		if name == "Date" || name == "Content-Length" {
+			continue
+		}
+		for _, value := range resp.Header[name] {
+			b.WriteString(name + ": " + value + "\n")
+		}
+	}
 	if len(bytes.TrimSpace(body)) == 0 {
-		return text
+		return b.String()
 	}
 	var buf bytes.Buffer
 	require.NoError(t, json.Indent(&buf, body, "", "  "), "response body: %s", body)
-	return text + "\n" + buf.String() + "\n"
+	return b.String() + "\n" + buf.String() + "\n"
 }
 
 func setArchiveFile(archive *txtar.Archive, name, data string) {

@@ -1,0 +1,17 @@
+リクエストボディが不正なJSONの場合は400を返す。
+
+-- request --
+POST /sign-in
+Content-Type: application/json
+
+invalid
+
+-- response.golden --
+400
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 400,
+  "message": "リクエストに何らかの間違いがあります"
+}

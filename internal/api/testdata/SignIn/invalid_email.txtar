@@ -1,0 +1,21 @@
+存在しないメールアドレスを指定した場合はサインインに失敗する。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', '$2a$10$om4pQ6OVk6u0k0pb/o0Jzu1P6HfzshhzgMe0wqYFgHuZrQaUtw7BO', '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+-- request --
+POST /sign-in
+Content-Type: application/json
+
+{"email": "unknown@dummy.invalid", "password": "Password123!"}
+
+-- response.golden --
+400
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 400,
+  "message": "メールアドレスかパスワードに誤りがあります"
+}

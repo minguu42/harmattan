@@ -1,0 +1,33 @@
+ステップ数が上限の20件に達している場合はステップを作成できない。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+insert into projects (id, user_id, name, color, is_archived, created_at, updated_at) values
+('PROJECT-000000000000000001', 'USER-000000000000000000001', 'プロジェクト1', 'blue', 0, '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+insert into tasks (id, user_id, project_id, name, content, priority, created_at, updated_at) values
+('TASK-000000000000000000001', 'USER-000000000000000000001', 'PROJECT-000000000000000001', 'タスク1', '', 0, '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+insert into steps (id, user_id, task_id, name, created_at, updated_at)
+with recursive seq (n) as (select 1 union all select n + 1 from seq where n < 20)
+select concat('STEP-', lpad(n, 21, '0')), 'USER-000000000000000000001', 'TASK-000000000000000000001', concat('ステップ', n), '2025-01-01 00:00:00', '2025-01-01 00:00:00'
+from seq;
+
+-- request --
+POST /tasks/TASK-000000000000000000001/steps
+Authorization: Bearer ${TOKEN}
+Content-Type: application/json
+
+{"name": "ステップ"}
+
+-- response.golden --
+409
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 409,
+  "message": "1つのタスクに作成できるステップは20件までです。不要なステップを削除してから再度お試しください"
+}

@@ -1,0 +1,13 @@
+CheckHealthの正常系。リビジョンを含むヘルスチェックの結果が返る。
+
+-- request --
+GET /health
+
+-- response.golden --
+200
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "revision": "xxxxxxx"
+}
