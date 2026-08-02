@@ -1,0 +1,17 @@
+不正なIDトークンを指定した場合はユーザの認証に失敗する。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+-- request --
+GET /projects
+Authorization: Bearer invalid-token
+
+-- response.golden --
+401
+
+{
+  "code": 401,
+  "message": "ユーザの認証に失敗しました"
+}

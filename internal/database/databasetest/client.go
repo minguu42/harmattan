@@ -1,10 +1,13 @@
 package databasetest
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -14,6 +17,7 @@ import (
 	"time"
 
 	"github.com/avast/retry-go/v5"
+	"github.com/minguu42/harmattan/internal/atel"
 	"github.com/minguu42/harmattan/internal/database"
 	"github.com/minguu42/harmattan/internal/lib/errtrace"
 	"github.com/stretchr/testify/assert"
@@ -118,6 +122,33 @@ func (c *Client) Close() error {
 	return errtrace.Wrap(errors.Join(dbErr, containerErr))
 }
 
+func (c *Client) ExecScript(ctx context.Context, script string) error {
+	var stmts []string
+	var b strings.Builder
+	for line := range strings.Lines(script) {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" || strings.HasPrefix(trimmed, "--") {
+			continue
+		}
+
+		b.WriteString(line)
+		if strings.HasSuffix(trimmed, ";") {
+			stmts = append(stmts, strings.TrimSuffix(strings.TrimSpace(b.String()), ";"))
+			b.Reset()
+		}
+	}
+	if stmt := strings.TrimSpace(b.String()); stmt != "" {
+		stmts = append(stmts, stmt)
+	}
+
+	for _, stmt := range stmts {
+		if _, err := c.db.ExecContext(ctx, stmt); err != nil {
+			return errtrace.Wrap(err, slog.String("statement", stmt))
+		}
+	}
+	return nil
+}
+
 func (c *Client) TruncateAndInsert(ctx context.Context, tableRows []any) error {
 	for _, rows := range tableRows {
 		stmt := &gorm.Statement{DB: c.gormDB}
@@ -140,6 +171,33 @@ func (c *Client) TruncateAndInsert(ctx context.Context, tableRows []any) error {
 	return nil
 }
 
+func (c *Client) TruncateAll(ctx context.Context) error {
+	rows, err := c.db.QueryContext(ctx, "select table_name from information_schema.tables where table_schema = ?", c.DSN.Database)
+	if err != nil {
+		return errtrace.Wrap(err)
+	}
+	defer atel.Capture(ctx, "Failed to close rows")(rows.Close)
+
+	var tables []string
+	for rows.Next() {
+		var table string
+		if err := rows.Scan(&table); err != nil {
+			return errtrace.Wrap(err)
+		}
+		tables = append(tables, table)
+	}
+	if err := rows.Err(); err != nil {
+		return errtrace.Wrap(err)
+	}
+
+	for _, table := range tables {
+		if _, err := c.db.ExecContext(ctx, fmt.Sprintf("truncate table %s", table)); err != nil {
+			return errtrace.Wrap(err, slog.String("table", table))
+		}
+	}
+	return nil
+}
+
 func (c *Client) Assert(t *testing.T, data []any) {
 	t.Helper()
 
@@ -156,4 +214,50 @@ func (c *Client) Assert(t *testing.T, data []any) {
 		got := reflect.ValueOf(gotPointer).Elem().Interface()
 		assert.ElementsMatch(t, want, got)
 	}
+}
+
+func (c *Client) DumpQueryResult(ctx context.Context, query string) (string, error) {
+	rows, err := c.db.QueryContext(ctx, query)
+	if err != nil {
+		return "", errtrace.Wrap(err)
+	}
+	defer atel.Capture(ctx, "Failed to close rows")(rows.Close)
+
+	columns, err := rows.Columns()
+	if err != nil {
+		return "", errtrace.Wrap(err)
+	}
+
+	// 結果が0件の場合にnullではなく[]と出力されるように空スライスで初期化する
+	records := []record{}
+	for rows.Next() {
+		values := make([]any, len(columns))
+		pointers := make([]any, len(columns))
+		for i := range values {
+			pointers[i] = &values[i]
+		}
+		if err := rows.Scan(pointers...); err != nil {
+			return "", errtrace.Wrap(err)
+		}
+
+		for i, v := range values {
+			if b, ok := v.([]byte); ok {
+				values[i] = string(b)
+			}
+		}
+		records = append(records, record{columns: columns, values: values})
+	}
+	if rows.Err() != nil {
+		return "", errtrace.Wrap(rows.Err())
+	}
+
+	// HTMLエスケープを無効化するために json.NewEncoder を使う
+	var b bytes.Buffer
+	encoder := json.NewEncoder(&b)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(records); err != nil {
+		return "", errtrace.Wrap(err)
+	}
+	return b.String(), nil
 }
