@@ -1,0 +1,31 @@
+DeleteProjectの正常系。プロジェクトを削除するとレスポンスボディなしの200が返り、他ユーザのプロジェクトは残る。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('USER-000000000000000000002', 'user2@dummy.invalid', 'password', '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into projects (id, user_id, name, color, is_archived, created_at, updated_at) values
+('PROJECT-000000000000000001', 'USER-000000000000000000001', 'プロジェクト1', 'blue', 0, '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('PROJECT-000000000000000002', 'USER-000000000000000000002', 'プロジェクト2', 'gray', 0, '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+-- request --
+DELETE /projects/PROJECT-000000000000000001
+Authorization: Bearer ${TOKEN}
+
+-- response.golden --
+200
+
+-- db.golden --
+> select id, user_id, name, color, is_archived, created_at, updated_at from projects order by id;
+[
+  {
+    "id": "PROJECT-000000000000000002",
+    "user_id": "USER-000000000000000000002",
+    "name": "プロジェクト2",
+    "color": "gray",
+    "is_archived": 0,
+    "created_at": "2025-01-01T00:00:02+09:00",
+    "updated_at": "2025-01-01T00:00:02+09:00"
+  }
+]

@@ -30,6 +30,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.44.0
 	go.opentelemetry.io/otel/trace v1.44.0
 	golang.org/x/crypto v0.54.0
+	golang.org/x/tools v0.48.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.2
 	gorm.io/plugin/opentelemetry v0.1.16
@@ -120,7 +121,6 @@ require (
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260708182218-49f421fb7959 // indirect
 	golang.org/x/text v0.40.0 // indirect
-	golang.org/x/tools v0.48.0 // indirect
 	golang.org/x/tools/go/expect v0.1.1-deprecated // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260526163538-3dc84a4a5aaa // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
