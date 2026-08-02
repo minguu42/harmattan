@@ -1,0 +1,14 @@
+存在しないパスを指定した場合は404を返す。
+
+-- request --
+GET /non-existent-path
+
+-- response.golden --
+404
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 404,
+  "message": "指定したパスは見つかりません"
+}

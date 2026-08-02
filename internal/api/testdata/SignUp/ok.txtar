@@ -1,0 +1,34 @@
+SignUpの正常系。ユーザを作成し、IDトークンを返す。
+パスワードのハッシュ値は決定的でないため、データベースの検証ではハッシュ値以外の列を検証する。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01');
+
+-- request --
+POST /sign-up
+Content-Type: application/json
+
+{"email": "newuser@dummy.invalid", "password": "Password123!"}
+
+-- response.golden --
+200
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJHRU5FUkFURUQtSUQtMDAwMDAwMDAwMDAwMSIsImV4cCI6MTczNTY2MTQwMCwiaWF0IjoxNzM1NjU3ODAwfQ.VYItmaTiOaYUdL-8NnC-wwlSKCqRNEMDC1oo1HrTOGA"
+}
+
+-- db.golden --
+> select id, email from users order by id;
+[
+  {
+    "id": "GENERATED-ID-0000000000001",
+    "email": "newuser@dummy.invalid"
+  },
+  {
+    "id": "USER-000000000000000000001",
+    "email": "user1@dummy.invalid"
+  }
+]

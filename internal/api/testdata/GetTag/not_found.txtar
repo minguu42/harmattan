@@ -1,0 +1,24 @@
+存在しないタグを指定した場合は404を返す。
+
+-- setup.sql --
+insert into users (id, email, hashed_password, created_at, updated_at) values
+('USER-000000000000000000001', 'user1@dummy.invalid', 'password', '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('USER-000000000000000000002', 'user2@dummy.invalid', 'password', '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+insert into tags (id, user_id, name, created_at, updated_at) values
+('TAG-0000000000000000000001', 'USER-000000000000000000001', 'タグ1', '2025-01-01 00:00:01', '2025-01-01 00:00:01'),
+('TAG-0000000000000000000002', 'USER-000000000000000000002', 'タグ2', '2025-01-01 00:00:02', '2025-01-01 00:00:02');
+
+-- request --
+GET /tags/TAG-0000000000000000000099
+Authorization: Bearer ${TOKEN}
+
+-- response.golden --
+404
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 404,
+  "message": "指定したタグは見つかりません"
+}

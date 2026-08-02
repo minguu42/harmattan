@@ -64,7 +64,7 @@ func TestMain(m *testing.M) {
 	}
 	defer atel.Capture(ctx, "Failed to close factory")(f.Close)
 
-	h, err := api.NewHandler(f, "xxxxxxx", []string{"*"})
+	h, err := api.NewHandler(f, "xxxxxxx", []string{"http://localhost:5173"})
 	if err != nil {
 		log.Fatalf("%+v", err)
 	}

@@ -1,0 +1,10 @@
+OPTIONSメソッドの場合は405ではなく、許可されたメソッドとヘッダを示す204を返す。
+
+-- request --
+OPTIONS /health
+
+-- response.golden --
+204
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Methods: GET
+Vary: Origin

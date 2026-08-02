@@ -1,0 +1,16 @@
+許可されたオリジンからのリクエストにはAccess-Control-Allow-Originヘッダを返す。
+
+-- request --
+GET /non-existent-path
+Origin: http://localhost:5173
+
+-- response.golden --
+404
+Access-Control-Allow-Origin: http://localhost:5173
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 404,
+  "message": "指定したパスは見つかりません"
+}

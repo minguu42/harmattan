@@ -1,0 +1,15 @@
+許可されていないメソッドを指定した場合はAllowヘッダを付けて405を返す。
+
+-- request --
+POST /health
+
+-- response.golden --
+405
+Allow: GET
+Content-Type: application/json; charset=utf-8
+Vary: Origin
+
+{
+  "code": 405,
+  "message": "指定したメソッドは許可されていません"
+}
