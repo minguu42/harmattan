@@ -80,13 +80,22 @@ jobs:
           TF_VAR_env: stg
       - name: Create comment
         uses: actions/github-script@v9.0.0
+        env:
+          PLAN_OUTCOME: ${{ steps.plan.outcome }}
+          PLAN_STDOUT: ${{ steps.plan.outputs.stdout }}
+          PLAN_STDERR: ${{ steps.plan.outputs.stderr }}
         with:
           script: |
-            const stdout = `${{ steps.plan.outputs.stdout }}`;
-            const stderr = `${{ steps.plan.outputs.stderr }}`;
+            const stdout = process.env.PLAN_STDOUT;
+            const stderr = process.env.PLAN_STDERR;
 
-            let output = `Terraform Plan: \`${{ steps.plan.outcome }}\`
+            let summary = stdout.match(/^(?:Plan: .*|No changes\..*)$/m)?.[0];
+            if (!summary && stdout.includes('Changes to Outputs:')) {
+              summary = 'Changes to Outputs only.';
+            }
 
+            let output = `Terraform Plan: \`${process.env.PLAN_OUTCOME}\`
+            ${summary ? `\n**${summary}**\n` : ''}
             <details><summary>Show plan</summary>
 
             \`\`\`
@@ -105,7 +114,7 @@ jobs:
             `;
             }
 
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
